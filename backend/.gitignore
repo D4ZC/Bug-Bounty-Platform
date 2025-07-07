@@ -1,0 +1,23 @@
+# dependencias
+node_modules/
+
+# build y logs
+/dist/
+/logs/
+*.log
+
+# entorno
+.env
+.env.*
+
+# uploads
+/uploads/
+
+# sistema
+.DS_Store
+*.local
+
+# editor
+.vscode/
+.idea/
+*.swp 
