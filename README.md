@@ -17,7 +17,6 @@ Una aplicación web para gestionar y puntuar la resolución de vulnerabilidades 
 - **Backend**: Node.js + Express.js
 - **Base de Datos**: MongoDB
 - **Autenticación**: w3id de IBM
-- **Notificaciones**: WebSockets + Push Notifications
 
 ## 📁 Estructura del Proyecto
 
@@ -108,7 +107,6 @@ npm start
 ```env
 PORT=3001
 MONGODB_URI=mongodb://localhost:27017/bug-bounty
-JWT_SECRET=your-jwt-secret
 W3ID_CLIENT_ID=your-w3id-client-id
 W3ID_CLIENT_SECRET=your-w3id-client-secret
 MENDSCAN_API_URL=your-mendscan-api-url
@@ -151,62 +149,4 @@ REACT_APP_W3ID_CLIENT_ID=your-w3id-client-id
 
 ### Retos
 - `GET /api/challenges` - Listar retos
-- `POST /api/challenges` - Crear reto
-- `PUT /api/challenges/:id/join` - Unirse a reto
-- `GET /api/challenges/:id/progress` - Progreso del reto
-
-### Tienda
-- `GET /api/shop/items` - Listar items
-- `POST /api/shop/purchase` - Comprar item
-- `GET /api/shop/mvp-items` - Items MVP
-
-### Contribuciones
-- `GET /api/contributions` - Listar contribuciones
-- `POST /api/contributions` - Crear contribución
-- `POST /api/contributions/:id/vote` - Votar contribución
-
-## 🧪 Testing
-
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-cd frontend
-npm test
-```
-
-## 📦 Despliegue
-
-### Producción
-```bash
-# Build frontend
-cd frontend
-npm run build
-
-# Start backend
-cd backend
-npm start
-```
-
-### Docker
-```bash
-docker-compose up -d
-```
-
-## 🤝 Contribución
-
-1. Fork el proyecto
-2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abrir un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
-
-## 📞 Soporte
-
-Para soporte técnico, contacta al equipo de desarrollo o crea un issue en el repositorio.
+- `POST /api/challenges`

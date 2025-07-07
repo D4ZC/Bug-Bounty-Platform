@@ -124,7 +124,6 @@ npm run lint:fix     # Corregir problemas automáticamente
 
 ### Autenticación
 - Login/Registro con w3id de IBM
-- Gestión de sesiones con JWT
 - Protección de rutas
 - Recuperación de contraseña
 

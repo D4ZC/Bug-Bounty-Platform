@@ -93,7 +93,7 @@ Aspectos Técnicos y de Arquitectura
 1. Tecnologías Clave
 Frontend: React.
 Backend: Node.js.
-Base de Datos: MongoDB o PostgreSQL.
+Base de Datos: PostgreSQL.
 2. Integración con Mendscan
 Usa APIs con autenticación basada en w3id de IBM.
 3. Actualización de Datos

@@ -10,18 +10,21 @@ router.get('/test', (req, res) => {
   });
 });
 
+// Datos simulados de estadísticas
+const mockStats = {
+  users: 4,
+  teams: 2,
+  vulnerabilities: 3,
+  challenges: 3,
+  contributions: 3,
+  lastUpdate: new Date()
+};
+
 // Ruta para obtener estadísticas generales
 router.get('/stats', (req, res) => {
   res.json({
     success: true,
-    data: {
-      users: 0,
-      teams: 0,
-      vulnerabilities: 0,
-      challenges: 0,
-      contributions: 0,
-      lastUpdate: new Date()
-    }
+    data: mockStats
   });
 });
 

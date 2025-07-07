@@ -50,8 +50,7 @@ router.post('/login', (req, res) => {
         isGulagParticipant: false,
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-      token: 'test-jwt-token'
+      }
     }
   });
 });
@@ -74,8 +73,7 @@ router.post('/register', (req, res) => {
         isGulagParticipant: false,
         createdAt: new Date(),
         updatedAt: new Date()
-      },
-      token: 'test-jwt-token'
+      }
     }
   });
 });

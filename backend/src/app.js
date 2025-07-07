@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
@@ -22,13 +21,12 @@ const shopRoutes = require('./routes/shop');
 const contributionRoutes = require('./routes/contributions');
 const adminRoutes = require('./routes/admin');
 
-// Importar middlewares
-const errorHandler = require('./middlewares/errorHandler');
-const authMiddleware = require('./middlewares/auth');
+// Eliminar importaciones de middlewares
+// Eliminar uso de authMiddleware y errorHandler en las rutas y app.use
 
-// Importar servicios
-const socketService = require('./services/socketService');
-const cronService = require('./services/cronService');
+// Eliminar importación y uso de socketService
+
+// Eliminar importación y uso de cronService
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -59,14 +57,14 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rutas de la API
 app.use('/api/auth', authRoutes);
-app.use('/api/users', authMiddleware.auth, userRoutes);
-app.use('/api/teams', authMiddleware.auth, teamRoutes);
-app.use('/api/vulnerabilities', authMiddleware.auth, vulnerabilityRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/teams', teamRoutes);
+app.use('/api/vulnerabilities', vulnerabilityRoutes);
 app.use('/api/rankings', rankingRoutes);
-app.use('/api/challenges', authMiddleware.auth, challengeRoutes);
-app.use('/api/shop', authMiddleware.auth, shopRoutes);
-app.use('/api/contributions', authMiddleware.auth, contributionRoutes);
-app.use('/api/admin', authMiddleware.auth, adminRoutes);
+app.use('/api/challenges', challengeRoutes);
+app.use('/api/shop', shopRoutes);
+app.use('/api/contributions', contributionRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Ruta de salud
 app.get('/api/health', (req, res) => {
@@ -99,7 +97,7 @@ app.get('/api', (req, res) => {
 });
 
 // Middleware de manejo de errores
-app.use(errorHandler);
+// Eliminar errorHandler
 
 // Ruta para manejar rutas no encontradas
 app.use('*', (req, res) => {
@@ -109,30 +107,9 @@ app.use('*', (req, res) => {
   });
 });
 
-// Función para conectar a MongoDB
-const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    
-    console.log(`MongoDB conectado: ${conn.connection.host}`);
-  } catch (error) {
-    console.error('Error conectando a MongoDB:', error.message);
-    process.exit(1);
-  }
-};
-
 // Función para iniciar el servidor
 const startServer = async () => {
   try {
-    // Conectar a la base de datos
-    await connectDB();
-    
-    // Iniciar servicios
-    await cronService.start();
-    
     // Iniciar servidor HTTP
     const server = app.listen(PORT, () => {
       console.log(`Servidor corriendo en puerto ${PORT}`);
@@ -140,15 +117,11 @@ const startServer = async () => {
       console.log(`API disponible en: http://localhost:${PORT}/api`);
     });
     
-    // Iniciar WebSocket
-    socketService.initialize(server);
-    
     // Manejo de señales para cierre graceful
     process.on('SIGTERM', () => {
       console.log('SIGTERM recibido, cerrando servidor...');
       server.close(() => {
         console.log('Servidor cerrado');
-        mongoose.connection.close();
         process.exit(0);
       });
     });
@@ -157,7 +130,6 @@ const startServer = async () => {
       console.log('SIGINT recibido, cerrando servidor...');
       server.close(() => {
         console.log('Servidor cerrado');
-        mongoose.connection.close();
         process.exit(0);
       });
     });
