@@ -14,9 +14,9 @@ interface UserProfile {
 }
 
 const UserProfileCard: React.FC<{ user: UserProfile }> = ({ user }) => (
-  <Tile className="col-span-1 flex flex-col items-start min-h-[200px] p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
-    <h2 className="text-2xl font-bold text-primary-700 mb-2">{user.name}</h2>
-    <div className="text-sm mb-2 text-primary-600">
+  <Tile className="dashboard-card col-span-1 flex flex-col items-center min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+    <h2 className="text-2xl font-bold text-primary-700 mb-2 text-center">{user.name}</h2>
+    <div className="text-sm mb-2 text-primary-600 text-center">
       Vulnerabilidades solucionadas: {user.stats.total}<br />
       -Críticas: {user.stats.criticas}<br />
       -Altas: {user.stats.altas}<br />

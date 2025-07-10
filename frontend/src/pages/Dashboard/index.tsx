@@ -10,24 +10,24 @@ import { Button } from '@carbon/react';
 const Dashboard: React.FC = () => {
   // Datos mockeados para la lógica dinámica
   const [teams] = useState([
-    { name: 'Piteritos I', score: 2000 },
-    { name: 'Piteritos II', score: 1900 },
-    { name: 'Piteritos III', score: 1500 },
+    { name: 'Vacio I', score: 2000 },
+    { name: 'Vacio II', score: 1900 },
+    { name: 'Vacio III', score: 1500 },
   ]);
   const [users] = useState([
-    { name: 'Piteritos I', score: 2000 },
-    { name: 'Piteritos II', score: 1900 },
-    { name: 'Piteritos III', score: 1500 },
+    { name: 'U1', score: 2000 },
+    { name: 'U2', score: 1900 },
+    { name: 'U3', score: 1500 },
   ]);
   const [gulag] = useState([
-    { name: 'deivid', score: 50 },
-    { name: 'runrun', score: 25 },
-    { name: 'excel', score: 20 },
-    { name: 'kick ass', score: 20 },
-    { name: 'pedrito sola', score: 10 },
+    { name: 'U1', score: 50 },
+    { name: 'U2', score: 25 },
+    { name: 'U3', score: 20 },
+    { name: 'U4', score: 20 },
+    { name: 'U5', score: 10 },
   ]);
   const [mvpTeam] = useState('P-TECH');
-  const [mvpUser] = useState({ name: 'D4ZC', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
+  const [mvpUser] = useState({ name: 'U1', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">
@@ -43,8 +43,8 @@ const Dashboard: React.FC = () => {
       </div>
       {/* Botón de tienda */}
       <div className="flex justify-center items-center mt-10">
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12">
-          <Button kind="primary" size="lg">Visit Store</Button>
+        <div className="w-full md:w-2/3 lg:w-1/2 bg-blue-300 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12 text-black">
+          <button className="store-button">Visit Store</button>
         </div>
       </div>
     </div>
