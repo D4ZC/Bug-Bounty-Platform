@@ -1,26 +1,34 @@
 import React from 'react';
-import { Tile } from '@carbon/react';
 
 interface GulagUser {
   name: string;
   score: number;
 }
 
-const GulagCard: React.FC<{ gulag: GulagUser[] }> = ({ gulag }) => (
-  <Tile className="col-span-1 min-h-[200px] bg-white flex flex-col border border-gray-200 rounded-xl shadow-sm relative">
-    <h2 className="text-2xl font-bold text-danger-700">Gulag</h2>
-    <div className="font-bold text-danger-500">Top 5 Worst</div>
-    <ol className="mt-2">
+const mockGulag: GulagUser[] = [
+  { name: 'deivid', score: 50 },
+  { name: 'runrun', score: 25 },
+  { name: 'excel', score: 20 },
+  { name: 'kick ass', score: 20 },
+  { name: 'pedrito sola', score: 10 },
+];
+
+const GulagCard: React.FC<{ gulag?: GulagUser[] }> = ({ gulag = mockGulag }) => (
+  <div className="w-full h-full flex flex-col gap-2 bg-[#181c24] rounded-xl shadow-lg border-2 border-red-700 p-4">
+    <h2 className="text-2xl font-extrabold text-red-500 tracking-wide mb-1">Gulag</h2>
+    <div className="font-bold text-red-400 text-base mb-2">Top 5 Worst</div>
+    <ol className="flex-1 flex flex-col gap-1">
       {gulag.map((user, idx) => (
-        <li key={user.name} className="flex justify-between text-gray-700">
-          <span>{idx + 1}. {user.name}</span>
-          <span>{user.score} pts</span>
+        <li
+          key={user.name}
+          className={`flex justify-between items-center px-2 py-1 rounded-lg group transition-all duration-200 ${idx === 0 ? 'bg-gradient-to-r from-red-700/40 via-red-400/10 to-red-700/40 shadow-lg border-l-4 border-red-500 animate-pulse' : 'hover:bg-[#23273a]/60'}`}
+        >
+          <span className={`font-bold text-base ${idx === 0 ? 'text-red-300' : 'text-red-200'}`}>{idx + 1}. {user.name}</span>
+          <span className={`font-bold text-lg ${idx === 0 ? 'text-red-100' : 'text-red-300'}`}>{user.score} pts</span>
         </li>
       ))}
     </ol>
-    {/* Placeholder de imagen de fondo */}
-    <div className="absolute right-4 top-4 w-20 h-16 bg-gray-300 rounded shadow-inner opacity-40" />
-  </Tile>
+  </div>
 );
 
 export default GulagCard; 

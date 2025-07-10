@@ -42,11 +42,7 @@ const Dashboard: React.FC = () => {
         <UserProfileCard user={mvpUser} />
       </div>
       {/* Botón de tienda */}
-      <div className="flex justify-center items-center mt-10">
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12">
-          <Button kind="primary" size="lg">Visit Store</Button>
-        </div>
-      </div>
+      {/* Eliminado el cuadro blanco de tienda */}
     </div>
   );
 };
