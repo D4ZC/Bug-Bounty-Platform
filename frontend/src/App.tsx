@@ -22,6 +22,7 @@ import NotFound from '@/pages/NotFound';
 import Duels from '@/pages/Duels';
 import Score from '@/pages/Score';
 import Rules from '@/pages/Rules';
+import Reports from '@/pages/Reports';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -60,6 +61,7 @@ function App() {
           <Route path="duels" element={<Duels />} />
           <Route path="score" element={<Score />} />
           <Route path="rules" element={<Rules />} />
+          <Route path="reports" element={<Reports />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

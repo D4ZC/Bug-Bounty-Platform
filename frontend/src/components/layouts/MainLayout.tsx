@@ -1,6 +1,7 @@
 import React from 'react';
-import { FaHome, FaList, FaTabletAlt, FaPlus, FaBookOpen, FaBars } from 'react-icons/fa';
+import { FaHome, FaList, FaTabletAlt, FaBookOpen, FaBars } from 'react-icons/fa';
 import { GiCrossedSwords } from 'react-icons/gi';
+import { FiEdit2 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 
 const SIDEBAR_WIDTH = 64; // w-16 = 64px
@@ -41,8 +42,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <button onClick={() => navigate('/contributions')} className="mb-2 p-2 hover:bg-gray-200 rounded">
             <FaTabletAlt size={24} />
           </button>
-          <button onClick={() => navigate('/contributions')} className="mb-2 p-2 hover:bg-gray-200 rounded">
-            <FaPlus size={24} />
+          {/* Icono de pluma para reportes */}
+          <button onClick={() => navigate('/reports')} className="mb-2 p-2 hover:bg-gray-200 rounded">
+            <FiEdit2 size={24} />
           </button>
         </div>
         <div className="flex flex-col items-center mb-auto mt-20">
