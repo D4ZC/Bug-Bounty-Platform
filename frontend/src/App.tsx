@@ -19,6 +19,8 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
+import TeamsScorePage from '@/pages/TeamsScorePage';
+import UsersScorePage from '@/pages/UsersScorePage';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -47,6 +49,8 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="teams-score" element={<TeamsScorePage />} />
+          <Route path="users-score" element={<UsersScorePage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
