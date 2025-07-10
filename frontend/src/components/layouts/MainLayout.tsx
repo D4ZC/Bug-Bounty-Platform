@@ -13,8 +13,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => (
         <HeaderGlobalAction aria-label="Notificaciones" className="flex items-center">
           <Notification size={24} />
         </HeaderGlobalAction>
-        <HeaderGlobalAction aria-label="Perfil">
-          <UserAvatar size={20} />
+        <HeaderGlobalAction aria-label="Perfil" className="flex items-center">
+          <UserAvatar size={24} />
         </HeaderGlobalAction>
       </HeaderGlobalBar>
     </Header>
