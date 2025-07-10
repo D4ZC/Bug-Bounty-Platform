@@ -1,0 +1,47 @@
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Logs
+logs/
+*.log
+
+# Build
+build/
+dist/
+frontend/build/
+frontend/dist/
+backend/build/
+backend/dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
+.env
+.env.*
+backend/.env
+frontend/.env
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test
+coverage/
+
+# Misc
+*.tgz
+*.gz
+*.zip
+*.bak
+*.tmp
+
+# Docker
+*.pid
+docker-compose.override.yml 
