@@ -19,6 +19,9 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
+import Duels from '@/pages/Duels';
+import Score from '@/pages/Score';
+import Rules from '@/pages/Rules';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -36,6 +39,13 @@ function App() {
       </Helmet>
 
       <Routes>
+        {/* Rutas de autenticación */}
+        <Route path="/auth" element={<AuthLayout><Outlet /></AuthLayout>}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+        
+        {/* Rutas principales */}
         <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -47,6 +57,9 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="duels" element={<Duels />} />
+          <Route path="score" element={<Score />} />
+          <Route path="rules" element={<Rules />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
