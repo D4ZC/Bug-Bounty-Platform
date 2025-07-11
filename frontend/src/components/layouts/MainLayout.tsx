@@ -1,11 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
 
 const initialNotifications = [
-  { id: 1, text: 'Nueva vulnerabilidad reportada', read: false },
-  { id: 2, text: 'Tu equipo subió de ranking', read: true },
-  { id: 3, text: 'Tienes una recompensa pendiente', read: false },
+  { id: 1, text: 'Nueva vulnerabilidad reportada', read: false, link: '/vulnerabilities' },
+  { id: 2, text: 'Tu equipo subió de ranking', read: true, link: '/rankings' },
+  { id: 3, text: 'Tienes una recompensa pendiente', read: false, link: '/rewards' },
+  { id: 4, text: 'Nuevo mensaje de tu capitán de equipo', read: false, link: '/team' },
+  { id: 5, text: 'Desafío semanal disponible', read: true, link: '/challenges' },
+  { id: 6, text: 'Tu reporte fue validado por un admin', read: false, link: '/contributions' },
+  { id: 7, text: 'Has recibido un nuevo logro', read: true, link: '/profile' },
+  { id: 8, text: 'Actualización de reglas en la plataforma', read: false, link: '/documentation' },
+  { id: 9, text: 'Un miembro se unió a tu equipo', read: true, link: '/team' },
+  { id: 10, text: 'Tu vulnerabilidad fue comentada', read: false, link: '/vulnerabilities' },
 ];
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -14,6 +22,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState(initialNotifications);
   const bellRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
+  const navigate = useNavigate();
 
   // Marcar todas como leídas al abrir el menú
   const handleBellClick = () => {
@@ -74,7 +83,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <li className="p-4 text-center text-gray-500">Sin notificaciones</li>
               ) : (
                 notifications.map((n) => (
-                  <li key={n.id} className={`p-4 border-b last:border-b-0 ${n.read ? 'bg-gray-100' : 'bg-blue-50 font-semibold'}`}>
+                  <li
+                    key={n.id}
+                    className={`p-4 border-b last:border-b-0 cursor-pointer transition hover:bg-blue-100 ${n.read ? 'bg-gray-100' : 'bg-blue-50 font-semibold'}`}
+                    onClick={() => navigate(n.link)}
+                  >
                     {n.text}
                   </li>
                 ))
