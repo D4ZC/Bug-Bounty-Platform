@@ -10,8 +10,8 @@ import { teams, users, getGulagUsers, getTopTeams, getTopUsers } from '@/data/us
 
 const Dashboard: React.FC = () => {
   // Datos dinámicos desde el módulo de datos
-  const [teamsData] = useState(getTopTeams(5));
-  const [usersData] = useState(getTopUsers(10));
+  const [teamsData] = useState(getTopTeams(3));
+  const [usersData] = useState(getTopUsers(3));
   const [gulag] = useState(getGulagUsers());
   const [mvpTeam] = useState('P-TECH');
   const [mvpUser] = useState({ name: 'D4ZC', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });

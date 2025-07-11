@@ -61,18 +61,52 @@ const Score: React.FC = () => {
   const [hoveredProfile, setHoveredProfile] = useState<any>(null);
   const [hoverType, setHoverType] = useState<ProfileType | null>(null);
   const [modalPos, setModalPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [showModal, setShowModal] = useState(false);
+  let leaveTimeout: NodeJS.Timeout;
 
   const handleMouseEnter = (
     e: React.MouseEvent<HTMLSpanElement>,
     profile: any,
     type: ProfileType
   ) => {
+    clearTimeout(leaveTimeout);
     const rect = (e.target as HTMLElement).getBoundingClientRect();
-    setModalPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
+    const modalWidth = 240;
+    const modalHeight = 160;
+    let left = rect.right + window.scrollX + 8;
+    let top = rect.top + window.scrollY - modalHeight - 8;
+    // Si no cabe arriba, la pongo abajo
+    if (top < 0) {
+      top = rect.bottom + window.scrollY + 8;
+    }
+    // Si no cabe a la derecha, la pongo a la izquierda
+    if (left + modalWidth > window.innerWidth) {
+      left = rect.left + window.scrollX - modalWidth - 8;
+    }
+    // Si no cabe a la izquierda, la ajusto al borde izquierdo
+    if (left < 0) left = 8;
+    // Si no cabe abajo, la ajusto al borde inferior
+    if (top + modalHeight > window.innerHeight) {
+      top = window.innerHeight - modalHeight - 8;
+    }
+    setModalPos({ top, left });
     setHoveredProfile(profile);
     setHoverType(type);
+    setShowModal(true);
   };
   const handleMouseLeave = () => {
+    leaveTimeout = setTimeout(() => {
+      setShowModal(false);
+      setHoveredProfile(null);
+      setHoverType(null);
+    }, 100);
+  };
+  const handleModalEnter = () => {
+    clearTimeout(leaveTimeout);
+    setShowModal(true);
+  };
+  const handleModalLeave = () => {
+    setShowModal(false);
     setHoveredProfile(null);
     setHoverType(null);
   };
@@ -162,13 +196,18 @@ const Score: React.FC = () => {
           </div>
         )}
         {/* Modal de perfil resumido */}
-        {hoveredProfile && (
-          <ProfileHoverModal
-            profile={hoveredProfile}
-            type={hoverType || 'user'} // Ensure type is not null for the modal
-            position={modalPos}
-            onClose={handleMouseLeave}
-          />
+        {hoveredProfile && showModal && (
+          <div
+            onMouseEnter={handleModalEnter}
+            onMouseLeave={handleModalLeave}
+          >
+            <ProfileHoverModal
+              profile={hoveredProfile}
+              type={hoverType || 'user'}
+              position={modalPos}
+              onClose={handleModalLeave}
+            />
+          </div>
         )}
       </div>
     </div>
