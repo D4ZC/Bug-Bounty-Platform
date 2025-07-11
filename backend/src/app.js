@@ -54,6 +54,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Servir archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads/avatars', express.static(path.join(__dirname, '../uploads/avatars')));
 
 // Rutas de la API
 app.use('/api/auth', authRoutes);

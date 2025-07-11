@@ -19,6 +19,10 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
+import MensualRanking from '@/pages/Mensual Ranking User';
+import CuatrimestralRankingTeams from '@/pages/Cuatrimestral Ranking Teams';
+import ProfileCustomization from '@/pages/ProfileCustomization';
+import AvatarSelection from '@/pages/AvatarSelection';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -47,6 +51,10 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="mensual-ranking" element={<MensualRanking />} />
+          <Route path="cuatrimestral-ranking-teams" element={<CuatrimestralRankingTeams />} />
+          <Route path="profile-customization" element={<ProfileCustomization />} />
+          <Route path="avatar-selection" element={<AvatarSelection />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
