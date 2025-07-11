@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { User, LoginForm, RegisterForm } from '@/types';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+} from 'react';
+import { LoginForm, RegisterForm, User } from '@/types';
 import apiService from '@/services/api';
 import socketService from '@/services/socket';
 
@@ -96,7 +102,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Verificar token al cargar la aplicación
   useEffect(() => {
-    const verifyToken = async () => {
+    const verifyToken = async() => {
       const token = localStorage.getItem('token');
       if (!token) {
         dispatch({ type: 'AUTH_FAILURE', payload: '' });
@@ -124,18 +130,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     verifyToken();
   }, []);
 
-  const login = async (credentials: LoginForm) => {
+  const login = async(credentials: LoginForm) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/login', credentials);
-      
+      const response = await apiService.post<{ user: User; token: string }>(
+        '/auth/login',
+        credentials,
+      );
+
       if (response.success && response.data) {
         const { user, token } = response.data;
-        
+
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         dispatch({
           type: 'AUTH_SUCCESS',
           payload: { user, token },
@@ -146,24 +155,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error(response.message || 'Error en el login');
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el login';
+      const errorMessage
+        = error.response?.data?.message || error.message || 'Error en el login';
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
       throw error;
     }
   };
 
-  const register = async (userData: RegisterForm) => {
+  const register = async(userData: RegisterForm) => {
     dispatch({ type: 'AUTH_START' });
 
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/register', userData);
-      
+      const response = await apiService.post<{ user: User; token: string }>(
+        '/auth/register',
+        userData,
+      );
+
       if (response.success && response.data) {
         const { user, token } = response.data;
-        
+
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        
+
         dispatch({
           type: 'AUTH_SUCCESS',
           payload: { user, token },
@@ -174,7 +187,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         throw new Error(response.message || 'Error en el registro');
       }
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
+      const errorMessage
+        = error.response?.data?.message
+        || error.message
+        || 'Error en el registro';
       dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
       throw error;
     }
@@ -214,4 +230,4 @@ export function useAuth() {
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
   return context;
-} 
+}

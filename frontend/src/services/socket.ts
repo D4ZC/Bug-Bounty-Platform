@@ -1,5 +1,5 @@
-import { io, Socket } from 'socket.io-client';
-import { SocketEvent, Notification } from '@/types';
+import { Socket, io } from 'socket.io-client';
+import { Notification, SocketEvent } from '@/types';
 
 class SocketService {
   private socket: Socket | null = null;
@@ -13,19 +13,22 @@ class SocketService {
       return;
     }
 
-    this.socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
-      auth: {
-        token,
+    this.socket = io(
+      import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000',
+      {
+        auth: {
+          token,
+        },
+        transports: ['websocket', 'polling'],
+        timeout: 20000,
       },
-      transports: ['websocket', 'polling'],
-      timeout: 20000,
-    });
+    );
 
     this.setupEventListeners();
   }
 
   private setupEventListeners() {
-    if (!this.socket) return;
+    if (!this.socket) { return; }
 
     this.socket.on('connect', () => {
       console.log('Socket conectado');
@@ -36,7 +39,7 @@ class SocketService {
     this.socket.on('disconnect', (reason) => {
       console.log('Socket desconectado:', reason);
       this.isConnected = false;
-      
+
       if (reason === 'io server disconnect') {
         // El servidor desconectó el socket
         this.socket?.connect();
@@ -46,7 +49,7 @@ class SocketService {
     this.socket.on('connect_error', (error) => {
       console.error('Error de conexión del socket:', error);
       this.isConnected = false;
-      
+
       if (this.reconnectAttempts < this.maxReconnectAttempts) {
         setTimeout(() => {
           this.reconnectAttempts++;
@@ -65,7 +68,11 @@ class SocketService {
     });
 
     this.socket.on('reconnect_failed', () => {
-      console.error('Falló la reconexión después de', this.maxReconnectAttempts, 'intentos');
+      console.error(
+        'Falló la reconexión después de',
+        this.maxReconnectAttempts,
+        'intentos',
+      );
     });
   }
 
@@ -168,4 +175,4 @@ class SocketService {
 }
 
 export const socketService = new SocketService();
-export default socketService; 
+export default socketService;

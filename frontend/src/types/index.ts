@@ -19,7 +19,12 @@ export interface User {
   updatedAt: Date;
 }
 
-export type UserRole = 'admin' | 'team_leader' | 'member' | 'mvp' | 'gulag_participant';
+export type UserRole =
+  | 'admin'
+  | 'team_leader'
+  | 'member'
+  | 'mvp'
+  | 'gulag_participant';
 
 export interface GulagStatus {
   isActive: boolean;
@@ -63,8 +68,18 @@ export interface Vulnerability {
   updatedAt: Date;
 }
 
-export type VulnerabilitySeverity = 'critical' | 'high' | 'medium' | 'low' | 'info';
-export type VulnerabilityStatus = 'open' | 'in_progress' | 'resolved' | 'closed' | 'duplicate';
+export type VulnerabilitySeverity =
+  | 'critical'
+  | 'high'
+  | 'medium'
+  | 'low'
+  | 'info';
+export type VulnerabilityStatus =
+  | 'open'
+  | 'in_progress'
+  | 'resolved'
+  | 'closed'
+  | 'duplicate';
 
 export interface MendscanData {
   scanId: string;
@@ -102,7 +117,14 @@ export interface Challenge {
   updatedAt: Date;
 }
 
-export type ChallengeCategory = 'web' | 'mobile' | 'api' | 'network' | 'reverse_engineering' | 'forensics' | 'crypto';
+export type ChallengeCategory =
+  | 'web'
+  | 'mobile'
+  | 'api'
+  | 'network'
+  | 'reverse_engineering'
+  | 'forensics'
+  | 'crypto';
 export type ChallengeDifficulty = 'easy' | 'medium' | 'hard' | 'expert';
 export type ChallengeStatus = 'upcoming' | 'active' | 'completed' | 'cancelled';
 
@@ -158,7 +180,12 @@ export interface Contribution {
   updatedAt: Date;
 }
 
-export type ContributionType = 'article' | 'tool' | 'tutorial' | 'research' | 'writeup';
+export type ContributionType =
+  | 'article'
+  | 'tool'
+  | 'tutorial'
+  | 'research'
+  | 'writeup';
 export type ContributionStatus = 'draft' | 'pending' | 'published' | 'rejected';
 
 // Tipos auxiliares
@@ -262,7 +289,7 @@ export interface Notification {
   createdAt: Date;
 }
 
-export type NotificationType = 
+export type NotificationType =
   | 'challenge_created'
   | 'challenge_completed'
   | 'vulnerability_found'
@@ -319,4 +346,4 @@ export interface ContributionForm {
   type: ContributionType;
   content: string;
   tags: string[];
-} 
+}

@@ -1,8 +1,11 @@
 import React from 'react';
 import { FallbackProps } from 'react-error-boundary';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
+import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
 
-const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+const ErrorFallback: React.FC<FallbackProps> = ({
+  error,
+  resetErrorBoundary,
+}) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div className="max-w-md w-full text-center">
@@ -35,9 +38,9 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
             <RefreshCw className="w-4 h-4 mr-2" />
             Intentar de nuevo
           </button>
-          
+
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => (window.location.href = '/')}
             className="w-full btn btn-outline flex items-center justify-center"
           >
             <Home className="w-4 h-4 mr-2" />
@@ -49,4 +52,4 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
   );
 };
 
-export default ErrorFallback; 
+export default ErrorFallback;

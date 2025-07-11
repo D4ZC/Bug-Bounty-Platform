@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, ReactNode } from 'react';
+import React, { ReactNode, createContext, useContext, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import socketService from '@/services/socket';
 import { Notification } from '@/types';
@@ -26,7 +26,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
 
       // Escuchar notificaciones
       socketService.onNotification((notification) => {
-        setNotifications(prev => [notification, ...prev]);
+        setNotifications((prev) => [notification, ...prev]);
       });
 
       // Escuchar actualizaciones de retos
@@ -76,12 +76,12 @@ export function SocketProvider({ children }: SocketProviderProps) {
   };
 
   const markAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification._id === notificationId
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        (notification._id === notificationId
           ? { ...notification, isRead: true }
-          : notification
-      )
+          : notification),
+      ),
     );
   };
 
@@ -92,7 +92,9 @@ export function SocketProvider({ children }: SocketProviderProps) {
     markAsRead,
   };
 
-  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;
+  return (
+    <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
+  );
 }
 
 export function useSocket() {
@@ -101,4 +103,4 @@ export function useSocket() {
     throw new Error('useSocket debe ser usado dentro de un SocketProvider');
   }
   return context;
-} 
+}

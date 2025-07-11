@@ -28,7 +28,7 @@ class ApiService {
       },
       (error) => {
         return Promise.reject(error);
-      }
+      },
     );
 
     // Response interceptor para manejar errores
@@ -43,44 +43,69 @@ class ApiService {
           window.location.href = '/login';
         }
         return Promise.reject(error);
-      }
+      },
     );
   }
 
   // Métodos genéricos
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async get<T>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
     const response = await this.api.get(url, config);
     return response.data;
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async post<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
     const response = await this.api.post(url, data, config);
     return response.data;
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async put<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
     const response = await this.api.put(url, data, config);
     return response.data;
   }
 
-  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async patch<T>(
+    url: string,
+    data?: any,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
     const response = await this.api.patch(url, data, config);
     return response.data;
   }
 
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async delete<T>(
+    url: string,
+    config?: AxiosRequestConfig,
+  ): Promise<ApiResponse<T>> {
     const response = await this.api.delete(url, config);
     return response.data;
   }
 
   // Métodos para obtener respuestas paginadas
-  async getPaginated<T>(url: string, params?: any): Promise<PaginatedResponse<T>> {
+  async getPaginated<T>(
+    url: string,
+    params?: any,
+  ): Promise<PaginatedResponse<T>> {
     const response = await this.api.get(url, { params });
     return response.data;
   }
 
   // Métodos para subir archivos
-  async uploadFile(url: string, file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<any>> {
+  async uploadFile(
+    url: string,
+    file: File,
+    onProgress?: (progress: number) => void,
+  ): Promise<ApiResponse<any>> {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -90,7 +115,9 @@ class ApiService {
       },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          );
           onProgress(progress);
         }
       },
@@ -100,7 +127,11 @@ class ApiService {
   }
 
   // Métodos para subir múltiples archivos
-  async uploadFiles(url: string, files: File[], onProgress?: (progress: number) => void): Promise<ApiResponse<any>> {
+  async uploadFiles(
+    url: string,
+    files: File[],
+    onProgress?: (progress: number) => void,
+  ): Promise<ApiResponse<any>> {
     const formData = new FormData();
     files.forEach((file) => {
       formData.append('files', file);
@@ -112,7 +143,9 @@ class ApiService {
       },
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          const progress = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          );
           onProgress(progress);
         }
       },
@@ -123,4 +156,4 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
-export default apiService; 
+export default apiService;

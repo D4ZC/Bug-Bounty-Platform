@@ -17,19 +17,21 @@ Frontend de la plataforma de Bug Bounty construido con React, TypeScript y Vite.
 
 ## 📋 Prerrequisitos
 
-- Node.js 18+ 
+- Node.js 18+
 - npm o yarn
 - Backend corriendo en `http://localhost:5000`
 
 ## 🛠️ Instalación
 
 1. **Clonar el repositorio**
+
    ```bash
    git clone <repository-url>
    cd Bug-Bounty-Platform/frontend
    ```
 
 2. **Instalar dependencias**
+
    ```bash
    npm install
    # o
@@ -37,17 +39,20 @@ Frontend de la plataforma de Bug Bounty construido con React, TypeScript y Vite.
    ```
 
 3. **Configurar variables de entorno**
+
    ```bash
    cp env.example .env.local
    ```
-   
+
    Editar `.env.local` con tus configuraciones:
+
    ```env
    VITE_API_URL=http://localhost:5000/api
    VITE_SOCKET_URL=http://localhost:5000
    ```
 
 4. **Iniciar servidor de desarrollo**
+
    ```bash
    npm run dev
    # o
@@ -80,10 +85,12 @@ src/
 ## 🎨 Componentes Principales
 
 ### Layouts
+
 - `MainLayout`: Layout principal con navegación
 - `AuthLayout`: Layout para páginas de autenticación
 
 ### Páginas
+
 - `Dashboard`: Panel principal con estadísticas
 - `Vulnerabilities`: Gestión de vulnerabilidades
 - `Challenges`: Retos y competencias
@@ -95,6 +102,7 @@ src/
 - `MVP`: Sistema de MVP
 
 ### Componentes UI
+
 - `LoadingSpinner`: Indicador de carga
 - `Button`: Botones con variantes
 - `Card`: Tarjetas de contenido
@@ -123,17 +131,20 @@ npm run lint:fix     # Corregir problemas automáticamente
 ## 🎯 Funcionalidades
 
 ### Autenticación
+
 - Login/Registro con w3id de IBM
 - Protección de rutas
 - Recuperación de contraseña
 
 ### Dashboard
+
 - Estadísticas en tiempo real
 - Gráficos de actividad
 - Notificaciones
 - Rankings de usuarios y equipos
 
 ### Vulnerabilidades
+
 - Listado con filtros avanzados
 - Creación y edición
 - Integración con Mendscan
@@ -141,6 +152,7 @@ npm run lint:fix     # Corregir problemas automáticamente
 - Adjuntos de archivos
 
 ### Retos
+
 - Creación de retos por categoría
 - Sistema de participación
 - Envío de soluciones
@@ -148,12 +160,14 @@ npm run lint:fix     # Corregir problemas automáticamente
 - Rankings y recompensas
 
 ### Tienda Virtual
+
 - Catálogo de items
 - Sistema de puntos
 - Compras seguras
 - Historial de transacciones
 
 ### Contribuciones
+
 - Artículos técnicos
 - Herramientas y scripts
 - Tutoriales
@@ -161,6 +175,7 @@ npm run lint:fix     # Corregir problemas automáticamente
 - Moderación de contenido
 
 ### Eventos Especiales
+
 - **Gulag**: Competencia de eliminación
 - **MVP**: Sistema de jugadores más valiosos
 - Notificaciones en tiempo real
@@ -169,12 +184,14 @@ npm run lint:fix     # Corregir problemas automáticamente
 ## 🔌 Integraciones
 
 ### WebSocket
+
 - Notificaciones en tiempo real
 - Actualizaciones de estado
 - Chat en vivo
 - Eventos del sistema
 
 ### API REST
+
 - Autenticación JWT
 - CRUD completo
 - Paginación
@@ -182,6 +199,7 @@ npm run lint:fix     # Corregir problemas automáticamente
 - Subida de archivos
 
 ### Servicios Externos
+
 - **Mendscan**: Análisis de vulnerabilidades
 - **w3id**: Autenticación IBM
 - **Email**: Notificaciones por correo
@@ -189,16 +207,19 @@ npm run lint:fix     # Corregir problemas automáticamente
 ## 🎨 Temas y Estilos
 
 ### Modo Oscuro/Claro
+
 - Detección automática del sistema
 - Cambio manual de tema
 - Persistencia en localStorage
 
 ### Diseño Responsivo
+
 - Mobile-first approach
 - Breakpoints optimizados
 - Componentes adaptativos
 
 ### Animaciones
+
 - Transiciones suaves
 - Micro-interacciones
 - Estados de carga
@@ -223,17 +244,20 @@ npm run test:e2e
 ## 📦 Build y Despliegue
 
 ### Desarrollo
+
 ```bash
 npm run dev
 ```
 
 ### Producción
+
 ```bash
 npm run build
 npm run preview
 ```
 
 ### Docker
+
 ```bash
 docker build -t bug-bounty-frontend .
 docker run -p 3000:3000 bug-bounty-frontend
@@ -283,4 +307,4 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ## 🔄 Changelog
 
-Ver [CHANGELOG.md](./CHANGELOG.md) para el historial de cambios. 
+Ver [CHANGELOG.md](./CHANGELOG.md) para el historial de cambios.
