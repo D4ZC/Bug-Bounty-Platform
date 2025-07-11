@@ -9,8 +9,10 @@ import { Button } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
 import { Home, Security, Code, ShoppingCart, UserMultiple, User, Group, Trophy, UserAvatar } from '@carbon/icons-react';
 import apiService from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   // Datos mockeados para la lógica dinámica
   const [teams] = useState([
     { name: 'Piteritos I', score: 2000 },
@@ -66,37 +68,38 @@ const Dashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white p-8 font-mono">
-      {/* Navbar horizontal eliminada */}
-
+    <div className="min-h-screen bg-app text-app p-8 font-mono">
       <div className="w-full max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Primera fila */}
           <TeamsScoreCard teams={teams} />
           <MVPTeamCard team={mvpTeam} />
           <GulagCard gulag={gulag} />
+          {/* Segunda fila: UserScoreCard, MVPUserCard, UserProfileCard */}
+          <UserScoreCard users={users} />
+          <UserProfileCard user={mvpUser} />
           {/* Card Ranking Diamante */}
           <div
-            className="bg-gradient-to-br from-cyan-900 via-cyan-800 to-cyan-950 border border-cyan-400 rounded-xl shadow-md p-6 flex flex-col justify-between cursor-pointer hover:scale-105 transition-transform duration-200"
+            className="bg-gradient-to-br from-cyan-900/80 to-cyan-800/60 text-cyan-100 border border-cyan-500/50 rounded-xl shadow-lg p-6 flex flex-col justify-between cursor-pointer hover:scale-105 transition-transform duration-200 backdrop-blur-sm"
             onClick={() => navigate('/mensual-ranking')}
           >
-            <h3 className="text-2xl font-bold text-cyan-300 mb-2 text-center">Ranking del Mes</h3>
-            <p className="text-cyan-100 text-center mb-1">¡Conoce a los 5 mejores jugadores <span className='text-cyan-400 font-bold'>Jugador del mes</span>!</p>
+            <h3 className="text-2xl font-bold text-cyan-300 mb-2 text-center">{t('Ranking del Mes')}</h3>
+            <p className="text-cyan-100 text-center mb-1">{t('¡Conoce a los 5 mejores jugadores!')} <span className='text-cyan-400 font-bold'>{t('Jugador del mes')}</span>!</p>
             <div className="flex justify-center mb-4">
-              <span className="inline-block bg-cyan-700/60 text-cyan-200 px-4 py-2 rounded-lg font-mono text-lg font-semibold">TOP 5 - Jugador del mes</span>
+              <span className="inline-block bg-cyan-700/60 text-cyan-200 px-4 py-2 rounded-lg font-mono text-lg font-semibold">{t('TOP 5 - Jugador del mes')}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-cyan-100 text-sm">
                 <thead>
                   <tr>
                     <th className="py-1 px-2 text-cyan-400 font-semibold">#</th>
-                    <th className="py-1 px-2 text-cyan-400 font-semibold">Jugador</th>
-                    <th className="py-1 px-2 text-cyan-400 font-semibold">Puntaje</th>
+                    <th className="py-1 px-2 text-cyan-400 font-semibold">{t('Jugador')}</th>
+                    <th className="py-1 px-2 text-cyan-400 font-semibold">{t('Puntaje')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {diamondPlayers.map((player, i) => (
-                    <tr key={player.username} className="border-b border-cyan-800 last:border-none">
+                    <tr key={player.username} className="border-b border-cyan-700/50 last:border-none">
                       <td className="py-1 px-2 font-bold text-cyan-300">{i + 1}</td>
                       <td className="py-1 px-2 font-bold">{player.username}</td>
                       <td className="py-1 px-2">{player.points}</td>
@@ -106,29 +109,29 @@ const Dashboard: React.FC = () => {
               </table>
             </div>
           </div>
-          {/* Card Ranking de Equipos Cuatrimestral con navegación */}
+          {/* Segunda fila */}
           <div
-            className="bg-gradient-to-br from-amber-900 via-yellow-800 to-yellow-950 border border-yellow-400 rounded-xl shadow-md p-6 flex flex-col justify-between cursor-pointer hover:scale-105 transition-transform duration-200"
+            className="bg-gradient-to-br from-yellow-900/80 to-yellow-800/60 text-yellow-100 border border-yellow-500/50 rounded-xl shadow-lg p-6 flex flex-col justify-between cursor-pointer hover:scale-105 transition-transform duration-200 backdrop-blur-sm"
             onClick={() => navigate('/cuatrimestral-ranking-teams')}
           >
-            <h3 className="text-2xl font-bold text-yellow-300 mb-2 text-center">Ranking de Equipos (Cuatrimestral)</h3>
-            <p className="text-yellow-100 text-center mb-1">¡Top equipos de 3 a 10 miembros del cuatrimestre!</p>
+            <h3 className="text-2xl font-bold text-yellow-300 mb-2 text-center">{t('Ranking de Equipos (Cuatrimestral)')}</h3>
+            <p className="text-yellow-100 text-center mb-1">{t('¡Top equipos de 3 a 10 miembros del cuatrimestre!')}</p>
             <div className="flex justify-center mb-4">
-              <span className="inline-block bg-yellow-700/60 text-yellow-200 px-4 py-2 rounded-lg font-mono text-lg font-semibold">TOP 5 - Equipo del Cuatrimestre</span>
+              <span className="inline-block bg-yellow-700/60 text-yellow-200 px-4 py-2 rounded-lg font-mono text-lg font-semibold">{t('TOP 5 - Equipo del Cuatrimestre')}</span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-yellow-100 text-sm">
                 <thead>
                   <tr>
                     <th className="py-1 px-2 text-yellow-400 font-semibold">#</th>
-                    <th className="py-1 px-2 text-yellow-400 font-semibold">Equipo</th>
-                    <th className="py-1 px-2 text-yellow-400 font-semibold">Puntaje</th>
-                    <th className="py-1 px-2 text-yellow-400 font-semibold">Miembros</th>
+                    <th className="py-1 px-2 text-yellow-400 font-semibold">{t('Equipo')}</th>
+                    <th className="py-1 px-2 text-yellow-400 font-semibold">{t('Puntaje')}</th>
+                    <th className="py-1 px-2 text-yellow-400 font-semibold">{t('Miembros')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {teamRanking.map((team, i) => (
-                    <tr key={team.name} className="border-b border-yellow-800 last:border-none">
+                    <tr key={team.name} className="border-b border-yellow-700/50 last:border-none">
                       <td className="py-1 px-2 font-bold text-yellow-300">{i + 1}</td>
                       <td className="py-1 px-2 font-bold">{team.name}</td>
                       <td className="py-1 px-2">{team.points}</td>
@@ -139,10 +142,6 @@ const Dashboard: React.FC = () => {
               </table>
             </div>
           </div>
-          {/* Segunda fila */}
-          <UserScoreCard users={users} />
-          <MVPUserCard user={mvpUser} />
-          <UserProfileCard user={mvpUser} />
         </div>
       </div>
     </div>

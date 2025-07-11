@@ -2,6 +2,59 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-bg: #f8fafc;
+  --color-bg-secondary: #e2e8f0;
+  --color-text: #0f172a;
+  --color-border: #cbd5e1;
+  --color-bg-card: #ffffff;
+  --color-border-card: #cbd5e1;
+  --color-text-card: #0f172a;
+  --color-tooltip-bg: #222831;
+  --color-tooltip-text: #fff;
+}
+.dark {
+  --color-bg: #0f172a;
+  --color-bg-secondary: #1e293b;
+  --color-text: #f8fafc;
+  --color-border: #334155;
+  --color-bg-card: #1e293b;
+  --color-border-card: #334155;
+  --color-text-card: #f8fafc;
+  --color-tooltip-bg: #222831;
+  --color-tooltip-text: #fff;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.bg-app {
+  background: var(--color-bg);
+}
+.text-app {
+  color: var(--color-text);
+}
+.border-app {
+  border-color: var(--color-border);
+}
+.bg-card {
+  background: var(--color-bg-card);
+}
+.text-card {
+  color: var(--color-text-card);
+}
+.border-card {
+  border-color: var(--color-border-card);
+}
+.bg-tooltip {
+  background: var(--color-tooltip-bg);
+}
+.text-tooltip {
+  color: var(--color-tooltip-text);
+}
+
 @layer base {
   html {
     font-family: 'Inter', system-ui, sans-serif;

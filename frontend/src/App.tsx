@@ -5,6 +5,7 @@ import { Helmet } from 'react-helmet-async';
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
 import AuthLayout from '@/components/layouts/AuthLayout';
+import Settings from '@/pages/Settings';
 
 // Pages
 import Dashboard from '@/pages/Dashboard';
@@ -55,6 +56,7 @@ function App() {
           <Route path="cuatrimestral-ranking-teams" element={<CuatrimestralRankingTeams />} />
           <Route path="profile-customization" element={<ProfileCustomization />} />
           <Route path="avatar-selection" element={<AvatarSelection />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

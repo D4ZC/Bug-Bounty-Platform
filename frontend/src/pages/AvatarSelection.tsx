@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Checkmark } from '@carbon/icons-react';
 import apiService from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 interface Avatar {
   id: string;
@@ -12,6 +13,7 @@ interface Avatar {
 }
 
 const AvatarSelection: React.FC = () => {
+  const { t } = useTranslation();
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -82,23 +84,23 @@ const AvatarSelection: React.FC = () => {
 
   const getCategoryName = (category: string) => {
     switch (category) {
-      case 'default': return 'Por Defecto';
-      case 'premium': return 'Premium';
-      case 'special': return 'Especial';
-      default: return 'Otros';
+      case 'default': return t('Por Defecto');
+      case 'premium': return t('Premium');
+      case 'special': return t('Especial');
+      default: return t('Otros');
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-green-400 flex items-center justify-center">
-        <div className="text-xl animate-pulse">Cargando avatares...</div>
+      <div className="min-h-screen bg-app text-app flex items-center justify-center">
+        <div className="text-xl animate-pulse">{t('Cargando avatares...')}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-black text-green-400 p-8 font-mono">
+    <div className="min-h-screen bg-app text-app p-8 font-mono">
       <div className="w-full max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -107,11 +109,11 @@ const AvatarSelection: React.FC = () => {
             className="flex items-center space-x-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
           >
             <ArrowLeft size={20} />
-            <span>Volver</span>
+            <span>{t('Volver')}</span>
           </button>
           
           <h1 className="text-4xl font-bold bg-gradient-to-r from-green-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent animate-pulse">
-            Seleccionar Avatar
+            {t('Seleccionar Avatar')}
           </h1>
           
           {selectedAvatar && (
@@ -125,7 +127,7 @@ const AvatarSelection: React.FC = () => {
               ) : (
                 <Checkmark size={20} />
               )}
-              <span>{saving ? 'Guardando...' : 'Guardar'}</span>
+              <span>{saving ? t('Guardando...') : t('Guardar')}</span>
             </button>
           )}
         </div>
@@ -142,7 +144,7 @@ const AvatarSelection: React.FC = () => {
                   {getCategoryName(category)}
                 </h2>
                 <span className="ml-4 text-sm text-gray-400">
-                  ({categoryAvatars.filter(a => a.unlocked).length}/{categoryAvatars.length} desbloqueados)
+                  ({categoryAvatars.filter(a => a.unlocked).length}/{categoryAvatars.length} {t('desbloqueados')})
                 </span>
               </div>
               
@@ -205,20 +207,20 @@ const AvatarSelection: React.FC = () => {
         })}
 
         {/* Información adicional */}
-        <div className="mt-8 p-6 bg-gradient-to-br from-gray-800/50 via-green-900/50 to-blue-900/50 border-2 border-green-500/30 rounded-xl backdrop-blur-sm">
-          <h3 className="text-xl font-bold text-green-300 mb-4">¿Cómo desbloquear más avatares?</h3>
+        <div className="mt-8 p-6 bg-card border-2 border-card rounded-xl backdrop-blur-sm">
+          <h3 className="text-xl font-bold text-green-300 mb-4">{t('¿Cómo desbloquear más avatares?')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-              <span className="text-green-200">Avatares Premium: Compra en la tienda</span>
+              <span className="text-green-200">{t('Avatares Premium: Compra en la tienda')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              <span className="text-blue-200">Avatares Especiales: Logros especiales</span>
+              <span className="text-blue-200">{t('Avatares Especiales: Logros especiales')}</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-              <span className="text-yellow-200">Eventos temporales y competiciones</span>
+              <span className="text-yellow-200">{t('Eventos temporales y competiciones')}</span>
             </div>
           </div>
         </div>

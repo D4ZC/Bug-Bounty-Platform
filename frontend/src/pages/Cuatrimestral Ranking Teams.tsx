@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import apiService from '@/services/api';
+import { useTranslation } from 'react-i18next';
 
 type Team = { name: string; points: number; rank: number; members: string[] };
 type TeamRankingResponse = { success: boolean; data: Team[] };
 
 const CuatrimestralRankingTeams: React.FC = () => {
+  const { t } = useTranslation();
   const [teamRanking, setTeamRanking] = useState<Team[]>([]);
 
   useEffect(() => {
@@ -21,18 +23,18 @@ const CuatrimestralRankingTeams: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-yellow-950 text-yellow-100 p-8 font-mono flex flex-col items-center">
-      <h1 className="text-4xl font-bold mb-10 text-yellow-300 text-center tracking-widest">Ranking Cuatrimestral de Equipos</h1>
-      <div className="w-full max-w-2xl mt-4 border border-yellow-700 rounded-xl p-6 bg-yellow-900/30">
-        <h2 className="text-yellow-300 text-lg font-bold mb-4 tracking-wide">TOP 5 EQUIPOS DEL CUATRIMESTRE (3-10 miembros)</h2>
+    <div className="min-h-screen bg-app text-app p-8 font-mono flex flex-col items-center">
+      <h1 className="text-4xl font-bold mb-10 text-yellow-300 text-center tracking-widest">{t('Ranking Cuatrimestral de Equipos')}</h1>
+      <div className="w-full max-w-2xl mt-4 border border-yellow-700 rounded-xl p-6 bg-card">
+        <h2 className="text-yellow-300 text-lg font-bold mb-4 tracking-wide">{t('TOP 5 EQUIPOS DEL CUATRIMESTRE')} (3-10 {t('Miembros').toLowerCase()})</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-yellow-100 text-sm">
             <thead>
               <tr>
                 <th className="py-1 px-2 text-yellow-400 font-semibold">#</th>
-                <th className="py-1 px-2 text-yellow-400 font-semibold">Equipo</th>
-                <th className="py-1 px-2 text-yellow-400 font-semibold">Puntaje</th>
-                <th className="py-1 px-2 text-yellow-400 font-semibold">Miembros</th>
+                <th className="py-1 px-2 text-yellow-400 font-semibold">{t('Equipo')}</th>
+                <th className="py-1 px-2 text-yellow-400 font-semibold">{t('Puntaje')}</th>
+                <th className="py-1 px-2 text-yellow-400 font-semibold">{t('Miembros')}</th>
               </tr>
             </thead>
             <tbody>
