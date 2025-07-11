@@ -29,7 +29,9 @@ export default defineConfig({
         changeOrigin: true,
         ws: true
       }
-    }
+    },
+    // Habilitar fallback para SPA
+    historyApiFallback: true
   },
   build: {
     outDir: 'dist',

@@ -1,16 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Security, Code, ShoppingCart, UserMultiple, User, Group, Trophy } from '@carbon/icons-react';
+import { Home, ShoppingCart, UserMultiple, User, Group } from '@carbon/icons-react';
 
 const navigationItems = [
   { icon: Home, label: 'Menú', path: '/dashboard', color: 'from-green-500 to-green-600' },
-  { icon: Security, label: 'Vulnerabilidades', path: '/vulnerabilities', color: 'from-blue-500 to-blue-600' },
-  { icon: Code, label: 'Desafíos', path: '/challenges', color: 'from-purple-500 to-purple-600' },
   { icon: ShoppingCart, label: 'Tienda', path: '/shop', color: 'from-yellow-500 to-yellow-600' },
-  { icon: UserMultiple, label: 'Contribuciones', path: '/contributions', color: 'from-red-500 to-red-600' },
   { icon: User, label: 'Perfil', path: '/profile-customization', color: 'from-cyan-500 to-cyan-600' },
-  { icon: Group, label: 'Equipo', path: '/team', color: 'from-orange-500 to-orange-600' },
-  { icon: Trophy, label: 'MVP', path: '/mvp', color: 'from-pink-500 to-pink-600' }
+  { icon: Group, label: 'Equipo', path: '/team', color: 'from-orange-500 to-orange-600' }
 ];
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

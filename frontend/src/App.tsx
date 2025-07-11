@@ -11,9 +11,9 @@ import Dashboard from '@/pages/Dashboard';
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
 import Vulnerabilities from '@/pages/Vulnerabilities';
-import Challenges from '@/pages/Challenges';
+// import Challenges from '@/pages/Challenges';
 import Shop from '@/pages/Shop';
-import Contributions from '@/pages/Contributions';
+// import Contributions from '@/pages/Contributions';
 import Profile from '@/pages/Profile';
 import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
@@ -44,9 +44,9 @@ function App() {
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vulnerabilities" element={<Vulnerabilities />} />
-          <Route path="challenges" element={<Challenges />} />
+          {/* <Route path="challenges" element={<Challenges />} /> */}
           <Route path="shop" element={<Shop />} />
-          <Route path="contributions" element={<Contributions />} />
+          {/* <Route path="contributions" element={<Contributions />} /> */}
           <Route path="profile" element={<Profile />} />
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
