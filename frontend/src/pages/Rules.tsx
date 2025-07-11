@@ -115,23 +115,23 @@ const Rules: React.FC = () => {
   const [activeIdx, setActiveIdx] = useState(0);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full bg-gray-100">
       <h2 className="text-2xl font-semibold mb-6">Reglamento</h2>
-      <div className="flex w-full h-[80vh] min-h-[80vh] bg-gray-50 overflow-hidden">
+      <div className="flex w-full h-[65vh] min-h-[65vh] bg-gray-100 overflow-hidden">
         {/* Sidebar de reglas */}
-        <aside className="w-64 bg-gray-50 rounded-l-2xl p-6 flex flex-col gap-2 max-h-[80vh] overflow-y-auto scrollbar-none sticky top-0 border-none shadow-none">
+        <aside className="w-64 bg-gray-100 rounded-l-2xl p-6 flex flex-col gap-2 max-h-[65vh] overflow-y-auto scrollbar-none sticky top-0 border-none shadow-none">
           {rules.map((rule, idx) => (
             <button
               key={rule.title}
               onClick={() => setActiveIdx(idx)}
-              className={`text-left px-4 py-2 rounded-lg font-semibold text-lg transition border-none shadow-none ${activeIdx === idx ? 'bg-blue-50 text-blue-700' : 'bg-gray-50 text-gray-700 hover:bg-blue-50 hover:text-blue-700'}`}
+              className={`text-left px-4 py-2 rounded-lg font-semibold text-lg transition border-none shadow-none ${activeIdx === idx ? 'bg-gray-200 text-blue-700' : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-blue-700'}`}
             >
               {rule.title}
             </button>
           ))}
         </aside>
         {/* Contenido de la regla seleccionada */}
-        <main className="flex-1 bg-white rounded-2xl p-8 ml-4 max-h-[80vh] overflow-y-auto scrollbar-none">
+        <main className="flex-1 bg-white rounded-2xl p-8 ml-4 max-h-[65vh] overflow-y-auto scrollbar-none">
           <h1 className="text-3xl font-bold mb-6 text-blue-900">{rules[activeIdx].title}</h1>
           <pre className="text-gray-800 whitespace-pre-wrap text-lg">{rules[activeIdx].content}</pre>
         </main>

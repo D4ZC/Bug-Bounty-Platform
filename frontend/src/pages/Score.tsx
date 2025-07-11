@@ -1,13 +1,84 @@
 import React, { useState } from 'react';
 import { teams, users, getTopTeams, getTopUsers } from '@/data/usersData';
 
+// Mock insignias
+const mockBadges = [
+  { id: 1, name: 'Top Hunter', icon: '🏆' },
+  { id: 2, name: 'BluePoints', icon: '💎' },
+  { id: 3, name: 'MVP', icon: '⭐' },
+];
+
+type ProfileType = 'user' | 'team';
+interface ProfileHoverModalProps {
+  profile: any;
+  type: ProfileType;
+  position: { top: number; left: number };
+  onClose: () => void;
+}
+
+const ProfileHoverModal: React.FC<ProfileHoverModalProps> = ({ profile, type, position, onClose }) => {
+  if (!profile) return null;
+  return (
+    <div
+      className="absolute z-50 bg-white border border-gray-300 rounded-xl shadow-lg p-4 min-w-[220px] min-h-[120px] flex flex-col items-center"
+      style={{ top: position.top, left: position.left }}
+      onMouseLeave={onClose}
+    >
+      {/* Avatar con marco */}
+      <div className="w-16 h-16 rounded-full border-4 border-blue-400 flex items-center justify-center mb-2 bg-gray-100 text-2xl font-bold">
+        {profile.avatar || profile.name[0]}
+      </div>
+      {/* Insignias */}
+      <div className="flex gap-2 mb-2">
+        {mockBadges.map(badge => (
+          <span key={badge.id} title={badge.name} className="text-xl">{badge.icon}</span>
+        ))}
+      </div>
+      {/* Estadísticas */}
+      <div className="text-xs text-gray-700 text-center">
+        {type === 'user' ? (
+          <>
+            <div><b>Puntos:</b> {profile.score}</div>
+            <div><b>Vulnerabilidades resueltas:</b> {profile.vulns || 12}</div>
+            <div><b>Documentación enviada:</b> {profile.docs || 5}</div>
+          </>
+        ) : (
+          <>
+            <div><b>Puntos:</b> {profile.score}</div>
+            <div><b>Miembros:</b> {profile.members}</div>
+            <div><b>Ranking:</b> {profile.rank || 1}</div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const tableHeight = 'max-h-[500px]';
 
 const Score: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'teams' | 'user'>('teams');
+  const [hoveredProfile, setHoveredProfile] = useState<any>(null);
+  const [hoverType, setHoverType] = useState<ProfileType | null>(null);
+  const [modalPos, setModalPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+
+  const handleMouseEnter = (
+    e: React.MouseEvent<HTMLSpanElement>,
+    profile: any,
+    type: ProfileType
+  ) => {
+    const rect = (e.target as HTMLElement).getBoundingClientRect();
+    setModalPos({ top: rect.bottom + window.scrollY + 8, left: rect.left + window.scrollX });
+    setHoveredProfile(profile);
+    setHoverType(type);
+  };
+  const handleMouseLeave = () => {
+    setHoveredProfile(null);
+    setHoverType(null);
+  };
 
   return (
-    <div className="score-page w-full h-full">
+    <div className="score-page w-full h-full relative">
       <div className="flex items-center gap-4 mb-6 mt-0 ml-0">
         <button
           onClick={() => setActiveTab('teams')}
@@ -36,10 +107,18 @@ const Score: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {teams.map((team, idx) => (
+                  {teams.slice(0, 5).map((team, idx) => (
                     <tr key={team.name} className="border-t">
                       <td className="py-2 px-4">{idx + 1}</td>
-                      <td className="py-2 px-4">{team.name}</td>
+                      <td className="py-2 px-4">
+                        <span
+                          className="cursor-pointer hover:underline"
+                          onMouseEnter={e => handleMouseEnter(e, team, 'team')}
+                          onMouseLeave={handleMouseLeave}
+                        >
+                          {team.name}
+                        </span>
+                      </td>
                       <td className="py-2 px-4 text-right font-bold">{team.score}</td>
                     </tr>
                   ))}
@@ -65,7 +144,15 @@ const Score: React.FC = () => {
                   {users.map((user, idx) => (
                     <tr key={user.name} className="border-t">
                       <td className="py-2 px-4">{idx + 1}</td>
-                      <td className="py-2 px-4">{user.name}</td>
+                      <td className="py-2 px-4">
+                        <span
+                          className="cursor-pointer hover:underline"
+                          onMouseEnter={e => handleMouseEnter(e, user, 'user')}
+                          onMouseLeave={handleMouseLeave}
+                        >
+                          {user.name}
+                        </span>
+                      </td>
                       <td className="py-2 px-4 text-right font-bold">{user.score}</td>
                     </tr>
                   ))}
@@ -73,6 +160,15 @@ const Score: React.FC = () => {
               </table>
             </div>
           </div>
+        )}
+        {/* Modal de perfil resumido */}
+        {hoveredProfile && (
+          <ProfileHoverModal
+            profile={hoveredProfile}
+            type={hoverType || 'user'} // Ensure type is not null for the modal
+            position={modalPos}
+            onClose={handleMouseLeave}
+          />
         )}
       </div>
     </div>

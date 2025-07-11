@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaHome, FaList, FaTabletAlt, FaBookOpen, FaBars } from 'react-icons/fa';
+import { FaHome, FaList, FaTabletAlt, FaBookOpen, FaBars, FaBell, FaUser } from 'react-icons/fa';
 import { GiCrossedSwords } from 'react-icons/gi';
 import { FiEdit2 } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         style={{ height: HEADER_HEIGHT }}
       >
         <span className="text-lg font-bold tracking-wide">Bug Bounty Platform</span>
+        <div className="ml-auto flex items-center gap-6">
+          <button className="focus:outline-none hover:text-gray-300" aria-label="Notificaciones">
+            <FaBell size={22} />
+          </button>
+          <button className="focus:outline-none hover:text-gray-300" aria-label="Perfil">
+            <FaUser size={22} />
+          </button>
+        </div>
       </header>
       {/* Sidebar lateral fijo */}
       <aside
@@ -65,8 +73,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       >
         <div className="p-6">{children}</div>
       </main>
-    </div>
-  );
+  </div>
+);
 };
 
 export default MainLayout; 
