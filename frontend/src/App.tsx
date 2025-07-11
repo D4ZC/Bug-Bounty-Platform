@@ -19,6 +19,7 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
+import Documentation from '@/pages/Documentation';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -47,6 +48,7 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="documentation" element={<Documentation />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
