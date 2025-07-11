@@ -1,4 +1,6 @@
 import React from 'react';
+import LoadingSpinner from '../ui/LoadingSpinner';
+import { useRef } from 'react';
 
 interface Reward {
   id: number;
@@ -8,11 +10,16 @@ interface Reward {
   cost: number;
   rarity: 'común' | 'raro' | 'épico' | 'legendario' | 'mítico';
   category: string;
+  featured?: boolean; // Added featured property
 }
 
 interface RewardCardProps {
   reward: Reward;
   userPoints: number;
+  onBuy?: () => void;
+  isLoading?: boolean;
+  onSuccess?: () => void;
+  onError?: () => void;
 }
 
 const rarityStyles: Record<Reward['rarity'], string> = {
@@ -33,20 +40,33 @@ const rarityBorderStyles: Record<Reward['rarity'], string> = {
     'border-transparent bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 p-[2px]',
 };
 
-const RewardCard: React.FC<RewardCardProps> = ({ reward, userPoints }) => {
+const RewardCard: React.FC<RewardCardProps> = ({ reward, userPoints, onBuy, isLoading, onSuccess, onError }) => {
   const [imgIndex, setImgIndex] = React.useState(0);
   const [isHovered, setIsHovered] = React.useState(false);
+  const [animateConfetti, setAnimateConfetti] = React.useState(false);
+  const [animateShake, setAnimateShake] = React.useState(false);
   const canRedeem = userPoints >= reward.cost;
+  const confettiRef = useRef<HTMLDivElement>(null);
 
   // Carrousel simple
   const nextImg = () => setImgIndex((i) => (i + 1) % reward.images.length);
   const prevImg = () =>
     setImgIndex((i) => (i - 1 + reward.images.length) % reward.images.length);
 
-  const handleRedeem = () => {
+  const handleRedeem = async () => {
     if (canRedeem) {
-      // Aquí iría la lógica de canje
-      alert(`¡Has canjeado ${reward.name} por ${reward.cost} Blue Points!`);
+      if (onBuy) {
+        await onBuy();
+        setAnimateConfetti(true);
+        onSuccess && onSuccess();
+        setTimeout(() => setAnimateConfetti(false), 1200);
+      } else {
+        alert(`¡Has canjeado ${reward.name} por ${reward.cost} Blue Points!`);
+      }
+    } else {
+      setAnimateShake(true);
+      onError && onError();
+      setTimeout(() => setAnimateShake(false), 600);
     }
   };
 
@@ -55,10 +75,22 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, userPoints }) => {
 
   return (
     <div
-      className={`relative bg-gradient-to-br from-purple-700 via-blue-800 to-black rounded-2xl shadow-xl p-4 flex flex-col items-center transition-all duration-500 hover:scale-105 hover:shadow-2xl ${rarityBorderStyles[reward.rarity]}`}
+      className={`relative bg-gradient-to-br from-purple-700 via-blue-800 to-black rounded-2xl shadow-xl p-4 flex flex-col items-center transition-all duration-500 hover:scale-105 hover:shadow-2xl ${rarityBorderStyles[reward.rarity]} ${animateShake ? 'animate-shake-x' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
+      {/* Confetti animación */}
+      {animateConfetti && (
+        <div ref={confettiRef} className="absolute inset-0 pointer-events-none z-20 animate-confetti">
+          {[...Array(18)].map((_, i) => (
+            <span key={i} className={`confetti-piece confetti-${i % 6}`}></span>
+          ))}
+        </div>
+      )}
+      {/* Badge Destacado */}
+      {reward.featured && (
+        <span className="absolute top-2 right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-insignia z-10 border border-yellow-300">Destacado</span>
+      )}
       {/* Efectos de partículas para items legendarios y míticos */}
       {isLegendaryOrMythic && (
         <div className="absolute inset-0 rounded-2xl overflow-hidden pointer-events-none">
@@ -77,6 +109,9 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, userPoints }) => {
         <img
           src={reward.images[imgIndex]}
           alt={reward.name}
+          loading="lazy"
+          width={240}
+          height={160}
           className={`object-cover w-full h-full transition-all duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
         />
         {reward.images.length > 1 && (
@@ -127,16 +162,58 @@ const RewardCard: React.FC<RewardCardProps> = ({ reward, userPoints }) => {
           canRedeem
             ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white hover:scale-105 hover:shadow-lg'
             : 'bg-gray-500 text-gray-300 cursor-not-allowed'
-        } ${isHovered && canRedeem ? 'animate-pulse' : ''}`}
-        disabled={!canRedeem}
+        } ${isHovered && canRedeem ? 'animate-pulse' : ''} flex items-center justify-center gap-2`}
+        disabled={!canRedeem || isLoading}
       >
-        {canRedeem ? '🎁 Canjear' : '❌ Insuficientes'}
+        {isLoading ? <LoadingSpinner size={20} /> : canRedeem ? '🎁 Canjear' : '❌ Insuficientes'}
       </button>
 
       {/* Efecto de brillo para items especiales */}
       {isLegendaryOrMythic && isHovered && (
         <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse pointer-events-none" />
       )}
+      <style>{`
+        .shadow-insignia {
+          box-shadow: 0 2px 8px 0 #2228, 0 1.5px 0 #fff4 inset;
+        }
+        .animate-pulse-soft {
+          animation: pulse-soft 2s infinite;
+        }
+        @keyframes pulse-soft {
+          0%, 100% { box-shadow: 0 0 0 0 #22d3ee44; }
+          50% { box-shadow: 0 0 12px 4px #22d3ee44; }
+        }
+        .animate-shake-x {
+          animation: shake-x 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shake-x {
+          10%, 90% { transform: translateX(-2px); }
+          20%, 80% { transform: translateX(4px); }
+          30%, 50%, 70% { transform: translateX(-8px); }
+          40%, 60% { transform: translateX(8px); }
+        }
+        .animate-confetti {
+          animation: confetti-burst 1.2s cubic-bezier(.4,0,.2,1);
+        }
+        @keyframes confetti-burst {
+          0% { opacity: 0; transform: scale(0.7); }
+          10% { opacity: 1; transform: scale(1.1); }
+          100% { opacity: 0; transform: scale(1.2); }
+        }
+        .confetti-piece {
+          position: absolute;
+          width: 10px;
+          height: 18px;
+          border-radius: 2px;
+          opacity: 0.8;
+        }
+        .confetti-0 { left: 10%; top: 20%; background: #00fff7; transform: rotate(-12deg); }
+        .confetti-1 { left: 20%; top: 40%; background: #ff00ea; transform: rotate(8deg); }
+        .confetti-2 { left: 30%; top: 10%; background: #fff200; transform: rotate(-6deg); }
+        .confetti-3 { left: 40%; top: 30%; background: #00ffae; transform: rotate(14deg); }
+        .confetti-4 { left: 50%; top: 15%; background: #ff6b00; transform: rotate(-8deg); }
+        .confetti-5 { left: 60%; top: 35%; background: #00bfff; transform: rotate(10deg); }
+      `}</style>
     </div>
   );
 };

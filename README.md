@@ -25,8 +25,17 @@ Una aplicación web para gestionar y puntuar la resolución de vulnerabilidades 
 ├── backend/           # API REST con Node.js
 ├── frontend/          # Aplicación React
 ├── docs/              # Documentación
+│   ├── API.md         # Documentación de la API
+│   ├── FRONTEND.md    # Guía de desarrollo frontend
+│   └── DEVELOPMENT_HISTORY.md  # Historial de desarrollo
 └── README.md
 ```
+
+## 📚 Documentación
+
+- **[API.md](docs/API.md)** - Documentación completa de la API REST
+- **[FRONTEND.md](docs/FRONTEND.md)** - Guía de desarrollo del frontend
+- **[DEVELOPMENT_HISTORY.md](docs/DEVELOPMENT_HISTORY.md)** - Historial completo de desarrollo y mejoras implementadas
 
 ## 🚀 Instalación y Configuración
 

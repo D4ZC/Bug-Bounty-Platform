@@ -1,22 +1,27 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
 
-// Pages
-import Dashboard from '@/pages/Dashboard';
-import Challenges from '@/pages/Challenges';
-import Shop from '@/pages/Shop';
-import Contributions from '@/pages/Contributions';
-import Profile from '@/pages/Profile';
-import Team from '@/pages/Team';
-import Gulag from '@/pages/Gulag';
-import MVP from '@/pages/MVP';
-import NotFound from '@/pages/NotFound';
-import Leagues from '@/pages/Leagues';
-import Exercises from '@/pages/Exercises';
+// Lazy load de páginas
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Challenges = lazy(() => import('@/pages/Challenges'));
+const Shop = lazy(() => import('@/pages/Shop'));
+const Contributions = lazy(() => import('@/pages/Contributions'));
+const Profile = lazy(() => import('@/pages/Profile'));
+const Team = lazy(() => import('@/pages/Team'));
+const Gulag = lazy(() => import('@/pages/Gulag'));
+const MVP = lazy(() => import('@/pages/MVP'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
+const Login = lazy(() => import('@/pages/auth/Login'));
+const Register = lazy(() => import('@/pages/auth/Register'));
+// Si tienes Leagues, Exercises, Clans:
+const Leagues = lazy(() => import('@/pages/Leagues'));
+const Exercises = lazy(() => import('@/pages/Exercises'));
+const Clans = lazy(() => import('@/pages/Clans'));
 
 function App() {
   return (
@@ -29,6 +34,7 @@ function App() {
         />
       </Helmet>
 
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><LoadingSpinner size={48} /></div>}>
       <Routes>
         <Route
           path="/"
@@ -47,11 +53,15 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
-          <Route path="leagues" element={<Leagues />} />
-          <Route path="exercises" element={<Exercises />} />
+            <Route path="leagues" element={<Leagues />} />
+            <Route path="exercises" element={<Exercises />} />
+            <Route path="clans" element={<Clans />} />
           <Route path="*" element={<NotFound />} />
         </Route>
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
       </Routes>
+      </Suspense>
     </>
   );
 }

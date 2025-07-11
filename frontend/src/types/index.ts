@@ -217,10 +217,15 @@ export interface Vote {
 
 export interface Achievement {
   _id: string;
+  id?: number;
   name: string;
   description: string;
   icon: string;
-  unlockedAt: Date;
+  unlocked?: boolean;
+  reward?: string;
+  dateUnlocked?: string | Date;
+  unlockedAt?: string | Date;
+  // Puedes agregar más campos si el backend los envía
 }
 
 export interface Badge {

@@ -41,11 +41,48 @@ const mockExercises = [
     difficulty: 'Experto',
     solution: '$(id)',
   },
+  // Ejercicios adicionales
+  {
+    id: 6,
+    title: 'CSRF Token',
+    description: '¿Qué técnica usarías para explotar un formulario vulnerable a CSRF?',
+    difficulty: 'Media',
+    solution: 'Enviar petición desde otro sitio',
+  },
+  {
+    id: 7,
+    title: 'Inyección de comandos',
+    description: '¿Qué comando podrías usar para listar archivos si hay inyección en un campo de nombre?',
+    difficulty: 'Difícil',
+    solution: 'ls',
+  },
+  {
+    id: 8,
+    title: 'IDOR',
+    description: '¿Qué parámetro modificarías para acceder a recursos de otros usuarios?',
+    difficulty: 'Media',
+    solution: 'userId',
+  },
+  {
+    id: 9,
+    title: 'XXE',
+    description: '¿Qué entidad externa podrías usar para leer archivos en un XML mal configurado?',
+    difficulty: 'Difícil',
+    solution: '<!ENTITY',
+  },
+  {
+    id: 10,
+    title: 'Fuerza bruta',
+    description: '¿Qué herramienta automatizada podrías usar para probar contraseñas?',
+    difficulty: 'Fácil',
+    solution: 'Hydra',
+  },
 ];
 
 const Exercises: React.FC = () => {
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [feedback, setFeedback] = useState<{ [key: number]: string }>({});
+  const [search, setSearch] = useState('');
 
   const handleChange = (id: number, value: string) => {
     setAnswers((prev) => ({ ...prev, [id]: value }));
@@ -60,6 +97,13 @@ const Exercises: React.FC = () => {
       setFeedback((prev) => ({ ...prev, [id]: '❌ Intenta de nuevo.' }));
     }
   };
+
+  // Filtrado reactivo de ejercicios
+  const filteredExercises = mockExercises.filter(
+    (exercise) =>
+      exercise.title.toLowerCase().includes(search.toLowerCase()) ||
+      exercise.description.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0026] via-[#1a0033] to-[#0f0026] text-white py-10 px-4 relative overflow-x-hidden">
@@ -78,52 +122,66 @@ const Exercises: React.FC = () => {
       </div>
       <div className="max-w-3xl mx-auto relative z-10">
         <h1 className="text-5xl font-extrabold mb-10 text-center neon-text drop-shadow-cyber tracking-widest">EJERCICIOS DE CIBERSEGURIDAD</h1>
+        {/* Barra de búsqueda */}
+        <div className="mb-8 flex justify-center">
+          <input
+            type="text"
+            className="w-full max-w-md px-4 py-3 rounded-lg bg-gray-900 border-2 border-cyan-400 neon-shadow text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg font-mono"
+            placeholder="Buscar ejercicio..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="space-y-10">
-          {mockExercises.map((exercise) => (
-            <div
-              key={exercise.id}
-              className="bg-black/70 border-2 border-cyan-400 neon-shadow rounded-2xl p-8 shadow-cyber relative overflow-hidden hover:scale-105 transition-transform duration-300"
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl animate-bounce">🧩</span>
-                <h2 className="text-2xl font-bold neon-text drop-shadow-cyber">{exercise.title}</h2>
-                <span className={`ml-auto px-4 py-1 rounded-full text-base font-extrabold tracking-wider border-2 shadow-cyber ${exercise.difficulty === 'Fácil' ? 'bg-green-700 border-green-400 text-green-200' : exercise.difficulty === 'Media' ? 'bg-yellow-700 border-yellow-400 text-yellow-200' : exercise.difficulty === 'Difícil' ? 'bg-pink-700 border-pink-400 text-pink-200' : 'bg-purple-700 border-purple-400 text-purple-200'}`}>{exercise.difficulty}</span>
-              </div>
-              <p className="mb-6 text-cyan-100 text-lg font-mono">{exercise.description}</p>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  className="flex-1 px-4 py-3 rounded-lg bg-gray-900 border-2 border-cyan-400 neon-shadow text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg font-mono"
-                  placeholder="Tu respuesta..."
-                  value={answers[exercise.id] || ''}
-                  onChange={(e) => handleChange(exercise.id, e.target.value)}
-                />
-                <button
-                  className="px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 border-2 border-pink-400 neon-shadow font-extrabold text-lg text-white hover:scale-105 hover:shadow-cyber transition-all"
-                  onClick={() => handleSubmit(exercise.id)}
-                >
-                  Enviar
-                </button>
-              </div>
-              {feedback[exercise.id] && (
-                <div className={`mt-4 text-xl font-extrabold ${feedback[exercise.id].includes('Correcto') ? 'text-green-400' : 'text-pink-400'} drop-shadow-cyber`}>
-                  {feedback[exercise.id]}
+          {filteredExercises.length === 0 ? (
+            <div className="text-center text-xl text-pink-400 font-bold">No se encontraron ejercicios.</div>
+          ) : (
+            filteredExercises.map((exercise) => (
+              <div
+                key={exercise.id}
+                className="bg-black/70 border-2 border-cyan-400 neon-shadow rounded-2xl p-8 shadow-cyber relative overflow-hidden hover:scale-105 transition-transform duration-300"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl animate-bounce">🧩</span>
+                  <h2 className="text-2xl font-bold neon-text drop-shadow-cyber">{exercise.title}</h2>
+                  <span className={`ml-auto px-4 py-1 rounded-full text-base font-extrabold tracking-wider border-2 shadow-cyber ${exercise.difficulty === 'Fácil' ? 'bg-green-700 border-green-400 text-green-200' : exercise.difficulty === 'Media' ? 'bg-yellow-700 border-yellow-400 text-yellow-200' : exercise.difficulty === 'Difícil' ? 'bg-pink-700 border-pink-400 text-pink-200' : 'bg-purple-700 border-purple-400 text-purple-200'}`}>{exercise.difficulty}</span>
                 </div>
-              )}
-              {/* Efecto de brillo cyberpunk */}
-              <div className="absolute inset-0 pointer-events-none opacity-10">
-                <svg width="100%" height="100%">
-                  <defs>
-                    <radialGradient id="glow-exercise" cx="50%" cy="50%" r="80%">
-                      <stop offset="0%" stopColor="#ff00ea" stopOpacity="0.5" />
-                      <stop offset="100%" stopColor="#0f0026" stopOpacity="0" />
-                    </radialGradient>
-                  </defs>
-                  <circle cx="50%" cy="50%" r="120" fill="url(#glow-exercise)" />
-                </svg>
+                <p className="mb-6 text-cyan-100 text-lg font-mono">{exercise.description}</p>
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="text"
+                    className="flex-1 px-4 py-3 rounded-lg bg-gray-900 border-2 border-cyan-400 neon-shadow text-white focus:outline-none focus:ring-2 focus:ring-pink-500 text-lg font-mono"
+                    placeholder="Tu respuesta..."
+                    value={answers[exercise.id] || ''}
+                    onChange={(e) => handleChange(exercise.id, e.target.value)}
+                  />
+                  <button
+                    className="px-6 py-3 rounded-lg bg-gradient-to-r from-pink-500 to-cyan-500 border-2 border-pink-400 neon-shadow font-extrabold text-lg text-white hover:scale-105 hover:shadow-cyber transition-all"
+                    onClick={() => handleSubmit(exercise.id)}
+                  >
+                    Enviar
+                  </button>
+                </div>
+                {feedback[exercise.id] && (
+                  <div className={`mt-4 text-xl font-extrabold ${feedback[exercise.id].includes('Correcto') ? 'text-green-400' : 'text-pink-400'} drop-shadow-cyber`}>
+                    {feedback[exercise.id]}
+                  </div>
+                )}
+                {/* Efecto de brillo cyberpunk */}
+                <div className="absolute inset-0 pointer-events-none opacity-10">
+                  <svg width="100%" height="100%">
+                    <defs>
+                      <radialGradient id="glow-exercise" cx="50%" cy="50%" r="80%">
+                        <stop offset="0%" stopColor="#ff00ea" stopOpacity="0.5" />
+                        <stop offset="100%" stopColor="#0f0026" stopOpacity="0" />
+                      </radialGradient>
+                    </defs>
+                    <circle cx="50%" cy="50%" r="120" fill="url(#glow-exercise)" />
+                  </svg>
+                </div>
               </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
         <div className="text-center mt-14">
           <a
@@ -155,3 +213,4 @@ const Exercises: React.FC = () => {
 };
 
 export default Exercises;
+ 

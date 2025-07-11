@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../utils/authMiddleware');
 
 // Datos simulados de vulnerabilidades
 const mockVulns = [
@@ -62,7 +63,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Crear una nueva vulnerabilidad
-router.post('/', (req, res) => {
+router.post('/', authMiddleware, (req, res) => {
   const newVuln = {
     _id: (mockVulns.length + 1).toString(),
     ...req.body,

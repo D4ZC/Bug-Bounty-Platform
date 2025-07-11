@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../utils/authMiddleware');
 
 // Datos simulados de contribuciones
 const mockContributions = [
@@ -68,7 +69,7 @@ router.get('/:id', (req, res) => {
 });
 
 // Crear una nueva contribución
-router.post('/', (req, res) => {
+router.post('/', authMiddleware, (req, res) => {
   const newContrib = {
     _id: (mockContributions.length + 1).toString(),
     ...req.body,

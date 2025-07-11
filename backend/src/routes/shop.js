@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../utils/authMiddleware');
 
 // Datos simulados de la tienda
 const mockShopItems = [
@@ -50,7 +51,7 @@ router.get('/', (req, res) => {
 });
 
 // Comprar un item (placeholder)
-router.post('/buy', (req, res) => {
+router.post('/buy', authMiddleware, (req, res) => {
   const item = mockShopItems.find(i => i._id === req.body.itemId);
   if (!item) {
     return res.status(404).json({ success: false, error: 'Item no encontrado' });

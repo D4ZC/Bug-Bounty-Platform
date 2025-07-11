@@ -1,4 +1,5 @@
 const express = require('express');
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
 
 // Ruta de prueba para verificar que el servidor funciona
@@ -33,49 +34,64 @@ router.get('/me', (req, res) => {
 });
 
 // Ruta de login (placeholder)
-router.post('/login', (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      user: {
-        _id: '1',
-        email: req.body.email || 'test@example.com',
-        username: 'testuser',
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'member',
-        points: 0,
-        rank: 1,
-        isMVP: false,
-        isGulagParticipant: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
+router.post('/login',
+  body('email').isEmail().withMessage('Email inválido'),
+  body('password').isLength({ min: 6 }).withMessage('Contraseña muy corta'),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
+    res.json({
+      success: true,
+      data: {
+        user: {
+          _id: '1',
+          email: req.body.email || 'test@example.com',
+          username: 'testuser',
+          firstName: 'Test',
+          lastName: 'User',
+          role: 'member',
+          points: 0,
+          rank: 1,
+          isMVP: false,
+          isGulagParticipant: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      }
+    });
   });
-});
 
 // Ruta de registro (placeholder)
-router.post('/register', (req, res) => {
-  res.json({
-    success: true,
-    data: {
-      user: {
-        _id: '1',
-        email: req.body.email || 'test@example.com',
-        username: req.body.username || 'testuser',
-        firstName: req.body.firstName || 'Test',
-        lastName: req.body.lastName || 'User',
-        role: 'member',
-        points: 0,
-        rank: 1,
-        isMVP: false,
-        isGulagParticipant: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
+router.post('/register',
+  body('email').isEmail().withMessage('Email inválido'),
+  body('username').isLength({ min: 3 }).withMessage('Usuario muy corto'),
+  body('password').isLength({ min: 6 }).withMessage('Contraseña muy corta'),
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ success: false, errors: errors.array() });
     }
+    res.json({
+      success: true,
+      data: {
+        user: {
+          _id: '1',
+          email: req.body.email || 'test@example.com',
+          username: req.body.username || 'testuser',
+          firstName: req.body.firstName || 'Test',
+          lastName: req.body.lastName || 'User',
+          role: 'member',
+          points: 0,
+          rank: 1,
+          isMVP: false,
+          isGulagParticipant: false,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      }
+    });
   });
-});
 
 module.exports = router; 

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+type Theme = 'light' | 'dark' | 'system' | 'cyberpunk';
 
 interface ThemeContextType {
   theme: Theme;
@@ -37,9 +37,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         ? 'dark'
         : 'light';
       root.classList.toggle('dark', systemTheme === 'dark');
+      root.classList.toggle('cyberpunk', false);
       setIsDark(systemTheme === 'dark');
+    } else if (theme === 'cyberpunk') {
+      root.classList.add('cyberpunk');
+      root.classList.remove('dark');
+      setIsDark(false);
     } else {
       root.classList.toggle('dark', theme === 'dark');
+      root.classList.toggle('cyberpunk', false);
       setIsDark(theme === 'dark');
     }
 

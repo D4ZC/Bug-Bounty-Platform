@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware = require('../utils/authMiddleware');
+const roleMiddleware = require('../utils/roleMiddleware');
 
 // Ruta de prueba para admin
-router.get('/test', (req, res) => {
+router.get('/test', authMiddleware, roleMiddleware('admin'), (req, res) => {
   res.json({
     success: true,
     message: 'Admin route working!',
@@ -21,7 +23,7 @@ const mockStats = {
 };
 
 // Ruta para obtener estadísticas generales
-router.get('/stats', (req, res) => {
+router.get('/stats', authMiddleware, roleMiddleware('admin'), (req, res) => {
   res.json({
     success: true,
     data: mockStats

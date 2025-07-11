@@ -40,7 +40,9 @@ class ApiService {
         if (error.response?.status === 401) {
           localStorage.removeItem('token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          // Disparar evento personalizado para logout global
+          window.dispatchEvent(new CustomEvent('session-expired'));
+          window.location.href = '/auth/login?expired=1';
         }
         return Promise.reject(error);
       },
@@ -152,6 +154,66 @@ class ApiService {
     });
 
     return response.data;
+  }
+
+  // Actualizar XP y nivel de usuario
+  async updateUserXP(userId: string, xp: number, level: number) {
+    return this.patch(`/users/${userId}/xp`, { xp, level });
+  }
+
+  // Actualizar logros de usuario
+  async updateUserAchievements(userId: string, achievements: any[]) {
+    return this.patch(`/users/${userId}/achievements`, { achievements });
+  }
+
+  // Obtener historial de canjes de usuario
+  async getUserRedemptions(userId: string) {
+    return this.get(`/users/${userId}/redemptions`);
+  }
+
+  // Agregar un canje de tienda
+  async addUserRedemption(userId: string, redemption: any) {
+    return this.post(`/users/${userId}/redemptions`, redemption);
+  }
+
+  // Obtener historial de actividades de usuario
+  async getUserActivity(userId: string) {
+    return this.get(`/users/${userId}/activity`);
+  }
+
+  // Agregar una actividad al historial
+  async addUserActivity(userId: string, activity: any) {
+    return this.post(`/users/${userId}/activity`, activity);
+  }
+
+  // Obtener ranking global de usuarios
+  async getUserRanking() {
+    return this.get('/rankings/users');
+  }
+
+  // Obtener todos los clanes
+  async getClans() {
+    return this.get('/teams');
+  }
+
+  // Obtener detalles de un clan
+  async getClanById(clanId: string) {
+    return this.get(`/teams/${clanId}`);
+  }
+
+  // Crear un nuevo clan
+  async createClan(data: { name: string; description: string; logo?: string; leader: string }) {
+    return this.post('/teams', data);
+  }
+
+  // Unirse a un clan
+  async joinClan(clanId: string, username: string) {
+    return this.post(`/teams/${clanId}/join`, { username });
+  }
+
+  // Salir de un clan
+  async leaveClan(clanId: string, username: string) {
+    return this.post(`/teams/${clanId}/leave`, { username });
   }
 }
 

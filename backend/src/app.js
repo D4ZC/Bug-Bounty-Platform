@@ -7,6 +7,11 @@ const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
 
+// Importar configuración de base de datos SQLite
+const { db } = require('./config/database');
+const { seedData } = require('./config/seedData');
+const config = require('./config/config');
+
 // Cargar variables de entorno
 dotenv.config();
 
@@ -29,7 +34,7 @@ const adminRoutes = require('./routes/admin');
 // Eliminar importación y uso de cronService
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = config.port;
 
 // Configuración de rate limiting
 const limiter = rateLimit({
@@ -110,11 +115,16 @@ app.use('*', (req, res) => {
 // Función para iniciar el servidor
 const startServer = async () => {
   try {
+    // Poblar base de datos con datos de ejemplo
+    seedData();
+    
     // Iniciar servidor HTTP
     const server = app.listen(PORT, () => {
-      console.log(`Servidor corriendo en puerto ${PORT}`);
-      console.log(`Ambiente: ${process.env.NODE_ENV}`);
-      console.log(`API disponible en: http://localhost:${PORT}/api`);
+      console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+      console.log(`🌍 Ambiente: ${config.nodeEnv}`);
+      console.log(`📊 Base de datos SQLite: ${config.database.path}`);
+      console.log(`🔗 API disponible en: http://localhost:${PORT}/api`);
+      console.log(`💡 Modo desarrollo: ${config.development.enableMockAuth ? 'Activado' : 'Desactivado'}`);
     });
     
     // Manejo de señales para cierre graceful

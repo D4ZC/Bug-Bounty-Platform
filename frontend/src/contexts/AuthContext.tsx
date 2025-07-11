@@ -1,16 +1,31 @@
-import React, {
+import {
   ReactNode,
   createContext,
   useContext,
   useEffect,
   useReducer,
 } from 'react';
-import { LoginForm, RegisterForm, User } from '@/types';
+import { LoginForm, RegisterForm, User, Achievement } from '@/types';
 import apiService from '@/services/api';
 import socketService from '@/services/socket';
 
+export interface FrontendUser extends User {
+  avatarUrl?: string;
+  redemptions?: Redemption[];
+  xp?: number;
+  level?: number;
+  achievements: Achievement[]; // obligatorio
+}
+
+export interface Redemption {
+  id: number;
+  recompensa: string;
+  puntos_gastados: number;
+  fecha_canje: string;
+}
+
 interface AuthState {
-  user: User | null;
+  user: FrontendUser | null;
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -19,18 +34,28 @@ interface AuthState {
 
 type AuthAction =
   | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
+  | { type: 'AUTH_SUCCESS'; payload: { user: FrontendUser; token: string } }
   | { type: 'AUTH_FAILURE'; payload: string }
   | { type: 'AUTH_LOGOUT' }
   | { type: 'CLEAR_ERROR' }
-  | { type: 'UPDATE_USER'; payload: User };
+  | { type: 'UPDATE_USER'; payload: FrontendUser }
+  | { type: 'UPDATE_AVATAR'; payload: string }
+  | { type: 'ADD_REDEMPTION'; payload: Redemption }
+  | { type: 'ADD_XP'; payload: number }
+  | { type: 'UNLOCK_ACHIEVEMENT'; payload: Achievement };
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginForm) => Promise<void>;
   register: (userData: RegisterForm) => Promise<void>;
   logout: () => void;
-  updateUser: (user: User) => void;
+  updateUser: (user: FrontendUser) => void;
+  updateAvatar: (avatarUrl: string) => void;
+  addRedemption: (redemption: Redemption) => void;
   clearError: () => void;
+  addXP: (xp: number) => void;
+  unlockAchievement: (achievement: Achievement) => void;
+  addActivity: (activity: any) => void;
+  getActivityLog: () => Promise<any[]>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,6 +113,44 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
         ...state,
         user: action.payload,
       };
+    case 'UPDATE_AVATAR':
+      return {
+        ...state,
+        user: state.user ? { ...state.user, avatarUrl: action.payload } : null,
+      };
+    case 'ADD_REDEMPTION':
+      return {
+        ...state,
+        user: state.user
+          ? {
+              ...state.user,
+              redemptions: [
+                ...(state.user.redemptions || []),
+                action.payload,
+              ],
+            }
+          : null,
+      };
+    case 'ADD_XP':
+      return {
+        ...state,
+        user: state.user
+          ? { ...state.user, xp: (state.user.xp || 0) + action.payload }
+          : null,
+      };
+    case 'UNLOCK_ACHIEVEMENT':
+      return {
+        ...state,
+        user: state.user
+          ? {
+              ...state.user,
+              achievements: [
+                ...(state.user.achievements || []),
+                action.payload,
+              ],
+            }
+          : null,
+      };
     default:
       return state;
   }
@@ -114,7 +177,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (response.success && response.data) {
           dispatch({
             type: 'AUTH_SUCCESS',
-            payload: { user: response.data, token },
+            payload: { user: mapUserToFrontendUser(response.data), token },
           });
           socketService.connect(token);
         } else {
@@ -128,6 +191,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     verifyToken();
+
+    // Escuchar expiración de sesión
+    const handleSessionExpired = () => {
+      dispatch({ type: 'AUTH_LOGOUT' });
+      // Opcional: mostrar toast de expiración
+      // showToast('Tu sesión ha expirado. Por favor inicia sesión de nuevo.', 'error');
+    };
+    window.addEventListener('session-expired', handleSessionExpired);
+    return () => {
+      window.removeEventListener('session-expired', handleSessionExpired);
+    };
   }, []);
 
   const login = async(credentials: LoginForm) => {
@@ -147,7 +221,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         dispatch({
           type: 'AUTH_SUCCESS',
-          payload: { user, token },
+          payload: { user: mapUserToFrontendUser(user), token },
         });
 
         socketService.connect(token);
@@ -179,7 +253,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         dispatch({
           type: 'AUTH_SUCCESS',
-          payload: { user, token },
+          payload: { user: mapUserToFrontendUser(user), token },
         });
 
         socketService.connect(token);
@@ -203,9 +277,71 @@ export function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'AUTH_LOGOUT' });
   };
 
-  const updateUser = (user: User) => {
+  const updateUser = (user: FrontendUser) => {
     localStorage.setItem('user', JSON.stringify(user));
     dispatch({ type: 'UPDATE_USER', payload: user });
+  };
+
+  const updateAvatar = (avatarUrl: string) => {
+    if (state.user) {
+      const updatedUser = { ...state.user, avatarUrl };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      dispatch({ type: 'UPDATE_AVATAR', payload: avatarUrl });
+    }
+  };
+
+  const addRedemption = async (redemption: Redemption) => {
+    if (state.user && state.user._id) {
+      try {
+        await apiService.addUserRedemption(state.user._id, redemption);
+      } catch (e) { /* manejar error si quieres */ }
+    }
+    if (state.user) {
+      const updatedUser = {
+        ...state.user,
+        redemptions: [...(state.user.redemptions || []), redemption],
+      };
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      dispatch({ type: 'ADD_REDEMPTION', payload: redemption });
+    }
+  };
+
+  const addXP = async (xp: number) => {
+    if (state.user && state.user._id) {
+      const newXP = (state.user.xp || 0) + xp;
+      const newLevel = state.user.level || 1; // Aquí puedes poner lógica de subida de nivel
+      try {
+        await apiService.updateUserXP(state.user._id, newXP, newLevel);
+      } catch (e) { /* manejar error si quieres */ }
+    }
+    dispatch({ type: 'ADD_XP', payload: xp });
+  };
+  const unlockAchievement = async (achievement: Achievement) => {
+    if (state.user && state.user._id) {
+      const achievements = [...(state.user.achievements || []), achievement];
+      try {
+        await apiService.updateUserAchievements(state.user._id, achievements);
+      } catch (e) { /* manejar error si quieres */ }
+    }
+    dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: achievement });
+  };
+
+  const getActivityLog = async (): Promise<any[]> => {
+    if (state.user && state.user._id) {
+      try {
+        const res = await apiService.getUserActivity(state.user._id);
+        return Array.isArray(res.data) ? res.data : [];
+      } catch (e) { return []; }
+    }
+    return [];
+  };
+
+  const addActivity = async (activity: any) => {
+    if (state.user && state.user._id) {
+      try {
+        await apiService.addUserActivity(state.user._id, activity);
+      } catch (e) { /* manejar error si quieres */ }
+    }
   };
 
   const clearError = () => {
@@ -218,7 +354,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
     register,
     logout,
     updateUser,
+    updateAvatar,
+    addRedemption,
     clearError,
+    addXP,
+    unlockAchievement,
+    addActivity,
+    getActivityLog,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -230,4 +372,15 @@ export function useAuth() {
     throw new Error('useAuth debe ser usado dentro de un AuthProvider');
   }
   return context;
+}
+
+function mapUserToFrontendUser(user: User): FrontendUser {
+  return {
+    ...user,
+    achievements: (user as any).achievements || [],
+    redemptions: (user as any).redemptions || [],
+    xp: (user as any).xp || 0,
+    level: (user as any).level || 1,
+    avatarUrl: (user as any).avatarUrl || '',
+  };
 }
