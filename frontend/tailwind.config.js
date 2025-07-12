@@ -78,7 +78,21 @@ module.exports = {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
-        }
+        },
+        primaryBlue: {
+          DEFAULT: '#2563eb', // azul principal
+          light: '#60a5fa',
+          dark: '#1e40af',
+        },
+        softGray: {
+          DEFAULT: '#f3f4f6', // gris claro
+          medium: '#d1d5db',
+          dark: '#6b7280',
+        },
+        pureWhite: '#ffffff',
+      },
+      backgroundImage: {
+        'main-gradient': 'linear-gradient(135deg, #2563eb 0%, #f3f4f6 100%)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],

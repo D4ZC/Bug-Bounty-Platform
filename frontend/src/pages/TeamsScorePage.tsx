@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import TeamCard from '../components/TeamCard';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const mockTeams = [
   {
@@ -36,6 +37,8 @@ function getCurrentMonthName() {
 const TeamsScorePage: React.FC = () => {
   const [expanded, setExpanded] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Cerrar panel al hacer clic fuera
   useEffect(() => {
@@ -52,24 +55,42 @@ const TeamsScorePage: React.FC = () => {
   }, []);
 
   return (
-    <div className="max-w-4xl mx-auto py-8" ref={containerRef}>
-      <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-        Clasificación {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
+    <>
+      {/* Submenú barra secundaria */}
+      <div className="bg-transparent h-[30px] flex items-center w-screen">
+        <div
+          className={`mr-6 cursor-pointer font-semibold text-blue-600 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] rounded-lg shadow-[0_2px_8px_0_rgba(0,0,0,0.7)] px-3 py-1" style={{ fontFamily: 'Arial Black, Arial, sans-serif' }} ${location.pathname === '/users-score' ? 'text-green-500' : ''}`}
+          onClick={() => navigate('/users-score')}
+        >
+          USUARIOS
+        </div>
+        <div
+          className={`cursor-pointer font-semibold text-blue-600 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] rounded-lg shadow-[0_2px_8px_0_rgba(0,0,0,0.7)] px-3 py-1" style={{ fontFamily: 'Arial Black, Arial, sans-serif' }} ${location.pathname === '/teams-score' ? 'text-green-500' : ''}`}
+          onClick={() => navigate('/teams-score')}
+        >
+          EQUIPOS
+        </div>
       </div>
-      <div className="mb-2 text-lg font-bold text-gray-700">{totalVulns} vulnerabilidades resueltas</div>
-      <div className="mb-4 text-base font-semibold text-gray-600">Teams</div>
-      <div className="grid gap-6">
-        {sortedTeams.map((team, idx) => (
-          <TeamCard
-            key={team.id}
-            team={team}
-            expanded={expanded === team.id}
-            onExpand={() => setExpanded(expanded === team.id ? null : team.id)}
-            ranking={idx + 1}
-          />
-        ))}
+      {/* Contenido principal */}
+      <div className="max-w-4xl mx-auto py-8" ref={containerRef}>
+        <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          Clasificación {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
+        </div>
+        <div className="mb-2 text-lg font-bold text-gray-700">{totalVulns} vulnerabilidades resueltas</div>
+        <div className="mb-4 text-base font-semibold text-gray-600">Teams</div>
+        <div className="grid gap-6">
+          {sortedTeams.map((team, idx) => (
+            <TeamCard
+              key={team.id}
+              team={team}
+              expanded={expanded === team.id}
+              onExpand={() => setExpanded(expanded === team.id ? null : team.id)}
+              ranking={idx + 1}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

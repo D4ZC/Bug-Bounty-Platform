@@ -44,7 +44,7 @@ const UserRankingTable: React.FC<UserRankingTableProps> = ({ users }) => {
             return (
               <React.Fragment key={user.id}>
                 <tr className={`${rowBg} transition group`} style={{ borderBottom: '1px solid #E5E7EB' }}>
-                  <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">{idx + 1}</td>
+                  <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">🇲🇽 <span className='ml-1'>{idx + 1}</span></td>
                   <td className="px-4 py-3 flex items-center gap-3 min-w-[160px] align-middle">
                     <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base shrink-0 ${color}`}>{initials}</span>
                     <span className="truncate max-w-[120px] font-medium text-gray-800" title={user.name}>{user.name}</span>
@@ -94,6 +94,14 @@ const UserRankingTable: React.FC<UserRankingTableProps> = ({ users }) => {
           })}
         </tbody>
       </table>
+      <div className="flex justify-end mt-4">
+        <button
+          onClick={() => window.location.href = '/TeamsScorePage'}
+          className="px-4 py-2 bg-primaryBlue text-white rounded hover:bg-primaryBlue-dark transition-colors"
+        >
+          Ver ranking de equipos
+        </button>
+      </div>
     </div>
   );
 };

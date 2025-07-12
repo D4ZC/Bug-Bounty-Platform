@@ -40,38 +40,32 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Primera fila */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[15px] justify-items-center">
+        {/* Card USUARIOS */}
         <div
-          className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col items-center justify-center min-h-[200px] cursor-pointer"
-          onClick={() => navigate('/teams-score')}
-          tabIndex={0}
-          role="button"
-          aria-label="Ver ranking de equipos"
-        >
-          <h2 className="text-xl font-bold text-gray-700 mb-2 text-center">EQUIPOS</h2>
-          <Podium items={topTeams.map(t => ({ name: t.name }))} />
-        </div>
-        <MVPTeamCard team={mvpTeam} />
-        <GulagCard gulag={gulag} />
-        {/* Segunda fila */}
-        <div
-          className="bg-white border border-gray-200 rounded-xl shadow-sm flex flex-col items-center justify-center min-h-[200px] cursor-pointer"
+          className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[290px] cursor-pointer"
           onClick={() => navigate('/users-score')}
           tabIndex={0}
           role="button"
           aria-label="Ver ranking de usuarios"
         >
-          <h2 className="text-xl font-bold text-gray-700 mb-2 text-center">USUARIOS</h2>
-          <Podium items={topUsers.map(u => ({ name: u.name }))} />
+          <h2 className="text-xl font-bold text-gray-700 text-center">USUARIOS</h2>
         </div>
-        <MVPUserCard user={mvpUser} />
-        <UserProfileCard user={mvpUser} />
-      </div>
-      {/* Botón de tienda */}
-      <div className="flex justify-center items-center mt-10">
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12">
-          <Button kind="primary" size="lg">Visit Store</Button>
+        {/* Card MVP */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[290px]">
+          <h2 className="text-xl font-bold text-gray-700 text-center">MVP</h2>
+        </div>
+        {/* Card PERFIL (antes TIENDA, +30px altura) */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[370px] -mt-[30px] cursor-pointer" onClick={() => navigate('/profile')} tabIndex={0} role="button" aria-label="Ver perfil">
+          <h2 className="text-xl font-bold text-gray-700 text-center">PERFIL</h2>
+        </div>
+        {/* Card GULAG (restar 15px de altura) */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[375px] -mt-[30px]">
+          <h2 className="text-xl font-bold text-gray-700 text-center">GULAG</h2>
+        </div>
+        {/* Card TIENDA (antes PERFIL) */}
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[275px] cursor-pointer" onClick={() => navigate('/shop')} tabIndex={0} role="button" aria-label="Ver tienda">
+          <h2 className="text-xl font-bold text-gray-700 text-center">TIENDA</h2>
         </div>
       </div>
     </div>
