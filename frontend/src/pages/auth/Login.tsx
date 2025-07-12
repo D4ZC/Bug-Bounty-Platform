@@ -102,7 +102,7 @@ const Login: React.FC = () => {
         </button>
         <div className="text-center text-cyan-200 mt-2">
           ¿No tienes cuenta?{' '}
-          <Link to="/register" className="text-green-400 font-bold hover:underline">Regístrate</Link>
+          <Link to="/auth/register" className="text-green-400 font-bold hover:underline">Regístrate</Link>
         </div>
       </form>
       <style>{`

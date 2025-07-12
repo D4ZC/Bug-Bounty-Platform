@@ -8,6 +8,12 @@ import {
 import { LoginForm, RegisterForm, User, Achievement } from '@/types';
 import apiService from '@/services/api';
 import socketService from '@/services/socket';
+import {
+  saveUser as saveUserDb,
+  findUserByUsername,
+  findUserByEmail,
+  newId as newUserId,
+} from '@/localDb';
 
 export interface FrontendUser extends User {
   avatarUrl?: string;
@@ -167,12 +173,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     const verifyToken = async() => {
       const token = localStorage.getItem('token');
+      const userData = localStorage.getItem('user');
+      
       if (!token) {
         dispatch({ type: 'AUTH_FAILURE', payload: '' });
         return;
       }
 
       try {
+        // Mock token verification for development
+        if (process.env.NODE_ENV === 'development' || !process.env.VITE_API_URL) {
+          if (userData) {
+            const user = JSON.parse(userData);
+            dispatch({
+              type: 'AUTH_SUCCESS',
+              payload: { user, token },
+            });
+            return;
+          } else {
+            throw new Error('No user data found');
+          }
+        }
+
+        // Real token verification
         const response = await apiService.get<User>('/auth/me');
         if (response.success && response.data) {
           dispatch({
@@ -208,6 +231,50 @@ export function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'AUTH_START' });
 
     try {
+      // Mock authentication for development
+      if (process.env.NODE_ENV === 'development' || !process.env.VITE_API_URL) {
+        // Simular delay de red
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Buscar usuario en base local
+        const user = findUserByEmail(credentials.email) || findUserByUsername(credentials.email);
+        if (!user) {
+          throw new Error('Usuario o correo no encontrado.');
+        }
+        if (user.password !== credentials.password) {
+          throw new Error('Contraseña incorrecta.');
+        }
+        // Adaptar a FrontendUser
+        const frontendUser = {
+          ...user,
+          _id: user.id,
+          firstName: (user as any).firstName || '',
+          lastName: (user as any).lastName || '',
+          role: 'member' as const,
+          rank: 999,
+          isMVP: false,
+          isGulagParticipant: false,
+          xp: 0,
+          level: 1,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.username}`,
+          achievements: Array.isArray((user as any).achievements) && typeof (user as any).achievements[0] === 'object' ? (user as any).achievements : [],
+          badges: [],
+          redemptions: [],
+          createdAt: new Date(user.createdAt),
+          updatedAt: new Date(),
+        };
+        const mockToken = 'mock-jwt-token-' + Date.now();
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(frontendUser));
+        dispatch({
+          type: 'AUTH_SUCCESS',
+          payload: { user: frontendUser, token: mockToken },
+        });
+        return;
+      }
+
+      // Real authentication
       const response = await apiService.post<{ user: User; token: string }>(
         '/auth/login',
         credentials,
@@ -240,6 +307,67 @@ export function AuthProvider({ children }: AuthProviderProps) {
     dispatch({ type: 'AUTH_START' });
 
     try {
+      // Mock registration for development
+      if (process.env.NODE_ENV === 'development' || !process.env.VITE_API_URL) {
+        // Simular delay de red
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        // Validar si el usuario ya existe
+        if (findUserByUsername(userData.username)) {
+          throw new Error('El nombre de usuario ya está en uso.');
+        }
+        if (findUserByEmail(userData.email)) {
+          throw new Error('El correo electrónico ya está en uso.');
+        }
+
+        // Crear usuario real en base local
+        const newUser = {
+          id: newUserId(),
+          username: userData.username,
+          email: userData.email,
+          password: userData.password, // En real, deberías hashear
+          points: 0,
+          streak: 0,
+          accuracy: 0,
+          vulnerabilities: [],
+          purchases: [],
+          clans: [],
+          achievements: [],
+          createdAt: new Date().toISOString(),
+        };
+        saveUserDb(newUser);
+
+        // Crear FrontendUser para el contexto
+        const frontendUser = {
+          ...newUser,
+          _id: newUser.id,
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+          role: 'member' as const,
+          rank: 999,
+          isMVP: false,
+          isGulagParticipant: false,
+          xp: 0,
+          level: 1,
+          avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${userData.username}`,
+          achievements: [],
+          badges: [],
+          redemptions: [],
+          createdAt: new Date(newUser.createdAt),
+          updatedAt: new Date(),
+        };
+        const mockToken = 'mock-jwt-token-' + Date.now();
+        localStorage.setItem('token', mockToken);
+        localStorage.setItem('user', JSON.stringify(frontendUser));
+        dispatch({
+          type: 'AUTH_SUCCESS',
+          payload: { user: frontendUser, token: mockToken },
+        });
+        return;
+      }
+
+      // Real registration
       const response = await apiService.post<{ user: User; token: string }>(
         '/auth/register',
         userData,
@@ -310,37 +438,70 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (state.user && state.user._id) {
       const newXP = (state.user.xp || 0) + xp;
       const newLevel = state.user.level || 1; // Aquí puedes poner lógica de subida de nivel
-      try {
-        await apiService.updateUserXP(state.user._id, newXP, newLevel);
-      } catch (e) { /* manejar error si quieres */ }
+      
+      // Solo hacer llamada al backend si no estamos en modo mock
+      if (process.env.NODE_ENV !== 'development' && process.env.VITE_API_URL) {
+        try {
+          await apiService.updateUserXP(state.user._id, newXP, newLevel);
+        } catch (e) { /* manejar error si quieres */ }
+      }
     }
     dispatch({ type: 'ADD_XP', payload: xp });
   };
+  
   const unlockAchievement = async (achievement: Achievement) => {
     if (state.user && state.user._id) {
       const achievements = [...(state.user.achievements || []), achievement];
-      try {
-        await apiService.updateUserAchievements(state.user._id, achievements);
-      } catch (e) { /* manejar error si quieres */ }
+      
+      // Solo hacer llamada al backend si no estamos en modo mock
+      if (process.env.NODE_ENV !== 'development' && process.env.VITE_API_URL) {
+        try {
+          await apiService.updateUserAchievements(state.user._id, achievements);
+        } catch (e) { /* manejar error si quieres */ }
+      }
     }
     dispatch({ type: 'UNLOCK_ACHIEVEMENT', payload: achievement });
   };
 
   const getActivityLog = async (): Promise<any[]> => {
     if (state.user && state.user._id) {
-      try {
-        const res = await apiService.getUserActivity(state.user._id);
-        return Array.isArray(res.data) ? res.data : [];
-      } catch (e) { return []; }
+      // Solo hacer llamada al backend si no estamos en modo mock
+      if (process.env.NODE_ENV !== 'development' && process.env.VITE_API_URL) {
+        try {
+          const res = await apiService.getUserActivity(state.user._id);
+          return Array.isArray(res.data) ? res.data : [];
+        } catch (e) { return []; }
+      } else {
+        // Mock activity log
+        return [
+          {
+            _id: 'mock-1',
+            type: 'vulnerability_resolved',
+            description: 'Resolvió vulnerabilidad SQL Injection',
+            points: 500,
+            createdAt: new Date(),
+          },
+          {
+            _id: 'mock-2',
+            type: 'achievement_unlocked',
+            description: 'Desbloqueó logro: Primer Bug',
+            points: 50,
+            createdAt: new Date(),
+          }
+        ];
+      }
     }
     return [];
   };
 
   const addActivity = async (activity: any) => {
     if (state.user && state.user._id) {
-      try {
-        await apiService.addUserActivity(state.user._id, activity);
-      } catch (e) { /* manejar error si quieres */ }
+      // Solo hacer llamada al backend si no estamos en modo mock
+      if (process.env.NODE_ENV !== 'development' && process.env.VITE_API_URL) {
+        try {
+          await apiService.addUserActivity(state.user._id, activity);
+        } catch (e) { /* manejar error si quieres */ }
+      }
     }
   };
 

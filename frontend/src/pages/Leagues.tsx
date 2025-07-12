@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import LeagueUpModal from '../components/Leagues/LeagueUpModal';
+import { getUsers, getAchievementsByUser } from '../localDb';
+import { useAuth } from '../contexts/AuthContext';
+import Modal from '../components/ui/Modal';
 
 interface LeagueUser {
   id: number;
@@ -19,7 +22,7 @@ interface League {
   rewards: string[];
 }
 
-const mockLeagues: League[] = [
+const leagues: League[] = [
   {
     name: 'Bronce',
     minPoints: 0,
@@ -70,37 +73,8 @@ const mockLeagues: League[] = [
   },
 ];
 
-// Mock de usuarios por liga
-const mockLeagueUsers: Record<string, LeagueUser[]> = {
-  'Bronce': [
-    { id: 1, name: 'BronzeWarrior', avatar: 'https://robohash.org/bronze1?set=set2', skin: 'default', points: 300, badges: [{ name: 'Bug Hunter', icon: '🐞' }] },
-    { id: 2, name: 'NoobMaster', avatar: 'https://robohash.org/bronze2?set=set2', skin: 'bronze', points: 450, badges: [] },
-  ],
-  'Plata': [
-    { id: 3, name: 'SilverFox', avatar: 'https://robohash.org/silver1?set=set2', skin: 'silver', points: 700, badges: [{ name: 'MVP', icon: '🏆' }] },
-    { id: 4, name: 'QuickHacker', avatar: 'https://robohash.org/silver2?set=set2', skin: 'default', points: 800, badges: [] },
-  ],
-  'Oro': [
-    { id: 5, name: 'GoldenEye', avatar: 'https://robohash.org/gold1?set=set2', skin: 'gold', points: 1200, badges: [{ name: 'Bug Hunter', icon: '🐞' }, { name: 'MVP', icon: '🏆' }] },
-    { id: 6, name: 'EliteHunter', avatar: 'https://robohash.org/gold2?set=set2', skin: 'default', points: 1100, badges: [] },
-  ],
-  'Platino': [
-    { id: 7, name: 'PlatinumGhost', avatar: 'https://robohash.org/platinum1?set=set2', skin: 'platinum', points: 1700, badges: [{ name: 'MVP', icon: '🏆' }] },
-  ],
-  'Diamante': [
-    { id: 8, name: 'DiamondWolf', avatar: 'https://robohash.org/diamond1?set=set2', skin: 'diamond', points: 2200, badges: [{ name: 'Bug Hunter', icon: '🐞' }] },
-  ],
-  'Maestro': [
-    { id: 9, name: 'MasterMind', avatar: 'https://robohash.org/master1?set=set2', skin: 'master', points: 3500, badges: [{ name: 'MVP', icon: '🏆' }, { name: 'Bug Hunter', icon: '🐞' }] },
-  ],
-};
-
-const mockUser = {
-  name: 'PlayerOne',
-  points: 1250,
-};
-
 function getLeague(points: number) {
+  if (points >= 3000) return 'Maestro';
   if (points >= 2000) return 'Diamante';
   if (points >= 1500) return 'Platino';
   if (points >= 1000) return 'Oro';
@@ -109,20 +83,48 @@ function getLeague(points: number) {
 }
 
 const Leagues: React.FC = () => {
+  const { user } = useAuth();
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [newLeague, setNewLeague] = useState<string | null>(null);
   const [newLeagueImage, setNewLeagueImage] = useState<string | null>(null);
   const [selectedLeague, setSelectedLeague] = useState<League | null>(null);
-  const [selectedUser, setSelectedUser] = useState<LeagueUser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [leagueUsers, setLeagueUsers] = useState<Record<string, any[]>>({});
 
-  const userLeagueName = getLeague(mockUser.points);
-  const userLeague = mockLeagues.find(l => l.name === userLeagueName);
-  const nextLeague = mockLeagues.find(
+  useEffect(() => {
+    // Obtener usuarios reales y agruparlos por liga
+    const users = getUsers();
+    const groupedUsers: Record<string, any[]> = {};
+    
+    users.forEach((user, index) => {
+      const leagueName = getLeague(user.points);
+      if (!groupedUsers[leagueName]) {
+        groupedUsers[leagueName] = [];
+      }
+      
+      groupedUsers[leagueName].push({
+        id: user.id,
+        username: user.username,
+        avatar: `https://robohash.org/${user.username}?set=set2`,
+        points: user.points,
+        level: Math.floor(user.points / 1000) + 1,
+        bio: 'Sin biografía disponible',
+      });
+    });
+    
+    setLeagueUsers(groupedUsers);
+  }, []);
+
+  const userPoints = user?.points || 0;
+  const userLeagueName = getLeague(userPoints);
+  const userLeague = leagues.find(l => l.name === userLeagueName);
+  const nextLeague = leagues.find(
     (l) => userLeague && l.minPoints > userLeague.minPoints,
   );
   const progress
     = userLeague && nextLeague
-      ? ((mockUser.points - userLeague.minPoints)
+      ? ((userPoints - userLeague.minPoints)
           / (nextLeague.minPoints - userLeague.minPoints))
         * 100
       : 100;
@@ -130,12 +132,12 @@ const Leagues: React.FC = () => {
   // Simulación: si el usuario acaba de subir de liga, mostrar animación
   useEffect(() => {
     // Simula que el usuario acaba de subir a "Oro"
-    if (mockUser.points === 1000) {
+    if (userPoints === 1000) {
       setNewLeague('Oro');
       setNewLeagueImage('https://cdn-icons-png.flaticon.com/512/2583/2583346.png'); // ejemplo de medalla de oro
       setShowLevelUp(true);
     }
-  }, []);
+  }, [userPoints]);
 
   // Botón de prueba para simular subida de liga
   const triggerLeagueUp = () => {
@@ -145,6 +147,17 @@ const Leagues: React.FC = () => {
   };
 
   const closeModal = () => setShowLevelUp(false);
+
+  // Handler para mostrar modal de perfil
+  const handleProfileClick = (user: any) => {
+    const achievements = getAchievementsByUser ? getAchievementsByUser(user.id) : [];
+    setSelectedUser({ ...user, achievements });
+    setShowProfileModal(true);
+  };
+  const handleCloseProfileModal = () => {
+    setShowProfileModal(false);
+    setSelectedUser(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0026] via-[#1a0033] to-[#0f0026] text-white py-10 px-4 relative overflow-x-hidden">
@@ -187,21 +200,77 @@ const Leagues: React.FC = () => {
               </div>
               <h3 className="text-xl font-bold text-center mb-4 text-pink-200">Usuarios en esta liga</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {(mockLeagueUsers[selectedLeague.name] || []).map((user) => (
-                  <div key={user.id} className="flex flex-col items-center bg-black/70 border-2 border-cyan-400 neon-shadow rounded-xl p-4 cursor-pointer hover:scale-105 transition" onClick={() => setSelectedUser(user)}>
-                    <img src={user.avatar} alt={user.name} className="w-16 h-16 rounded-full border-2 border-cyan-400 mb-2 neon-shadow" />
-                    <div className={`font-bold text-lg mb-1 ${
-                      user.skin === 'gold' ? 'text-yellow-300 drop-shadow-cyber' :
-                      user.skin === 'silver' ? 'text-gray-300 drop-shadow-cyber' :
-                      user.skin === 'bronze' ? 'text-yellow-700 drop-shadow-cyber' :
-                      user.skin === 'platinum' ? 'text-blue-300 drop-shadow-cyber' :
-                      user.skin === 'diamond' ? 'text-blue-500 drop-shadow-cyber' :
-                      user.skin === 'master' ? 'text-purple-400 drop-shadow-cyber' :
-                      'text-cyan-200 drop-shadow-cyber'
-                    }`}>
-                      {user.name}
-                    </div>
-                    <button className="mt-1 px-3 py-1 bg-cyan-700/80 border border-cyan-400 rounded text-cyan-100 text-xs font-bold hover:bg-cyan-600 transition">Ver perfil</button>
+                {(leagueUsers[selectedLeague.name] || []).map((user) => (
+                  <div key={user.id} className="flex flex-col items-center bg-black/70 border-2 border-cyan-400 neon-shadow rounded-xl p-4 cursor-pointer hover:scale-105 transition" onClick={() => handleProfileClick(user)}>
+                    <img src={user.avatar} alt={user.username} className="w-16 h-16 rounded-full border-2 border-cyan-400 mb-2 neon-shadow" />
+                    <div className="font-bold text-lg mb-1 text-cyan-200 drop-shadow-cyber">{user.username}</div>
+                    <div className="text-yellow-300 font-mono">{user.points} pts</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Modal de Perfil de Usuario */}
+        <Modal
+          isOpen={showProfileModal}
+          onClose={handleCloseProfileModal}
+          title={selectedUser ? `Perfil de ${selectedUser.username}` : ''}
+        >
+          {selectedUser && (
+            <div className="flex flex-col items-center gap-4">
+              <img src={selectedUser.avatar} alt={selectedUser.username} className="w-24 h-24 rounded-full border-4 border-cyan-400 neon-shadow mb-2" />
+              <div className="text-2xl font-bold text-cyan-200">{selectedUser.username}</div>
+              <div className="flex gap-4 text-lg">
+                <span className="text-yellow-300">💎 {selectedUser.points} pts</span>
+                <span className="text-cyan-300">🏅 Nivel {selectedUser.level}</span>
+              </div>
+              <div className="text-cyan-100 text-center italic text-base mb-2">{selectedUser.bio}</div>
+              {/* Logros recientes si existen */}
+              {selectedUser.achievements && selectedUser.achievements.length > 0 && (
+                <div className="w-full">
+                  <div className="text-cyan-200 font-bold mb-2 text-center">Logros recientes</div>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {selectedUser.achievements.slice(-5).map((ach: any) => (
+                      <div key={ach.id} className="bg-cyan-900/60 border border-cyan-400 rounded-lg px-3 py-1 text-cyan-100 text-sm flex items-center gap-2">
+                        <span className="text-lg">{ach.icon || '🏆'}</span> {ach.name}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              <button
+                onClick={handleCloseProfileModal}
+                className="mt-4 bg-cyan-600 text-white font-bold px-6 py-2 rounded-full hover:bg-cyan-700 transition"
+              >
+                Cerrar
+              </button>
+            </div>
+          )}
+        </Modal>
+        <h2 className="text-3xl font-extrabold mb-8 text-center neon-text drop-shadow-cyber tracking-widest">Tu Progreso</h2>
+        {/* Vista detallada de liga */}
+        {selectedLeague && (
+          <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center animate-fade-in">
+            <div className="bg-[#181028] border-2 border-cyan-400 neon-shadow rounded-2xl p-8 max-w-lg w-full relative">
+              <button onClick={() => setSelectedLeague(null)} className="absolute top-4 right-4 text-cyan-400 text-2xl font-bold hover:text-pink-400">×</button>
+              <div className="flex flex-col items-center mb-6">
+                <div className="text-6xl mb-2 animate-bounce drop-shadow-cyber">{selectedLeague.icon}</div>
+                <div className="text-3xl font-bold text-cyan-200 drop-shadow-cyber mb-1">{selectedLeague.name}</div>
+                <div className="text-base text-yellow-200 font-mono mb-2">{selectedLeague.minPoints} - {selectedLeague.maxPoints} pts</div>
+                <ul className="text-sm text-center text-cyan-100 mb-4">
+                  {selectedLeague.rewards.map((reward: string) => (
+                    <li key={reward} className="mb-1">• {reward}</li>
+                  ))}
+                </ul>
+              </div>
+              <h3 className="text-xl font-bold text-center mb-4 text-pink-200">Usuarios en esta liga</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {(leagueUsers[selectedLeague.name] || []).map((user) => (
+                  <div key={user.id} className="flex flex-col items-center bg-black/70 border-2 border-cyan-400 neon-shadow rounded-xl p-4 cursor-pointer hover:scale-105 transition" onClick={() => handleProfileClick(user)}>
+                    <img src={user.avatar} alt={user.username} className="w-16 h-16 rounded-full border-2 border-cyan-400 mb-2 neon-shadow" />
+                    <div className="font-bold text-lg mb-1 text-cyan-200 drop-shadow-cyber">{user.username}</div>
+                    <div className="text-yellow-300 font-mono">{user.points} pts</div>
                   </div>
                 ))}
               </div>
@@ -231,7 +300,7 @@ const Leagues: React.FC = () => {
           </div>
           <h2 className="text-3xl font-bold mt-4 text-cyan-200 drop-shadow-cyber">{userLeague?.name}</h2>
           <p className="text-lg mt-2 text-pink-200">
-            Puntos: <span className="font-mono text-yellow-300 text-2xl">{mockUser.points}</span>
+            Puntos: <span className="font-mono text-yellow-300 text-2xl">{userPoints}</span>
           </p>
           {nextLeague && (
             <div className="w-full mt-6">
@@ -246,13 +315,13 @@ const Leagues: React.FC = () => {
                 ></div>
               </div>
               <div className="text-center mt-2 text-sm text-cyan-100">
-                <span className="font-bold text-yellow-300">{nextLeague.minPoints - mockUser.points}</span> puntos para subir a <span className="font-bold text-pink-300">{nextLeague.name}</span>
+                <span className="font-bold text-yellow-300">{nextLeague.minPoints - userPoints}</span> puntos para subir a <span className="font-bold text-pink-300">{nextLeague.name}</span>
               </div>
             </div>
           )}
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-          {mockLeagues.map((league) => (
+          {leagues.map((league) => (
             <div
               key={league.name}
               className={`rounded-2xl p-8 shadow-cyber border-2 border-cyan-400 neon-shadow flex flex-col items-center bg-black/60 hover:scale-105 transition-transform duration-300 relative overflow-hidden cursor-pointer`}

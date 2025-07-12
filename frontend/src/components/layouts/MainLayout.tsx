@@ -10,7 +10,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -32,10 +32,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <button onClick={handleLogout} className="bg-pink-600 text-white font-bold px-4 py-1 rounded-full hover:bg-pink-700 transition">Salir</button>
             </>
           ) : (
-            <>
-              <Link to="/login" className="bg-cyan-600 text-white font-bold px-4 py-1 rounded-full hover:bg-cyan-700 transition">Iniciar sesión</Link>
-              <Link to="/register" className="bg-green-600 text-white font-bold px-4 py-1 rounded-full hover:bg-green-700 transition">Registrarse</Link>
-            </>
+            <div className="text-cyan-200 text-sm">
+              Bienvenido a Bug Bounty Platform
+            </div>
           )}
         </div>
       </nav>

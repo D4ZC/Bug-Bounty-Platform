@@ -1,669 +1,728 @@
-import React, { useState, useEffect } from 'react';
-import { useRef } from 'react';
-// import PointsStats from '../components/Points/PointsStats';
+import React, { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useToast } from '../contexts/ToastContext';
 import { useAuth } from '../contexts/AuthContext';
-import XPProgressBar from '../components/ui/XPProgressBar';
-import AchievementsGallery from '../components/ui/AchievementsGallery';
-import { useTheme } from '../contexts/ThemeContext';
 import Modal from '../components/ui/Modal';
-
-// Mock de usuario (mismo que en Dashboard y Shop)
-const mockUser = {
-  name: 'PlayerOne',
-  level: 15,
-  rank: 3,
-  totalPoints: 1250,
-  pointsThisWeek: 180,
-  vulnerabilitiesFound: 47,
-  criticalVulns: 8,
-  highVulns: 12,
-  mediumVulns: 18,
-  lowVulns: 9,
-  rewardsEarned: 12,
-  streak: 7,
-  accuracy: 94.2,
-  achievements: [
-    { id: 1, name: 'Vulnerabilidad Crítica', icon: '💥' },
-    { id: 2, name: 'Vulnerabilidad Alta', icon: '⚠️' },
-    { id: 3, name: 'MVP', icon: '🏆' },
-    { id: 4, name: 'Vulnerabilidad Media', icon: '🔧' },
-  ],
-};
-
-// Mock de puntos obtenidos
-const mockPointsList = [
-  {
-    id: 1,
-    cantidad: 100,
-    motivo: 'Vulnerabilidad Crítica',
-    fecha_obtencion: '2023-07-01',
-    fecha_expiracion: '2024-07-01',
-  },
-  {
-    id: 2,
-    cantidad: 75,
-    motivo: 'Vulnerabilidad Alta',
-    fecha_obtencion: '2023-10-15',
-    fecha_expiracion: '2024-10-15',
-  },
-  {
-    id: 3,
-    cantidad: 150,
-    motivo: 'MVP',
-    fecha_obtencion: '2024-01-10',
-    fecha_expiracion: '2025-01-10',
-  },
-  {
-    id: 4,
-    cantidad: 50,
-    motivo: 'Vulnerabilidad Media',
-    fecha_obtencion: '2024-02-20',
-    fecha_expiracion: '2025-02-20',
-  },
-];
-
-// Mock de canjes realizados
-const mockRedemptions = [
-  {
-    id: 1,
-    recompensa: 'Camiseta Oficial',
-    puntos_gastados: 200,
-    fecha_canje: '2023-12-01',
-  },
-  {
-    id: 2,
-    recompensa: 'Sticker Pack',
-    puntos_gastados: 50,
-    fecha_canje: '2024-02-20',
-  },
-  {
-    id: 3,
-    recompensa: 'Skin Cyber Ninja',
-    puntos_gastados: 400,
-    fecha_canje: '2024-03-15',
-  },
-];
-
-// Mock de avatares desbloqueados
-const unlockedAvatars = [
-  {
-    id: 1,
-    name: 'Cyber Ninja',
-    url: 'https://robohash.org/cyberninja?set=set2',
-  },
-  {
-    id: 2,
-    name: 'Ice King',
-    url: 'https://robohash.org/iceking?set=set2',
-  },
-  {
-    id: 3,
-    name: 'Blaze',
-    url: 'https://robohash.org/blaze?set=set2',
-  },
-  {
-    id: 4,
-    name: 'Breakpoint',
-    url: 'https://robohash.org/breakpoint?set=set2',
-  },
-  {
-    id: 5,
-    name: 'Shadow Samurai',
-    url: 'https://robohash.org/shadowsamurai?set=set2',
-  },
-  {
-    id: 6,
-    name: 'Neon Wolf',
-    url: 'https://robohash.org/neonwolf?set=set2',
-  },
-  {
-    id: 7,
-    name: 'Pixel Bot',
-    url: 'https://robohash.org/pixelbot?set=set2',
-  },
-];
-
-// Preferencias de usuario (animaciones, sonidos, notificaciones)
-function getUserPrefs() {
-  try {
-    return JSON.parse(localStorage.getItem('userPrefs') || '{}');
-  } catch {
-    return {};
-  }
-}
-function setUserPrefs(prefs: any) {
-  localStorage.setItem('userPrefs', JSON.stringify(prefs));
-}
-
-const profileFrames = [
-  { key: 'none', label: 'Sin marco', className: '' },
-  { key: 'gold', label: 'Dorado', className: 'ring-4 ring-yellow-400 border-yellow-400 shadow-gold-frame' },
-  { key: 'cyber', label: 'Cyberpunk', className: 'ring-4 ring-cyan-400 border-pink-500 shadow-cyber-frame' },
-  { key: 'epic', label: 'Épico', className: 'ring-4 ring-purple-500 border-purple-400 shadow-epic-frame' },
-];
-function getProfilePrefs() {
-  try {
-    return JSON.parse(localStorage.getItem('profilePrefs') || '{}');
-  } catch {
-    return {};
-  }
-}
-function setProfilePrefs(prefs: any) {
-  localStorage.setItem('profilePrefs', JSON.stringify(prefs));
-}
-
-const profileBackgrounds = [
-  { key: 'default', label: 'Predeterminado', className: 'bg-gradient-to-br from-blue-900 via-purple-900 to-black' },
-  { key: 'cyber', label: 'Cyberpunk', className: 'bg-gradient-to-br from-[#0f0026] via-[#1a0033] to-[#0f0026] cyberpunk-bg' },
-  { key: 'gold', label: 'Dorado', className: 'bg-gradient-to-br from-yellow-200 via-yellow-400 to-yellow-700' },
-  { key: 'epic', label: 'Épico', className: 'bg-gradient-to-br from-purple-700 via-pink-500 to-blue-700' },
-];
-
-function getVisibleAchievements() {
-  try {
-    return JSON.parse(localStorage.getItem('visibleAchievements') || '[]');
-  } catch {
-    return [];
-  }
-}
-function setVisibleAchievements(ids: number[]) {
-  localStorage.setItem('visibleAchievements', JSON.stringify(ids));
-}
+import ConfettiBlast from '../components/ui/ConfettiBlast';
+import {
+  updateUser,
+  getVulnerabilitiesByUser,
+  getPurchasesByUser,
+  getAchievementsByUser,
+  Vulnerability,
+  Purchase,
+  Achievement
+} from '../localDb';
 
 const Profile: React.FC = () => {
-  const { user, updateAvatar, updateUser } = useAuth();
-  const selectedAvatar = user?.avatarUrl || unlockedAvatars[0].url;
   const { showToast } = useToast();
+  const { user, updateUser: updateAuthUser } = useAuth();
+  const [vulnerabilities, setVulnerabilities] = useState<Vulnerability[]>([]);
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedAvatarName, setSelectedAvatarName] = useState<string | null>(null);
-  const confettiRef = useRef<HTMLDivElement>(null);
-  const { theme, setTheme } = useTheme();
-  const [prefs, setPrefs] = useState(() => getUserPrefs());
-  const [profilePrefs, setProfilePrefs] = useState(() => getProfilePrefs());
-  // Sincronizar con localStorage
-  useEffect(() => { setUserPrefs(prefs); }, [prefs]);
-  useEffect(() => { setProfilePrefs(profilePrefs); }, [profilePrefs]);
-  const [visibleAchievements, setVisibleAchievementsState] = useState<number[]>(() => getVisibleAchievements());
-  useEffect(() => { setVisibleAchievements(visibleAchievements); }, [visibleAchievements]);
-  // Obtener lista de logros del usuario
-  const userAchievements = (user?.achievements && Array.isArray(user.achievements)) ? user.achievements : (Array.isArray(mockUser.achievements) ? mockUser.achievements : []);
-  const visibleAchObjs = userAchievements.filter((a: any) => visibleAchievements.includes(a.id));
-  const toggleAchievement = (id: number) => {
-    setVisibleAchievementsState((prev) => {
-      if (prev.includes(id)) return prev.filter(x => x !== id);
-      if (prev.length >= 3) return prev; // máximo 3
-      return [...prev, id];
-    });
+  const [selectedTab, setSelectedTab] = useState<'overview' | 'vulnerabilities' | 'purchases' | 'achievements'>('overview');
+
+  // Formulario de edición
+  const [editForm, setEditForm] = useState({
+    username: user?.username || '',
+    email: user?.email || '',
+    avatar: user?.avatar || ''
+  });
+
+  useEffect(() => {
+    if (user) {
+      loadUserData();
+    }
+  }, [user]);
+
+  const loadUserData = async () => {
+    if (!user) return;
+
+    try {
+      const [userVulns, userPurchases, userAchievements] = await Promise.all([
+        getVulnerabilitiesByUser(user._id),
+        getPurchasesByUser(user._id),
+        getAchievementsByUser(user._id)
+      ]);
+      setVulnerabilities(userVulns);
+      setPurchases(userPurchases);
+      setAchievements(userAchievements);
+    } catch (error) {
+      console.error('Error loading user data:', error);
+      showToast('Error al cargar datos del usuario', 'error');
+    }
   };
 
-  // Mock de XP y nivel
-  const xp = user?.xp ?? 850;
-  const level = user?.level ?? 15;
-  const xpToNextLevel = 1000;
-  const achievements = user?.achievements ?? [];
+  const handleSaveProfile = async () => {
+    if (!user) return;
 
-  const handleAvatarChange = (avatarUrl: string, avatarName: string) => {
-    updateAvatar(avatarUrl);
-    updateUser({
-      ...user!,
-      avatarUrl,
-    });
-    showToast(`Avatar cambiado a ${avatarName}!`, 'success');
-    setShowConfetti(true);
-    setSelectedAvatarName(avatarName);
-    setShowModal(true);
-    setTimeout(() => setShowConfetti(false), 1200);
+    try {
+      const updatedUser = {
+        ...user,
+        ...editForm
+      };
+
+      await updateUser(updatedUser);
+      updateAuthUser(updatedUser);
+      showToast('Perfil actualizado exitosamente', 'success');
+      setShowEditModal(false);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2000);
+    } catch (error) {
+      showToast('Error al actualizar el perfil', 'error');
+    }
   };
+
+  const getSeverityColor = (severity: string) => {
+    switch (severity) {
+      case 'critical': return 'from-red-400 to-red-600';
+      case 'high': return 'from-orange-400 to-orange-600';
+      case 'medium': return 'from-yellow-400 to-yellow-600';
+      case 'low': return 'from-green-400 to-green-600';
+      default: return 'from-gray-400 to-gray-600';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'accepted': return 'from-green-400 to-green-600';
+      case 'rejected': return 'from-red-400 to-red-600';
+      case 'pending': return 'from-yellow-400 to-yellow-600';
+      default: return 'from-gray-400 to-gray-600';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'accepted': return '✅';
+      case 'rejected': return '❌';
+      case 'pending': return '⏳';
+      default: return '❓';
+    }
+  };
+
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      case 'weapons': return '⚔️';
+      case 'armor': return '🛡️';
+      case 'consumables': return '🧪';
+      case 'cosmetics': return '🎨';
+      case 'tools': return '🔧';
+      default: return '📦';
+    }
+  };
+
+  const totalPoints = vulnerabilities
+    .filter(v => v.status === 'accepted')
+    .reduce((sum, v) => sum + v.points, 0);
+
+  const totalSpent = purchases.reduce((sum, p) => sum + p.totalPrice, 0);
+
+  const acceptedVulns = vulnerabilities.filter(v => v.status === 'accepted').length;
+  const pendingVulns = vulnerabilities.filter(v => v.status === 'pending').length;
+  const rejectedVulns = vulnerabilities.filter(v => v.status === 'rejected').length;
 
   return (
-    <div className={`min-h-screen ${profileBackgrounds.find(b => b.key === profilePrefs.bg)?.className || profileBackgrounds[0].className} text-white`}>
-      <div className="max-w-3xl mx-auto py-10 px-4">
-        {/* Avatar Personalization */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Personaliza tu Avatar</h2>
-          <div className="flex flex-wrap gap-6 items-center justify-center">
-            {unlockedAvatars.map((avatar) => (
-              <button
-                key={avatar.id}
-                onClick={() => handleAvatarChange(avatar.url, avatar.name)}
-                className={`relative p-2 rounded-2xl border-4 neon-shadow transition-transform duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400 active:scale-95 active:shadow-inner hover:shadow-cyan-400/60 hover:scale-110 ${selectedAvatar === avatar.url ? 'border-cyan-400 scale-110 ring-2 ring-cyan-400 animate-avatar-pop' : 'border-gray-700 opacity-60 hover:scale-105'}`}
-                aria-label={`Seleccionar ${avatar.name}`}
-                style={{ boxShadow: selectedAvatar === avatar.url ? '0 0 12px 2px #22d3ee' : undefined }}
-              >
-                <img src={avatar.url} alt={avatar.name} className="w-20 h-20 rounded-full" loading="lazy" width={80} height={80} />
-                <div className="text-xs text-center mt-2 text-cyan-200 font-bold">{avatar.name}</div>
-                {selectedAvatar === avatar.url && (
-                  <span className="absolute top-2 right-2 bg-cyan-400 text-white rounded-full p-1 shadow-lg animate-pop-in">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#22d3ee"/><path d="M6 10.5l2.5 2.5L14 8.5" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0026] via-[#1a0033] to-[#0f0026] text-white relative overflow-x-hidden">
+      {/* Efecto de partículas/fondo cyberpunk */}
+      <div className="pointer-events-none fixed inset-0 z-0 opacity-60">
+        <svg width="100%" height="100%">
+          <defs>
+            <radialGradient id="cyberpunk-glow" cx="50%" cy="50%" r="80%">
+              <stop offset="0%" stopColor="#00ff88" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#0f0026" stopOpacity="0" />
+            </radialGradient>
+          </defs>
+          <circle cx="80%" cy="20%" r="400" fill="url(#cyberpunk-glow)" />
+          <circle cx="20%" cy="80%" r="300" fill="url(#cyberpunk-glow)" />
+        </svg>
+      </div>
+
+      <div className="max-w-7xl mx-auto py-8 px-4 relative z-10">
+        {/* Header del Perfil */}
+        <motion.div 
+          initial={{ opacity: 0, y: -50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="mb-12"
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-green-900/20 via-blue-900/20 to-green-900/20 rounded-3xl blur-3xl"></div>
+            <div className="relative bg-black/40 backdrop-blur-xl border-2 border-green-400/50 rounded-3xl p-8 shadow-2xl">
+              <div className="flex flex-col md:flex-row items-center gap-8">
+                {/* Avatar */}
+                <div className="relative group">
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-blue-500 rounded-full blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+                  <img 
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.username || 'user'}`} 
+                    alt="avatar" 
+                    className="relative w-32 h-32 rounded-full border-4 border-green-400 shadow-2xl group-hover:scale-110 transition-all duration-300" 
+                  />
+                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-2 border-black animate-pulse"></div>
+                </div>
+
+                {/* Información del usuario */}
+                <div className="flex-1 text-center md:text-left">
+                  <motion.h1 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.2 }}
+                    className="text-4xl font-extrabold mb-4 bg-gradient-to-r from-green-400 via-blue-400 to-green-400 bg-clip-text text-transparent"
+                  >
+                    {user?.username || 'Usuario'}
+                  </motion.h1>
+                  
+                  <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
+                    className="text-lg text-green-200 mb-6"
+                  >
+                    Sin descripción
+                  </motion.p>
+
+                  <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                      className="bg-gradient-to-r from-cyan-600 to-blue-600 px-6 py-2 rounded-full text-lg font-bold border-2 border-cyan-400 shadow-lg"
+                    >
+                      💎 {user?.points || 0} Puntos
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.7 }}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-full text-lg font-bold border-2 border-purple-400 shadow-lg"
+                    >
+                      🏆 #{user?.rank || 999} Global
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.8 }}
+                      className="bg-gradient-to-r from-yellow-600 to-orange-600 px-6 py-2 rounded-full text-lg font-bold border-2 border-yellow-400 shadow-lg"
+                    >
+                      ⭐ Nivel {user?.level || 1}
+                    </motion.div>
+                  </div>
+                </div>
+
+                {/* Botón Editar */}
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.9 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowEditModal(true)}
+                  className="bg-gradient-to-r from-green-600 to-green-700 text-white font-bold px-8 py-4 rounded-2xl border-2 border-green-400/50 shadow-2xl hover:shadow-green-400/30 transition-all duration-300"
+                >
+                  <span className="flex items-center gap-2">
+                    ✏️
+                    Editar Perfil
                   </span>
-                )}
-              </button>
-            ))}
+                </motion.button>
+              </div>
+            </div>
           </div>
-        </div>
-        {/* Selección de marco de perfil */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Marco de perfil</h2>
-          <div className="flex gap-4 items-center justify-center flex-wrap">
-            {profileFrames.map((frame) => (
-              <button
-                key={frame.key}
-                className={`p-2 rounded-full border-2 font-bold transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${profilePrefs.frame === frame.key ? 'scale-110 border-cyan-400 ring-2 ring-cyan-400' : 'border-gray-700 hover:scale-105'}`}
-                onClick={() => setProfilePrefs((p: any) => ({ ...p, frame: frame.key }))}
-                aria-label={frame.label}
+        </motion.div>
+
+        {/* Estadísticas Rápidas */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12"
+        >
+          {/* Vulnerabilidades Encontradas */}
+          <motion.div 
+            whileHover={{ scale: 1.05, y: -5 }}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm border-2 border-green-400/50 rounded-2xl p-6 text-center">
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-4xl mb-2"
               >
-                <span className="block w-12 h-12 bg-gray-800 rounded-full relative">
-                  <span className={`absolute inset-0 rounded-full pointer-events-none ${frame.className}`}></span>
-                </span>
-                <div className="text-xs text-center mt-1 text-cyan-200 font-bold">{frame.label}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-        {/* Selección de fondo de perfil */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Fondo de perfil</h2>
-          <div className="flex gap-4 items-center justify-center flex-wrap">
-            {profileBackgrounds.map((bg) => (
-              <button
-                key={bg.key}
-                className={`p-2 rounded-lg border-2 font-bold transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 ${profilePrefs.bg === bg.key ? 'scale-110 border-cyan-400 ring-2 ring-cyan-400' : 'border-gray-700 hover:scale-105'}`}
-                onClick={() => setProfilePrefs((p: any) => ({ ...p, bg: bg.key }))}
-                aria-label={bg.label}
-                style={{ minWidth: 48, minHeight: 48 }}
+                🔍
+              </motion.div>
+              <div className="text-3xl font-bold text-green-400 mb-1">
+                {vulnerabilities.length}
+              </div>
+              <div className="text-green-200 text-sm">Vulnerabilidades</div>
+            </div>
+          </motion.div>
+
+          {/* Puntos Ganados */}
+          <motion.div 
+            whileHover={{ scale: 1.05, y: -5 }}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm border-2 border-cyan-400/50 rounded-2xl p-6 text-center">
+              <motion.div
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-4xl mb-2"
               >
-                <span className={`block w-12 h-12 rounded-lg ${bg.className}`}></span>
-                <div className="text-xs text-center mt-1 text-cyan-200 font-bold">{bg.label}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-        {/* Selector de tema visual */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Tema visual</h2>
-          <div className="flex gap-4 items-center justify-center">
-            <button
-              className={`px-4 py-2 rounded-lg font-bold border-2 transition-all shadow-cyber focus:outline-none focus:ring-2 focus:ring-cyan-400 ${theme === 'light' ? 'bg-white text-cyan-900 border-cyan-400 scale-105' : 'bg-gray-900 text-white border-gray-700 hover:scale-105'}`}
-              onClick={() => setTheme('light')}
-            >
-              Claro
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg font-bold border-2 transition-all shadow-cyber focus:outline-none focus:ring-2 focus:ring-cyan-400 ${theme === 'dark' ? 'bg-gray-900 text-cyan-200 border-cyan-400 scale-105' : 'bg-gray-800 text-white border-gray-700 hover:scale-105'}`}
-              onClick={() => setTheme('dark')}
-            >
-              Oscuro
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg font-bold border-2 transition-all shadow-cyber focus:outline-none focus:ring-2 focus:ring-pink-400 ${theme === 'cyberpunk' ? 'bg-gradient-to-r from-pink-500 to-cyan-400 text-white border-pink-400 scale-105' : 'bg-black text-pink-200 border-pink-400 hover:scale-105'}`}
-              onClick={() => setTheme('cyberpunk')}
-            >
-              Cyberpunk
-            </button>
-            <button
-              className={`px-4 py-2 rounded-lg font-bold border-2 transition-all shadow-cyber focus:outline-none focus:ring-2 focus:ring-cyan-400 ${theme === 'system' ? 'bg-gray-200 text-cyan-900 border-cyan-400 scale-105' : 'bg-gray-800 text-white border-gray-700 hover:scale-105'}`}
-              onClick={() => setTheme('system')}
-            >
-              Sistema
-            </button>
-          </div>
-        </div>
-        {/* Selección de insignias/logros destacados */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Logros destacados</h2>
-          <div className="flex flex-wrap gap-4 items-center justify-center">
-            {userAchievements.map((ach: any) => (
-              <button
-                key={ach.id}
-                className={`p-2 rounded-xl border-2 font-bold transition-all focus:outline-none focus:ring-2 focus:ring-cyan-400 flex flex-col items-center gap-1 ${visibleAchievements.includes(ach.id) ? 'scale-110 border-cyan-400 ring-2 ring-cyan-400 bg-cyan-900/60' : 'border-gray-700 hover:scale-105 bg-gray-800/60'}`}
-                onClick={() => toggleAchievement(ach.id)}
-                aria-label={ach.name}
-                disabled={!visibleAchievements.includes(ach.id) && visibleAchievements.length >= 3}
+                💎
+              </motion.div>
+              <div className="text-3xl font-bold text-cyan-400 mb-1">
+                {totalPoints}
+              </div>
+              <div className="text-cyan-200 text-sm">Puntos Ganados</div>
+            </div>
+          </motion.div>
+
+          {/* Compras Realizadas */}
+          <motion.div 
+            whileHover={{ scale: 1.05, y: -5 }}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-purple-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm border-2 border-purple-400/50 rounded-2xl p-6 text-center">
+              <motion.div
+                animate={{ y: [0, -5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="text-4xl mb-2"
               >
-                <span className="text-3xl">{ach.icon}</span>
-                <span className="text-xs text-cyan-200 font-bold">{ach.name}</span>
-              </button>
-            ))}
-          </div>
-          <div className="text-xs text-cyan-300 mt-2">Puedes seleccionar hasta 3 logros para mostrar en tu perfil.</div>
-        </div>
-        {/* Avatar Preview */}
-        <div className="flex flex-col items-center mb-8 relative">
-          <span className={`inline-block rounded-full ${profileFrames.find(f => f.key === profilePrefs.frame)?.className || ''}`}
-            style={{ boxShadow: '0 0 12px 2px #22d3ee' }}>
-            <img src={selectedAvatar} alt="Avatar seleccionado" className="w-32 h-32 rounded-full border-4 border-cyan-400 neon-shadow mb-2" loading="lazy" width={128} height={128} />
-          </span>
-          {/* Fondo de avatar preview */}
-          <span className={`absolute -z-10 w-40 h-40 rounded-full left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 ${profileBackgrounds.find(b => b.key === profilePrefs.bg)?.className || ''}`}></span>
-          {/* Logros destacados preview */}
-          <div className="flex gap-2 mt-2">
-            {visibleAchObjs.map((ach: any) => (
-              <span key={ach.id} title={ach.name} className="text-2xl drop-shadow-cyber animate-pop-in">{ach.icon}</span>
-            ))}
-          </div>
-          {showConfetti && (
-            <div ref={confettiRef} className="absolute inset-0 pointer-events-none z-20 animate-confetti">
-              {[...Array(18)].map((_, i) => (
-                <span key={i} className={`confetti-piece confetti-${i % 6}`}></span>
+                🛍️
+              </motion.div>
+              <div className="text-3xl font-bold text-purple-400 mb-1">
+                {purchases.length}
+              </div>
+              <div className="text-purple-200 text-sm">Compras</div>
+            </div>
+          </motion.div>
+
+          {/* Logros Desbloqueados */}
+          <motion.div 
+            whileHover={{ scale: 1.05, y: -5 }}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+            <div className="relative bg-black/60 backdrop-blur-sm border-2 border-yellow-400/50 rounded-2xl p-6 text-center">
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 360]
+                }}
+                transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+                className="text-4xl mb-2"
+              >
+                🏆
+              </motion.div>
+              <div className="text-3xl font-bold text-yellow-400 mb-1">
+                {achievements.length}
+              </div>
+              <div className="text-yellow-200 text-sm">Logros</div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* Tabs de Navegación */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          className="flex justify-center mb-8"
+        >
+          <div className="bg-black/40 backdrop-blur-sm border-2 border-green-400/50 rounded-2xl p-2">
+            <div className="flex gap-2">
+              {[
+                { key: 'overview', label: 'Resumen', icon: '📊' },
+                { key: 'vulnerabilities', label: 'Vulnerabilidades', icon: '🔍' },
+                { key: 'purchases', label: 'Compras', icon: '🛍️' },
+                { key: 'achievements', label: 'Logros', icon: '🏆' }
+              ].map(tab => (
+                <motion.button
+                  key={tab.key}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setSelectedTab(tab.key as any)}
+                  className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+                    selectedTab === tab.key
+                      ? 'bg-gradient-to-r from-green-600 to-blue-600 text-white shadow-lg'
+                      : 'text-green-200 hover:text-green-100'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    {tab.icon}
+                    {tab.label}
+                  </span>
+                </motion.button>
               ))}
             </div>
-          )}
-          <span className="text-lg font-bold text-cyan-200">Avatar actual</span>
-        </div>
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-extrabold tracking-tight drop-shadow-lg mb-4">
-            Perfil de Usuario
-          </h1>
-          <div className="bg-blue-800 rounded-lg px-6 py-3 inline-flex items-center gap-3 shadow-lg">
-            <span className="font-bold text-lg">{mockUser.name}</span>
-            <span className="bg-blue-400 text-blue-900 font-bold px-3 py-1 rounded-full">
-              {mockUser.totalPoints} Blue Points
-            </span>
-            <span className="bg-yellow-600 text-white font-bold px-3 py-1 rounded-full">
-              Nivel {mockUser.level}
-            </span>
-            <span className="bg-purple-600 text-white font-bold px-3 py-1 rounded-full">
-              #{mockUser.rank} Global
-            </span>
           </div>
-        </header>
+        </motion.div>
 
-        {/* Estadísticas de puntos */}
-        <section className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            {/* Total de puntos */}
-            <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl p-4 text-center group hover:scale-105 hover:shadow-2xl focus-within:ring-2 focus-within:ring-blue-400 active:scale-95 transition-all animate-bounce-short-card">
-              <div className="text-2xl font-bold text-white mb-1">
-                {mockUser.totalPoints}
-              </div>
-              <div className="text-blue-100 text-sm">Total Blue Points</div>
-              <div className="w-full bg-blue-800 rounded-full h-2 mt-2">
-                <div
-                  className="bg-yellow-400 h-2 rounded-full"
-                  style={{
-                    width: `${Math.min((mockUser.totalPoints / 1000) * 100, 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Puntos este mes */}
-            <div className="bg-gradient-to-br from-purple-600 to-purple-700 rounded-xl p-4 text-center group hover:scale-105 hover:shadow-2xl focus-within:ring-2 focus-within:ring-blue-400 active:scale-95 transition-all animate-bounce-short-card">
-              <div className="text-2xl font-bold text-white mb-1">
-                {mockUser.pointsThisWeek}
-              </div>
-              <div className="text-purple-100 text-sm">Esta Semana</div>
-              <div className="w-full bg-purple-800 rounded-full h-2 mt-2">
-                <div
-                  className="bg-pink-400 h-2 rounded-full"
-                  style={{
-                    width: `${Math.min((mockUser.pointsThisWeek / 200) * 100, 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Vulnerabilidades encontradas */}
-            <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-4 text-center group hover:scale-105 hover:shadow-2xl focus-within:ring-2 focus-within:ring-blue-400 active:scale-95 transition-all animate-bounce-short-card">
-              <div className="text-2xl font-bold text-white mb-1">
-                {mockUser.vulnerabilitiesFound}
-              </div>
-              <div className="text-green-100 text-sm">Vulns Encontradas</div>
-              <div className="w-full bg-green-800 rounded-full h-2 mt-2">
-                <div
-                  className="bg-green-300 h-2 rounded-full"
-                  style={{
-                    width: `${Math.min((mockUser.vulnerabilitiesFound / 50) * 100, 100)}%`,
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Ranking */}
-            <div className="bg-gradient-to-br from-yellow-600 to-yellow-700 rounded-xl p-4 text-center group hover:scale-105 hover:shadow-2xl focus-within:ring-2 focus-within:ring-blue-400 active:scale-95 transition-all animate-bounce-short-card">
-              <div className="text-2xl font-bold text-white mb-1">
-                #{mockUser.rank}
-              </div>
-              <div className="text-yellow-100 text-sm">Ranking Global</div>
-              <div className="flex justify-center mt-2">
-                {mockUser.rank <= 3 ? (
-                  <span className="text-2xl">
-                    {mockUser.rank === 1
-                      ? '🥇'
-                      : mockUser.rank === 2
-                        ? '🥈'
-                        : '🥉'}
-                  </span>
-                ) : (
-                  <span className="text-yellow-300">⭐</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Barra de progreso de XP/Nivel */}
-        <XPProgressBar xp={xp} level={level} xpToNextLevel={xpToNextLevel} />
-
-        {/* Galería de logros */}
-        <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Tus Logros</h2>
-        <AchievementsGallery achievements={achievements} />
-
-        {/* Lista de puntos obtenidos */}
-        <section className="mb-8">
-          <h2 className="text-2xl font-bold mb-4">Puntos Obtenidos</h2>
-          <div className="bg-white bg-opacity-10 rounded-2xl shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-blue-800">
-                  <tr>
-                    <th className="py-3 px-4 text-left">Cantidad</th>
-                    <th className="py-3 px-4 text-left">Motivo</th>
-                    <th className="py-3 px-4 text-left">Fecha Obtención</th>
-                    <th className="py-3 px-4 text-left">Expira</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockPointsList.map((point) => (
-                    <tr
-                      key={point.id}
-                      className="border-b border-blue-700 hover:bg-blue-800 hover:bg-opacity-30"
-                    >
-                      <td className="py-3 px-4 font-bold text-green-400">
-                        {point.cantidad}
-                      </td>
-                      <td className="py-3 px-4">{point.motivo}</td>
-                      <td className="py-3 px-4 text-blue-200">
-                        {point.fecha_obtencion}
-                      </td>
-                      <td className="py-3 px-4 text-yellow-200">
-                        {point.fecha_expiracion}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* Enlace a tienda */}
-        <section className="mb-8 text-center">
-          <a
-            href="/shop"
-            className="inline-block bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-2xl font-bold text-lg hover:from-green-600 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            🛒 Ir a la Tienda Virtual
-          </a>
-        </section>
-
-        {/* Historial de canjes */}
-        <section>
-          <h2 className="text-2xl font-bold mb-4">Historial de Canjes</h2>
-          <div className="bg-white bg-opacity-10 rounded-2xl shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-purple-800">
-                  <tr>
-                    <th className="py-3 px-4 text-left">Recompensa</th>
-                    <th className="py-3 px-4 text-left">Puntos Gastados</th>
-                    <th className="py-3 px-4 text-left">Fecha de Canje</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {mockRedemptions.map((redemption) => (
-                    <tr
-                      key={redemption.id}
-                      className="border-b border-purple-700 hover:bg-purple-800 hover:bg-opacity-30"
-                    >
-                      <td className="py-3 px-4 font-bold">
-                        {redemption.recompensa}
-                      </td>
-                      <td className="py-3 px-4 text-red-400 font-bold">
-                        {redemption.puntos_gastados}
-                      </td>
-                      <td className="py-3 px-4 text-purple-200">
-                        {redemption.fecha_canje}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
-
-        {/* Preferencias de usuario */}
-        <div className="mb-10">
-          <h2 className="text-2xl font-extrabold mb-4 neon-text drop-shadow-cyber tracking-widest">Preferencias</h2>
-          <div className="flex flex-col gap-4 items-center justify-center">
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={prefs.animations !== false}
-                onChange={e => setPrefs((p: any) => ({ ...p, animations: e.target.checked }))}
-                className="form-checkbox h-5 w-5 text-cyan-500"
-              />
-              <span className="font-bold text-cyan-200">Animaciones</span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={prefs.sounds === true}
-                onChange={e => setPrefs((p: any) => ({ ...p, sounds: e.target.checked }))}
-                className="form-checkbox h-5 w-5 text-pink-500"
-              />
-              <span className="font-bold text-pink-200">Sonidos</span>
-            </label>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={prefs.notifications !== false}
-                onChange={e => setPrefs((p: any) => ({ ...p, notifications: e.target.checked }))}
-                className="form-checkbox h-5 w-5 text-yellow-500"
-              />
-              <span className="font-bold text-yellow-200">Notificaciones</span>
-            </label>
-          </div>
-        </div>
-
-        {/* Back to Dashboard */}
-        <div className="text-center mt-8">
-          <a
-            href="/"
-            className="inline-block bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
-          >
-            ← Volver al Dashboard
-          </a>
-        </div>
-        <Modal
-          open={showModal}
-          onClose={() => setShowModal(false)}
-          title="¡Avatar cambiado!"
-        >
-          <div className="flex flex-col items-center gap-4">
-            <span className="text-5xl animate-bounce">🎭</span>
-            <p className="text-lg font-bold text-cyan-200 text-center">Has cambiado tu avatar a <span className="text-pink-400">{selectedAvatarName}</span>.</p>
-            <button
-              onClick={() => setShowModal(false)}
-              className="mt-4 bg-cyan-600 text-white font-bold px-6 py-2 rounded-full hover:bg-cyan-700 transition"
+        {/* Contenido de las Tabs */}
+        <AnimatePresence mode="wait">
+          {selectedTab === 'overview' && (
+            <motion.div
+              key="overview"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 lg:grid-cols-2 gap-8"
             >
-              ¡Genial!
-            </button>
-          </div>
-        </Modal>
+              {/* Estadísticas de Vulnerabilidades */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-900/20 to-blue-900/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+                <div className="relative bg-black/60 backdrop-blur-xl border-2 border-green-400/50 rounded-3xl p-6 shadow-2xl hover:shadow-green-400/30 transition-all duration-300">
+                  <h3 className="text-2xl font-bold mb-6 text-green-200 flex items-center gap-3">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      📊
+                    </motion.div>
+                    Estadísticas de Vulnerabilidades
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-green-200">Aceptadas:</span>
+                      <span className="text-green-400 font-bold">{acceptedVulns}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-yellow-200">Pendientes:</span>
+                      <span className="text-yellow-400 font-bold">{pendingVulns}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-red-200">Rechazadas:</span>
+                      <span className="text-red-400 font-bold">{rejectedVulns}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-cyan-200">Total Ganado:</span>
+                      <span className="text-cyan-400 font-bold">{totalPoints} puntos</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Estadísticas de Compras */}
+              <div className="relative group">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+                <div className="relative bg-black/60 backdrop-blur-xl border-2 border-purple-400/50 rounded-3xl p-6 shadow-2xl hover:shadow-purple-400/30 transition-all duration-300">
+                  <h3 className="text-2xl font-bold mb-6 text-purple-200 flex items-center gap-3">
+                    <motion.div
+                      animate={{ y: [0, -5, 0] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      🛍️
+                    </motion.div>
+                    Estadísticas de Compras
+                  </h3>
+                  
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-purple-200">Total Compras:</span>
+                      <span className="text-purple-400 font-bold">{purchases.length}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-purple-200">Puntos Gastados:</span>
+                      <span className="text-purple-400 font-bold">{totalSpent}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-purple-200">Promedio por Compra:</span>
+                      <span className="text-purple-400 font-bold">
+                        {purchases.length > 0 ? Math.round(totalSpent / purchases.length) : 0}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-purple-200">Última Compra:</span>
+                      <span className="text-purple-400 font-bold">
+                        {purchases.length > 0 ? new Date(purchases[purchases.length - 1].date).toLocaleDateString() : 'N/A'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {selectedTab === 'vulnerabilities' && (
+            <motion.div
+              key="vulnerabilities"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
+              {vulnerabilities.length === 0 ? (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-16"
+                >
+                  <div className="text-8xl mb-6">🔍</div>
+                  <h3 className="text-2xl font-bold text-green-200 mb-4">No hay vulnerabilidades reportadas</h3>
+                  <p className="text-gray-400">¡Comienza a explorar para reportar tu primera vulnerabilidad!</p>
+                </motion.div>
+              ) : (
+                vulnerabilities.map((vuln, index) => (
+                  <motion.div
+                    key={vuln.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="relative group"
+                  >
+                    <div className={`absolute inset-0 bg-gradient-to-r ${getSeverityColor(vuln.severity)} rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300`}></div>
+                    
+                    <div className="relative bg-black/60 backdrop-blur-xl border-2 border-green-400/50 rounded-3xl p-6 shadow-2xl hover:shadow-green-400/30 transition-all duration-300">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <h3 className="text-xl font-bold text-green-200 mb-2">{vuln.title}</h3>
+                          <p className="text-gray-300 text-sm mb-3">{vuln.description}</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <motion.div
+                            animate={{ 
+                              scale: vuln.status === 'accepted' ? [1, 1.1, 1] : 1,
+                              rotate: vuln.status === 'rejected' ? [0, 10, -10, 0] : 0
+                            }}
+                            transition={{ 
+                              duration: vuln.status === 'accepted' ? 2 : 1, 
+                              repeat: vuln.status === 'accepted' ? Infinity : 0 
+                            }}
+                            className="text-3xl"
+                          >
+                            {getStatusIcon(vuln.status)}
+                          </motion.div>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-cyan-400">💎</div>
+                          <div className="text-sm text-cyan-200">{vuln.points}</div>
+                          <div className="text-xs text-gray-400">Puntos</div>
+                        </div>
+                        <div className="text-center">
+                          <div className={`text-lg font-bold px-3 py-1 rounded-full text-xs bg-gradient-to-r ${getSeverityColor(vuln.severity)} text-white`}>
+                            {vuln.severity.toUpperCase()}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">Severidad</div>
+                        </div>
+                        <div className="text-center">
+                          <div className={`text-lg font-bold px-3 py-1 rounded-full text-xs bg-gradient-to-r ${getStatusColor(vuln.status)} text-white`}>
+                            {vuln.status.toUpperCase()}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">Estado</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-lg font-bold text-blue-400">📅</div>
+                          <div className="text-sm text-blue-200">{new Date(vuln.date).toLocaleDateString()}</div>
+                          <div className="text-xs text-gray-400">Fecha</div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          )}
+
+          {selectedTab === 'purchases' && (
+            <motion.div
+              key="purchases"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5 }}
+              className="space-y-6"
+            >
+              {purchases.length === 0 ? (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="text-center py-16"
+                >
+                  <div className="text-8xl mb-6">🛍️</div>
+                  <h3 className="text-2xl font-bold text-purple-200 mb-4">No hay compras registradas</h3>
+                  <p className="text-gray-400">¡Visita la tienda para hacer tu primera compra!</p>
+                </motion.div>
+              ) : (
+                purchases.map((purchase, index) => (
+                  <motion.div
+                    key={purchase.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.02 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+                    
+                    <div className="relative bg-black/60 backdrop-blur-xl border-2 border-purple-400/50 rounded-3xl p-6 shadow-2xl hover:shadow-purple-400/30 transition-all duration-300">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <motion.div
+                            animate={{ y: [0, -5, 0] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="text-3xl"
+                          >
+                            {getCategoryIcon(purchase.product.category)}
+                          </motion.div>
+                          <div>
+                            <h3 className="text-xl font-bold text-purple-200">{purchase.product.name}</h3>
+                            <div className="text-sm text-purple-300">{purchase.product.category}</div>
+                          </div>
+                        </div>
+                        
+                        <div className="text-right">
+                          <div className="text-2xl font-bold text-purple-400">{purchase.totalPrice} 💎</div>
+                          <div className="text-sm text-purple-300">{purchase.quantity}x</div>
+                          <div className="text-xs text-gray-400">{new Date(purchase.date).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          )}
+
+          {selectedTab === 'achievements' && (
+            <motion.div
+              key="achievements"
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {achievements.length === 0 ? (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="col-span-full text-center py-16"
+                >
+                  <div className="text-8xl mb-6">🏆</div>
+                  <h3 className="text-2xl font-bold text-yellow-200 mb-4">No hay logros desbloqueados</h3>
+                  <p className="text-gray-400">¡Completa objetivos para desbloquear logros!</p>
+                </motion.div>
+              ) : (
+                achievements.map((achievement, index) => (
+                  <motion.div
+                    key={achievement.id}
+                    initial={{ opacity: 0, scale: 0.8, y: 50 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05, y: -10 }}
+                    className="relative group"
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 rounded-3xl blur-xl opacity-30 group-hover:opacity-50 transition-all duration-300"></div>
+                    
+                    <div className="relative bg-black/60 backdrop-blur-xl border-2 border-yellow-400/50 rounded-3xl p-6 shadow-2xl hover:shadow-yellow-400/30 transition-all duration-300 h-full">
+                      <div className="text-center">
+                        <motion.div
+                          animate={{ 
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0]
+                          }}
+                          transition={{ duration: 3, repeat: Infinity }}
+                          className="text-5xl mb-4"
+                        >
+                          {achievement.icon}
+                        </motion.div>
+                        
+                        <h3 className="text-lg font-bold text-yellow-200 mb-2">{achievement.name}</h3>
+                        <p className="text-yellow-300 text-sm mb-4">{achievement.description}</p>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Puntos:</span>
+                            <span className="text-yellow-400 font-bold">+{achievement.points}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Fecha:</span>
+                            <span className="text-blue-200">{new Date(achievement.date).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-      {/* Estilos cyberpunk extra */}
-      <style>{`
-        .neon-text {
-          color: #22d3ee;
-          text-shadow: 0 0 8px #22d3ee, 0 0 16px #a78bfa, 0 0 32px #00fff7;
-        }
-        .drop-shadow-cyber {
-          filter: drop-shadow(0 0 8px #00fff7) drop-shadow(0 0 16px #a78bfa);
-        }
-        .shadow-cyber {
-          box-shadow: 0 0 16px 2px #00fff7, 0 0 32px 4px #a78bfa;
-        }
-        .neon-shadow {
-          box-shadow: 0 0 16px 2px #22d3ee, 0 0 32px 4px #a78bfa, 0 0 8px #fff0;
-        }
-        @keyframes pop-in {
-          0% { transform: scale(0.7); opacity: 0; }
-          80% { transform: scale(1.1); opacity: 1; }
-          100% { transform: scale(1); opacity: 1; }
-        }
-        .animate-pop-in {
-          animation: pop-in 0.5s cubic-bezier(.68,-0.55,.27,1.55);
-        }
-        @keyframes avatar-pop {
-          0% { transform: scale(0.8); }
-          60% { transform: scale(1.15); }
-          100% { transform: scale(1.1); }
-        }
-        .animate-avatar-pop {
-          animation: avatar-pop 0.5s cubic-bezier(.68,-0.55,.27,1.55);
-        }
-        .animate-bounce-short-card {
-          transition: transform 0.2s cubic-bezier(.4,0,.2,1);
-        }
-        .group:hover .animate-bounce-short-card, .group:focus-within .animate-bounce-short-card {
-          animation: bounce-short-card 0.4s cubic-bezier(.4,0,.2,1);
-        }
-        @keyframes bounce-short-card {
-          0%, 100% { transform: scale(1); }
-          30% { transform: scale(1.08); }
-          60% { transform: scale(0.96); }
-          80% { transform: scale(1.03); }
-        }
-        .animate-confetti {
-          animation: confetti-burst 1.2s cubic-bezier(.4,0,.2,1);
-        }
-        @keyframes confetti-burst {
-          0% { opacity: 0; transform: scale(0.7); }
-          10% { opacity: 1; transform: scale(1.1); }
-          100% { opacity: 0; transform: scale(1.2); }
-        }
-        .confetti-piece {
-          position: absolute;
-          width: 10px;
-          height: 18px;
-          border-radius: 2px;
-          opacity: 0.8;
-        }
-        .confetti-0 { left: 10%; top: 20%; background: #00fff7; transform: rotate(-12deg); }
-        .confetti-1 { left: 20%; top: 40%; background: #ff00ea; transform: rotate(8deg); }
-        .confetti-2 { left: 30%; top: 10%; background: #fff200; transform: rotate(-6deg); }
-        .confetti-3 { left: 40%; top: 30%; background: #00ffae; transform: rotate(14deg); }
-        .confetti-4 { left: 50%; top: 15%; background: #ff6b00; transform: rotate(-8deg); }
-        .confetti-5 { left: 60%; top: 35%; background: #00bfff; transform: rotate(10deg); }
-        .shadow-gold-frame { box-shadow: 0 0 16px 4px #ffd70099, 0 0 8px #fff0; }
-        .shadow-cyber-frame { box-shadow: 0 0 16px 4px #00fff799, 0 0 8px #ff00ea99, 0 0 8px #fff0; }
-        .shadow-epic-frame { box-shadow: 0 0 16px 4px #a78bfa99, 0 0 8px #fff0; }
-        .cyberpunk-bg { background: radial-gradient(circle at 60% 20%, #ff00ea33 0%, #0f0026 100%); }
-      `}</style>
+
+      {/* Modal de Edición */}
+      <Modal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        title="Editar Perfil"
+      >
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-green-200 mb-2">Nombre de Usuario</label>
+            <input
+              type="text"
+              value={editForm.username}
+              onChange={(e) => setEditForm({...editForm, username: e.target.value})}
+              className="w-full bg-black/60 border-2 border-green-400/50 rounded-xl p-3 text-white focus:border-green-400 outline-none"
+              placeholder="Tu nombre de usuario"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-green-200 mb-2">Email</label>
+            <input
+              type="email"
+              value={editForm.email}
+              onChange={(e) => setEditForm({...editForm, email: e.target.value})}
+              className="w-full bg-black/60 border-2 border-green-400/50 rounded-xl p-3 text-white focus:border-green-400 outline-none"
+              placeholder="tu@email.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-green-200 mb-2">Biografía</label>
+            <textarea
+              value={editForm.bio}
+              onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+              className="w-full bg-black/60 border-2 border-green-400/50 rounded-xl p-3 text-white focus:border-green-400 outline-none h-24"
+              placeholder="Cuéntanos sobre ti..."
+            />
+          </div>
+
+          <div className="flex gap-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleSaveProfile}
+              className="flex-1 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold py-3 px-6 rounded-xl hover:from-green-500 hover:to-green-600 transition-all duration-300"
+            >
+              Guardar Cambios
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowEditModal(false)}
+              className="flex-1 bg-gradient-to-r from-gray-600 to-gray-700 text-white font-bold py-3 px-6 rounded-xl hover:from-gray-500 hover:to-gray-600 transition-all duration-300"
+            >
+              Cancelar
+            </motion.button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Confetti */}
+      {showConfetti && <ConfettiBlast />}
     </div>
   );
 };

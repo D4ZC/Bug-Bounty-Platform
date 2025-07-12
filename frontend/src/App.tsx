@@ -1,7 +1,8 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { Outlet, Route, Routes } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { initializeShopProducts, initializeGlobalClans } from './localDb';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
@@ -24,6 +25,12 @@ const Exercises = lazy(() => import('@/pages/Exercises'));
 const Clans = lazy(() => import('@/pages/Clans'));
 
 function App() {
+  // Inicializar datos al cargar la aplicación
+  useEffect(() => {
+    initializeShopProducts();
+    initializeGlobalClans();
+  }, []);
+
   return (
     <>
       <Helmet>
@@ -35,32 +42,37 @@ function App() {
       </Helmet>
 
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><LoadingSpinner size={48} /></div>}>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <MainLayout>
-              <Outlet />
-            </MainLayout>
-          }
-        >
-          <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="challenges" element={<Challenges />} />
-          <Route path="shop" element={<Shop />} />
-          <Route path="contributions" element={<Contributions />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="team" element={<Team />} />
-          <Route path="gulag" element={<Gulag />} />
-          <Route path="mvp" element={<MVP />} />
+        <Routes>
+          {/* Rutas de autenticación (sin layout) */}
+          <Route path="/auth/login" element={<Login />} />
+          <Route path="/auth/register" element={<Register />} />
+          
+          {/* Rutas principales (con layout) */}
+          <Route
+            path="/"
+            element={
+              <MainLayout>
+                <Outlet />
+              </MainLayout>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="challenges" element={<Challenges />} />
+            <Route path="shop" element={<Shop />} />
+            <Route path="contributions" element={<Contributions />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="team" element={<Team />} />
+            <Route path="gulag" element={<Gulag />} />
+            <Route path="mvp" element={<MVP />} />
             <Route path="leagues" element={<Leagues />} />
             <Route path="exercises" element={<Exercises />} />
             <Route path="clans" element={<Clans />} />
+          </Route>
+          
+          {/* Ruta 404 */}
           <Route path="*" element={<NotFound />} />
-        </Route>
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/auth/register" element={<Register />} />
-      </Routes>
+        </Routes>
       </Suspense>
     </>
   );

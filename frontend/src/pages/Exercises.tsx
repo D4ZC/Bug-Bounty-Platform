@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import { updateUser } from '../localDb';
 
-const mockExercises = [
+// Ejercicios estáticos con rareza y puntos
+const exercises = [
   {
     id: 1,
     title: 'Encuentra la XSS básica',
@@ -8,6 +12,8 @@ const mockExercises = [
       'En el siguiente input, ¿qué payload podrías usar para mostrar una alerta en la página?',
     difficulty: 'Fácil',
     solution: '<script>alert(1)</script>',
+    rarity: 'común',
+    points: 25,
   },
   {
     id: 2,
@@ -16,6 +22,8 @@ const mockExercises = [
       '¿Qué valor podrías ingresar en un campo de login para saltar la autenticación si el backend es vulnerable?',
     difficulty: 'Fácil',
     solution: "' OR '1'='1",
+    rarity: 'común',
+    points: 30,
   },
   {
     id: 3,
@@ -24,6 +32,8 @@ const mockExercises = [
       'Supón que tienes un JWT vulnerable a manipulación. ¿Qué parte modificarías para obtener acceso de admin?',
     difficulty: 'Media',
     solution: 'payload',
+    rarity: 'raro',
+    points: 75,
   },
   {
     id: 4,
@@ -32,6 +42,8 @@ const mockExercises = [
       '¿Qué cadena usarías para intentar leer /etc/passwd en un campo de nombre de archivo?',
     difficulty: 'Difícil',
     solution: '../../etc/passwd',
+    rarity: 'épico',
+    points: 150,
   },
   {
     id: 5,
@@ -40,14 +52,17 @@ const mockExercises = [
       '¿Qué input podrías probar para ejecutar un comando en el servidor si el campo es vulnerable?',
     difficulty: 'Experto',
     solution: '$(id)',
+    rarity: 'legendario',
+    points: 300,
   },
-  // Ejercicios adicionales
   {
     id: 6,
     title: 'CSRF Token',
     description: '¿Qué técnica usarías para explotar un formulario vulnerable a CSRF?',
     difficulty: 'Media',
     solution: 'Enviar petición desde otro sitio',
+    rarity: 'raro',
+    points: 80,
   },
   {
     id: 7,
@@ -55,6 +70,8 @@ const mockExercises = [
     description: '¿Qué comando podrías usar para listar archivos si hay inyección en un campo de nombre?',
     difficulty: 'Difícil',
     solution: 'ls',
+    rarity: 'épico',
+    points: 120,
   },
   {
     id: 8,
@@ -62,6 +79,8 @@ const mockExercises = [
     description: '¿Qué parámetro modificarías para acceder a recursos de otros usuarios?',
     difficulty: 'Media',
     solution: 'userId',
+    rarity: 'raro',
+    points: 60,
   },
   {
     id: 9,
@@ -69,6 +88,8 @@ const mockExercises = [
     description: '¿Qué entidad externa podrías usar para leer archivos en un XML mal configurado?',
     difficulty: 'Difícil',
     solution: '<!ENTITY',
+    rarity: 'épico',
+    points: 180,
   },
   {
     id: 10,
@@ -76,12 +97,17 @@ const mockExercises = [
     description: '¿Qué herramienta automatizada podrías usar para probar contraseñas?',
     difficulty: 'Fácil',
     solution: 'Hydra',
+    rarity: 'común',
+    points: 20,
   },
 ];
 
 const Exercises: React.FC = () => {
+  const { user, addXP } = useAuth();
+  const { showToast } = useToast();
   const [answers, setAnswers] = useState<{ [key: number]: string }>({});
   const [feedback, setFeedback] = useState<{ [key: number]: string }>({});
+  const [completedExercises, setCompletedExercises] = useState<number[]>([]);
   const [search, setSearch] = useState('');
 
   const handleChange = (id: number, value: string) => {
@@ -89,21 +115,54 @@ const Exercises: React.FC = () => {
   };
 
   const handleSubmit = (id: number) => {
-    const exercise = mockExercises.find((e) => e.id === id);
+    const exercise = exercises.find((e) => e.id === id);
     if (!exercise) { return; }
+    
     if (answers[id]?.trim() === exercise.solution) {
-      setFeedback((prev) => ({ ...prev, [id]: '✅ ¡Correcto!' }));
+      // Ejercicio completado correctamente
+      if (!completedExercises.includes(id)) {
+        setCompletedExercises(prev => [...prev, id]);
+        
+        // Dar puntos al usuario usando el contexto
+        addXP(exercise.points);
+        
+        showToast(`¡Correcto! +${exercise.points} puntos por completar ejercicio ${exercise.rarity}`, 'success');
+      }
+      
+      setFeedback((prev) => ({ ...prev, [id]: `✅ ¡Correcto! +${exercise.points} puntos` }));
     } else {
       setFeedback((prev) => ({ ...prev, [id]: '❌ Intenta de nuevo.' }));
     }
   };
 
   // Filtrado reactivo de ejercicios
-  const filteredExercises = mockExercises.filter(
+  const filteredExercises = exercises.filter(
     (exercise) =>
       exercise.title.toLowerCase().includes(search.toLowerCase()) ||
       exercise.description.toLowerCase().includes(search.toLowerCase())
   );
+
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'común': return 'text-gray-300';
+      case 'raro': return 'text-blue-300';
+      case 'épico': return 'text-purple-300';
+      case 'legendario': return 'text-yellow-300';
+      case 'mítico': return 'text-red-300';
+      default: return 'text-gray-300';
+    }
+  };
+
+  const getRarityBg = (rarity: string) => {
+    switch (rarity) {
+      case 'común': return 'bg-gray-700 border-gray-400';
+      case 'raro': return 'bg-blue-700 border-blue-400';
+      case 'épico': return 'bg-purple-700 border-purple-400';
+      case 'legendario': return 'bg-yellow-700 border-yellow-400';
+      case 'mítico': return 'bg-red-700 border-red-400';
+      default: return 'bg-gray-700 border-gray-400';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0f0026] via-[#1a0033] to-[#0f0026] text-white py-10 px-4 relative overflow-x-hidden">
@@ -122,6 +181,32 @@ const Exercises: React.FC = () => {
       </div>
       <div className="max-w-3xl mx-auto relative z-10">
         <h1 className="text-5xl font-extrabold mb-10 text-center neon-text drop-shadow-cyber tracking-widest">EJERCICIOS DE CIBERSEGURIDAD</h1>
+        
+        {/* Estadísticas del usuario */}
+        {user && (
+          <div className="mb-8 bg-black/60 rounded-2xl border-2 border-cyan-400 neon-shadow p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+              <div>
+                <div className="text-2xl font-bold text-cyan-300">{completedExercises.length}</div>
+                <div className="text-sm text-cyan-100">Ejercicios Completados</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-yellow-300">
+                  {completedExercises.reduce((total, id) => {
+                    const exercise = exercises.find(e => e.id === id);
+                    return total + (exercise?.points || 0);
+                  }, 0)}
+                </div>
+                <div className="text-sm text-yellow-100">Puntos Ganados</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-purple-300">{user.points || 0}</div>
+                <div className="text-sm text-purple-100">Puntos Totales</div>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Barra de búsqueda */}
         <div className="mb-8 flex justify-center">
           <input
@@ -144,7 +229,19 @@ const Exercises: React.FC = () => {
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-3xl animate-bounce">🧩</span>
                   <h2 className="text-2xl font-bold neon-text drop-shadow-cyber">{exercise.title}</h2>
-                  <span className={`ml-auto px-4 py-1 rounded-full text-base font-extrabold tracking-wider border-2 shadow-cyber ${exercise.difficulty === 'Fácil' ? 'bg-green-700 border-green-400 text-green-200' : exercise.difficulty === 'Media' ? 'bg-yellow-700 border-yellow-400 text-yellow-200' : exercise.difficulty === 'Difícil' ? 'bg-pink-700 border-pink-400 text-pink-200' : 'bg-purple-700 border-purple-400 text-purple-200'}`}>{exercise.difficulty}</span>
+                  <div className="ml-auto flex items-center gap-2">
+                    <span className={`px-3 py-1 rounded-full text-sm font-bold border-2 shadow-cyber ${getRarityBg(exercise.rarity)}`}>
+                      <span className={`${getRarityColor(exercise.rarity)}`}>{exercise.rarity}</span>
+                    </span>
+                    <span className="px-3 py-1 rounded-full text-sm font-bold bg-yellow-700 border-2 border-yellow-400 text-yellow-200 shadow-cyber">
+                      +{exercise.points} pts
+                    </span>
+                    {completedExercises.includes(exercise.id) && (
+                      <span className="px-3 py-1 rounded-full text-sm font-bold bg-green-700 border-2 border-green-400 text-green-200 shadow-cyber">
+                        ✅ Completado
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <p className="mb-6 text-cyan-100 text-lg font-mono">{exercise.description}</p>
                 <div className="flex gap-2 items-center">
