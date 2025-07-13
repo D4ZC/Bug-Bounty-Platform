@@ -34,6 +34,11 @@ export interface Product {
   category: string;
   stock: number;
   featured?: boolean;
+  requirements?: {
+    minLevel: number;
+    minPoints: number;
+  };
+  effects?: string[];
 }
 
 export interface Purchase {
@@ -201,6 +206,11 @@ export function initializeShopProducts() {
       category: 'insignias',
       stock: 50,
       featured: true,
+      requirements: {
+        minLevel: 1,
+        minPoints: 0
+      },
+      effects: ['+10% de precisión en retos']
     },
     {
       id: newId(),
@@ -212,6 +222,11 @@ export function initializeShopProducts() {
       category: 'skins',
       stock: 25,
       featured: true,
+      requirements: {
+        minLevel: 5,
+        minPoints: 500
+      },
+      effects: ['Avatar con efectos de neón', '+15% de velocidad en retos']
     },
     {
       id: newId(),
@@ -223,6 +238,11 @@ export function initializeShopProducts() {
       category: 'títulos',
       stock: 10,
       featured: true,
+      requirements: {
+        minLevel: 10,
+        minPoints: 2000
+      },
+      effects: ['Título exclusivo MVP', '+25% de puntos en retos']
     },
     {
       id: newId(),
@@ -234,6 +254,11 @@ export function initializeShopProducts() {
       category: 'físico',
       stock: 30,
       featured: false,
+      requirements: {
+        minLevel: 3,
+        minPoints: 1000
+      },
+      effects: ['Producto físico real', 'Envío incluido']
     },
     {
       id: newId(),
@@ -245,6 +270,11 @@ export function initializeShopProducts() {
       category: 'físico',
       stock: 100,
       featured: false,
+      requirements: {
+        minLevel: 1,
+        minPoints: 0
+      },
+      effects: ['Pack de stickers físicos']
     },
     {
       id: newId(),
@@ -256,6 +286,11 @@ export function initializeShopProducts() {
       category: 'power-ups',
       stock: 40,
       featured: false,
+      requirements: {
+        minLevel: 2,
+        minPoints: 300
+      },
+      effects: ['+30% de precisión por 1 hora', 'Efecto temporal']
     },
     {
       id: newId(),
@@ -267,6 +302,11 @@ export function initializeShopProducts() {
       category: 'electrónicos',
       stock: 5,
       featured: true,
+      requirements: {
+        minLevel: 15,
+        minPoints: 5000
+      },
+      effects: ['Teclado físico premium', 'Retroiluminación RGB', '+50% de velocidad de escritura']
     },
     {
       id: newId(),
@@ -278,6 +318,11 @@ export function initializeShopProducts() {
       category: 'premium',
       stock: 5,
       featured: true,
+      requirements: {
+        minLevel: 20,
+        minPoints: 10000
+      },
+      effects: ['Acceso a retos VIP', 'Contenido premium', '+100% de puntos en retos especiales']
     },
     {
       id: newId(),
@@ -289,6 +334,11 @@ export function initializeShopProducts() {
       category: 'cosméticos',
       stock: 40,
       featured: false,
+      requirements: {
+        minLevel: 4,
+        minPoints: 800
+      },
+      effects: ['Marco dorado para avatar', 'Efecto visual premium']
     },
     {
       id: newId(),
@@ -300,6 +350,11 @@ export function initializeShopProducts() {
       category: 'cosméticos',
       stock: 20,
       featured: false,
+      requirements: {
+        minLevel: 7,
+        minPoints: 1500
+      },
+      effects: ['Efecto de partículas', 'Animación especial', '+20% de visibilidad en rankings']
     },
   ];
 
@@ -487,65 +542,121 @@ export function initializeGlobalClans() {
   const existingClans = getAllClans();
   if (existingClans.length > 0) return; // Ya están inicializados
 
-  // Crear usuarios para los clanes
-  const clanUsers = [
-    { username: 'CyberWolf', points: 2500, avatar: 'https://robohash.org/cyberwolf?set=set2' },
-    { username: 'NeonHunter', points: 1800, avatar: 'https://robohash.org/neonhunter?set=set2' },
-    { username: 'PixelNinja', points: 2200, avatar: 'https://robohash.org/pixelninja?set=set2' },
-    { username: 'ShadowFox', points: 1600, avatar: 'https://robohash.org/shadowfox?set=set2' },
-    { username: 'BlazeMaster', points: 1900, avatar: 'https://robohash.org/blazemaster?set=set2' },
-    { username: 'IcePhantom', points: 2100, avatar: 'https://robohash.org/icephantom?set=set2' },
-    { username: 'ThunderStrike', points: 1700, avatar: 'https://robohash.org/thunderstrike?set=set2' },
-    { username: 'VoidWalker', points: 2400, avatar: 'https://robohash.org/voidwalker?set=set2' },
-    { username: 'CrystalGuard', points: 2000, avatar: 'https://robohash.org/crystalguard?set=set2' },
-    { username: 'DarkKnight', points: 2300, avatar: 'https://robohash.org/darkknight?set=set2' },
+  // Listas de ejemplo para variedad
+  const ranks = ['Bronce', 'Plata', 'Oro', 'Platino', 'Diamante', 'Élite', 'Mítico'];
+  const avatars = [
+    'https://robohash.org/cyberwolf?set=set2',
+    'https://robohash.org/neonhunter?set=set2',
+    'https://robohash.org/pixelninja?set=set2',
+    'https://robohash.org/shadowfox?set=set2',
+    'https://robohash.org/blazemaster?set=set2',
+    'https://robohash.org/icephantom?set=set2',
+    'https://robohash.org/thunderstrike?set=set2',
+    'https://robohash.org/voidwalker?set=set2',
+    'https://robohash.org/crystalguard?set=set2',
+    'https://robohash.org/darkknight?set=set2',
+    'https://robohash.org/phantombyte?set=set2',
+    'https://robohash.org/ironclad?set=set2',
+    'https://robohash.org/blueflame?set=set2',
+    'https://robohash.org/cryptorider?set=set2',
+    'https://robohash.org/bughunter?set=set2',
+  ];
+  const achievementsList = [
+    { name: 'Cazador de Bugs', description: 'Reportó 10 vulnerabilidades', icon: '🐞', points: 100 },
+    { name: 'Maestro en Retos', description: 'Completó 5 retos difíciles', icon: '🏆', points: 150 },
+    { name: 'Racha Imparable', description: 'Racha de 30 días', icon: '🔥', points: 200 },
+    { name: 'MVP Mensual', description: 'Ganó el MVP del mes', icon: '👑', points: 300 },
+    { name: 'Coleccionista', description: 'Compró 5 artículos en la tienda', icon: '🛒', points: 80 },
+    { name: 'Primer Logro', description: 'Desbloqueó su primer logro', icon: '✨', points: 20 },
   ];
 
-  // Guardar usuarios en la base de datos
-  clanUsers.forEach(userData => {
-    const user: User = {
-      id: newId(),
-      username: userData.username,
-      email: `${userData.username.toLowerCase()}@example.com`,
+  // Crear usuarios para los clanes con datos aleatorios
+  const clanUsers = Array.from({ length: 12 }).map((_, i) => {
+    const username = [
+      'CyberWolf', 'NeonHunter', 'PixelNinja', 'ShadowFox', 'BlazeMaster', 'IcePhantom',
+      'ThunderStrike', 'VoidWalker', 'CrystalGuard', 'DarkKnight', 'PhantomByte', 'IronClad'
+    ][i];
+    const avatar = avatars[i % avatars.length];
+    const rank = ranks[Math.floor(Math.random() * ranks.length)];
+    const points = Math.floor(Math.random() * 2000) + 1000; // 1000-2999
+    const streak = Math.floor(Math.random() * 30) + 1; // 1-30 días
+    const accuracy = Math.floor(Math.random() * 21) + 80; // 80-100%
+    const createdAt = randomPastDate();
+    // Logros aleatorios (0 a 3)
+    const numAchievements = Math.floor(Math.random() * 4);
+    const achievements = Array.from({ length: numAchievements }).map(() => {
+      const ach = achievementsList[Math.floor(Math.random() * achievementsList.length)];
+      return {
+        id: newId(),
+        userId: '', // Se asigna después
+        name: ach.name,
+        description: ach.description,
+        icon: ach.icon,
+        points: ach.points,
+        date: randomPastDate(),
+      };
+    });
+    const userId = newId();
+    // Asignar userId a los logros
+    achievements.forEach(a => (a.userId = userId));
+    // Guardar logros
+    achievements.forEach(a => saveAchievement(a));
+    return {
+      id: userId,
+      username,
+      email: `${username.toLowerCase()}@example.com`,
       password: 'hashed_password',
-      points: userData.points,
-      streak: Math.floor(Math.random() * 30) + 1,
-      accuracy: Math.floor(Math.random() * 20) + 80,
+      points,
+      streak,
+      accuracy,
       vulnerabilities: [],
       purchases: [],
       clans: [],
-      achievements: [],
-      createdAt: new Date().toISOString(),
+      achievements: achievements.map(a => a.id),
+      createdAt,
+      // Extra: puedes agregar rank y avatar si tu UI lo soporta
+      rank,
+      avatar,
     };
-    saveUser(user);
   });
 
-  // Crear clanes con nombres atractivos
+  // Guardar usuarios en la base de datos
+  clanUsers.forEach(user => saveUser(user));
+
+  // Crear clanes con nombres atractivos y asignar miembros
   const clans = [
     {
       id: newId(),
       name: 'Cyber Dragons',
-      members: clanUsers.slice(0, 3).map(u => u.username),
+      members: clanUsers.slice(0, 4).map(u => u.username),
       createdBy: clanUsers[0].username,
       createdAt: new Date().toISOString(),
     },
     {
       id: newId(),
       name: 'Neon Warriors',
-      members: clanUsers.slice(3, 6).map(u => u.username),
-      createdBy: clanUsers[3].username,
+      members: clanUsers.slice(4, 8).map(u => u.username),
+      createdBy: clanUsers[4].username,
       createdAt: new Date().toISOString(),
     },
     {
       id: newId(),
       name: 'Shadow Hunters',
-      members: clanUsers.slice(6, 9).map(u => u.username),
-      createdBy: clanUsers[6].username,
+      members: clanUsers.slice(8, 12).map(u => u.username),
+      createdBy: clanUsers[8].username,
       createdAt: new Date().toISOString(),
     },
   ];
 
   clans.forEach(clan => saveClanGlobal(clan));
+}
+
+// Generar una fecha aleatoria en el pasado (últimos 2 años)
+function randomPastDate() {
+  const now = new Date();
+  const past = new Date(now.getFullYear() - 2, now.getMonth(), now.getDate());
+  const date = new Date(past.getTime() + Math.random() * (now.getTime() - past.getTime()));
+  return date.toISOString();
 }
 
 // UUID helper

@@ -518,19 +518,21 @@ const Shop: React.FC = () => {
                   </div>
 
                   {/* Requisitos */}
-                  <div className="space-y-2 mb-4">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">Nivel:</span>
-                      <span className="text-blue-200">{product.requirements.minLevel}</span>
+                  {product.requirements && (
+                    <div className="space-y-2 mb-4">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">Nivel:</span>
+                        <span className="text-blue-200">{product.requirements.minLevel}</span>
+                      </div>
+                      <div className="flex justify-between text-xs">
+                        <span className="text-gray-400">Puntos:</span>
+                        <span className="text-purple-200">{product.requirements.minPoints}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">Puntos:</span>
-                      <span className="text-purple-200">{product.requirements.minPoints}</span>
-                    </div>
-                  </div>
+                  )}
 
                   {/* Efectos */}
-                  {product.effects.length > 0 && (
+                  {product.effects && product.effects.length > 0 && (
                     <div className="mb-4">
                       <div className="text-xs text-gray-400 mb-2">Efectos:</div>
                       <div className="space-y-1">
