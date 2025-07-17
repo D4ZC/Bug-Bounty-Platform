@@ -67,4 +67,9 @@ router.get('/:id', (req, res) => {
   });
 });
 
+// PLACEHOLDER: Endpoints para gestión de retos
+// Ejemplo:
+// router.post('/create', (req, res) => res.json({ placeholder: true }));
+// router.post('/join', (req, res) => res.json({ placeholder: true }));
+
 module.exports = router; 

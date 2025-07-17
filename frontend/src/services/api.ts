@@ -123,4 +123,18 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
-export default apiService; 
+export default apiService;
+
+// PLACEHOLDER: Funciones para consumir endpoints principales
+export const getUserRanking = async () => apiService.get('/users/ranking');
+export const getTeamRanking = async () => apiService.get('/teams/ranking');
+export const getMVPUsers = async () => apiService.get('/users/mvp');
+export const getMVPTeams = async () => apiService.get('/teams/mvp');
+export const syncMendscan = async () => apiService.get('/vulnerabilities/sync-mendscan');
+export const resolveIssue = async (data: any) => apiService.post('/vulnerabilities/resolve', data);
+export const createChallenge = async (data: any) => apiService.post('/challenges/create', data);
+export const joinChallenge = async (data: any) => apiService.post('/challenges/join', data);
+export const getShopItems = async () => apiService.get('/shop/items');
+export const buyShopItem = async (data: any) => apiService.post('/shop/buy', data);
+export const submitContribution = async (data: any) => apiService.post('/contributions/submit', data);
+export const voteContribution = async (data: any) => apiService.post('/contributions/vote', data); 

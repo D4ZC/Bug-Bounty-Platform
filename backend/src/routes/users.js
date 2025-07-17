@@ -81,4 +81,10 @@ router.get('/:id', (req, res) => {
   });
 });
 
+// PLACEHOLDER: Endpoints para gestión de usuarios, ranking, MVP y notificaciones
+// Ejemplo:
+// router.get('/ranking', (req, res) => res.json({ placeholder: true }));
+// router.get('/mvp', (req, res) => res.json({ placeholder: true }));
+// router.get('/notifications', (req, res) => res.json({ placeholder: true }));
+
 module.exports = router; 

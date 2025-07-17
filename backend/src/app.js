@@ -57,13 +57,28 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rutas de la API
 app.use('/api/auth', authRoutes);
+// PLACEHOLDER: Asegurar que las rutas principales están conectadas
+// const usersRouter = require('./routes/users');
+// const teamsRouter = require('./routes/teams');
+// const vulnerabilitiesRouter = require('./routes/vulnerabilities');
+// const challengesRouter = require('./routes/challenges');
+// const shopRouter = require('./routes/shop');
+// const contributionsRouter = require('./routes/contributions');
+// const rankingsRouter = require('./routes/rankings');
+// app.use('/api/users', usersRouter);
+// app.use('/api/teams', teamsRouter);
+// app.use('/api/vulnerabilities', vulnerabilitiesRouter);
+// app.use('/api/challenges', challengesRouter);
+// app.use('/api/shop', shopRouter);
+// app.use('/api/contributions', contributionsRouter);
+// app.use('/api/rankings', rankingsRouter);
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/vulnerabilities', vulnerabilityRoutes);
-app.use('/api/rankings', rankingRoutes);
 app.use('/api/challenges', challengeRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api/contributions', contributionRoutes);
+app.use('/api/rankings', rankingRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Ruta de salud

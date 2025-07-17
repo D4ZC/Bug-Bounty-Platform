@@ -13,6 +13,11 @@ const mockTeamRanking = [
   { name: 'Equipo Beta', points: 180, rank: 2 }
 ];
 
+// PLACEHOLDER: Endpoints para rankings de usuarios y equipos
+// Ejemplo:
+// router.get('/users', (req, res) => res.json({ placeholder: true }));
+// router.get('/teams', (req, res) => res.json({ placeholder: true }));
+
 // Obtener ranking de usuarios
 router.get('/users', (req, res) => {
   res.json({

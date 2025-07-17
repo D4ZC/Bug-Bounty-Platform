@@ -14,10 +14,12 @@ import Vulnerabilities from '@/pages/Vulnerabilities';
 import Challenges from '@/pages/Challenges';
 import Shop from '@/pages/Shop';
 import Contributions from '@/pages/Contributions';
-import Profile from '@/pages/Profile';
+import Perfil from '@/pages/perfil';
 import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
+import Criticas from '@/pages/Criticas';
+import Comunidad from '@/pages/Comunidad';
 import NotFound from '@/pages/NotFound';
 
 // Components
@@ -43,10 +45,12 @@ function App() {
           <Route path="challenges" element={<Challenges />} />
           <Route path="shop" element={<Shop />} />
           <Route path="contributions" element={<Contributions />} />
-          <Route path="profile" element={<Profile />} />
+          <Route path="perfil" element={<Perfil />} />
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="criticas" element={<Criticas />} />
+          <Route path="comunidad" element={<Comunidad />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

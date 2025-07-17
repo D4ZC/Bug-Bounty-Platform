@@ -76,4 +76,9 @@ router.post('/', (req, res) => {
   });
 });
 
+// PLACEHOLDER: Endpoints para gestión de problemas (issues)
+// Ejemplo:
+// router.get('/sync-mendscan', (req, res) => res.json({ placeholder: true }));
+// router.post('/resolve', (req, res) => res.json({ placeholder: true }));
+
 module.exports = router; 

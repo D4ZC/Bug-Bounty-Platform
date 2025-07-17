@@ -63,4 +63,9 @@ router.post('/buy', (req, res) => {
   });
 });
 
+// PLACEHOLDER: Endpoints para gestión de tienda y blue points
+// Ejemplo:
+// router.get('/items', (req, res) => res.json({ placeholder: true }));
+// router.post('/buy', (req, res) => res.json({ placeholder: true }));
+
 module.exports = router; 

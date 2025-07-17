@@ -82,4 +82,9 @@ router.post('/', (req, res) => {
   });
 });
 
+// PLACEHOLDER: Endpoints para gestión de contribuciones
+// Ejemplo:
+// router.post('/submit', (req, res) => res.json({ placeholder: true }));
+// router.post('/vote', (req, res) => res.json({ placeholder: true }));
+
 module.exports = router; 

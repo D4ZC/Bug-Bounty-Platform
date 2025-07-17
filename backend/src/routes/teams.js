@@ -47,4 +47,9 @@ router.get('/:id', (req, res) => {
   });
 });
 
+// PLACEHOLDER: Endpoints para gestión de equipos, ranking y MVP
+// Ejemplo:
+// router.get('/ranking', (req, res) => res.json({ placeholder: true }));
+// router.get('/mvp', (req, res) => res.json({ placeholder: true }));
+
 module.exports = router; 

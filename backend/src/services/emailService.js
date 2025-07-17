@@ -298,6 +298,12 @@ class EmailService {
 
     return this.sendEmail(email, subject, html);
   }
+
+  // PLACEHOLDER: Función para enviar notificaciones por correo
+  // function sendNotificationEmail(to, subject, message) {
+  //   // Lógica de envío de correo (placeholder)
+  //   return true;
+  // }
 }
 
 module.exports = new EmailService(); 

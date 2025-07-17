@@ -221,6 +221,12 @@ const logger = {
     logger[level](message, logMeta);
   },
 
+  // PLACEHOLDER: Función para monitorear actividades sospechosas
+  // function logSuspiciousActivity(activity) {
+  //   // Lógica de monitoreo (placeholder)
+  //   return true;
+  // }
+
   // Función para limpiar logs antiguos
   cleanup: (daysToKeep = 30) => {
     try {
