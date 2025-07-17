@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import Navbar from './components/Navbar';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
@@ -24,6 +25,8 @@ import Documentation from '@/pages/Documentation';
 import SubmitExplanation from '@/pages/SubmitExplanation';
 import ModerateExplanations from '@/pages/ModerateExplanations';
 import ProfileTeam from '@/pages/ProfileTeam';
+import GulagDetail from './pages/GulagDetail';
+import TeamScore from '@/pages/TeamScore';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -39,13 +42,7 @@ function App() {
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-[#F9FAFB] text-[#1F2937]">
-        <header className="sticky top-0 z-40 flex justify-between items-center px-6 py-4 bg-[#E5E7EB] shadow-lg border-b border-blue-100">
-          <h1 className="text-2xl font-bold text-[#1E3A8A]">
-            {/* Usar traducción para el título principal */}
-            Bug Bounty Platform
-          </h1>
-          <LanguageSelector />
-        </header>
+        <Navbar />
         <Helmet>
           <title>Bug Bounty Platform</title>
           <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
@@ -55,6 +52,7 @@ function App() {
           <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
             <Route index element={<Dashboard />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="team-score" element={<TeamScore />} />
             <Route path="vulnerabilities" element={<Vulnerabilities />} />
             <Route path="challenges" element={<Challenges />} />
             <Route path="shop" element={<Shop />} />
@@ -64,6 +62,7 @@ function App() {
             <Route path="profile/team" element={<ProfileTeam />} />
             <Route path="team" element={<Team />} />
             <Route path="gulag" element={<Gulag />} />
+            <Route path="gulag/:id" element={<GulagDetail />} />
             <Route path="mvp" element={<MVP />} />
             <Route path="documentation" element={<Documentation />} />
             <Route path="submit-explanation" element={<SubmitExplanation />} />
