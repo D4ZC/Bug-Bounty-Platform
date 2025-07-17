@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink, Modal, Button, Search } from '@carbon/react';
-import { Notification, UserAvatar, UserMultiple, Star, WarningAlt, Trophy, Document, Currency, Settings, Store } from '@carbon/icons-react';
+import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, Modal, Button, Search } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
+import {
+  Dashboard,
+  UserMilitary,
+  Folders,
+  TaskView,
+  Notification,
+  Chat,
+  Settings,
+  Help,
+  Store,
+  Gift
+} from '@carbon/icons-react';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [modal, setModal] = useState<string | null>(null);
@@ -57,83 +68,138 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
-      {/* Navbar superior */}
-      <nav className="w-full h-14 bg-[#181818] flex items-center px-8 shadow z-10 fixed top-0 left-0 justify-between" style={{ color: 'white' }}>
-        <span className="text-2xl font-bold tracking-wide">BugBounty</span>
-        <span className="flex items-center"><Store size={28} /></span>
-      </nav>
-      <div className="flex flex-1 pt-16">
-        {/* Sidebar lateral */}
-        <SideNav
-          aria-label="Menú lateral"
-          expanded={expanded}
-          onMouseEnter={() => setExpanded(true)}
-          onMouseLeave={() => setExpanded(false)}
-          className={`transition-all duration-300 text-white shadow-lg min-h-full flex flex-col py-6 items-center border-none ${expanded ? 'w-64' : 'w-20'}`}
-          style={{ width: expanded ? 240 : 80, color: 'white', background: '#181818', boxShadow: '0 4px 32px 0 rgba(0,0,0,0.25)' }}
+    <div className="min-h-screen flex flex-row bg-gray-100">
+      {/* Sidebar */}
+      <aside
+        className={`h-screen ${expanded ? 'w-56' : 'w-20'} bg-white flex flex-col items-center py-4 shadow-lg fixed top-0 left-0 z-20 transition-all duration-300 border-r border-gray-200 ${!expanded ? 'justify-center' : ''}`}
+        onMouseEnter={() => setExpanded(true)}
+        onMouseLeave={() => setExpanded(false)}
+      >
+        {/* Perfil */}
+        <div
+          className="flex flex-col items-center cursor-pointer mb-6"
+          onClick={() => navigate('/perfil')}
         >
-          {/* Avatar, nombre de usuario y equipo */}
-          <div className={`flex flex-col items-center w-full ${expanded ? 'px-6 mb-4' : 'px-2 mb-2'}`}>
-            <div className="flex flex-col items-center gap-2 mb-2 w-full">
-              <img src={user.avatar} alt="avatar" className="w-12 h-12 rounded-full object-cover border-2 border-white" />
-              {expanded && (
-                <div className="flex flex-col items-center w-full">
-                  <span className="text-base font-semibold mt-1 cursor-pointer" onClick={() => navigate('/perfil')}>{user.name}</span>
-                  <span className="text-xs text-gray-400 cursor-pointer" onClick={() => navigate('/perfil')}>{team.name}</span>
-                </div>
-              )}
-            </div>
-            {/* Buscador cuadrado/redondeado según estado */}
-            <div className={`w-full flex justify-center ${expanded ? 'mt-2' : 'mt-1'}`}>
-              <div className={`${expanded ? 'w-full' : 'w-10 h-10'} transition-all duration-300`}>
-                {expanded ? (
-                  <div className="flex items-center bg-black rounded-full px-3 py-1 w-full">
-                    <svg width="22" height="22" fill="none" stroke="#888" strokeWidth="2" viewBox="0 0 24 24" className="mr-2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                    <input type="text" placeholder="Buscar..." className="flex-1 bg-transparent outline-none border-none text-white placeholder-gray-400 text-base" />
-                  </div>
-                ) : (
-                  <div className="w-10 h-10 bg-white/10 flex items-center justify-center"><svg width="24" height="24" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-                )}
-              </div>
-            </div>
-          </div>
-          {/* Menú principal */}
-          <SideNavItems className="w-full px-4">
-            <div className={`text-xs font-bold uppercase text-gray-400 mb-2 ${expanded ? 'opacity-100' : 'opacity-0'}`}>Menu</div>
-            <SideNavLink href="#" renderIcon={Trophy} onClick={() => { setSelected('Dashboard'); navigate('/'); }} className={`flex items-center font-bold px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'Dashboard' ? 'text-blue-500' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'Dashboard'}
-            </SideNavLink>
-            <SideNavLink href="#" renderIcon={UserAvatar} onClick={() => { setSelected('Perfil'); navigate('/perfil'); }} className={`flex items-center px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'Perfil' ? 'text-blue-500 font-bold' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'Perfil'}
-            </SideNavLink>
-            <SideNavLink href="#" renderIcon={Star} onClick={() => setSelected('MVP')} className={`flex items-center px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'MVP' ? 'text-blue-500 font-bold' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'MVP'}
-            </SideNavLink>
-            <SideNavLink href="#" renderIcon={WarningAlt} onClick={() => setSelected('Gulag')} className={`flex items-center px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'Gulag' ? 'text-blue-500 font-bold' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'Gulag'}
-            </SideNavLink>
-            <SideNavLink href="#" renderIcon={Document} onClick={() => setSelected('Documentación')} className={`flex items-center px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'Documentación' ? 'text-blue-500 font-bold' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'Documentación'}
-            </SideNavLink>
-            <SideNavLink href="#" renderIcon={Currency} onClick={() => setSelected('Blue Points')} className={`flex items-center px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'Blue Points' ? 'text-blue-500 font-bold' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'Blue Points'}
-            </SideNavLink>
-          </SideNavItems>
-          {/* Separador */}
-          <div className="w-11/12 mx-auto border-t border-gray-700 my-4"></div>
-          {/* Shortcuts */}
-          <SideNavItems className="w-full px-4">
-            <div className={`text-xs font-bold uppercase text-gray-400 mb-2 ${expanded ? 'opacity-100' : 'opacity-0'}`}>Shortcuts</div>
-            <SideNavLink href="#" renderIcon={Settings} onClick={() => setSelected('Settings')} className={`flex items-center px-3 py-2 my-1 rounded-md transition-all duration-150 ${selected === 'Settings' ? 'text-blue-500 font-bold' : 'text-white'} ${expanded ? '' : 'justify-center'}`} style={{ gap: 10, fontWeight: 700, fontSize: 16 }}>
-              {expanded && 'Settings'}
-            </SideNavLink>
-          </SideNavItems>
-        </SideNav>
-        {/* Contenido principal */}
-        <main className="flex-1 p-6 bg-gray-100 min-h-screen relative z-0">{children}</main>
-        {renderModal()}
-      </div>
+          <img
+            src={user.avatar}
+            alt="avatar"
+            className="w-12 h-12 rounded-full object-cover border-2 border-gray-300"
+          />
+        </div>
+        {/* Buscador */}
+        <div className="mb-6 w-full flex justify-center px-2">
+          {expanded ? (
+            <input
+              type="text"
+              placeholder="Buscar..."
+              className="w-full h-8 rounded bg-gray-100 text-xs text-gray-800 px-2 outline-none border border-gray-300 placeholder-gray-400"
+              style={{ fontSize: 12, minWidth: 120, transition: 'min-width 0.3s' }}
+            />
+          ) : (
+            <button className="flex items-center justify-center w-10 h-10 focus:outline-none bg-transparent border-none">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#23232a" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="7" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {/* Módulo Banners */}
+        <nav className="flex flex-col gap-2 items-center w-full mb-2">
+          <button
+            className={`flex items-center gap-3 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150 text-[#7c3aed]`}
+            onClick={() => navigate('/banners')}
+            title="Banners"
+          >
+            <Gift size={24} />
+            {expanded && <span className="text-base font-medium text-[#7c3aed]">Banners</span>}
+          </button>
+        </nav>
+        {/* Módulos principales */}
+        <nav className="flex flex-col gap-2 items-center w-full">
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/')}
+            title="Dashboard"
+          >
+            <Dashboard size={24} />
+            {expanded && <span className="text-base font-medium">Dashboard</span>}
+          </button>
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/duel')}
+            title="Duel"
+          >
+            <UserMilitary size={24} />
+            {expanded && <span className="text-base font-medium">Duel</span>}
+          </button>
+        </nav>
+        {/* Separador y Extra Points */}
+        <div className="w-10 border-t border-gray-200 my-4"></div>
+        {expanded && <div className="text-[11px] text-gray-500 mb-2 w-full px-3">Extra Points</div>}
+        <nav className="flex flex-col gap-2 items-center w-full">
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/helpers')}
+            title="Helpers"
+          >
+            <Help size={24} />
+            {expanded && <span className="text-base font-medium">Helpers</span>}
+          </button>
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/files')}
+            title="Files"
+          >
+            <Folders size={24} />
+            {expanded && <span className="text-base font-medium">Files</span>}
+          </button>
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/recovery-files')}
+            title="Recovery Files"
+          >
+            <TaskView size={24} />
+            {expanded && <span className="text-base font-medium">Recovery Files</span>}
+          </button>
+        </nav>
+        {/* Separador y Notifications */}
+        <div className="w-10 border-t border-gray-200 my-4"></div>
+        {expanded && <div className="text-[11px] text-gray-500 mb-2 w-full px-3">Notifications</div>}
+        <nav className="flex flex-col gap-2 items-center w-full">
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/messages')}
+            title="Message"
+          >
+            <Chat size={24} />
+            {expanded && <span className="text-base font-medium">Message</span>}
+          </button>
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/notifications')}
+            title="Notifications"
+          >
+            <Notification size={24} />
+            {expanded && <span className="text-base font-medium">Notifications</span>}
+          </button>
+        </nav>
+        {/* Separador y Settings */}
+        <div className="w-10 border-t border-gray-200 my-4"></div>
+        {expanded && <div className="text-[11px] text-gray-500 mb-2 w-full px-3">Settings</div>}
+        <nav className="flex flex-col gap-2 items-center w-full">
+          <button
+            className="flex items-center gap-3 text-gray-700 hover:text-blue-600 focus:outline-none w-full px-3 py-2 rounded transition-colors duration-150"
+            onClick={() => navigate('/settings')}
+            title="Settings"
+          >
+            <Settings size={24} />
+            {expanded && <span className="text-base font-medium">Settings</span>}
+          </button>
+        </nav>
+      </aside>
+      {/* Contenido principal */}
+      <main className="flex-1 p-6 bg-gray-100 min-h-screen relative z-0 ml-20">{children}</main>
     </div>
   );
 };

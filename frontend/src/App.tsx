@@ -21,6 +21,7 @@ import MVP from '@/pages/MVP';
 import Criticas from '@/pages/Criticas';
 import Comunidad from '@/pages/Comunidad';
 import NotFound from '@/pages/NotFound';
+import Banners from '@/pages/Banners';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -51,6 +52,7 @@ function App() {
           <Route path="mvp" element={<MVP />} />
           <Route path="criticas" element={<Criticas />} />
           <Route path="comunidad" element={<Comunidad />} />
+          <Route path="banners" element={<Banners />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

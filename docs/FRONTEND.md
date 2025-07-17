@@ -101,11 +101,9 @@ const AppHeader = () => {
       </HeaderName>
       <HeaderNavigation aria-label="Main Navigation">
         <HeaderMenuItem href="/dashboard">Dashboard</HeaderMenuItem>
-        <HeaderMenuItem href="/vulnerabilities">Vulnerabilidades</HeaderMenuItem>
         <HeaderMenuItem href="/rankings">Rankings</HeaderMenuItem>
         <HeaderMenuItem href="/challenges">Retos</HeaderMenuItem>
         <HeaderMenuItem href="/shop">Tienda</HeaderMenuItem>
-        <HeaderMenuItem href="/contributions">Contribuciones</HeaderMenuItem>
       </HeaderNavigation>
       <HeaderGlobalBar>
         <HeaderGlobalAction aria-label="Notifications">

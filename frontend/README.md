@@ -85,10 +85,8 @@ src/
 
 ### Páginas
 - `Dashboard`: Panel principal con estadísticas
-- `Vulnerabilities`: Gestión de vulnerabilidades
 - `Challenges`: Retos y competencias
 - `Shop`: Tienda virtual
-- `Contributions`: Contribuciones técnicas
 - `Profile`: Perfil de usuario
 - `Team`: Gestión de equipos
 - `Gulag`: Evento especial Gulag
