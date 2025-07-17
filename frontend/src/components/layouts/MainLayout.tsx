@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
-import { Bell, User, Menu, Home as HomeIcon, FileText, Globe, Mail } from 'lucide-react';
+import { Bell, User, Menu, Home as HomeIcon, FileText, Globe, Mail, ShoppingBag, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const NAVBAR_HEIGHT = 64 + 50; // altura original + 50px extra
@@ -115,8 +115,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     {['Español', 'Inglés', 'Mandarín', 'Alemán', 'Ruso', 'Francés'].map(lang => (
                       <button
                         key={lang}
-                        className="w-full py-2 px-4 rounded-lg font-gamer-body text-lg text-white bg-strong-blue hover:bg-carbon-blue hover:text-white transition-colors border border-strong-blue shadow-md"
-                        style={{ boxShadow: '0 0 8px #0000FF33' }}
+                        className="w-full py-2 px-4 rounded-lg font-gamer-body text-lg text-purple-900 bg-purple-200 hover:bg-purple-300 hover:text-purple-900 transition-colors border border-purple-300 shadow-md"
+                        style={{ boxShadow: '0 0 8px #a78bfa55' }}
                         onClick={() => setShowLangModal(false)}
                       >
                         {lang}
@@ -124,7 +124,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                     ))}
                   </div>
                   <button
-                    className="mt-6 px-4 py-2 rounded font-gamer-body bg-strong-blue text-white hover:bg-carbon-blue transition-colors border border-strong-blue"
+                    className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
                     onClick={() => setShowLangModal(false)}
                   >
                     Cerrar
@@ -132,9 +132,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 </div>
               </div>
             )}
-            <SideNavLink href="/add" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
-              <Add size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">Próximamente</span>
+            <SideNavLink href="/shop" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2">
+              <ShoppingBag size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">Tienda</span>
+            </SideNavLink>
+            <SideNavLink href="/gulag" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2">
+              <Landmark size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">Gulag</span>
             </SideNavLink>
           </SideNavItems>
         </SideNav>

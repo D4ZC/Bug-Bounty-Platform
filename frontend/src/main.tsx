@@ -13,6 +13,8 @@ import { SocketProvider } from './contexts/SocketContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import ErrorFallback from './components/ErrorFallback'
 import './styles/index.css'
+import './i18n';
+import { WalletProvider } from './contexts/WalletContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -31,21 +33,23 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <ThemeProvider>
-              <AuthProvider>
-                <SocketProvider>
-                  <App />
-                  <Toaster
-                    position="top-right"
-                    toastOptions={{
-                      duration: 4000,
-                      style: {
-                        background: '#363636',
-                        color: '#fff',
-                      },
-                    }}
-                  />
-                </SocketProvider>
-              </AuthProvider>
+              <WalletProvider>
+                <AuthProvider>
+                  <SocketProvider>
+                    <App />
+                    <Toaster
+                      position="top-right"
+                      toastOptions={{
+                        duration: 4000,
+                        style: {
+                          background: '#363636',
+                          color: '#fff',
+                        },
+                      }}
+                    />
+                  </SocketProvider>
+                </AuthProvider>
+              </WalletProvider>
             </ThemeProvider>
           </BrowserRouter>
           <ReactQueryDevtools initialIsOpen={false} />

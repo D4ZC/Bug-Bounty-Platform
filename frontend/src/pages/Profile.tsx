@@ -1,12 +1,22 @@
 import React, { useState } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useShop, ShopItem } from '../contexts/ShopContext';
 import ReplaceItemModal from '../components/ReplaceItemModal';
+import { useWallet } from '../contexts/WalletContext';
 
 const pieData = [
   { name: 'HARD', value: 50, color: '#f43f5e' },
   { name: 'MEDIUM', value: 30, color: '#f59e42' },
   { name: 'LOW', value: 20, color: '#10b981' },
+];
+
+const barData = [
+  { name: 'Ene', coins: 80 },
+  { name: 'Feb', coins: 120 },
+  { name: 'Mar', coins: 100 },
+  { name: 'Abr', coins: 140 },
+  { name: 'May', coins: 90 },
+  { name: 'Jun', coins: 110 },
 ];
 
 const carouselImages = [
@@ -29,6 +39,7 @@ const mockUser = {
 
 const Profile: React.FC = () => {
   const { userItems, selectItem, getSelectedItem } = useShop();
+  const { coins, bluepoints } = useWallet();
   const [activeSection, setActiveSection] = useState<'fondos' | 'marcos' | 'badges' | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -99,69 +110,53 @@ const Profile: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-gray-50 py-8 px-2">
-      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6 bg-white rounded-2xl shadow-lg p-4 md:p-8">
+      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6 bg-white rounded-2xl shadow-lg p-4 md:p-8 min-h-[700px]">
         {/* Columna Izquierda */}
-        <div className="w-full md:w-1/4 flex flex-col items-center gap-8">
-          {/* Pie Chart */}
-          <div className="w-full flex flex-col items-center">
-            <div className="w-40 h-40">
+        <div className="w-full md:w-1/4 flex flex-col items-center gap-6 justify-between min-h-full">
+          {/* Gráfica de barras de monedas */}
+          <div className="w-full flex flex-col items-center flex-1 justify-center">
+            <div className="w-full h-60">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={70}
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {pieData.map((entry, idx) => (
-                      <Cell key={`cell-${idx}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                </PieChart>
+                <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="coins" fill="#38bdf8" radius={[8,8,0,0]} />
+                </BarChart>
               </ResponsiveContainer>
+            </div>
+            <div className="w-full flex justify-center mt-2">
+              <span className="text-lg font-bold text-purple-700 tracking-wide" style={{ marginLeft: '40px' }}>EFICIENCIA</span>
             </div>
           </div>
           {/* Botones verticales */}
-          <div className="flex flex-col gap-4 w-full mt-4">
+          <div className="flex flex-col gap-4 w-full mt-2 flex-1 justify-end" style={{ marginTop: '-80px' }}>
             <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'fondos' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('fondos')}>FONDOS</button>
             <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'marcos' ? 'border-purple-600 shadow-lg' : 'border-gray-200'} bg-gray-100 hover:bg-purple-50`} onClick={() => openSectionModal('marcos')}>MARCOS</button>
             <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'badges' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('badges')}>BADGES</button>
           </div>
         </div>
         {/* Columna Central */}
-        <div className="w-full md:w-2/4 flex flex-col items-center gap-6">
+        <div className="w-full md:w-2/4 flex flex-col items-center gap-4 justify-between min-h-full">
           {/* Barra superior */}
           <div className="w-full flex items-center justify-between bg-gray-100 rounded-lg px-6 py-3 mb-2">
-            <span className="font-bold text-gray-700">MONEDAS: <span className="text-yellow-500">{mockUser.coins}</span></span>
-            <span className="font-bold text-gray-700">bluepoints: <span className="text-blue-500">{mockUser.bluepoints}</span></span>
-            <button className="ml-auto px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-red-100">LOG OUT</button>
+            <span className="font-bold text-gray-700">MONEDAS: <span className="text-yellow-500">{coins}</span></span>
+            <span className="font-bold text-gray-700 ml-auto">bluepoints: <span className="text-blue-500">{bluepoints}</span></span>
           </div>
-          {/* Avatar con marco de fuego animado */}
-          <div className="relative flex flex-col items-center">
-            <div className="w-40 h-40 flex items-center justify-center relative">
-              {/* Marco SVG cuadrado de fuego animado */}
-              <svg width="170" height="170" viewBox="0 0 170 170" className="absolute z-10 fire-frame" style={{ left: 0, top: 0 }}>
-                <g className="flame-group">
-                  <path className="flame flame1" d="M10 10 Q30 30 10 85 Q30 140 10 160 Q85 160 160 160 Q140 140 160 85 Q140 30 160 10 Q85 10 10 10" fill="none" stroke="#ffb300" strokeWidth="6" strokeLinecap="round" />
-                  <path className="flame flame2" d="M20 20 Q40 40 20 85 Q40 130 20 150 Q85 150 150 150 Q130 130 150 85 Q130 40 150 20 Q85 20 20 20" fill="none" stroke="#ff7043" strokeWidth="6" strokeLinecap="round" />
-                  <path className="flame flame3" d="M40 40 Q60 60 40 85 Q60 110 40 130 Q85 130 130 130 Q110 110 130 85 Q110 60 130 40 Q85 40 40 40" fill="none" stroke="#ff1744" strokeWidth="4" strokeLinecap="round" />
-                </g>
-                <rect x="12" y="12" width="146" height="146" fill="none" stroke="#f59e42" strokeWidth="8" rx="16" />
-              </svg>
-              {/* Avatar cuadrado */}
-              <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-7xl z-20 overflow-hidden rounded-[18px] border-4 border-white shadow-lg">
+          {/* Avatar con marco personalizado */}
+          <div className="relative flex flex-col items-center flex-1 justify-center" style={{ marginTop: '-50px' }}>
+            <div className="flex items-center justify-center relative" style={{ background: 'rgba(243, 244, 246, 0.7)', borderRadius: '18px', width: '220px', height: '240px' }}>
+              {/* Contenedor para la imagen de perfil */}
+              <div className="bg-white flex items-center justify-center text-[8rem] z-20 overflow-hidden rounded-full border-2 border-gray-200 shadow-lg" style={{ width: '200px', height: '200px' }}>
                 {/* Aquí va la imagen del usuario, por ahora emoji */}
                 <img
-                  src={/* aquí iría la url de la imagen del usuario, por ahora vacío para mostrar emoji */''}
+                  src={profilePic || ''}
                   alt="avatar"
                   className="w-full h-full object-cover"
-                  style={{ display: 'none' }}
+                  style={{ display: profilePic ? 'block' : 'none' }}
                 />
-                <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>
+                {!profilePic && <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>}
               </div>
             </div>
             {/* Botones debajo del avatar */}
@@ -170,7 +165,7 @@ const Profile: React.FC = () => {
               <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowPassword(true)}>CAMBIAR CONTRASEÑA</button>
             </div>
             {/* Caja de descripción */}
-            <div className="w-full mt-6">
+            <div className="w-full mt-4">
               <div className="bg-gray-100 rounded-lg p-4 min-h-[80px] flex flex-col">
                 <div className="flex justify-between items-center mb-2">
                   <span className="font-bold text-gray-700">DESCRIPCIÓN</span>
@@ -192,9 +187,9 @@ const Profile: React.FC = () => {
           </div>
         </div>
         {/* Columna Derecha */}
-        <div className="w-full md:w-1/4 flex flex-col gap-6 items-center">
+        <div className="w-full md:w-1/4 flex flex-col gap-4 items-center justify-between min-h-full">
           {/* Cuadros grandes de nombre y país */}
-          <div className="w-full flex flex-col gap-4">
+          <div className="w-full flex flex-col gap-4 flex-1 justify-center">
             <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
               <span className="font-bold text-gray-700 mb-1">NOMBRE</span>
               <input className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={name} onChange={e => setName(e.target.value)} />
@@ -217,7 +212,7 @@ const Profile: React.FC = () => {
             </div>
           </div>
           {/* Cuadros pequeños de estadísticas */}
-          <div className="w-full flex flex-row gap-4 mt-2">
+          <div className="w-full flex flex-row gap-4 mt-2 flex-1 justify-end">
             <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
               <span className="font-bold text-gray-700">LIKES</span>
               <span className="text-green-600 font-bold text-xl">{mockUser.likes}</span>
@@ -228,7 +223,7 @@ const Profile: React.FC = () => {
             </div>
           </div>
           {/* Carrusel de imágenes */}
-          <div className="w-full flex flex-col items-center mt-4">
+          <div className="w-full flex flex-col items-center mt-4 flex-1 justify-center">
             <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center w-full">
               <div className="flex items-center justify-center w-full">
                 <img src={carouselImages[carouselIdx]} alt="mock" className="w-full h-32 object-cover rounded-lg border transition-all duration-700" />

@@ -1,18 +1,139 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // Datos ficticios del GULAG
 const gulagData = [
-  { name: 'deivid', score: 50, status: 'active', timeLeft: '2h30' },
-  { name: 'runrun', score: 25, status: 'active', timeLeft: '1h45' },
-  { name: 'excel', score: 20, status: 'active', timeLeft: '3h15' },
-  { name: 'kick ass', score: 20, status: 'completed', timeLeft: '0h 0' },
-  { name: 'pedrito sola', score: 10, status: 'waiting', timeLeft: '5h20' },
+  {
+    id: 1,
+    titulo: 'Desafío de lógica',
+    descripcion: 'Resuelve este problema de lógica básica. Debes encontrar el número que falta en la secuencia.',
+    reglas: 'No uses librerías externas. Solo puedes enviar una solución por intento.',
+    archivos: [
+      { nombre: 'instrucciones.pdf', url: 'https://example.com/instrucciones.pdf' }
+    ],
+    lenguaje: 'javascript',
+    status: 'active',
+    tiempo: 300, // segundos
+    puntos: 50,
+    dificultad: 'fácil',
+    categorias: ['lógica', 'secuencias'],
+    intentos: 0,
+    fecha: '2024-07-18',
+    creador: 'Admin',
+    score: 50,
+    timeLeft: '2h30',
+    name: 'deivid',
+  },
+  {
+    id: 2,
+    titulo: 'Desafío de backend',
+    descripcion: 'Implementa una API REST que devuelva los usuarios activos.',
+    reglas: 'No uses frameworks externos.',
+    archivos: [
+      { nombre: 'api_spec.pdf', url: 'https://example.com/api_spec.pdf' }
+    ],
+    lenguaje: 'python',
+    status: 'active',
+    tiempo: 600,
+    puntos: 80,
+    dificultad: 'medio',
+    categorias: ['backend', 'api'],
+    intentos: 0,
+    fecha: '2024-07-18',
+    creador: 'Admin',
+    score: 25,
+    timeLeft: '1h45',
+    name: 'runrun',
+  },
+  {
+    id: 3,
+    titulo: 'Desafío de frontend',
+    descripcion: 'Crea una interfaz que consuma una API y muestre los resultados.',
+    reglas: 'No uses librerías externas.',
+    archivos: [],
+    lenguaje: 'javascript',
+    status: 'waiting',
+    tiempo: 400,
+    puntos: 60,
+    dificultad: 'fácil',
+    categorias: ['frontend'],
+    intentos: 0,
+    fecha: '2024-07-18',
+    creador: 'Admin',
+    score: 20,
+    timeLeft: '5h20',
+    name: 'pedrito sola',
+  },
+  {
+    id: 4,
+    titulo: 'Desafío de algoritmos',
+    descripcion: 'Resuelve el problema de encontrar el camino más corto en un grafo.',
+    reglas: 'Solo puedes usar estructuras de datos básicas.',
+    archivos: [
+      { nombre: 'grafo.png', url: 'https://example.com/grafo.png' }
+    ],
+    lenguaje: 'javascript',
+    status: 'completed',
+    tiempo: 900,
+    puntos: 100,
+    dificultad: 'difícil',
+    categorias: ['algoritmos', 'grafos'],
+    intentos: 1,
+    fecha: '2024-07-18',
+    creador: 'Admin',
+    score: 20,
+    timeLeft: '0h 0',
+    name: 'kick ass',
+  },
 ];
+
+const getStartTime = (id: number, tiempo: number) => {
+  const key = `gulag_start_${id}`;
+  let start = localStorage.getItem(key);
+  if (!start) {
+    const now = Date.now();
+    localStorage.setItem(key, String(now));
+    return now;
+  }
+  return parseInt(start, 10);
+};
+
+const getTiempoRestante = (id: number, tiempo: number) => {
+  const start = getStartTime(id, tiempo);
+  const now = Date.now();
+  const diff = Math.max(0, tiempo - Math.floor((now - start) / 1000));
+  return diff;
+};
+
+const Timer: React.FC<{ id: number; tiempoTotal: number; status: string; onExpire?: () => void }> = ({ id, tiempoTotal, status, onExpire }) => {
+  const [tiempo, setTiempo] = useState(() => getTiempoRestante(id, tiempoTotal));
+  useEffect(() => {
+    if (status !== 'active') return;
+    if (tiempo <= 0) {
+      onExpire && onExpire();
+      return;
+    }
+    const interval = setInterval(() => {
+      setTiempo(getTiempoRestante(id, tiempoTotal));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [tiempo, status, onExpire, id, tiempoTotal]);
+  return (
+    <span className="font-mono text-blue-700 font-bold">{Math.floor(tiempo/60)}m {(tiempo%60).toString().padStart(2,'0')}s</span>
+  );
+};
 
 const Gulag: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'active' | 'completed' | 'waiting'>('all');
+  const navigate = useNavigate();
+  const [cardsState, setCardsState] = useState(gulagData.map(d => ({ ...d })));
 
-  const filteredData = gulagData.filter(item => {
+  // Actualizar estado de cards cuando el temporizador expira
+  const handleExpire = (id: number) => {
+    setCardsState(prev => prev.map(card => card.id === id ? { ...card, status: 'completed' } : card));
+  };
+
+  const filteredData = cardsState.filter(item => {
     if (selectedFilter === 'all') return true;
     return item.status === selectedFilter;
   });
@@ -104,7 +225,7 @@ const Gulag: React.FC = () => {
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-semibold text-gray-600">Tiempo restante:</span>
-                  <span className="text-sm font-bold text-gray-800">{participant.timeLeft}</span>
+                  <Timer id={participant.id} tiempoTotal={participant.tiempo} status={participant.status} onExpire={() => handleExpire(participant.id)} />
                 </div>
 
                 {/* Barra de progreso */}
@@ -124,22 +245,31 @@ const Gulag: React.FC = () => {
               </div>
 
               {/* Botón de acción */}
-              <button className={`w-full mt-4 py-2 rounded-lg font-semibold transition-colors ${
-                participant.status === 'active' 
-                  ? 'bg-red-500 text-white hover:bg-red-600' 
-                  : participant.status === 'completed'
-                  ? 'bg-green-500 text-white hover:bg-green-600'
-                  : 'bg-yellow-500 text-white hover:bg-yellow-600'
-              }`}>
-                {participant.status === 'active' ? 'VER DESAFÍO' :
-                 participant.status === 'completed' ? 'VER RESULTADO' :
-                 'ESPERAR'}
-              </button>
+              {participant.status === 'active' ? (
+                <button
+                  className="w-full mt-4 py-2 rounded-lg font-semibold transition-colors bg-red-500 text-white hover:bg-red-600"
+                  onClick={() => navigate(`/gulag/desafio/${participant.id}`)}
+                >
+                  VER DESAFÍO
+                </button>
+              ) : (
+                <button
+                  className={`w-full mt-4 py-2 rounded-lg font-semibold transition-colors ${
+                    participant.status === 'completed'
+                      ? 'bg-green-500 text-white hover:bg-green-600'
+                      : 'bg-yellow-500 text-white hover:bg-yellow-600'
+                  }`}
+                  disabled
+                >
+                  {participant.status === 'completed' ? 'VER RESULTADO' : 'ESPERAR'}
+                </button>
+              )}
             </div>
           ))}
         </div>
 
         {/* Estadísticas */}
+        {/*
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
             <h3 className="text-lg font-bold text-gray-800 mb-2">Participantes Activos</h3>
@@ -160,6 +290,7 @@ const Gulag: React.FC = () => {
             </p>
           </div>
         </div>
+        */}
       </div>
     </div>
   );

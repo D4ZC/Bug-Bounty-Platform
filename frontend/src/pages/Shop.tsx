@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useShop, ShopItem } from '../contexts/ShopContext';
+import { useWallet } from '../contexts/WalletContext';
 
 const CATEGORIES = [
   { key: 'fondo', label: 'FONDO' },
@@ -33,13 +34,12 @@ const PRODUCTS = {
 
 const Shop: React.FC = () => {
   const { purchaseItem, isItemPurchased } = useShop();
+  const { coins, bluepoints, spendCoins, spendBluepoints } = useWallet();
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0].key);
   const [selectedProductIdx, setSelectedProductIdx] = useState(0);
   const [rotation, setRotation] = useState(0);
   const rotationRef = useRef<number>(0);
   const dragStartRef = useRef<number | null>(null);
-  const [coins, setCoins] = useState(100);
-  const [bluepoints, setBluepoints] = useState(100);
 
   useEffect(() => {
     setSelectedProductIdx(0);
@@ -76,7 +76,7 @@ const Shop: React.FC = () => {
   const handlePurchase = (product: ShopItem) => {
     if (coins >= product.price) {
       purchaseItem(product);
-      setCoins(prev => prev - product.price);
+      spendCoins(product.price);
     } else {
       alert('No tienes suficientes monedas!');
     }
@@ -86,19 +86,19 @@ const Shop: React.FC = () => {
   const selectedProduct = products[selectedProductIdx];
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-gray-50">
+    <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50 animate-fade-in">
       {/* Barra superior de monedas */}
-      <div className="w-full flex justify-end items-center gap-4 px-8 py-4 bg-transparent">
-        <div className="bg-yellow-200 text-yellow-900 font-bold px-4 py-2 rounded shadow">COINS: {coins}</div>
-        <div className="bg-yellow-200 text-yellow-900 font-bold px-4 py-2 rounded shadow">BLUEPOINTS: {bluepoints}</div>
+      <div className="w-full flex justify-end items-center gap-4 px-8 py-4 bg-white/80 shadow-sm sticky top-0 z-20 rounded-b-xl">
+        <div className="bg-yellow-200 text-yellow-900 font-bold px-4 py-2 rounded shadow flex items-center gap-2">MONEDAS: {coins}</div>
+        <div className="bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded shadow flex items-center gap-2">BLUEPOINTS: {bluepoints}</div>
       </div>
       <div className="flex flex-row flex-1 w-full">
         {/* Contenedor 1: Opciones */}
-        <div className="flex flex-col gap-2 p-4 bg-white border-r border-gray-200" style={{ width: 180 }}>
+        <div className="flex flex-col gap-2 p-4 bg-white border-r border-gray-200/70 shadow-sm" style={{ width: 180 }}>
           {CATEGORIES.map((cat) => (
             <div
               key={cat.key}
-              className={`px-4 py-3 rounded-lg font-bold text-center cursor-pointer transition border ${selectedCategory === cat.key ? 'bg-blue-100 border-blue-500 text-blue-700 shadow' : 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-blue-50'}`}
+              className={`px-4 py-3 rounded-lg font-bold text-center cursor-pointer transition border-2 ${selectedCategory === cat.key ? 'bg-cyan-100 border-cyan-400 text-cyan-700 shadow-lg scale-105' : 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-cyan-50'}`}
               onClick={() => setSelectedCategory(cat.key)}
             >
               {cat.label}
@@ -107,30 +107,34 @@ const Shop: React.FC = () => {
         </div>
         {/* Contenedor 2: Productos */}
         <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
-          <div className="grid grid-cols-2 gap-6 w-full max-w-lg">
+          <div className="grid grid-cols-2 gap-8 w-full max-w-lg">
             {products.map((prod, idx) => (
               <div
                 key={prod.id}
-                className={`relative rounded-xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 ${selectedProductIdx === idx ? 'border-blue-500 shadow-lg bg-white scale-105 z-10' : 'border-gray-200 bg-gray-100 hover:border-blue-300'}`}
+                className={`relative rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-hidden`}
                 onClick={() => setSelectedProductIdx(idx)}
+                style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined }}
               >
-                <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2" />
-                <span className="font-semibold text-gray-700 text-center">{prod.name}</span>
-                <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded text-xs">${prod.price}</span>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-200 opacity-70 group-hover:h-2 transition-all duration-300" />
+                <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
+                <span className="font-semibold text-gray-700 text-center text-lg group-hover:text-cyan-700 transition-colors">{prod.name}</span>
+                <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded-full text-xs shadow">${prod.price}</span>
                 {isItemPurchased(prod.id) && (
-                  <div className="absolute top-2 left-2 bg-green-50 text-white font-bold px-2 py-1 rounded text-xs">
-                    ✓ COMPRADO
-                  </div>
+                  <div className="absolute top-2 left-2 bg-green-400 text-white font-bold px-2 py-1 rounded-full text-xs shadow animate-bounce">✓ COMPRADO</div>
+                )}
+                {/* Badge de oferta o nuevo */}
+                {prod.price < 100 && (
+                  <span className="absolute bottom-2 left-2 bg-cyan-200 text-cyan-800 font-bold px-2 py-1 rounded-full text-xs shadow">OFERTA</span>
                 )}
               </div>
             ))}
           </div>
         </div>
         {/* Contenedor 3: Vista detallada */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white relative">
+        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white/90 relative rounded-l-3xl shadow-xl">
           <div className="flex flex-col items-center">
             <div
-              className="w-56 h-56 rounded-full bg-gray-100 shadow-lg flex items-center justify-center mb-6 select-none"
+              className="w-56 h-56 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 shadow-xl flex items-center justify-center mb-6 select-none border-4 border-cyan-200 animate-fade-in"
               style={{
                 transform: `perspective(600px) rotateY(${rotation}deg)`,
                 transition: dragStartRef.current ? 'none' : 'transform 0.3s',
@@ -141,15 +145,17 @@ const Shop: React.FC = () => {
               }}
               onMouseDown={handleMouseDown}
             >
-              <img src={selectedProduct.img} alt={selectedProduct.name} className="w-40 h-40 object-contain" draggable={false} />
+              <img src={selectedProduct.img} alt={selectedProduct.name} className="w-40 h-40 object-contain drop-shadow-2xl" draggable={false} />
             </div>
-            <div className="bg-gray-100 rounded-lg p-4 mb-4 w-64 text-center font-semibold text-gray-700 shadow">{selectedProduct.desc}</div>
+            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg p-4 mb-4 w-64 text-center font-semibold text-gray-700 shadow border border-cyan-100 animate-fade-in">
+              {selectedProduct.desc}
+            </div>
             <button 
-              className={`px-6 py-3 rounded-lg font-bold shadow transition ${
+              className={`px-8 py-3 rounded-xl font-bold shadow-lg transition text-lg tracking-wide mt-2 ${
                 isItemPurchased(selectedProduct.id)
-                  ? 'bg-green-500 text-white cursor-not-allowed'
+                  ? 'bg-green-500 text-white cursor-not-allowed animate-pulse'
                   : coins >= selectedProduct.price
-                  ? 'bg-yellow-300 text-yellow-900 hover:bg-yellow-400'
+                  ? 'bg-cyan-400 text-cyan-900 hover:bg-cyan-300'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               onClick={() => !isItemPurchased(selectedProduct.id) && handlePurchase(selectedProduct)}

@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ThumbsUp, ThumbsDown, Eye, Edit, Trash2 } from 'lucide-react';
-
-export interface CardData {
-  id: string;
-  nombre: string;
-  fecha: string;
-  jugador: string;
-  descripcion: string;
-  imagenUrl?: string;
-  likes: number;
-  dislikes: number;
-  userVote?: 'like' | 'dislike' | null;
-  createdAt: number;
-}
+import { CardData } from '../types';
 
 const CARDS_KEY = 'vulnerabilidad_cards';
 const USER_KEY = 'nombre_usuario';
+const USER_EMAIL_KEY = 'usuario_email_actual';
 
 const getCardsFromStorage = (): CardData[] => {
   try {
@@ -32,6 +21,24 @@ const saveCardsToStorage = (cards: CardData[]) => {
 };
 
 const getUserFromStorage = () => localStorage.getItem(USER_KEY) || '';
+
+// Obtener email actual (mock, luego se puede obtener de contexto)
+const getCurrentUserEmail = () => {
+  return localStorage.getItem(USER_EMAIL_KEY) || 'alex.turner@email.com';
+};
+
+// Guardar voto por usuario y card
+const getVotesFromStorage = () => {
+  try {
+    const data = localStorage.getItem('votos_por_usuario');
+    return data ? JSON.parse(data) : {};
+  } catch {
+    return {};
+  }
+};
+const saveVotesToStorage = (votes: Record<string, Record<string, 'like' | 'dislike'>>) => {
+  localStorage.setItem('votos_por_usuario', JSON.stringify(votes));
+};
 
 export const SidebarSecundario: React.FC<{ modo: 'normal' | 'editar', setModo: (m: 'normal' | 'editar') => void }> = ({ modo, setModo }) => {
   const navigate = useNavigate();
@@ -75,14 +82,21 @@ const FormularioPage: React.FC = () => {
   const [editCard, setEditCard] = useState<CardData | null>(null);
   const [showDelete, setShowDelete] = useState<CardData | null>(null);
   const usuario = getUserFromStorage();
+  const [votes, setVotes] = useState<Record<string, Record<string, 'like' | 'dislike'>>>(getVotesFromStorage());
+  const usuarioEmail = getCurrentUserEmail();
 
   useEffect(() => {
     setCards(getCardsFromStorage());
-  }, []);
+    setVotes(getVotesFromStorage());
+  }, [modalOpen, editCard, showDelete]); // recarga cada vez que cambia un modal
 
   useEffect(() => {
     saveCardsToStorage(cards);
   }, [cards]);
+
+  useEffect(() => {
+    saveVotesToStorage(votes);
+  }, [votes]);
 
   // Ordenar cards por likes netos y fecha
   const sortedCards = [...cards].sort((a, b) => {
@@ -92,16 +106,18 @@ const FormularioPage: React.FC = () => {
     return netB - netA;
   });
 
-  const filteredCards = modo === 'editar' && usuario
-    ? sortedCards.filter(card => card.jugador === usuario)
-    : sortedCards;
+  // Mostrar todas las tarjetas para depuración
+  const filteredCards = sortedCards;
+
+  // Log de depuración
+  console.log('Cards to render:', filteredCards);
 
   const handleVote = (id: string, type: 'like' | 'dislike') => {
     setCards(prev => prev.map(card => {
       if (card.id !== id) return card;
       let likes = card.likes;
       let dislikes = card.dislikes;
-      let userVote = card.userVote;
+      let userVote = votes[usuarioEmail]?.[id] || null;
       if (type === 'like') {
         if (userVote === 'like') return card;
         if (userVote === 'dislike') { dislikes--; likes++; userVote = 'like'; }
@@ -111,7 +127,14 @@ const FormularioPage: React.FC = () => {
         if (userVote === 'like') { likes--; dislikes++; userVote = 'dislike'; }
         else { dislikes++; userVote = 'dislike'; }
       }
-      return { ...card, likes, dislikes, userVote };
+      // Actualizar votos por usuario
+      setVotes(prevVotes => {
+        const updated = { ...prevVotes };
+        if (!updated[usuarioEmail]) updated[usuarioEmail] = {};
+        updated[usuarioEmail][id] = userVote as 'like' | 'dislike';
+        return updated;
+      });
+      return { ...card, likes, dislikes };
     }));
   };
 
@@ -153,10 +176,10 @@ const FormularioPage: React.FC = () => {
               <div className="flex items-center justify-between">
                 {modo === 'normal' ? (
                   <div className="flex flex-col gap-2">
-                    <button onClick={() => handleVote(card.id, 'like')} className={`flex items-center gap-1 text-green-600 font-bold ${card.userVote === 'like' ? 'scale-110' : ''}`}>
+                    <button onClick={() => handleVote(card.id, 'like')} className={`flex items-center gap-1 text-green-600 font-bold ${votes[usuarioEmail]?.[card.id] === 'like' ? 'scale-110' : ''}`}>
                       <ThumbsUp size={20} /> {card.likes}
                     </button>
-                    <button onClick={() => handleVote(card.id, 'dislike')} className={`flex items-center gap-1 text-red-600 font-bold ${card.userVote === 'dislike' ? 'scale-110' : ''}`}>
+                    <button onClick={() => handleVote(card.id, 'dislike')} className={`flex items-center gap-1 text-red-600 font-bold ${votes[usuarioEmail]?.[card.id] === 'dislike' ? 'scale-110' : ''}`}>
                       <ThumbsDown size={20} /> {card.dislikes}
                     </button>
                   </div>
@@ -173,7 +196,8 @@ const FormularioPage: React.FC = () => {
               <div className="mt-2">
                 <div className="font-bold text-gray-900 truncate">{card.nombre}</div>
                 <div className="text-xs text-gray-500">{card.fecha}</div>
-                <div className="text-xs text-gray-700 truncate">{card.jugador}</div>
+                {/* Mostrar solo las primeras dos líneas de la descripción */}
+                <div className="text-xs text-gray-700 truncate" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{card.descripcion}</div>
               </div>
             </div>
           ))}
@@ -188,7 +212,7 @@ const FormularioPage: React.FC = () => {
             >
               <button onClick={closeModal} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
               <h3 className="text-xl font-bold text-blue-700 mb-2">{modalCard.nombre}</h3>
-              <div className="text-xs text-gray-500 mb-2">{modalCard.fecha} — {modalCard.jugador}</div>
+              <div className="text-xs text-gray-500 mb-2">{modalCard.fecha} — {modalCard.jugador} — {modalCard.email}</div>
               {modalCard.imagenUrl && (
                 <img src={modalCard.imagenUrl} alt="Vulnerabilidad" className="w-full max-h-48 object-contain rounded mb-4 border" />
               )}

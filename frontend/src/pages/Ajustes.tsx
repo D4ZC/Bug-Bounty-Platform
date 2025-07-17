@@ -1,89 +1,87 @@
-import React, { useState } from 'react';
-
-const bloques = [
-  {
-    titulo: 'Personalización',
-    icono: '🎮',
-    items: [
-      'Cambiar avatar',
-      'Seleccionar fondo de perfil',
-      'Tema visual (Claro / Oscuro / Ciberpunk)',
-    ],
-    color: 'bg-carbon-light',
-    accent: 'border-cyber-blue',
-  },
-  {
-    titulo: 'Cuenta',
-    icono: '👤',
-    items: [
-      'Cambiar nombre de usuario',
-      'Cambiar email o contraseña',
-      'Cerrar sesión (Salir de la partida)',
-    ],
-    color: 'bg-carbon-light',
-    accent: 'border-cyber-blue',
-  },
-  {
-    titulo: 'Notificaciones',
-    icono: '🔔',
-    items: [
-      'Notificaciones ON / OFF',
-      'Sonido de alertas',
-    ],
-    color: 'bg-carbon-light',
-    accent: 'border-cyber-blue',
-  },
-  {
-    titulo: 'Idioma',
-    icono: '🌐',
-    items: [
-      'Seleccionar idioma de la interfaz',
-    ],
-    color: 'bg-carbon-light',
-    accent: 'border-cyber-blue',
-  },
-];
+import React, { useEffect, useState } from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Ajustes: React.FC = () => {
-  const [showSecret, setShowSecret] = useState(false);
+  const { theme, setTheme, isDark } = useTheme();
+  const { logout } = useAuth();
+  const [notificaciones, setNotificaciones] = useState(() => {
+    const saved = localStorage.getItem('notificaciones');
+    return saved ? saved === 'on' : true;
+  });
+
+  // Persistencia de notificaciones
+  useEffect(() => {
+    localStorage.setItem('notificaciones', notificaciones ? 'on' : 'off');
+  }, [notificaciones]);
+
+  // Animación para el toggle
+  const [animDark, setAnimDark] = useState(false);
+  const handleThemeToggle = () => {
+    setAnimDark(true);
+    setTimeout(() => setAnimDark(false), 400);
+    setTheme(isDark ? 'light' : 'dark');
+  };
+
   return (
-    <div className="min-h-screen w-full bg-carbon-gray flex flex-col items-center py-8 px-2 animate-fade-in">
-      <h1 className="font-gamer-title text-3xl md:text-5xl text-cyber-blue mb-8 drop-shadow-lg text-center">Panel de Ajustes</h1>
-      <div className="w-full max-w-3xl grid grid-cols-1 md:grid-cols-2 gap-8">
-        {bloques.map((bloque, idx) => (
-          <div
-            key={bloque.titulo}
-            className={`rounded-[10px] border-2 ${bloque.accent} shadow-xl p-6 flex flex-col gap-3 pixel-border ${bloque.color} hover:scale-[1.03] transition-transform duration-300`}
-            style={{ boxShadow: '0 0 8px #00f0ff33, 0 0 2px #fff' }}
+    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gray-50 dark:bg-carbon-gray transition-colors duration-500">
+      <div className="w-full max-w-xl bg-white dark:bg-carbon-dark rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-carbon-blue flex flex-col items-center gap-8">
+        <h2 className="text-2xl font-bold text-blue-700 dark:text-cyber-blue mb-6">Ajustes</h2>
+        {/* Barra de búsqueda */}
+        <div className="w-full flex items-center mb-4 relative">
+          <span className="absolute left-4 text-gray-400 pointer-events-none">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.6 10.6z"/></svg>
+          </span>
+          <input
+            type="text"
+            placeholder="Buscar en ajustes..."
+            className="w-full pl-12 pr-4 py-2 rounded-lg border border-gray-200 dark:border-carbon-blue bg-gray-50 dark:bg-carbon-gray text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition"
+          />
+        </div>
+        {/* Toggle modo oscuro */}
+        <div className="w-full flex items-center justify-between gap-4 mb-4">
+          <span className="flex items-center gap-2 text-blue-700 dark:text-cyber-blue font-semibold">
+            <span className="text-2xl">🌞</span> Modo oscuro
+          </span>
+          <button
+            className={`relative w-16 h-8 rounded-full transition-colors duration-300 focus:outline-none ${isDark ? 'bg-cyber-blue' : 'bg-gray-300'} ${animDark ? 'ring-4 ring-cyber-blue/30' : ''}`}
+            onClick={handleThemeToggle}
+            aria-label="Cambiar modo oscuro"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <span className="text-3xl md:text-4xl drop-shadow-lg">{bloque.icono}</span>
-              <span className="font-gamer-title text-xl md:text-2xl text-cyber-blue drop-shadow">{bloque.titulo}</span>
-            </div>
-            <ul className="font-carbon-base text-base md:text-lg text-carbon-dark pl-2 list-disc list-inside">
-              {bloque.items.map(item => (
-                <li key={item} className="mb-1 font-gamer-body">{item}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-        {/* Zona secreta */}
-        <div className="rounded-[10px] border-2 border-cyber-blue shadow-xl p-6 flex flex-col gap-3 pixel-border bg-carbon-light hover:scale-[1.03] transition-transform duration-300 cursor-pointer" style={{ boxShadow: '0 0 8px #00f0ff33, 0 0 2px #fff' }} onClick={() => setShowSecret(v => !v)}>
-          <div className="flex items-center gap-3 mb-2">
-            <span className="text-3xl md:text-4xl drop-shadow-lg">🕵️‍♂️</span>
-            <span className="font-gamer-title text-xl md:text-2xl text-cyber-blue drop-shadow">Zona secreta</span>
-          </div>
-          {showSecret ? (
-            <ul className="font-carbon-base text-base md:text-lg text-carbon-dark pl-2 list-disc list-inside animate-fade-in">
-              <li className="font-gamer-body">Ingresar código promocional</li>
-              <li className="font-gamer-body">Resetear progreso (con advertencia)</li>
-              <li className="font-gamer-body">Easter egg: modo desarrollador oculto</li>
-            </ul>
-          ) : (
-            <div className="font-gamer-body text-cyber-blue/80 italic">Haz clic para descubrir...</div>
-          )}
+            <span
+              className={`absolute left-1 top-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-300 flex items-center justify-center text-lg ${isDark ? 'translate-x-8 bg-carbon-dark text-cyber-blue' : 'translate-x-0 text-yellow-400'}`}
+              style={{ transform: isDark ? 'translateX(2rem)' : 'translateX(0)' }}
+            >
+              {isDark ? '🌙' : '🌞'}
+            </span>
+          </button>
+        </div>
+        {/* Toggle notificaciones */}
+        <div className="w-full flex items-center justify-between gap-4 mb-2">
+          <span className="flex items-center gap-2 text-blue-700 dark:text-cyber-blue font-semibold">
+            <span className="text-2xl">🔔</span> Notificaciones
+          </span>
+          <button
+            className={`relative w-16 h-8 rounded-full transition-colors duration-300 focus:outline-none ${notificaciones ? 'bg-cyber-blue' : 'bg-gray-300'}`}
+            onClick={() => setNotificaciones(n => !n)}
+            aria-label="Cambiar notificaciones"
+          >
+            <span
+              className={`absolute left-1 top-1 w-6 h-6 rounded-full bg-white shadow transition-transform duration-300 flex items-center justify-center text-lg ${notificaciones ? 'translate-x-8 text-cyber-blue' : 'translate-x-0 text-gray-400'}`}
+              style={{ transform: notificaciones ? 'translateX(2rem)' : 'translateX(0)' }}
+            >
+              {notificaciones ? '🔔' : '🔕'}
+            </span>
+          </button>
         </div>
       </div>
+      {/* Botón de log-out */}
+      <button
+        className="mt-8 px-6 py-3 rounded-lg bg-red-500 text-white font-bold shadow hover:bg-red-600 transition-colors border border-red-600"
+        onClick={logout}
+      >
+        Cerrar sesión
+      </button>
     </div>
   );
 };

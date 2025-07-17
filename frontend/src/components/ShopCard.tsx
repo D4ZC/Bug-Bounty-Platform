@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 
 // Imágenes ficticias relacionadas con tienda
 const shopImages = [
-  'https://images.unsplash.com/photo-144198630917-64674d600d8c?auto=format&fit=crop&w=400&q=80', // Tienda de ropa
-  'https://images.unsplash.com/photo-1556742049-0c9c-4f5b-8c1a-0b5e5b9b2c5d?auto=format&fit=crop&w=400&q=80', // Tienda de tecnología
-  'https://images.unsplash.com/photo-1441984904996-e0b6ba6874b1?auto=format&fit=crop&w=400&q=80', // Tienda de libros
-  'https://images.unsplash.com/photo-1472851294608-624d29cc6e51?auto=format&fit=crop&w=400&q=80', // Tienda de juguetes
-  'https://images.unsplash.com/photo-1564723542431-b33ff0c44443?auto=format&fit=crop&w=400&q=80', // Tienda de deportes
+  'https://images.unsplash.com/photo-1515168833906-d2a3b82b1a5e?auto=format&fit=crop&w=400&q=80', // Carrito de compras
+  'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80', // Zapatos
+  'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80', // Reloj
+  'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80', // Promoción/descuento
+  'https://images.unsplash.com/photo-1513708927688-890a1e2b6b94?auto=format&fit=crop&w=400&q=80', // Audífonos
 ];
 
 const ShopCard: React.FC = () => {

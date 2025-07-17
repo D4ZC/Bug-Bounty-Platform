@@ -320,3 +320,18 @@ export interface ContributionForm {
   content: string;
   tags: string[];
 } 
+
+// CardData para vulnerabilidades creadas por el usuario (formulario)
+export interface CardData {
+  id: string;
+  nombre: string;
+  fecha: string;
+  jugador: string;
+  descripcion: string;
+  imagenUrl?: string;
+  likes: number;
+  dislikes: number;
+  userVote?: 'like' | 'dislike' | null;
+  createdAt: number;
+  email: string;
+} 

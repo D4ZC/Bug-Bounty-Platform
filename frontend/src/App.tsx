@@ -24,6 +24,7 @@ import UsersScorePage from '@/pages/UsersScorePage';
 import FormularioPage from '@/pages/formulario';
 import CrearVulnerabilidad from '@/pages/formulario/crear';
 import Ajustes from '@/pages/Ajustes';
+import GulagDesafio from '@/pages/GulagDesafio';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -54,6 +55,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
+          <Route path="gulag/desafio/:id" element={<GulagDesafio />} />
           <Route path="mvp" element={<MVP />} />
           <Route path="teams-score" element={<TeamsScorePage />} />
           <Route path="users-score" element={<UsersScorePage />} />
