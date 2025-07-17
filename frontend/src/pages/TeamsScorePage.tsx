@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import TeamCard from '../components/TeamCard';
 import { useNavigate, useLocation } from 'react-router-dom';
+import TeamRankingTable from '../components/TeamRankingTable'; // Added import for TeamRankingTable
+import TrophySection from '../components/TrophySection'; // Added import for TrophySection
 
 const mockTeams = [
   {
@@ -56,39 +58,39 @@ const TeamsScorePage: React.FC = () => {
 
   return (
     <>
-      {/* Submenú barra secundaria */}
-      <div className="bg-transparent h-[30px] flex items-center w-screen">
-        <div
-          className={`mr-6 cursor-pointer font-semibold text-blue-600 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] rounded-lg shadow-[0_2px_8px_0_rgba(0,0,0,0.7)] px-3 py-1" style={{ fontFamily: 'Arial Black, Arial, sans-serif' }} ${location.pathname === '/users-score' ? 'text-green-500' : ''}`}
-          onClick={() => navigate('/users-score')}
-        >
-          USUARIOS
-        </div>
-        <div
-          className={`cursor-pointer font-semibold text-blue-600 drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)] rounded-lg shadow-[0_2px_8px_0_rgba(0,0,0,0.7)] px-3 py-1" style={{ fontFamily: 'Arial Black, Arial, sans-serif' }} ${location.pathname === '/teams-score' ? 'text-green-500' : ''}`}
-          onClick={() => navigate('/teams-score')}
-        >
-          EQUIPOS
+      {/* Botones agrupados tipo GULAG */}
+      <div className="flex justify-center my-8">
+        <div className="flex gap-2 bg-[#abebc6] rounded-lg p-2 shadow-sm">
+          {[
+            { key: '/users-score', label: 'USUARIOS' },
+            { key: '/teams-score', label: 'EQUIPOS' }
+          ].map(btn => (
+            <button
+              key={btn.key}
+              onClick={() => navigate(btn.key)}
+              className={`px-6 py-2 rounded-md font-semibold transition-all duration-200 shadow-sm
+                ${location.pathname === btn.key
+                  ? 'bg-green-400 text-white scale-105'
+                  : 'bg-white text-gray-700 hover:bg-green-200'}
+              `}
+              style={{ minWidth: 120 }}
+            >
+              {btn.label}
+            </button>
+          ))}
         </div>
       </div>
+      {/* Sección de copas y estrellas */}
+      <TrophySection />
       {/* Contenido principal */}
       <div className="max-w-4xl mx-auto py-8" ref={containerRef}>
         <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
           Clasificación {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
         </div>
         <div className="mb-2 text-lg font-bold text-gray-700">{totalVulns} vulnerabilidades resueltas</div>
-        <div className="mb-4 text-base font-semibold text-gray-600">Teams</div>
-        <div className="grid gap-6">
-          {sortedTeams.map((team, idx) => (
-            <TeamCard
-              key={team.id}
-              team={team}
-              expanded={expanded === team.id}
-              onExpand={() => setExpanded(expanded === team.id ? null : team.id)}
-              ranking={idx + 1}
-            />
-          ))}
-        </div>
+        <div className="mb-4 text-base font-semibold text-gray-600">Equipos</div>
+        {/* Tabla de equipos con el mismo estilo que UserRankingTable */}
+        <TeamRankingTable teams={sortedTeams} />
       </div>
     </>
   );

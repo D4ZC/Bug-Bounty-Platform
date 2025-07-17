@@ -24,6 +24,7 @@ const mockUser = {
   likes: 100,
   dislikes: 200,
   description: 'Bug hunter, gamer y entusiasta de la ciberseguridad.',
+  email: 'alex.turner@email.com',
 };
 
 const Profile: React.FC = () => {
@@ -44,6 +45,11 @@ const Profile: React.FC = () => {
     isOpen: false,
     item: null
   });
+  const [email, setEmail] = useState(mockUser.email);
+  const [editEmail, setEditEmail] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [profilePic, setProfilePic] = useState<string | null>(null);
+  const [frame, setFrame] = useState('default');
 
   // Auto-slide del carrusel
   React.useEffect(() => {
@@ -160,7 +166,7 @@ const Profile: React.FC = () => {
             </div>
             {/* Botones debajo del avatar */}
             <div className="flex gap-4 mt-4">
-              <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowEdit(true)}>EDITAR PERFIL</button>
+              <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowEditProfile(true)}>EDITAR PERFIL</button>
               <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowPassword(true)}>CAMBIAR CONTRASEÑA</button>
             </div>
             {/* Caja de descripción */}
@@ -192,6 +198,13 @@ const Profile: React.FC = () => {
             <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
               <span className="font-bold text-gray-700 mb-1">NOMBRE</span>
               <input className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={name} onChange={e => setName(e.target.value)} />
+              {/* Correo debajo del nombre */}
+              <div className="w-full mt-2 flex flex-col items-center">
+                <span className="font-bold text-gray-700 mb-1">CORREO</span>
+                <div className="flex items-center gap-2">
+                  <span className="font-carbon-base text-gray-700">{email}</span>
+                </div>
+              </div>
             </div>
             <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
               <span className="font-bold text-gray-700 mb-1">PAÍS</span>
@@ -287,32 +300,33 @@ const Profile: React.FC = () => {
       />
 
       {/* Modales de edición y cambio de contraseña (reutilizados) */}
-      {showEdit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 relative">
-            <button onClick={() => setShowEdit(false)} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
-            <h2 className="text-xl font-bold mb-4">Editar Perfil</h2>
-            {/* Aquí va el formulario de edición */}
-            <form className="flex flex-col gap-4">
-              <label className="font-semibold text-gray-700">Nombre
-                <input type="text" className="input mt-1 w-full border rounded px-3 py-2" value={name} onChange={e => setName(e.target.value)} />
+      {showEditProfile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-[90vw] max-w-md flex flex-col items-center border-2 border-cyber-blue animate-fade-in">
+            <h2 className="font-gamer-title text-2xl text-cyber-blue mb-4">Editar Perfil</h2>
+            <div className="w-full flex flex-col gap-4">
+              <label className="font-bold text-gray-700">Nombre
+                <input className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" value={name} onChange={e => setName(e.target.value)} />
               </label>
-              <label className="font-semibold text-gray-700">País
-                <select className="input mt-1 w-full border rounded px-3 py-2" value={country} onChange={e => setCountry(e.target.value)}>
-                  <option value="Germany">🇩🇪 Germany</option>
-                  <option value="Mexico">🇲🇽 Mexico</option>
-                  <option value="USA">🇺🇸 USA</option>
-                  <option value="Spain">🇪🇸 Spain</option>
+              <label className="font-bold text-gray-700">Correo
+                <input className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" value={email} onChange={e => setEmail(e.target.value)} />
+              </label>
+              <label className="font-bold text-gray-700">Foto de perfil
+                <input type="file" accept="image/*" className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" onChange={e => setProfilePic(e.target.files?.[0] ? URL.createObjectURL(e.target.files[0]) : null)} />
+              </label>
+              <label className="font-bold text-gray-700">Marco
+                <select className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" value={frame} onChange={e => setFrame(e.target.value)}>
+                  <option value="default">Sin marco</option>
+                  <option value="fire">Fuego</option>
+                  <option value="neon">Neón</option>
+                  <option value="pixel">Pixel</option>
                 </select>
               </label>
-              <label className="font-semibold text-gray-700">Avatar
-                <input type="file" className="input mt-1 w-full" accept="image/*" />
-              </label>
-              <div className="flex justify-end gap-2">
-                <button type="button" className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold" onClick={() => setShowEdit(false)}>Cancelar</button>
-                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white font-bold">Guardar</button>
-              </div>
-            </form>
+            </div>
+            <div className="flex gap-2 justify-center mt-6">
+              <button className="px-3 py-1 rounded bg-gray-200 text-gray-800 font-bold" onClick={() => setShowEditProfile(false)}>Cancelar</button>
+              <button className="px-3 py-1 rounded bg-cyber-blue text-black font-bold" onClick={() => setShowEditProfile(false)}>Guardar</button>
+            </div>
           </div>
         </div>
       )}

@@ -23,6 +23,7 @@ import TeamsScorePage from '@/pages/TeamsScorePage';
 import UsersScorePage from '@/pages/UsersScorePage';
 import FormularioPage from '@/pages/formulario';
 import CrearVulnerabilidad from '@/pages/formulario/crear';
+import Ajustes from '@/pages/Ajustes';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -56,8 +57,9 @@ function App() {
           <Route path="mvp" element={<MVP />} />
           <Route path="teams-score" element={<TeamsScorePage />} />
           <Route path="users-score" element={<UsersScorePage />} />
-          <Route path="formulario" element={<FormularioPage />} />
           <Route path="formulario/crear" element={<CrearVulnerabilidad />} />
+          <Route path="formulario" element={<FormularioPage />} />
+          <Route path="ajustes" element={<Ajustes />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

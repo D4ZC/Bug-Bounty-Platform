@@ -30,8 +30,8 @@ const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
         <thead className="sticky top-0 z-10" style={{ backgroundColor: '#181A20' }}>
           <tr>
             <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Puesto</th>
-            <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Jugador</th>
-            <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Puntos</th>
+            <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Equipo</th>
+            <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Vulnerabilidades</th>
             <th className="px-4 py-3 text-center"></th>
           </tr>
         </thead>
@@ -43,7 +43,7 @@ const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
             return (
               <React.Fragment key={team.id}>
                 <tr className={`${rowBg} transition group`} style={{ borderBottom: '1px solid #E5E7EB' }}>
-                  <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">{idx + 1}</td>
+                  <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">🏆 <span className='ml-1'>{idx + 1}</span></td>
                   <td className="px-4 py-3 flex items-center gap-3 min-w-[160px] align-middle">
                     <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base shrink-0 ${color}`}>{initials}</span>
                     <span className="truncate max-w-[120px] font-medium text-gray-800" title={team.name}>{team.name}</span>
@@ -81,9 +81,9 @@ const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
                   <tr className="bg-[#F4F6FA]">
                     <td colSpan={4} className="px-6 pb-4 pt-2 rounded-b-xl">
                       <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Descripción:</span> {team.description}</div>
+                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Puntos:</span> {team.stats.puntos}</div>
                       <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Retos completados:</span> {team.stats.retos}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Puntos:</span> {team.stats.vulnerabilidades}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Integrantes:</span> {team.members.join(', ')}</div>
+                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Miembros:</span> {team.members.join(', ')}</div>
                     </td>
                   </tr>
                 )}

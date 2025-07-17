@@ -30,7 +30,7 @@ const ShopCard: React.FC = () => {
 
   return (
     <div
-      className="bg-white border border-gray-200 rounded-xl shadow-sm w-[290px] h-[275px] cursor-pointer overflow-hidden relative group"
+      className="bg-white border border-gray-200 rounded-xl shadow-sm w-full h-full cursor-pointer overflow-hidden relative group"
       onClick={handleCardClick}
       tabIndex={0}
       role="button"
@@ -50,7 +50,7 @@ const ShopCard: React.FC = () => {
           />
         ))}
         {/* Overlay con texto */}
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center pointer-events-none">
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center pointer-events-none w-full h-full">
           <h2 className="text-xl font-bold text-white text-center drop-shadow-lg select-none">
             TIENDA
           </h2>
@@ -69,7 +69,7 @@ const ShopCard: React.FC = () => {
           ))}
         </div>
         {/* Efecto hover */}
-        <div className="absolute inset-0 bg-blue-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center pointer-events-none" />
+        <div className="absolute inset-0 bg-blue-500 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center pointer-events-none w-full h-full" />
       </div>
     </div>
   );

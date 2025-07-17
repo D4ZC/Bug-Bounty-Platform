@@ -1,56 +1,140 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
-import { Bell, User, Menu, Home as HomeIcon, FileText } from 'lucide-react';
+import { Bell, User, Menu, Home as HomeIcon, FileText, Globe, Mail } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const NAVBAR_HEIGHT = 64 + 50; // altura original + 50px extra
 // Elimino SIDEBAR_HEIGHT y lógica de sidebar superior
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [formOpen, setFormOpen] = useState(false);
+  const [showLangModal, setShowLangModal] = useState(false);
+  const [showMsgModal, setShowMsgModal] = useState(false);
+  const [selectedMsg, setSelectedMsg] = useState(0);
   // Elimino lógica de menú hamburguesa y sidebar superior
+  const navigate = useNavigate();
+  // Mock de mensajes
+  const mensajes = [
+    { title: 'HOLA', content: '¡Bienvenido a la plataforma! Aquí recibirás tus notificaciones importantes.' },
+    { title: 'Recordatorio', content: 'No olvides revisar los nuevos retos de la semana.' },
+    { title: 'Actualización', content: 'Se han mejorado las funciones de la tienda. ¡Explora las novedades!' },
+  ];
   return (
     <div className="min-h-screen bg-transparent">
       {/* Navbar superior */}
-      <Header aria-label="Bug Bounty Platform" className="bg-softGray-dark flex items-center h-24 shadow-md transition-all duration-300 w-full">
+      <Header aria-label="Bug Bounty Platform" className="bg-[#000000] flex items-center h-24 shadow-md transition-all duration-300 w-full">
         <span
-          className="font-sans text-2xl font-bold tracking-wide text-gray-800 select-none ml-6"
-          style={{ fontFamily: 'Arial, sans-serif' }}
+          className="font-gamer-title text-2xl font-bold tracking-wide text-white select-none ml-6"
+          style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
         >
           BUG BOUNTY PLATFORM
         </span>
         <div className="flex-1" />
         <div className="flex items-center gap-6 mr-6">
-          <button aria-label="Notificaciones" className="text-gray-700 hover:text-primaryBlue-dark transition-colors">
-            <Bell size={28} />
+          <button aria-label="Mensajes" className="text-white hover:text-cyber-blue transition-colors" onClick={() => setShowMsgModal(true)}>
+            <Mail size={28} />
           </button>
-          <button aria-label="Perfil" className="text-gray-700 hover:text-primaryBlue-dark transition-colors">
+          <button aria-label="Perfil" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/profile')}>
             <User size={28} />
           </button>
         </div>
+        {/* Modal de mensajes */}
+        {showMsgModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-carbon-light rounded-xl shadow-2xl flex w-[500px] h-[300px] border-2 border-strong-blue animate-fade-in">
+              {/* Sección izquierda: lista de títulos */}
+              <div className="w-[120px] h-full border-r border-carbon-gray flex flex-col overflow-y-auto">
+                {mensajes.map((msg, idx) => (
+                  <button
+                    key={msg.title}
+                    className={`w-full px-2 py-2 text-left font-gamer-body text-sm border-b border-carbon-gray hover:bg-strong-blue hover:text-white transition-colors ${selectedMsg === idx ? 'bg-strong-blue text-white' : 'bg-transparent text-carbon-dark'}`}
+                    onClick={() => setSelectedMsg(idx)}
+                  >
+                    {msg.title}
+                  </button>
+                ))}
+              </div>
+              {/* Sección derecha: contenido del mensaje */}
+              <div className="flex-1 h-full p-4 flex flex-col justify-between">
+                <div className="font-gamer-body text-carbon-dark text-base mb-2">
+                  {mensajes[selectedMsg].content}
+                </div>
+                <button className="self-end mt-auto px-3 py-1 rounded bg-strong-blue text-white font-bold hover:bg-carbon-blue transition-colors" onClick={() => setShowMsgModal(false)}>Cerrar</button>
+              </div>
+            </div>
+          </div>
+        )}
       </Header>
       <div className="flex flex-1">
         {/* Sidebar lateral restaurado */}
-        <SideNav aria-label="Menú lateral" className="bg-white shadow-md min-h-full w-[250px] flex flex-col items-start py-4">
+        <SideNav aria-label="Menú lateral" className="bg-[#999999] shadow-md min-h-full w-[250px] flex flex-col items-start py-4">
           <SideNavItems>
-            <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full">
-              <Home size={24} />
-              <span className="text-gray-700 font-medium">Inicio</span>
+            <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
+              <Home size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">Inicio</span>
             </SideNavLink>
-            <SideNavLink href="/formulario" className="flex flex-row items-center gap-3 px-4 py-2 w-full">
-              <FileText size={24} />
-              <span className="text-gray-700 font-medium">Formulario</span>
+            {/* Formulario con submenú */}
+            <div className="w-full">
+              <button
+                type="button"
+                className="flex flex-row items-center gap-3 px-4 py-2 w-full focus:outline-none text-left text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base"
+                onClick={() => setFormOpen((v) => !v)}
+                aria-expanded={formOpen}
+                aria-controls="submenu-formulario"
+              >
+                <FileText size={24} color="#161616" />
+                <span className="font-gamer-body text-carbon-dark">Formulario</span>
+                <svg className={`ml-auto w-4 h-4 transition-transform ${formOpen ? 'rotate-90' : ''}`} fill="none" stroke="#161616" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+              </button>
+              {formOpen && (
+                <div id="submenu-formulario" className="pl-10 flex flex-col gap-1">
+                  <SideNavLink href="/formulario/crear" className="px-2 py-1 text-carbon-dark hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
+                  <SideNavLink href="/formulario" className="px-2 py-1 text-carbon-dark hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
+                </div>
+              )}
+            </div>
+            <SideNavLink href="/ajustes" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
+              <SettingsAdjust size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">Ajustes</span>
             </SideNavLink>
-            <SideNavLink href="/settings" className="flex flex-row items-center gap-3 px-4 py-2 w-full">
-              <SettingsAdjust size={24} />
-              <span className="text-gray-700 font-medium">Ajustes</span>
+            <SideNavLink
+              href="#"
+              className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base"
+              onClick={e => { e.preventDefault(); setShowLangModal(true); }}
+            >
+              <Globe size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">Idioma</span>
             </SideNavLink>
-            <SideNavLink href="/tablet" className="flex flex-row items-center gap-3 px-4 py-2 w-full">
-              <Tablet size={24} />
-              <span className="text-gray-700 font-medium">Tablet</span>
-            </SideNavLink>
-            <SideNavLink href="/add" className="flex flex-row items-center gap-3 px-4 py-2 w-full">
-              <Add size={24} />
-              <span className="text-gray-700 font-medium">Próximamente</span>
+            {/* Modal de idioma */}
+            {showLangModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+                <div className="bg-carbon-light rounded-xl shadow-2xl p-6 w-[90vw] max-w-md max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in">
+                  <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Selecciona tu idioma</h2>
+                  <div className="overflow-y-auto w-full flex flex-col gap-3">
+                    {['Español', 'Inglés', 'Mandarín', 'Alemán', 'Ruso', 'Francés'].map(lang => (
+                      <button
+                        key={lang}
+                        className="w-full py-2 px-4 rounded-lg font-gamer-body text-lg text-white bg-strong-blue hover:bg-carbon-blue hover:text-white transition-colors border border-strong-blue shadow-md"
+                        style={{ boxShadow: '0 0 8px #0000FF33' }}
+                        onClick={() => setShowLangModal(false)}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </div>
+                  <button
+                    className="mt-6 px-4 py-2 rounded font-gamer-body bg-strong-blue text-white hover:bg-carbon-blue transition-colors border border-strong-blue"
+                    onClick={() => setShowLangModal(false)}
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            )}
+            <SideNavLink href="/add" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
+              <Add size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">Próximamente</span>
             </SideNavLink>
           </SideNavItems>
         </SideNav>

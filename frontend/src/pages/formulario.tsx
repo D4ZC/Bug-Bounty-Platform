@@ -145,7 +145,6 @@ const FormularioPage: React.FC = () => {
 
   return (
     <div className="w-full flex flex-row min-h-screen">
-      <SidebarSecundario modo={modo} setModo={setModo} />
       <div className="flex-1 p-8 ml-2">
         <h2 className="text-2xl font-bold text-gray-800 mb-6">Vulnerabilidades Registradas</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

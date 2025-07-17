@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { SidebarSecundario } from '../formulario';
 
 const CrearVulnerabilidad: React.FC = () => {
   const [nombre, setNombre] = useState('');
@@ -27,7 +26,6 @@ const CrearVulnerabilidad: React.FC = () => {
 
   return (
     <div className="w-full flex flex-row min-h-screen">
-      <SidebarSecundario />
       <div className="flex-1 p-8 ml-2">
         <form className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md flex flex-col gap-4" onSubmit={handleSubmit}>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Crear Vulnerabilidad</h2>

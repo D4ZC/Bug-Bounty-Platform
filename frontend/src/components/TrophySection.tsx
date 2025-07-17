@@ -1,41 +1,4 @@
 import React from 'react';
-import UserRankingTable from '../components/UserRankingTable';
-import { useNavigate, useLocation } from 'react-router-dom';
-
-const mockUsers = [
-  {
-    id: 'U001',
-    name: 'Ana Torres',
-    role: 'Pentester',
-    team: 'P-TECH',
-    stats: { puntos: 1200, vulnerabilidades: 18, retos: 7 },
-    badges: ['Top Performer', 'Bug Hunter'],
-  },
-  {
-    id: 'U002',
-    name: 'Luis Pérez',
-    role: 'Analista',
-    team: 'Data',
-    stats: { puntos: 950, vulnerabilidades: 12, retos: 5 },
-    badges: ['Fast Solver'],
-  },
-  {
-    id: 'U003',
-    name: 'Marta López',
-    role: 'Red Team',
-    team: 'P-TECH',
-    stats: { puntos: 800, vulnerabilidades: 10, retos: 3 },
-    badges: ['Team Player'],
-  },
-];
-
-// Ordenar por vulnerabilidades resueltas (descendente)
-const sortedUsers = [...mockUsers].sort((a, b) => b.stats.vulnerabilidades - a.stats.vulnerabilidades);
-const totalVulns = sortedUsers.reduce((acc, u) => acc + u.stats.vulnerabilidades, 0);
-
-function getCurrentMonthName() {
-  return new Date().toLocaleString('es-ES', { month: 'long' });
-}
 
 // Componente de copas y estrellas cartoon con lluvia dinámica tipo Matrix
 const TrophySection: React.FC = () => {
@@ -218,46 +181,4 @@ const TrophyCartoonSVG: React.FC<{ color: string; className?: string; place: str
   </svg>
 );
 
-const UsersScorePage: React.FC = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  return (
-    <>
-      {/* Botones agrupados tipo GULAG */}
-      <div className="flex justify-center my-8">
-        <div className="flex gap-2 bg-[#fcf3cf] rounded-lg p-2 shadow-sm">
-          {[
-            { key: '/users-score', label: 'USUARIOS' },
-            { key: '/teams-score', label: 'EQUIPOS' }
-          ].map(btn => (
-            <button
-              key={btn.key}
-              onClick={() => navigate(btn.key)}
-              className={`px-6 py-2 rounded-md font-semibold transition-all duration-200 shadow-sm
-                ${location.pathname === btn.key
-                  ? 'bg-yellow-400 text-white scale-105'
-                  : 'bg-white text-gray-700 hover:bg-yellow-200'}
-              `}
-              style={{ minWidth: 120 }}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-      </div>
-      {/* Sección de copas y estrellas */}
-      <TrophySection />
-      {/* Contenido principal */}
-      <div className="max-w-4xl mx-auto py-8">
-        <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          Clasificación {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
-        </div>
-        <div className="mb-2 text-lg font-bold text-gray-700">{totalVulns} vulnerabilidades resueltas</div>
-        <div className="mb-4 text-base font-semibold text-gray-600">Usuarios</div>
-        <UserRankingTable users={sortedUsers} />
-      </div>
-    </>
-  );
-};
-
-export default UsersScorePage; 
+export default TrophySection; 

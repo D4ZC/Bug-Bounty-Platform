@@ -94,14 +94,7 @@ const UserRankingTable: React.FC<UserRankingTableProps> = ({ users }) => {
           })}
         </tbody>
       </table>
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={() => window.location.href = '/TeamsScorePage'}
-          className="px-4 py-2 bg-primaryBlue text-white rounded hover:bg-primaryBlue-dark transition-colors"
-        >
-          Ver ranking de equipos
-        </button>
-      </div>
+      {/* Elimino el botón de ranking de equipos */}
     </div>
   );
 };

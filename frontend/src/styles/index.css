@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -172,3 +173,20 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
 } 
+
+.font-gamer-title { font-family: 'Orbitron', Arial, sans-serif; }
+.font-gamer-body { font-family: 'Rajdhani', Arial, sans-serif; }
+.font-carbon-base { font-family: 'IBM Plex Sans', Arial, sans-serif; }
+.text-cyber-blue { color: #00f0ff; }
+.bg-cyber-blue { background-color: #00f0ff; }
+.text-carbon-blue { color: #0f62fe; }
+.bg-carbon-blue { background-color: #0f62fe; }
+.text-carbon-dark { color: #161616; }
+.bg-carbon-dark { background-color: #161616; }
+.text-carbon-gray { color: #393939; }
+.bg-carbon-gray { background-color: #393939; }
+.text-carbon-light { color: #f4f4f4; }
+.bg-carbon-light { background-color: #f4f4f4; } 
+.text-strong-blue { color: #0000FF; }
+.bg-strong-blue { background-color: #0000FF; }
+.border-strong-blue { border-color: #0000FF; } 

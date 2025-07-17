@@ -41,37 +41,54 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-[15px] justify-items-center">
-        {/* Card USUARIOS */}
-        <div
-          className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[290px] cursor-pointer"
-          onClick={() => navigate('/users-score')}
-          tabIndex={0}
-          role="button"
-          aria-label="Ver ranking de usuarios"
-        >
-          <h2 className="text-xl font-bold text-gray-700 text-center">USUARIOS</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 h-full">
+        {/* Columna 1: USUARIOS y GULAG */}
+        <div className="flex flex-col gap-4 h-full">
+          <div
+            className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-full h-[220px] cursor-pointer"
+            onClick={() => navigate('/users-score')}
+            tabIndex={0}
+            role="button"
+            aria-label="Ver ranking de usuarios"
+          >
+            <h2 className="text-xl font-bold text-gray-700 text-center">USUARIOS</h2>
+          </div>
+          <div
+            className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-full h-[220px] cursor-pointer"
+            onClick={() => navigate('/gulag')}
+            tabIndex={0}
+            role="button"
+            aria-label="Ver GULAG"
+          >
+            <h2 className="text-xl font-bold text-gray-700 text-center">GULAG</h2>
+          </div>
         </div>
-        {/* Card MVP */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[290px]">
-          <h2 className="text-xl font-bold text-gray-700 text-center">MVP</h2>
+        {/* Columna 2: MVP y TIENDA */}
+        <div className="flex flex-col gap-4 h-full">
+          <div
+            className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-full h-[220px] cursor-pointer"
+            onClick={() => navigate('/mvp')}
+            tabIndex={0}
+            role="button"
+            aria-label="Ver MVP"
+          >
+            <h2 className="text-xl font-bold text-gray-700 text-center">MVP</h2>
+          </div>
+          <div className="w-full h-[220px] flex items-center justify-center">
+            <ShopCard />
+          </div>
         </div>
-        {/* Card PERFIL (antes TIENDA, +30px altura) */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[370px] -mt-[30px] cursor-pointer" onClick={() => navigate('/profile')} tabIndex={0} role="button" aria-label="Ver perfil">
-          <h2 className="text-xl font-bold text-gray-700 text-center">PERFIL</h2>
+        {/* Columna 3: PERFIL */}
+        <div className="flex flex-col h-full">
+          <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-full h-[460px] md:h-full cursor-pointer"
+            onClick={() => navigate('/profile')}
+            tabIndex={0}
+            role="button"
+            aria-label="Ver perfil"
+          >
+            <h2 className="text-xl font-bold text-gray-700 text-center">PERFIL</h2>
+          </div>
         </div>
-        {/* Card GULAG (restar 15px de altura) */}
-        <div
-          className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[375px] -mt-[30px] cursor-pointer"
-          onClick={() => navigate('/gulag')}
-          tabIndex={0}
-          role="button"
-          aria-label="Ver GULAG"
-        >
-          <h2 className="text-xl font-bold text-gray-700 text-center">GULAG</h2>
-        </div>
-        {/* Card TIENDA (antes PERFIL) */}
-        <ShopCard />
       </div>
     </div>
   );
