@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, ShoppingCart, UserMultiple, User, Group } from '@carbon/icons-react';
-import { Settings } from '@carbon/icons-react';
+import { Home, ShoppingCart, UserMultiple, User, Group, Settings, Trophy } from '@carbon/icons-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 const navigationItems = [
   { icon: Home, label: 'Menú', path: '/dashboard', color: 'from-green-500 to-green-600' },
   { icon: ShoppingCart, label: 'Tienda', path: '/shop', color: 'from-yellow-500 to-yellow-600' },
+  { icon: Trophy, label: 'Misiones', path: '/missions', color: 'from-cyan-500 to-cyan-600' },
   { icon: User, label: 'Perfil', path: '/profile-customization', color: 'from-cyan-500 to-cyan-600' },
   { icon: Group, label: 'Equipo', path: '/team', color: 'from-orange-500 to-orange-600' },
   { icon: Settings, label: 'Ajustes', path: '/settings', color: 'from-cyan-500 to-cyan-700' }

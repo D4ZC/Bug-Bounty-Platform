@@ -1,8 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@carbon/react';
-import { UserAvatar, Trophy, Star, Edit, Home, Security, Code, ShoppingCart, UserMultiple, User, Group, Trophy as Award } from '@carbon/icons-react';
-import apiService from '@/services/api';
 import { useTranslation } from 'react-i18next';
 
 interface UserProfile {
@@ -37,6 +34,53 @@ const ProfileCustomization: React.FC = () => {
   const [customUsername, setCustomUsername] = useState(() => localStorage.getItem('profile_custom_username') || 'D4ZC');
   const [usernameInput, setUsernameInput] = useState(customUsername);
 
+  const mockFrames = [
+    { id: 'frame1', name: t('Marco Verde'), image: '/frames/green.png' },
+    { id: 'frame2', name: t('Marco Dorado'), image: '/frames/gold.png' },
+  ];
+  const mockTitles = [
+    t('Cazador de Bugs'),
+    t('Pentester'),
+    t('MVP'),
+  ];
+  const mockTitlesIds = ['title_bug_hunter', 'title_pentester', 'title_mvp'];
+  const mockBackgrounds = [
+    { id: 'bg1', name: t('Fondo Estático'), image: '/backgrounds/static1.jpg', animated: false },
+    { id: 'bg2', name: t('Fondo Animado'), image: '/backgrounds/animated1.gif', animated: true },
+  ];
+
+  const [selectedFrame, setSelectedFrame] = useState<string>('frame1');
+  const [selectedTitle, setSelectedTitle] = useState<string>('title_bug_hunter');
+  const [selectedBackground, setSelectedBackground] = useState<string>('bg1');
+  const [activeTab, setActiveTab] = useState(0); // BASIC por defecto
+
+  const getInitialInventory = () => {
+    try {
+      const inv = localStorage.getItem('user_inventory');
+      return inv ? JSON.parse(inv) : { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
+    } catch {
+      return { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
+    }
+  };
+
+  const [inventory, setInventory] = useState(getInitialInventory);
+
+  // Filtrar los ítems desbloqueados
+  const unlockedFrames = mockFrames.filter(f => inventory.frames.includes(f.id));
+  const unlockedTitles = mockTitles.filter((t, i) => inventory.titles.includes(mockTitlesIds[i]));
+  const unlockedBackgrounds = mockBackgrounds.filter(bg => inventory.backgrounds.includes(bg.id));
+
+  // Estado para animación de confeti al desbloquear logro
+  const [showConfetti, setShowConfetti] = useState(false);
+  const confettiTimeout = useRef<NodeJS.Timeout | null>(null);
+
+  // Simular desbloqueo de logro (puedes conectar esto a tu lógica real)
+  const handleUnlockAchievement = (id: string) => {
+    setShowConfetti(true);
+    if (confettiTimeout.current) clearTimeout(confettiTimeout.current);
+    confettiTimeout.current = setTimeout(() => setShowConfetti(false), 2000);
+  };
+
   useEffect(() => {
     // Cargar datos del perfil (simulado por ahora)
     const mockProfile: UserProfile = {
@@ -62,11 +106,38 @@ const ProfileCustomization: React.FC = () => {
     setProfile(mockProfile);
     setAchievements(mockAchievements);
     setLoading(false);
-  }, []);
+  }, [t]);
 
   const handleAvatarEdit = () => {
+    // Guardar en sessionStorage que se viene de editar avatar
+    sessionStorage.setItem('returnToBasic', 'true');
     navigate('/avatar-selection');
   };
+
+  // Handler para editar marco (nuevo)
+  const handleFrameEdit = () => {
+    sessionStorage.setItem('returnToBasic', 'true');
+    navigate('/frame-selection');
+  };
+
+  // Handler para editar título
+  const handleTitleEdit = () => {
+    sessionStorage.setItem('returnToBasic', 'true');
+    navigate('/title-selection');
+  };
+  // Handler para editar fondo
+  const handleBackgroundEdit = () => {
+    sessionStorage.setItem('returnToBasic', 'true');
+    navigate('/background-selection');
+  };
+
+  // Al montar, si se viene de seleccionar avatar, regresar a BASIC
+  useEffect(() => {
+    if (sessionStorage.getItem('returnToBasic')) {
+      setActiveTab(0);
+      sessionStorage.removeItem('returnToBasic');
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -97,174 +168,160 @@ const ProfileCustomization: React.FC = () => {
     setProfile({ ...profile, username: usernameInput });
   };
 
+  const tabLabels = [
+    // t('LEVEL UNLOCK'),
+    t('BASIC'),
+    t('ACHIEVEMENTS'),
+    t('COLLECTION'),
+    // t('HISTORY'),
+  ];
+
   return (
-    <div className="min-h-screen bg-app text-app p-8 font-mono">
-      {/* Navbar horizontal eliminada */}
+    <div className="flex min-h-screen bg-gradient-to-br from-gray-900 to-black text-white font-mono">
+      {/* Sidebar */}
+      <aside className="w-64 bg-black/90 border-r-2 border-gray-700 flex flex-col p-4">
+        {tabLabels.map((label, idx) => (
+          <button
+            key={label}
+            className={`mb-2 py-3 px-4 text-lg font-bold rounded-lg text-left transition-all ${
+              activeTab === idx
+                ? 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-black shadow-lg'
+                : 'bg-gray-800 text-gray-200 hover:bg-gray-700'
+            }`}
+            onClick={() => setActiveTab(idx)}
+          >
+            {label}
+          </button>
+        ))}
+      </aside>
 
-      <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-10 text-center tracking-widest bg-gradient-to-r from-green-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent animate-pulse">
-          {t('Personalización de Perfil')}
-        </h1>
-        
-        {/* Información del perfil */}
-        <div className="bg-card border-2 border-card rounded-xl shadow-2xl p-8 mb-8 backdrop-blur-sm">
-          <div className="flex flex-col items-center">
-            {/* Avatar con icono de edición */}
-            <div className="mb-6 relative group">
-              <div className="relative">
-                {profile.avatar ? (
-                  <img 
-                    src={profile.avatar} 
-                    alt="Avatar" 
-                    className="w-32 h-32 rounded-full border-4 border-green-500 shadow-2xl animate-pulse"
-                  />
-                ) : (
-                  <div className="w-32 h-32 rounded-full border-4 border-green-500 shadow-2xl bg-gradient-to-br from-green-600 to-blue-600 flex items-center justify-center animate-pulse">
-                    <UserAvatar size={64} className="text-white" />
-                  </div>
-                )}
-                
-                {/* Icono de lápiz en la esquina inferior derecha */}
-                <button
-                  onClick={handleAvatarEdit}
-                  className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 hover:bg-green-400 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 hover:scale-110 group-hover:opacity-100 opacity-80"
-                >
-                  <Edit size={16} className="text-white" />
-                </button>
-              </div>
-              
-              {/* Efecto de brillo */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-green-400/20 to-transparent animate-pulse"></div>
-            </div>
-
-            {/* Nombre y ID */}
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center mb-2">
-                {editingUsername ? (
-                  <>
-                    <input
-                      className="bg-black border-2 border-cyan-700 rounded-lg px-2 py-1 text-cyan-300 text-3xl font-bold w-48 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                      value={usernameInput}
-                      onChange={e => setUsernameInput(e.target.value)}
-                      autoFocus
-                    />
-                    <button onClick={handleSaveUsername} className="ml-2 px-2 py-1 border-2 border-green-700 rounded-lg text-green-400 hover:bg-green-900/20 font-bold">{t('Guardar')}</button>
-                    <button onClick={() => { setEditingUsername(false); setUsernameInput(customUsername); }} className="ml-1 px-2 py-1 border-2 border-red-700 rounded-lg text-red-400 hover:bg-red-900/20 font-bold">{t('Cancelar')}</button>
-                  </>
-                ) : (
-                  <>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent mb-2 animate-pulse">{customUsername}</h2>
-                    <button onClick={() => setEditingUsername(true)} className="ml-2 px-2 py-1 border-2 border-cyan-700 rounded-lg text-cyan-400 hover:bg-cyan-900/20 font-bold text-base">{t('Editar')}</button>
-                  </>
-                )}
-              </div>
-              {/* Custom title editable */}
-              <div className="flex items-center justify-center mb-2">
-                {editingTitle ? (
-                  <>
-                    <input
-                      className="bg-black border-2 border-cyan-700 rounded-lg px-2 py-1 text-cyan-300 text-lg font-bold w-48 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-                      value={titleInput}
-                      onChange={e => setTitleInput(e.target.value)}
-                      autoFocus
-                    />
-                    <button onClick={handleSaveTitle} className="ml-2 px-2 py-1 border-2 border-green-700 rounded-lg text-green-400 hover:bg-green-900/20 font-bold">{t('Guardar')}</button>
-                    <button onClick={() => { setEditingTitle(false); setTitleInput(customTitle); }} className="ml-1 px-2 py-1 border-2 border-red-700 rounded-lg text-red-400 hover:bg-red-900/20 font-bold">{t('Cancelar')}</button>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-cyan-300 text-lg font-semibold">{customTitle}</span>
-                    <button onClick={() => setEditingTitle(true)} className="ml-2 px-2 py-1 border-2 border-cyan-700 rounded-lg text-cyan-400 hover:bg-cyan-900/20 font-bold text-base">{t('Editar')}</button>
-                  </>
-                )}
-              </div>
-              <div className="flex items-center justify-center space-x-2">
-                <span className="text-green-300 text-sm">{t('ID')}:</span>
-                <span className="text-cyan-300 font-mono text-sm bg-gradient-to-r from-gray-800/50 to-blue-800/50 px-3 py-1 rounded-lg border border-green-500/50 backdrop-blur-sm">
-                  {profile._id}
-                </span>
-              </div>
-            </div>
-
-            {/* Estadísticas */}
-            <div className="flex space-x-8 mb-6">
-              <div className="text-center bg-gradient-to-br from-green-800/30 to-green-600/30 p-4 rounded-lg border border-green-500/30 backdrop-blur-sm">
-                <div className="text-2xl font-bold text-green-300">{profile.points}</div>
-                <div className="text-sm text-green-200">{t('Puntos')}</div>
-              </div>
-              <div className="text-center bg-gradient-to-br from-blue-800/30 to-blue-600/30 p-4 rounded-lg border border-blue-500/30 backdrop-blur-sm">
-                <div className="text-2xl font-bold text-blue-300">#{profile.rank}</div>
-                <div className="text-sm text-blue-200">{t('Ranking')}</div>
-              </div>
-              <div className="text-center bg-gradient-to-br from-cyan-800/30 to-cyan-600/30 p-4 rounded-lg border border-cyan-500/30 backdrop-blur-sm">
-                <div className="text-2xl font-bold text-cyan-300">{profile.achievements.length}</div>
-                <div className="text-sm text-cyan-200">{t('Logros')}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Sección de Logros */}
-        <div className="bg-card border-2 border-card rounded-xl shadow-2xl p-8 backdrop-blur-sm">
-          <div className="flex items-center mb-6">
-            <Trophy size={32} className="text-green-400 mr-3 animate-bounce" />
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-cyan-400 bg-clip-text text-transparent">
-              {t('Logros Obtenidos')}
-            </h3>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {achievements.map((achievement, index) => (
-              <div 
-                key={achievement.id}
-                className={`p-4 rounded-lg border-2 transition-all duration-300 transform hover:scale-105 ${
-                  achievement.unlocked 
-                    ? 'bg-gradient-to-br from-green-600/30 via-blue-600/30 to-cyan-600/30 border-green-400/50 hover:border-green-300 shadow-lg hover:shadow-green-500/25' 
-                    : 'bg-gradient-to-br from-gray-800/30 via-gray-700/30 to-gray-900/30 border-gray-600/50 opacity-50 hover:opacity-70'
-                }`}
-                style={{ animationDelay: `${index * 100}ms` }}
+      {/* Main content */}
+      <main className="flex-1 p-8">
+        {/* BASIC TAB: Tarjeta de vista principal */}
+        {activeTab === 0 && (
+          <div className="flex justify-center">
+            <div className="bg-gradient-to-br from-cyan-900 via-gray-900 to-black rounded-2xl p-10 border-4 border-cyan-500/40 shadow-2xl flex flex-col items-center w-full max-w-2xl relative overflow-hidden animate-fade-in">
+              {/* Partículas SVG animadas */}
+              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ opacity: 0.18 }}>
+                <circle cx="80" cy="80" r="60" fill="#00fff7" opacity="0.12">
+                  <animate attributeName="r" values="60;80;60" dur="4s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="300" cy="120" r="40" fill="#FFD700" opacity="0.10">
+                  <animate attributeName="r" values="40;60;40" dur="5s" repeatCount="indefinite" />
+                </circle>
+                <circle cx="200" cy="200" r="30" fill="#ff00cc" opacity="0.10">
+                  <animate attributeName="r" values="30;50;30" dur="6s" repeatCount="indefinite" />
+                </circle>
+              </svg>
+              {/* Eliminado: showConfetti y animación de confeti */}
+              {/* Glow y partículas decorativas */}
+              <div className="absolute -top-10 -left-10 w-40 h-40 bg-cyan-400/20 rounded-full blur-2xl animate-pulse z-0" />
+              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-2xl animate-pulse z-0" />
+              <div
+                className="relative cursor-pointer group mb-4 z-10"
+                onClick={handleAvatarEdit}
+                title={t('Seleccionar Avatar')}
               >
-                <div className="flex items-center space-x-3">
-                  <div className={`text-2xl ${achievement.unlocked ? 'opacity-100 animate-pulse' : 'opacity-30'}`}>
-                    {achievement.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className={`font-bold text-sm ${achievement.unlocked ? 'text-green-200' : 'text-gray-400'}`}>
-                      {achievement.name}
-                    </h4>
-                    <p className={`text-xs mt-1 ${achievement.unlocked ? 'text-green-100' : 'text-gray-500'}`}>
-                      {achievement.description}
-                    </p>
-                  </div>
-                  {achievement.unlocked && (
-                    <div className="text-green-400 animate-pulse">
-                      <Star size={16} />
-                    </div>
-                  )}
+                <img
+                  src={profile.avatar || '/default-avatar.png'}
+                  alt="Avatar"
+                  className="w-40 h-40 object-cover rounded-2xl border-4 border-cyan-400 shadow-2xl transition-all duration-200 group-hover:scale-105 group-hover:border-yellow-400 animate-glow"
+                  style={{ aspectRatio: '1 / 1', boxShadow: '0 0 32px 0 #00fff7, 0 0 0 4px #222' }}
+                />
+                <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-lg shadow-lg animate-bounce">{t('Editar')}</div>
+              </div>
+              <div className="text-3xl font-extrabold text-cyan-200 mb-1 drop-shadow-lg tracking-wide flex items-center gap-2">
+                {customUsername}
+                <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-2 py-1 rounded-lg text-xs font-bold ml-2 shadow">{t('PRO')}</span>
+              </div>
+              <div className="text-cyan-400 text-lg mb-2 font-semibold tracking-wide">{customTitle}</div>
+              <div className="flex gap-2 mb-2">
+                <span className="bg-gray-800/80 px-2 py-1 rounded text-xs border border-cyan-500/30 shadow">UID: {profile._id}</span>
+                <span className="bg-gray-800/80 px-2 py-1 rounded text-xs border border-cyan-500/30 shadow">{t('Puntos')}: <span className="text-yellow-300 font-bold">{profile.points}</span></span>
+                <span className="bg-gray-800/80 px-2 py-1 rounded text-xs border border-cyan-500/30 shadow">{t('Ranking')}: <span className="text-cyan-300 font-bold">#{profile.rank}</span></span>
+              </div>
+              <div className="grid grid-cols-3 gap-6 mt-6 w-full">
+                <div className="bg-gradient-to-br from-cyan-800/80 to-cyan-400/20 rounded-xl p-6 border-2 border-cyan-400/40 shadow-lg flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-pop-in">
+                  <div className="text-xs text-cyan-200 mb-1 tracking-wider">{t('Tarjeta de Juego')}</div>
+                  <span className="text-2xl font-bold text-cyan-100">{profile.rank}</span>
                 </div>
+                <div className="bg-gradient-to-br from-yellow-700/80 to-yellow-400/20 rounded-xl p-6 border-2 border-yellow-400/40 shadow-lg flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-pop-in">
+                  <div className="text-xs text-yellow-200 mb-1 tracking-wider">{t('Me gusta')}</div>
+                  <span className="text-2xl font-bold text-yellow-100">1226</span>
+                </div>
+                <div className="bg-gradient-to-br from-pink-800/80 to-pink-400/20 rounded-xl p-6 border-2 border-pink-400/40 shadow-lg flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-pop-in">
+                  <div className="text-xs text-pink-200 mb-1 tracking-wider">{t('Tasa de MVP')}</div>
+                  <span className="text-2xl font-bold text-pink-100">-</span>
+                </div>
+              </div>
+              {/* Botón para editar marco */}
+              <button onClick={handleFrameEdit} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs hover:bg-cyan-500 transition">{t('Editar Marco')}</button>
+              <button onClick={handleTitleEdit} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs hover:bg-cyan-500 transition">{t('Editar Título')}</button>
+              <button onClick={handleBackgroundEdit} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs hover:bg-cyan-500 transition">{t('Editar Fondo')}</button>
+            </div>
+          </div>
+        )}
+        {/* ACHIEVEMENTS TAB: Solo logros */}
+        {activeTab === 1 && (
+          <div className="flex flex-wrap gap-6 justify-center animate-fade-in-up">
+            {achievements.map(ach => (
+              <div
+                key={ach.id}
+                className={`p-6 rounded-2xl border-2 shadow-xl flex flex-col items-center min-w-[160px] max-w-xs relative ${ach.unlocked ? 'bg-gradient-to-br from-green-600/40 via-blue-600/30 to-cyan-600/30 border-green-400/60 animate-glow' : 'bg-gradient-to-br from-gray-800/30 via-gray-700/30 to-gray-900/30 border-gray-600/50 opacity-50'}`}
+                onClick={() => ach.unlocked && handleUnlockAchievement(ach.id)}
+                style={{ cursor: ach.unlocked ? 'pointer' : 'default' }}
+                title={ach.description}
+              >
+                <div className="text-4xl mb-2 drop-shadow-lg">{ach.icon}</div>
+                <div className="font-bold text-base text-cyan-100 mb-1 text-center">{ach.name}</div>
+                <div className="text-xs mt-1 text-cyan-200 text-center">{ach.description}</div>
+                {ach.unlocked && <span className="mt-2 px-2 py-1 bg-yellow-400 text-black text-xs font-bold rounded shadow animate-bounce">{t('Desbloqueado')}</span>}
               </div>
             ))}
           </div>
-
-          {/* Resumen de logros */}
-          <div className="mt-6 p-4 bg-card rounded-lg border-2 border-card backdrop-blur-sm">
-            <div className="flex items-center justify-between">
-              <span className="text-green-200">{t('Progreso de Logros')}:</span>
-              <span className="text-green-100 font-bold">
-                {achievements.filter(a => a.unlocked).length} / {achievements.length}
-              </span>
+        )}
+        {/* COLLECTION TAB: Inventario visual */}
+        {activeTab === 2 && (
+          <div className="flex flex-col gap-8 items-center animate-fade-in-up">
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-cyan-200 tracking-wide">{t('Marcos')}</h3>
+              <div className="flex gap-6 flex-wrap justify-center">
+                {mockFrames.map(frame => (
+                  <div
+                    key={frame.id}
+                    className="flex flex-col items-center bg-gray-900/80 rounded-xl p-4 border-2 border-cyan-700 shadow hover:scale-110 transition-transform duration-200 animate-pop-in"
+                    title={frame.name}
+                  >
+                    <img src={frame.image} alt={frame.name} className="w-16 h-16 object-contain border-2 rounded-lg mb-2" />
+                    <span className="text-xs text-cyan-200 font-bold">{frame.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="w-full bg-gray-700 rounded-full h-3 mt-2">
-              <div 
-                className="bg-gradient-to-r from-green-500 via-cyan-500 to-blue-500 h-3 rounded-full transition-all duration-500 animate-pulse"
-                style={{ 
-                  width: `${(achievements.filter(a => a.unlocked).length / achievements.length) * 100}%` 
-                }}
-              ></div>
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-cyan-200 tracking-wide">{t('Títulos')}</h3>
+              <div className="flex gap-6 flex-wrap justify-center">
+                {mockTitles.map((title, i) => (
+                  <div key={mockTitlesIds[i]} className="px-4 py-2 bg-gradient-to-r from-cyan-700 to-cyan-400 rounded-lg border-2 border-cyan-700 text-white font-bold text-base shadow hover:scale-105 transition-transform duration-200">
+                    {title}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-cyan-200 tracking-wide">{t('Fondos')}</h3>
+              <div className="flex gap-6 flex-wrap justify-center">
+                {mockBackgrounds.map(bg => (
+                  <div key={bg.id} className="flex flex-col items-center bg-gray-900/80 rounded-xl p-4 border-2 border-cyan-700 shadow hover:scale-105 transition-transform duration-200">
+                    <img src={bg.image} alt={bg.name} className="w-24 h-14 object-cover rounded-lg mb-2" />
+                    <span className="text-xs text-cyan-200 font-bold">{bg.name}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
+      </main>
     </div>
   );
 };

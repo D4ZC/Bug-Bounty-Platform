@@ -17,7 +17,7 @@ interface ThemeProviderProps {
 export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     const saved = localStorage.getItem('theme');
-    return (saved as Theme) || 'system';
+    return (saved as Theme) || 'dark'; // Cambia 'system' por 'dark' para que el default sea oscuro
   });
 
   const [isDark, setIsDark] = useState(false);

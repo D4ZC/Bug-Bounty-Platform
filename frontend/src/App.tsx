@@ -24,6 +24,10 @@ import MensualRanking from '@/pages/Mensual Ranking User';
 import CuatrimestralRankingTeams from '@/pages/Cuatrimestral Ranking Teams';
 import ProfileCustomization from '@/pages/ProfileCustomization';
 import AvatarSelection from '@/pages/AvatarSelection';
+import Missions from '@/pages/Missions';
+import FrameSelection from '@/pages/FrameSelection';
+import TitleSelection from '@/pages/TitleSelection';
+import BackgroundSelection from '@/pages/BackgroundSelection';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -52,10 +56,14 @@ function App() {
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="missions" element={<Missions />} />
           <Route path="mensual-ranking" element={<MensualRanking />} />
           <Route path="cuatrimestral-ranking-teams" element={<CuatrimestralRankingTeams />} />
           <Route path="profile-customization" element={<ProfileCustomization />} />
           <Route path="avatar-selection" element={<AvatarSelection />} />
+          <Route path="frame-selection" element={<FrameSelection />} />
+          <Route path="title-selection" element={<TitleSelection />} />
+          <Route path="background-selection" element={<BackgroundSelection />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Route>

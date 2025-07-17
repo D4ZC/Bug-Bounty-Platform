@@ -26,7 +26,7 @@ const CuatrimestralRankingTeams: React.FC = () => {
     <div className="min-h-screen bg-app text-app p-8 font-mono flex flex-col items-center">
       <h1 className="text-4xl font-bold mb-10 text-yellow-300 text-center tracking-widest">{t('Ranking Cuatrimestral de Equipos')}</h1>
       <div className="w-full max-w-2xl mt-4 border border-yellow-700 rounded-xl p-6 bg-card">
-        <h2 className="text-yellow-300 text-lg font-bold mb-4 tracking-wide">{t('TOP 5 EQUIPOS DEL CUATRIMESTRE')} (3-10 {t('Miembros').toLowerCase()})</h2>
+        <h2 className="text-yellow-300 text-lg font-bold mb-4 tracking-wide">{t('TOP 5 EQUIPOS DEL CUATRIMESTRE')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-yellow-100 text-sm">
             <thead>

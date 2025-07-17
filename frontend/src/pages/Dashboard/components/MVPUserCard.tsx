@@ -14,7 +14,7 @@ const MVPUserCard: React.FC<{ user: MVPUser }> = ({ user }) => {
       <h3 className="text-2xl font-bold text-pink-300 mb-2 text-center">{t('MVP Usuario')}</h3>
       <div className="flex flex-col items-center">
         <div className="w-16 h-16 rounded-full bg-pink-700 mb-2" />
-        <span className="text-pink-200 font-bold text-lg mb-1">{user.name}</span>
+        <span className="text-pink-200 font-bold text-lg mb-1">{t(user.name)}</span>
         <span className="text-pink-100 text-xs">{user.stats.total} {t('puntos_abbr')}</span>
       </div>
     </div>

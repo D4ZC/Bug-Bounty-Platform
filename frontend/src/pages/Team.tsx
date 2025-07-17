@@ -72,10 +72,7 @@ function isCurrentUserLeader(members: TeamMember[]) {
 const Team: React.FC = () => {
   const { t } = useTranslation();
   
-  // Función para traducir roles
-  const translateRole = (role: string) => {
-    return t(role) || role;
-  };
+  // Eliminar la función translateRole y su uso.
   
   const [members, setMembers] = useState<TeamMember[]>(() => {
     const saved = localStorage.getItem(TEAM_STORAGE_KEY);
@@ -135,12 +132,12 @@ const Team: React.FC = () => {
     setMembers([
       { username: user.username, role: user.title, _id: 'USER_NEW', avatar: undefined, achievements: [] }
     ]);
-    setTeamName(newTeamName || t('Nuevo Equipo'));
+    setTeamName(newTeamName || 'Nuevo Equipo');
     setShowTeamMenu(false);
     setNewTeamName('');
     setTeamDeleted(false); // Reset deleted state
     setIsLeader(true); // User is leader when creating a team
-    localStorage.setItem(TEAM_NAME_STORAGE_KEY, newTeamName || t('Nuevo Equipo'));
+    localStorage.setItem(TEAM_NAME_STORAGE_KEY, newTeamName || 'Nuevo Equipo');
     localStorage.removeItem(TEAM_STORAGE_KEY);
   };
 
@@ -222,7 +219,7 @@ const Team: React.FC = () => {
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
           <div className="bg-zinc-900 border-2 border-red-700 rounded-xl p-8 shadow-2xl min-w-[350px] max-w-sm animate-slide-up flex flex-col gap-6 items-center">
-            <h3 className="text-2xl font-bold text-red-400 mb-2 text-center">{isLeader ? t('¿Seguro que quieres eliminar tu equipo?') : t('¿Seguro que quieres salir del equipo?')}</h3>
+            <h3 className="text-2xl font-bold text-red-400 mb-2 text-center">{t('¿Seguro que quieres eliminar tu equipo?')}</h3>
             <div className="flex gap-6 mt-4">
               <button
                 onClick={() => {
@@ -283,7 +280,7 @@ const Team: React.FC = () => {
                   {selectedProfile.username}
                 </h2>
                 <div className="flex items-center justify-center space-x-2">
-                  <span className="text-green-300 text-sm">ID:</span>
+                  <span className="text-green-300 text-sm">{t('ID:')}</span>
                   <span className="text-cyan-300 font-mono text-sm bg-gradient-to-r from-gray-800/50 to-blue-800/50 px-3 py-1 rounded-lg border border-green-500/50 backdrop-blur-sm">
                     {selectedProfile._id}
                   </span>
@@ -329,7 +326,7 @@ const Team: React.FC = () => {
                 {/* Resumen de logros */}
                 <div className="mt-6 p-4 bg-gradient-to-r from-green-800/30 to-blue-800/30 rounded-lg border-2 border-green-500/30 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
-                    <span className="text-green-200">{t('Progreso de Logros')}:</span>
+                    <span className="text-green-200">{t('Progreso de Logros')}</span>
                     <span className="text-green-100 font-bold">
                       {selectedProfile.achievements.length} / {allAchievements.length}
                     </span>
@@ -359,7 +356,7 @@ const Team: React.FC = () => {
               className="w-full mb-4 px-4 py-2 rounded-lg border-2 border-cyan-700 bg-black text-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
             />
             <div className="max-h-48 overflow-y-auto flex flex-col gap-2">
-              {filteredUsers.length === 0 && <div className="text-cyan-500 text-center">No hay usuarios disponibles</div>}
+              {filteredUsers.length === 0 && <div className="text-cyan-500 text-center">{t('No hay usuarios disponibles')}</div>}
               {filteredUsers.map(user => (
                 <button
                   key={user.username}
@@ -367,7 +364,7 @@ const Team: React.FC = () => {
                   className={`w-full text-left px-4 py-2 rounded-lg border-2 border-cyan-700 text-cyan-300 hover:bg-cyan-900/20 transition-all duration-200 ${members.length >= 10 ? 'opacity-50 cursor-not-allowed' : ''}`}
                   disabled={members.length >= 10}
                 >
-                  <span className="font-bold">{user.username}</span> <span className="text-cyan-400 ml-2 text-xs">{translateRole(user.role)}</span>
+                  <span className="font-bold">{user.username}</span> <span className="text-cyan-400 ml-2 text-xs">{user.role}</span>
                 </button>
               ))}
             </div>
@@ -417,7 +414,7 @@ const Team: React.FC = () => {
                     </button>
                   ))}
                   {mockTeams.filter(t => t.name.toLowerCase().includes(searchTeam.toLowerCase())).length === 0 && (
-                    <div className="text-cyan-500 text-center">No hay equipos encontrados</div>
+                    <div className="text-cyan-500 text-center">{t('No hay equipos encontrados')}</div>
                   )}
                 </div>
               </div>
@@ -439,14 +436,14 @@ const Team: React.FC = () => {
                     onChange={e => setEditedTeamName(e.target.value)}
                     autoFocus
                   />
-                  <button onClick={handleSaveTeamName} className="ml-2 px-2 py-1 border-2 border-green-700 rounded-lg text-green-400 hover:bg-green-900/20 font-bold">Guardar</button>
-                  <button onClick={() => { setEditingTeamName(false); setEditedTeamName(teamName); }} className="ml-1 px-2 py-1 border-2 border-red-700 rounded-lg text-red-400 hover:bg-red-900/20 font-bold">Cancelar</button>
+                  <button onClick={handleSaveTeamName} className="ml-2 px-2 py-1 border-2 border-green-700 rounded-lg text-green-400 hover:bg-green-900/20 font-bold">{t('Guardar')}</button>
+                  <button onClick={() => { setEditingTeamName(false); setEditedTeamName(teamName); }} className="ml-1 px-2 py-1 border-2 border-red-700 rounded-lg text-red-400 hover:bg-red-900/20 font-bold">{t('Cancelar')}</button>
                 </>
               ) : (
                 <>
-                  {teamName || 'Sin equipo'}
+                  {teamName || t('Sin equipo')}
                   {isLeader && (
-                    <button onClick={() => setEditingTeamName(true)} className="ml-2 px-2 py-1 border-2 border-cyan-700 rounded-lg text-cyan-400 hover:bg-cyan-900/20 font-bold text-base">Editar</button>
+                    <button onClick={() => setEditingTeamName(true)} className="ml-2 px-2 py-1 border-2 border-cyan-700 rounded-lg text-cyan-400 hover:bg-cyan-900/20 font-bold text-base">{t('Editar')}</button>
                   )}
                 </>
               )}
@@ -471,7 +468,7 @@ const Team: React.FC = () => {
                     )}
                     <div>
                       <div className="text-xl font-bold text-cyan-300 mb-1">{member.username}</div>
-                      <div className="text-cyan-400 text-sm tracking-wide">{translateRole(member.role)}</div>
+                      <div className="text-cyan-400 text-sm tracking-wide">{member.role}</div>
                     </div>
                   </div>
                   <div className="flex gap-2 items-center">
@@ -479,7 +476,7 @@ const Team: React.FC = () => {
                       onClick={() => setSelectedProfile(member)}
                       className="border-2 border-cyan-700 rounded-lg px-3 py-1 text-cyan-400 hover:bg-cyan-900/20 transition-all duration-200 text-xs font-bold"
                     >
-                      Ver perfil
+                      {t('Ver perfil')}
                     </button>
                     {/* Mostrar eliminar si soy líder y no es el primer miembro (líder) ni yo mismo */}
                     {isLeader && idx !== 0 && member.username !== getCurrentUserProfile().username && (
@@ -487,7 +484,7 @@ const Team: React.FC = () => {
                         onClick={() => handleRemoveMember(member.username)}
                         className="border-2 border-red-700 rounded-lg px-3 py-1 text-red-400 hover:bg-red-900/20 transition-all duration-200 text-xs font-bold"
                       >
-                        Eliminar
+                        {t('Eliminar')}
                       </button>
                     )}
                   </div>
@@ -527,13 +524,13 @@ const Team: React.FC = () => {
         showTeamMenu || (
           <div className="flex items-center justify-center w-full animate-fade-in relative z-10">
             <div className="bg-zinc-900 border-2 border-cyan-700 rounded-xl p-8 shadow-2xl min-w-[350px] max-w-sm animate-slide-up flex flex-col gap-6">
-              <h3 className="text-2xl font-bold text-cyan-400 mb-2 text-center">Gestión de equipo</h3>
+              <h3 className="text-2xl font-bold text-cyan-400 mb-2 text-center">{t('Gestión de equipo')}</h3>
               <div className="flex flex-col gap-4">
                 <div className="border-2 border-cyan-700 rounded-lg p-4">
-                  <div className="font-bold mb-2 text-cyan-300">Crear nuevo equipo</div>
+                  <div className="font-bold mb-2 text-cyan-300">{t('Crear nuevo equipo')}</div>
                   <input
                     type="text"
-                    placeholder="Nombre del nuevo equipo (opcional)"
+                    placeholder={t('Nombre del nuevo equipo (opcional)')}
                     value={newTeamName}
                     onChange={e => setNewTeamName(e.target.value)}
                     className="w-full mb-2 px-3 py-2 rounded-lg border-2 border-cyan-700 bg-black text-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -542,14 +539,14 @@ const Team: React.FC = () => {
                     onClick={handleCreateTeam}
                     className="w-full border-2 border-green-700 rounded-lg py-2 text-green-400 hover:bg-green-900/20 transition-all duration-200 font-bold mt-2"
                   >
-                    Crear equipo
+                    {t('Crear equipo')}
                   </button>
                 </div>
                 <div className="border-2 border-cyan-700 rounded-lg p-4">
-                  <div className="font-bold mb-2 text-cyan-300">Buscar equipo para unirte</div>
+                  <div className="font-bold mb-2 text-cyan-300">{t('Buscar equipo para unirte')}</div>
                   <input
                     type="text"
-                    placeholder="Buscar equipo..."
+                    placeholder={t('Buscar equipo...')}
                     value={searchTeam}
                     onChange={e => setSearchTeam(e.target.value)}
                     className="w-full mb-2 px-3 py-2 rounded-lg border-2 border-cyan-700 bg-black text-cyan-200 focus:outline-none focus:ring-2 focus:ring-cyan-500"
@@ -561,11 +558,11 @@ const Team: React.FC = () => {
                         onClick={() => handleJoinTeam(team.name)}
                         className="w-full border-2 border-cyan-700 rounded-lg py-2 text-cyan-400 hover:bg-cyan-900/20 transition-all duration-200 font-bold"
                       >
-                        {team.name} <span className="text-xs text-cyan-200">({team.members} {t('Miembros').toLowerCase()})</span>
+                        {team.name} <span className="text-xs text-cyan-200">({team.members} Miembros)</span>
                       </button>
                     ))}
                     {mockTeams.filter(t => t.name.toLowerCase().includes(searchTeam.toLowerCase())).length === 0 && (
-                      <div className="text-cyan-500 text-center">No hay equipos encontrados</div>
+                      <div className="text-cyan-500 text-center">{t('No hay equipos encontrados')}</div>
                     )}
                   </div>
                 </div>
@@ -586,7 +583,7 @@ const Team: React.FC = () => {
                   onClick={() => setTransferTarget(member)}
                   className={`w-full border-2 rounded-lg py-2 text-yellow-200 hover:bg-yellow-900/20 transition-all duration-200 font-bold ${transferTarget && transferTarget.username === member.username ? 'border-yellow-400' : 'border-yellow-700'}`}
                 >
-                  {member.username} <span className="text-cyan-400 ml-2 text-xs">{translateRole(member.role)}</span>
+                  {member.username} <span className="text-cyan-400 ml-2 text-xs">{member.role}</span>
                 </button>
               ))}
             </div>
