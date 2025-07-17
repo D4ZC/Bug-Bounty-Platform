@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useShop, ShopItem } from '../contexts/ShopContext';
 
 const CATEGORIES = [
   { key: 'fondo', label: 'FONDO' },
@@ -9,28 +10,29 @@ const CATEGORIES = [
 
 const PRODUCTS = {
   fondo: [
-    { id: 1, name: 'Fondo Azul', price: 100, img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo azul para tu perfil.' },
-    { id: 2, name: 'Fondo Gris', price: 120, img: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo gris elegante.' },
-    { id: 3, name: 'Fondo Verde', price: 90, img: 'https://images.unsplash.com/photo-1519340333755-c6e2a6a1b49a?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo verde vibrante.' },
+    { id: 1, name: 'Fondo Azul', price: 100, img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo azul para tu perfil.', category: 'fondo' as const },
+    { id: 2, name: 'Fondo Gris', price: 120, img: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo gris elegante.', category: 'fondo' as const },
+    { id: 3, name: 'Fondo Verde', price: 90, img: 'https://images.unsplash.com/photo-1519340333755-c6e2a6a1b49a?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo verde vibrante.', category: 'fondo' as const },
   ],
   marco: [
-    { id: 1, name: 'Marco Fuego', price: 200, img: 'https://cdn.pixabay.com/photo/2017/01/06/19/15/fire-1959824_1280.png', desc: 'Marco animado de fuego.' },
-    { id: 2, name: 'Marco Oro', price: 250, img: 'https://cdn.pixabay.com/photo/2016/03/31/19/56/gold-1294463_1280.png', desc: 'Marco dorado brillante.' },
-    { id: 3, name: 'Marco Flores', price: 180, img: 'https://cdn.pixabay.com/photo/2017/01/31/13/14/flowers-2021755_1280.png', desc: 'Marco decorado con flores.' },
+    { id: 1, name: 'Marco Fuego', price: 200, img: 'https://cdn.pixabay.com/photo/2017/01/06/19/15/fire-1959824_1280.png', desc: 'Marco animado de fuego.', category: 'marco' as const },
+    { id: 2, name: 'Marco Oro', price: 250, img: 'https://cdn.pixabay.com/photo/2016/03/31/19/56/gold-1294463_1280.png', desc: 'Marco dorado brillante.', category: 'marco' as const },
+    { id: 3, name: 'Marco Flores', price: 180, img: 'https://cdn.pixabay.com/photo/2017/01/31/13/14/flowers-2021755_1280.png', desc: 'Marco decorado con flores.', category: 'marco' as const },
   ],
   sticker: [
-    { id: 1, name: 'Sticker Hacker', price: 50, img: 'https://cdn.pixabay.com/photo/2014/04/03/10/32/hacker-312817_1280.png', desc: 'Sticker de hacker.' },
-    { id: 2, name: 'Sticker Bug', price: 60, img: 'https://cdn.pixabay.com/photo/2013/07/12/13/57/bug-147909_1280.png', desc: 'Sticker de bug.' },
-    { id: 3, name: 'Sticker Escudo', price: 70, img: 'https://cdn.pixabay.com/photo/2012/04/13/00/22/shield-31234_1280.png', desc: 'Sticker de escudo.' },
+    { id: 1, name: 'Sticker Hacker', price: 50, img: 'https://cdn.pixabay.com/photo/2014/04/03/10/32/hacker-312817_1280.png', desc: 'Sticker de hacker.', category: 'sticker' as const },
+    { id: 2, name: 'Sticker Bug', price: 60, img: 'https://cdn.pixabay.com/photo/2013/07/12/13/57/bug-147909_1280.png', desc: 'Sticker de bug.', category: 'sticker' as const },
+    { id: 3, name: 'Sticker Escudo', price: 70, img: 'https://cdn.pixabay.com/photo/2012/04/13/00/22/shield-31234_1280.png', desc: 'Sticker de escudo.', category: 'sticker' as const },
   ],
   etc: [
-    { id: 1, name: 'Producto X', price: 80, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294471_1280.png', desc: 'Producto especial X.' },
-    { id: 2, name: 'Producto Y', price: 110, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294470_1280.png', desc: 'Producto especial Y.' },
-    { id: 3, name: 'Producto Z', price: 95, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294472_1280.png', desc: 'Producto especial Z.' },
+    { id: 1, name: 'Producto X', price: 80, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294471_1280.png', desc: 'Producto especial X.', category: 'etc' as const },
+    { id: 2, name: 'Producto Y', price: 110, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294470_1280.png', desc: 'Producto especial Y.', category: 'etc' as const },
+    { id: 3, name: 'Producto Z', price: 95, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294472_1280.png', desc: 'Producto especial Z.', category: 'etc' as const },
   ],
 };
 
 const Shop: React.FC = () => {
+  const { purchaseItem, isItemPurchased } = useShop();
   const [selectedCategory, setSelectedCategory] = useState(CATEGORIES[0].key);
   const [selectedProductIdx, setSelectedProductIdx] = useState(0);
   const [rotation, setRotation] = useState(0);
@@ -71,6 +73,15 @@ const Shop: React.FC = () => {
     document.removeEventListener('mouseup', handleMouseUp);
   };
 
+  const handlePurchase = (product: ShopItem) => {
+    if (coins >= product.price) {
+      purchaseItem(product);
+      setCoins(prev => prev - product.price);
+    } else {
+      alert('No tienes suficientes monedas!');
+    }
+  };
+
   const products = PRODUCTS[selectedCategory];
   const selectedProduct = products[selectedProductIdx];
 
@@ -106,6 +117,11 @@ const Shop: React.FC = () => {
                 <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2" />
                 <span className="font-semibold text-gray-700 text-center">{prod.name}</span>
                 <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded text-xs">${prod.price}</span>
+                {isItemPurchased(prod.id) && (
+                  <div className="absolute top-2 left-2 bg-green-50 text-white font-bold px-2 py-1 rounded text-xs">
+                    ✓ COMPRADO
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -128,7 +144,19 @@ const Shop: React.FC = () => {
               <img src={selectedProduct.img} alt={selectedProduct.name} className="w-40 h-40 object-contain" draggable={false} />
             </div>
             <div className="bg-gray-100 rounded-lg p-4 mb-4 w-64 text-center font-semibold text-gray-700 shadow">{selectedProduct.desc}</div>
-            <button className="px-6 py-3 rounded-lg bg-yellow-300 text-yellow-900 font-bold shadow hover:bg-yellow-400 transition">COMPRAR</button>
+            <button 
+              className={`px-6 py-3 rounded-lg font-bold shadow transition ${
+                isItemPurchased(selectedProduct.id)
+                  ? 'bg-green-500 text-white cursor-not-allowed'
+                  : coins >= selectedProduct.price
+                  ? 'bg-yellow-300 text-yellow-900 hover:bg-yellow-400'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              onClick={() => !isItemPurchased(selectedProduct.id) && handlePurchase(selectedProduct)}
+              disabled={isItemPurchased(selectedProduct.id) || coins < selectedProduct.price}
+            >
+              {isItemPurchased(selectedProduct.id) ? 'COMPRADO' : 'COMPRAR'}
+            </button>
           </div>
         </div>
       </div>

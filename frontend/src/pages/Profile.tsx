@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { useShop, ShopItem } from '../contexts/ShopContext';
+import ReplaceItemModal from '../components/ReplaceItemModal';
 
 const pieData = [
   { name: 'HARD', value: 50, color: '#f43f5e' },
@@ -25,6 +27,7 @@ const mockUser = {
 };
 
 const Profile: React.FC = () => {
+  const { userItems, selectItem, getSelectedItem } = useShop();
   const [activeSection, setActiveSection] = useState<'fondos' | 'marcos' | 'badges' | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -33,6 +36,14 @@ const Profile: React.FC = () => {
   const [name, setName] = useState(mockUser.name);
   const [country, setCountry] = useState(mockUser.country);
   const [carouselIdx, setCarouselIdx] = useState(0);
+  // Estado para la modal de reemplazo
+  const [replaceModal, setReplaceModal] = useState<{
+    isOpen: boolean;
+    item: ShopItem | null;
+  }>({
+    isOpen: false,
+    item: null
+  });
 
   // Auto-slide del carrusel
   React.useEffect(() => {
@@ -45,6 +56,36 @@ const Profile: React.FC = () => {
   // Modal para FONDOS, MARCOS, BADGES
   const closeSectionModal = () => setActiveSection(null);
   const openSectionModal = (section: 'fondos' | 'marcos' | 'badges') => setActiveSection(section);
+
+  // Función para manejar la selección de ítems
+  const handleItemSelection = (item: ShopItem) => {
+    const needsConfirmation = selectItem(item);
+    
+    if (needsConfirmation) {
+      setReplaceModal({
+        isOpen: true,
+        item: item
+      });
+    }
+  };
+
+  // Función para confirmar reemplazo
+  const confirmReplacement = () => {
+    if (replaceModal.item) {
+      // Aplicar el ítem directamente (ya se aplicó en selectItem)
+      setReplaceModal({ isOpen: false, item: null });
+    }
+  };
+
+  // Función para cancelar reemplazo
+  const cancelReplacement = () => {
+    setReplaceModal({ isOpen: false, item: null });
+  };
+
+  // Obtener ítems por categoría
+  const getItemsByCategory = (category: 'fondos' | 'marcos' | 'sticker') => {
+    return userItems.purchased.filter(item => item.category === category);
+  };
 
   // Carrusel handlers
   const prevImg = () => setCarouselIdx((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
@@ -96,21 +137,25 @@ const Profile: React.FC = () => {
           {/* Avatar con marco de fuego animado */}
           <div className="relative flex flex-col items-center">
             <div className="w-40 h-40 flex items-center justify-center relative">
-              {/* Marco SVG de fuego animado */}
+              {/* Marco SVG cuadrado de fuego animado */}
               <svg width="170" height="170" viewBox="0 0 170 170" className="absolute z-10 fire-frame" style={{ left: 0, top: 0 }}>
                 <g className="flame-group">
-                  <path className="flame flame1" d="M85 10 Q95 30 85 50 Q75 30 85 10" fill="none" stroke="#ffb300" strokeWidth="6" strokeLinecap="round" />
-                  <path className="flame flame2" d="M85 160 Q95 140 85 120 Q75 140 85 160" fill="none" stroke="#ff7043" strokeWidth="6" strokeLinecap="round" />
-                  <path className="flame flame3" d="M10 85 Q30 95 50 85 Q30 75 10 85" fill="none" stroke="#ff1744" strokeWidth="6" strokeLinecap="round" />
-                  <path className="flame flame4" d="M160 85 Q140 95 120 85 Q140 75 160 85" fill="none" stroke="#ffd600" strokeWidth="6" strokeLinecap="round" />
-                  <path className="flame flame5" d="M40 40 Q60 60 85 30 Q110 60 130 40" fill="none" stroke="#ff9100" strokeWidth="4" strokeLinecap="round" />
-                  <path className="flame flame6" d="M40 130 Q60 110 85 140 Q110 110 130 130" fill="none" stroke="#ffea00" strokeWidth="4" strokeLinecap="round" />
+                  <path className="flame flame1" d="M10 10 Q30 30 10 85 Q30 140 10 160 Q85 160 160 160 Q140 140 160 85 Q140 30 160 10 Q85 10 10 10" fill="none" stroke="#ffb300" strokeWidth="6" strokeLinecap="round" />
+                  <path className="flame flame2" d="M20 20 Q40 40 20 85 Q40 130 20 150 Q85 150 150 150 Q130 130 150 85 Q130 40 150 20 Q85 20 20 20" fill="none" stroke="#ff7043" strokeWidth="6" strokeLinecap="round" />
+                  <path className="flame flame3" d="M40 40 Q60 60 40 85 Q60 110 40 130 Q85 130 130 130 Q110 110 130 85 Q110 60 130 40 Q85 40 40 40" fill="none" stroke="#ff1744" strokeWidth="4" strokeLinecap="round" />
                 </g>
-                <circle cx="85" cy="85" r="80" fill="none" stroke="#f59e42" strokeWidth="8" />
+                <rect x="12" y="12" width="146" height="146" fill="none" stroke="#f59e42" strokeWidth="8" rx="16" />
               </svg>
-              {/* Avatar */}
-              <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-7xl z-20">
-                <span role="img" aria-label="avatar">👤</span>
+              {/* Avatar cuadrado */}
+              <div className="w-32 h-32 bg-gray-200 flex items-center justify-center text-7xl z-20 overflow-hidden rounded-[18px] border-4 border-white shadow-lg">
+                {/* Aquí va la imagen del usuario, por ahora emoji */}
+                <img
+                  src={/* aquí iría la url de la imagen del usuario, por ahora vacío para mostrar emoji */''}
+                  alt="avatar"
+                  className="w-full h-full object-cover"
+                  style={{ display: 'none' }}
+                />
+                <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>
               </div>
             </div>
             {/* Botones debajo del avatar */}
@@ -190,10 +235,57 @@ const Profile: React.FC = () => {
           <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 relative flex flex-col items-center">
             <button onClick={closeSectionModal} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
             <h2 className="text-xl font-bold mb-4">{activeSection.toUpperCase()}</h2>
-            <button className="px-4 py-2 rounded bg-blue-600 text-white font-bold mt-4" onClick={closeSectionModal}>Cerrar</button>
+            
+            {/* Mostrar ítems comprados */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96overflow-y-auto">
+              {getItemsByCategory(activeSection === 'badges' ? 'sticker' : activeSection).map((item) => {
+                const isSelected = getSelectedItem(item.category)?.id === item.id;
+                return (
+                  <div
+                    key={item.id}
+                    className={`relative rounded-lg border-2 cursor-pointer p-4 transition-all ${
+                      isSelected 
+                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
+                        : 'border-gray-200 hover:border-blue-300'
+                    }`}
+                    onClick={() => handleItemSelection(item)}
+                  >
+                    <img 
+                      src={item.img} 
+                      alt={item.name}
+                      className="w-full h-24 object-cover rounded mb-2"
+                    />
+                    <h3 className="font-semibold text-sm text-gray-800 mb-1">{item.name}</h3>
+                    <p className="text-xs text-gray-600">{item.desc}</p>
+                    {isSelected && (
+                      <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
+                        SELECCIONADO
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+              
+              {getItemsByCategory(activeSection === 'badges' ? 'sticker' : activeSection).length === 0 && (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-lg font-semibold mb-2">No tienes {activeSection} comprados</p>
+                  <p className="text-sm">Ve a la tienda para comprar algunos</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
+
+      {/* Modal de confirmación de reemplazo */}
+      <ReplaceItemModal
+        isOpen={replaceModal.isOpen}
+        onClose={cancelReplacement}
+        onConfirm={confirmReplacement}
+        item={replaceModal.item!}
+        currentItem={replaceModal.item ? getSelectedItem(replaceModal.item.category) : undefined}
+      />
+
       {/* Modales de edición y cambio de contraseña (reutilizados) */}
       {showEdit && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">

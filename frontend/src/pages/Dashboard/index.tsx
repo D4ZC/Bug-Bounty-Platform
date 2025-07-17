@@ -6,6 +6,7 @@ import UserProfileCard from './components/UserProfileCard';
 import { Button } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
 import Podium from '../../components/Podium';
+import ShopCard from '../../components/ShopCard';
 
 // Datos reales para equipos y usuarios
 const realTeams = [
@@ -60,13 +61,17 @@ const Dashboard: React.FC = () => {
           <h2 className="text-xl font-bold text-gray-700 text-center">PERFIL</h2>
         </div>
         {/* Card GULAG (restar 15px de altura) */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[375px] -mt-[30px]">
+        <div
+          className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[375px] -mt-[30px] cursor-pointer"
+          onClick={() => navigate('/gulag')}
+          tabIndex={0}
+          role="button"
+          aria-label="Ver GULAG"
+        >
           <h2 className="text-xl font-bold text-gray-700 text-center">GULAG</h2>
         </div>
         {/* Card TIENDA (antes PERFIL) */}
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm flex items-center justify-center w-[290px] h-[275px] cursor-pointer" onClick={() => navigate('/shop')} tabIndex={0} role="button" aria-label="Ver tienda">
-          <h2 className="text-xl font-bold text-gray-700 text-center">TIENDA</h2>
-        </div>
+        <ShopCard />
       </div>
     </div>
   );

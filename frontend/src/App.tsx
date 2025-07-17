@@ -28,12 +28,15 @@ import CrearVulnerabilidad from '@/pages/formulario/crear';
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
+// Contexts
+import { ShopProvider } from '@/contexts/ShopContext';
+
 // Hooks
 import { useAuth } from '@/contexts/AuthContext';
 
 function App() {
   return (
-    <>
+    <ShopProvider>
       <Helmet>
         <title>Bug Bounty Platform</title>
         <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
@@ -58,7 +61,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </>
+    </ShopProvider>
   );
 }
 
