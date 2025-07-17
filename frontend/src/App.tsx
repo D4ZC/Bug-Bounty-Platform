@@ -6,6 +6,9 @@ import { initializeShopProducts, initializeGlobalClans } from './localDb';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import AdminRoute from '@/components/auth/AdminRoute';
+import AdminPanel from '@/pages/AdminPanel';
 
 // Lazy load de páginas
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
@@ -47,13 +50,15 @@ function App() {
           <Route path="/auth/login" element={<Login />} />
           <Route path="/auth/register" element={<Register />} />
           
-          {/* Rutas principales (con layout) */}
+          {/* Rutas principales (con layout y protección) */}
           <Route
             path="/"
             element={
-              <MainLayout>
-                <Outlet />
-              </MainLayout>
+              <ProtectedRoute>
+                <MainLayout>
+                  <Outlet />
+                </MainLayout>
+              </ProtectedRoute>
             }
           >
             <Route index element={<Dashboard />} />
@@ -68,6 +73,15 @@ function App() {
             <Route path="leagues" element={<Leagues />} />
             <Route path="exercises" element={<Exercises />} />
             <Route path="clans" element={<Clans />} />
+            {/* Ruta de administración solo para admins */}
+            <Route
+              path="admin"
+              element={
+                <AdminRoute>
+                  <AdminPanel />
+                </AdminRoute>
+              }
+            />
           </Route>
           
           {/* Ruta 404 */}

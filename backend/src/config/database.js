@@ -32,10 +32,19 @@ const createTables = () => {
       bluePoints INTEGER DEFAULT 0,
       achievements TEXT DEFAULT '[]',
       clanId INTEGER,
+      role TEXT DEFAULT 'user',
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Si la columna 'role' no existe, agregarla
+  const columns = db.prepare("PRAGMA table_info(users)").all();
+  const hasRole = columns.some(col => col.name === 'role');
+  if (!hasRole) {
+    db.exec(`ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'`);
+    console.log('🛠️  Columna role agregada a users');
+  }
 
   // Tabla de clanes
   db.exec(`

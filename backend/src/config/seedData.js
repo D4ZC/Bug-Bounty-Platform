@@ -5,16 +5,18 @@ const seedData = () => {
 
   // Insertar usuarios de ejemplo
   const insertUser = db.prepare(`
-    INSERT OR IGNORE INTO users (w3id, email, name, avatar, xp, level, bluePoints, achievements)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT OR IGNORE INTO users (w3id, email, name, avatar, xp, level, bluePoints, achievements, role)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const users = [
-    ['user1@ibm.com', 'user1@ibm.com', 'Alice Johnson', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice', 1250, 3, 150, JSON.stringify(['first_vulnerability', 'team_player'])],
-    ['user2@ibm.com', 'user2@ibm.com', 'Bob Smith', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', 2100, 4, 300, JSON.stringify(['bug_hunter', 'critical_finder'])],
-    ['user3@ibm.com', 'user3@ibm.com', 'Carol Davis', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carol', 800, 2, 75, JSON.stringify(['newcomer'])],
-    ['user4@ibm.com', 'user4@ibm.com', 'David Wilson', 'https://api.dicebear.com/7.x/avataaars/svg?seed=David', 3500, 6, 500, JSON.stringify(['veteran', 'clan_leader', 'mvp'])],
-    ['user5@ibm.com', 'user5@ibm.com', 'Eva Brown', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eva', 1800, 3, 200, JSON.stringify(['documentation_master'])],
+    ['user1@ibm.com', 'user1@ibm.com', 'Alice Johnson', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alice', 1250, 3, 150, JSON.stringify(['first_vulnerability', 'team_player']), 'user'],
+    ['user2@ibm.com', 'user2@ibm.com', 'Bob Smith', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Bob', 2100, 4, 300, JSON.stringify(['bug_hunter', 'critical_finder']), 'user'],
+    ['user3@ibm.com', 'user3@ibm.com', 'Carol Davis', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Carol', 800, 2, 75, JSON.stringify(['newcomer']), 'user'],
+    ['user4@ibm.com', 'user4@ibm.com', 'David Wilson', 'https://api.dicebear.com/7.x/avataaars/svg?seed=David', 3500, 6, 500, JSON.stringify(['veteran', 'clan_leader', 'mvp']), 'user'],
+    ['user5@ibm.com', 'user5@ibm.com', 'Eva Brown', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Eva', 1800, 3, 200, JSON.stringify(['documentation_master']), 'user'],
+    // Usuario admin de ejemplo
+    ['admin@bugbounty.com', 'admin@bugbounty.com', 'Admin Owner', 'https://api.dicebear.com/7.x/avataaars/svg?seed=Admin', 0, 1, 0, JSON.stringify([]), 'admin'],
   ];
 
   users.forEach(user => {

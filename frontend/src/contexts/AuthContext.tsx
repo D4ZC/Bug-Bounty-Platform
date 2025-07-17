@@ -250,7 +250,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           _id: user.id,
           firstName: (user as any).firstName || '',
           lastName: (user as any).lastName || '',
-          role: 'member' as const,
+          role: 'admin' as const,
           rank: 999,
           isMVP: false,
           isGulagParticipant: false,

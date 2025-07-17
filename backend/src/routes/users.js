@@ -1,183 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../utils/authMiddleware');
-
-// Datos simulados de usuarios
-const mockUsers = [
-  {
-    _id: '1',
-    email: 'alice@example.com',
-    username: 'alice',
-    firstName: 'Alice',
-    lastName: 'Doe',
-    role: 'member',
-    points: 100,
-    xp: 500,
-    level: 5,
-    achievements: [
-      {
-        id: 1,
-        name: 'Primer Bug',
-        description: 'Reporta tu primera vulnerabilidad.',
-        icon: '🐞',
-        unlocked: true,
-        reward: '+50 XP',
-        dateUnlocked: '2024-01-10',
-      },
-      {
-        id: 2,
-        name: 'Cazador',
-        description: 'Reporta 10 vulnerabilidades.',
-        icon: '🏆',
-        unlocked: false,
-        reward: '+100 XP',
-      },
-    ],
-    redemptions: [
-      {
-        id: 1,
-        recompensa: 'Camiseta Oficial',
-        puntos_gastados: 200,
-        fecha_canje: '2023-12-01',
-      },
-    ],
-    activityLog: [
-      {
-        id: 1,
-        type: 'points',
-        description: 'Ganaste 100 puntos por vulnerabilidad crítica',
-        points: 100,
-        date: '2024-06-01',
-      },
-      {
-        id: 2,
-        type: 'achievement',
-        description: 'Desbloqueaste el logro "Primer Bug"',
-        points: 0,
-        date: '2024-06-02',
-      },
-    ],
-    rank: 1,
-    isMVP: false,
-    isGulagParticipant: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    _id: '2',
-    email: 'bob@example.com',
-    username: 'bob',
-    firstName: 'Bob',
-    lastName: 'Smith',
-    role: 'admin',
-    points: 200,
-    xp: 1200,
-    level: 8,
-    achievements: [
-      {
-        id: 1,
-        name: 'Primer Bug',
-        description: 'Reporta tu primera vulnerabilidad.',
-        icon: '🐞',
-        unlocked: true,
-        reward: '+50 XP',
-        dateUnlocked: '2024-01-12',
-      },
-      {
-        id: 3,
-        name: 'Comprador',
-        description: 'Canjea tu primer producto.',
-        icon: '🛒',
-        unlocked: true,
-        reward: '+25 XP',
-        dateUnlocked: '2024-02-01',
-      },
-    ],
-    redemptions: [],
-    activityLog: [],
-    rank: 2,
-    isMVP: true,
-    isGulagParticipant: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    _id: '3',
-    email: 'carla@example.com',
-    username: 'carla',
-    firstName: 'Carla',
-    lastName: 'García',
-    role: 'member',
-    points: 150,
-    xp: 700,
-    level: 6,
-    achievements: [
-      {
-        id: 1,
-        name: 'Primer Bug',
-        description: 'Reporta tu primera vulnerabilidad.',
-        icon: '🐞',
-        unlocked: true,
-        reward: '+50 XP',
-        dateUnlocked: '2024-01-15',
-      },
-      {
-        id: 4,
-        name: 'Guerrero',
-        description: 'Derrota a 5 enemigos.',
-        icon: '⚔️',
-        unlocked: false,
-        reward: '+150 XP',
-      },
-    ],
-    redemptions: [],
-    activityLog: [],
-    rank: 3,
-    isMVP: false,
-    isGulagParticipant: true,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  },
-  {
-    _id: '4',
-    email: 'daniel@example.com',
-    username: 'daniel',
-    firstName: 'Daniel',
-    lastName: 'Pérez',
-    role: 'member',
-    points: 80,
-    xp: 300,
-    level: 4,
-    achievements: [
-      {
-        id: 1,
-        name: 'Primer Bug',
-        description: 'Reporta tu primera vulnerabilidad.',
-        icon: '🐞',
-        unlocked: true,
-        reward: '+50 XP',
-        dateUnlocked: '2024-01-20',
-      },
-    ],
-    redemptions: [],
-    activityLog: [],
-    rank: 4,
-    isMVP: false,
-    isGulagParticipant: false,
-    createdAt: new Date(),
-    updatedAt: new Date()
-  }
-];
+const roleMiddleware = require('../utils/roleMiddleware');
+const { db } = require('../config/database');
 
 // Proteger todas las rutas de usuarios
 router.use(authMiddleware);
 
-// Obtener todos los usuarios
+// Obtener todos los usuarios desde la base de datos
 router.get('/', (req, res) => {
-  res.json({
-    success: true,
-    data: mockUsers
-  });
+  try {
+    const users = db.prepare('SELECT * FROM users').all();
+    res.json({ success: true, data: users });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Error al obtener usuarios' });
+  }
 });
 
 // Obtener un usuario específico
@@ -190,6 +27,57 @@ router.get('/:id', (req, res) => {
     success: true,
     data: user
   });
+});
+
+// --- ADMIN ENDPOINTS ---
+// Eliminar usuario (solo admin)
+router.delete('/:id', roleMiddleware('admin'), (req, res) => {
+  try {
+    const info = db.prepare('DELETE FROM users WHERE id = ?').run(req.params.id);
+    if (info.changes === 0) {
+      return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Error al eliminar usuario' });
+  }
+});
+
+// Editar usuario (solo admin)
+router.put('/:id', roleMiddleware('admin'), (req, res) => {
+  try {
+    const { username, role } = req.body;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+    }
+    db.prepare('UPDATE users SET name = COALESCE(?, name), role = COALESCE(?, role), updatedAt = CURRENT_TIMESTAMP WHERE id = ?')
+      .run(username, role, req.params.id);
+    const updated = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Error al editar usuario' });
+  }
+});
+
+// Asignar Blue Points (solo admin)
+router.patch('/:id/bluepoints', roleMiddleware('admin'), (req, res) => {
+  try {
+    const { bluePoints } = req.body;
+    if (typeof bluePoints !== 'number' || bluePoints < 1) {
+      return res.status(400).json({ success: false, error: 'Cantidad inválida de Blue Points' });
+    }
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+    }
+    db.prepare('UPDATE users SET bluePoints = bluePoints + ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?')
+      .run(bluePoints, req.params.id);
+    const updated = db.prepare('SELECT * FROM users WHERE id = ?').get(req.params.id);
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, error: 'Error al asignar Blue Points' });
+  }
 });
 
 // Actualizar XP y nivel de un usuario

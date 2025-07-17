@@ -18,6 +18,7 @@ const Dashboard: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [confettiType, setConfettiType] = useState<'logro' | 'nivel'>('logro');
   const [clanesDestacados, setClanesDestacados] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
   const [selectedClan, setSelectedClan] = useState<any>(null);
   const [showClanModal, setShowClanModal] = useState(false);
   const [userStats, setUserStats] = useState({
@@ -31,6 +32,10 @@ const Dashboard: React.FC = () => {
   });
   const [selectedProfile, setSelectedProfile] = useState<any>(null);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  // Eliminar la declaración previa de allUsers como useState
+  // const [allUsers, setAllUsers] = useState<any[]>([]);
+  // Usar solo la versión sincrónica:
+  // const allUsers = getUsers();
 
   useEffect(() => {
     // Obtener clanes globales destacados (los 3 con más miembros)
@@ -142,7 +147,15 @@ const Dashboard: React.FC = () => {
   };
 
   // Funciones para manejar clanes
+  // Recargar clanes y usuarios cada vez que se abra el modal de clan
   const handleClanClick = (clan: any) => {
+    // Recargar datos actualizados
+    const allClans = getAllClans();
+    const sortedClans = allClans
+      .sort((a, b) => (b.members?.length || 0) - (a.members?.length || 0))
+      .slice(0, 3);
+    setClanesDestacados(sortedClans);
+    setAllUsers(getUsers());
     setSelectedClan(clan);
     setShowClanModal(true);
   };
@@ -171,11 +184,9 @@ const Dashboard: React.FC = () => {
     setSelectedProfile(null);
   };
 
-  // Obtener información detallada de los miembros del clan
-  const getClanMembersInfo = (clan: any) => {
+  // Reemplazar getClanMembersInfo para usar la misma lógica que Team.tsx
+  const getClanMembersInfo = (clan: any, allUsers: any[]) => {
     if (!clan.members || clan.members.length === 0) return [];
-    
-    const allUsers = getUsers();
     return clan.members.map((memberId: string) => {
       const user = allUsers.find(u => u.id === memberId);
       return user ? {
@@ -1045,96 +1056,86 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Modal de Detalles del Clan */}
-        <Modal
-          isOpen={showClanModal}
-          onClose={handleCloseClanModal}
-          title={`Clan: ${selectedClan?.name || ''}`}
-        >
-          {selectedClan && (
-            <div className="space-y-6">
-              {/* Información del Clan */}
-              <div className="bg-gradient-to-r from-green-900/50 to-green-800/50 border-2 border-green-400 rounded-xl p-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <img 
-                    src={selectedClan.logo || 'https://robohash.org/' + selectedClan.name} 
-                    alt={selectedClan.name} 
-                    className="w-16 h-16 rounded-full border-2 border-green-400" 
-                  />
-                  <div>
-                    <h3 className="text-2xl font-bold text-green-200">{selectedClan.name}</h3>
-                    <p className="text-green-100">Miembros: {selectedClan.members?.length || 0}</p>
-                  </div>
+        {showClanModal && selectedClan && (
+          <Modal isOpen={showClanModal} onClose={handleCloseClanModal}>
+            <button onClick={handleCloseClanModal} className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl">&times;</button>
+            {/* Información del Clan */}
+            <div className="bg-gradient-to-r from-green-900/50 to-green-800/50 border-2 border-green-400 rounded-xl p-6">
+              <div className="flex items-center gap-4 mb-4">
+                <img 
+                  src={selectedClan.logo || 'https://robohash.org/' + selectedClan.name} 
+                  alt={selectedClan.name} 
+                  className="w-16 h-16 rounded-full border-2 border-green-400" 
+                />
+                <div>
+                  <h3 className="text-2xl font-bold text-green-200">{selectedClan.name}</h3>
+                  <p className="text-green-100">Miembros: {selectedClan.members?.length || 0}</p>
                 </div>
-                <p className="text-green-100 text-sm">{selectedClan.description || 'Sin descripción disponible'}</p>
               </div>
-
-              {/* Lista de Miembros */}
-              <div>
-                <h4 className="text-xl font-bold text-cyan-200 mb-4">Miembros del Clan</h4>
-                <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
-                  {getClanMembersInfo(selectedClan).map((member, index) => (
-                    <motion.div
-                      key={member.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      className="bg-black/50 border border-cyan-400/30 rounded-lg p-4 hover:bg-cyan-900/20 transition-all duration-300"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="relative">
-                          <img 
-                            src={member.avatar} 
-                            alt={member.username} 
-                            className="w-12 h-12 rounded-full border-2 border-cyan-400" 
-                          />
-                          <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border border-black"></div>
+              <p className="text-green-100 text-sm">{selectedClan.description || 'Sin descripción disponible'}</p>
+            </div>
+            {/* Lista de Miembros */}
+            <div>
+              <h4 className="text-xl font-bold text-cyan-200 mb-4">Miembros del Clan</h4>
+              <div className="space-y-3 max-h-96 overflow-y-auto custom-scrollbar">
+                {getClanMembersInfo(selectedClan, allUsers).map((member, index) => (
+                  <div
+                    key={member.id}
+                    className="bg-black/50 border border-cyan-400/30 rounded-lg p-4 hover:bg-cyan-900/20 transition-all duration-300"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <img 
+                          src={member.avatar} 
+                          alt={member.username} 
+                          className="w-12 h-12 rounded-full border-2 border-cyan-400" 
+                        />
+                        <div className="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border border-black"></div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-bold text-cyan-200">{member.username}</span>
+                          <span className="text-xs bg-cyan-600 text-cyan-100 px-2 py-1 rounded-full">Nivel {member.level}</span>
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-bold text-cyan-200">{member.username}</span>
-                            <span className="text-xs bg-cyan-600 text-cyan-100 px-2 py-1 rounded-full">Nivel {member.level}</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm">
-                            <span className="text-yellow-300">💎 {member.points} pts</span>
-                            <span className="text-green-300">🛡️ Miembro</span>
-                          </div>
+                        <div className="flex items-center gap-4 text-sm">
+                          <span className="text-yellow-300">💎 {member.points} pts</span>
+                          <span className="text-green-300">🛡️ Miembro</span>
                         </div>
                       </div>
-                      <div className="mt-3 pt-3 border-t border-cyan-400/20">
-                        <p className="text-sm text-cyan-100 italic">"{member.bio}"</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                  {getClanMembersInfo(selectedClan).length === 0 && (
-                    <div className="text-center py-8 text-cyan-300">
-                      <div className="text-4xl mb-2">🛡️</div>
-                      <p>Este clan aún no tiene miembros</p>
                     </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Botones de Acción */}
-              <div className="flex gap-3 pt-4 border-t border-cyan-400/20">
-                <button
-                  onClick={handleCloseClanModal}
-                  className="flex-1 bg-cyan-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
-                >
-                  Cerrar
-                </button>
-                <button
-                  onClick={() => {
-                    handleCloseClanModal();
-                    // Aquí se podría navegar a la página de clanes
-                  }}
-                  className="flex-1 bg-green-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
-                >
-                  Ver Página del Clan
-                </button>
+                    <div className="mt-3 pt-3 border-t border-cyan-400/20">
+                      <p className="text-sm text-cyan-100 italic">"{member.bio}"</p>
+                    </div>
+                  </div>
+                ))}
+                {getClanMembersInfo(selectedClan, allUsers).length === 0 && (
+                  <div className="text-center py-8 text-cyan-300">
+                    <div className="text-4xl mb-2">🛡️</div>
+                    <p>Este clan aún no tiene miembros</p>
+                  </div>
+                )}
               </div>
             </div>
-          )}
-        </Modal>
+            {/* Botones de Acción */}
+            <div className="flex gap-3 pt-4 border-t border-cyan-400/20">
+              <button
+                onClick={handleCloseClanModal}
+                className="flex-1 bg-cyan-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-cyan-700 transition-colors"
+              >
+                Cerrar
+              </button>
+              <button
+                onClick={() => {
+                  handleCloseClanModal();
+                  // Aquí se podría navegar a la página de clanes
+                }}
+                className="flex-1 bg-green-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Ver Página del Clan
+              </button>
+            </div>
+          </Modal>
+        )}
 
         {/* Modal de Perfil de Usuario */}
         <Modal

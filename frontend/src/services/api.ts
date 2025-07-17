@@ -215,6 +215,27 @@ class ApiService {
   async leaveClan(clanId: string, username: string) {
     return this.post(`/teams/${clanId}/leave`, { username });
   }
+
+  // --- ADMIN USERS ---
+  // Obtener todos los usuarios (admin)
+  async getAllUsers() {
+    return this.get('/users');
+  }
+
+  // Eliminar usuario (admin)
+  async deleteUser(userId: string) {
+    return this.delete(`/users/${userId}`);
+  }
+
+  // Editar usuario (admin)
+  async editUser(userId: string, data: { username?: string; role?: string }) {
+    return this.put(`/users/${userId}`, data);
+  }
+
+  // Asignar Blue Points (admin)
+  async assignBluePoints(userId: string, bluePoints: number) {
+    return this.patch(`/users/${userId}/bluepoints`, { bluePoints });
+  }
 }
 
 export const apiService = new ApiService();
