@@ -4,7 +4,7 @@ import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideN
 import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
 
 const initialNotifications = [
-  { id: 1, text: 'Nueva vulnerabilidad reportada', read: false, link: '/vulnerabilities' },
+  { id: 1, text: 'Nueva vulnerabilidad reportada', read: false, link: '/documentation' },
   { id: 2, text: 'Tu equipo subió de ranking', read: true, link: '/rankings' },
   { id: 3, text: 'Tienes una recompensa pendiente', read: false, link: '/rewards' },
   { id: 4, text: 'Nuevo mensaje de tu capitán de equipo', read: false, link: '/team' },
@@ -99,7 +99,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className="flex flex-1">
         {/* Sidebar lateral */}
         <SideNav aria-label="Menú lateral" className="bg-white shadow-md min-h-full w-16 flex flex-col items-center py-4">
-          <SideNavItems>
+          <SideNavItems className="flex flex-col gap-6">
             <SideNavLink href="/">
               <Home size={24} />
             </SideNavLink>
