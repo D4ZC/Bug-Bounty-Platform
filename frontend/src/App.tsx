@@ -19,6 +19,9 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
+import ResolvedVulnerabilities from '@/pages/ResolvedVulnerabilities';
+import Notifications from '@/pages/Notifications';
+import Users from '@/pages/Users';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -44,9 +47,12 @@ function App() {
           <Route path="shop" element={<Shop />} />
           <Route path="contributions" element={<Contributions />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="notifications" element={<Notifications />} />
           <Route path="team" element={<Team />} />
+          <Route path="users" element={<Users />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
+          <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

@@ -1,13 +1,15 @@
 import React from 'react';
 import { Tile } from '@carbon/react';
+import { useNavigate } from 'react-router-dom';
 
-const MVPTeamCard: React.FC<{ team: string }> = ({ team }) => (
-  <Tile className="col-span-1 flex flex-col items-center justify-center min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm">
-    <h2 className="text-2xl font-bold text-primary-700 mb-2">MVP Team</h2>
-    <div className="text-3xl font-bold text-primary-600 mb-4">{team}</div>
-    {/* Placeholder de pedestal */}
-    <div className="w-24 h-12 bg-yellow-300 rounded-b-full shadow-inner" />
-  </Tile>
-);
+const MVPTeamCard: React.FC<{ team: string }> = ({ team }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="col-span-1 flex flex-col items-center justify-center min-h-[160px] bg-white p-6 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200" onClick={() => navigate('/team')}>
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">MVP Team</h2>
+      <div className="text-2xl font-bold text-primary-700">{team}</div>
+    </div>
+  );
+};
 
 export default MVPTeamCard; 

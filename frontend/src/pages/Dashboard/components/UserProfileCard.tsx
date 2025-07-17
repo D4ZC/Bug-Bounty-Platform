@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tile } from '@carbon/react';
+import { useNavigate } from 'react-router-dom';
 
 interface UserProfile {
   name: string;
@@ -13,21 +14,17 @@ interface UserProfile {
   };
 }
 
-const UserProfileCard: React.FC<{ user: UserProfile }> = ({ user }) => (
-  <Tile className="col-span-1 flex flex-col items-start min-h-[200px] p-4 bg-white border border-gray-200 rounded-xl shadow-sm">
-    <h2 className="text-2xl font-bold text-primary-700 mb-2">{user.name}</h2>
-    <div className="text-sm mb-2 text-primary-600">
-      Vulnerabilidades solucionadas: {user.stats.total}<br />
-      -Críticas: {user.stats.criticas}<br />
-      -Altas: {user.stats.altas}<br />
-      -Medianas: {user.stats.medianas}<br />
-      -Bajas: {user.stats.bajas}
+const UserProfileCard: React.FC<{ user: UserProfile }> = ({ user }) => {
+  const navigate = useNavigate();
+  return (
+    <div className="col-span-1 flex flex-col items-start min-h-[160px] p-6 bg-white rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200" onClick={() => navigate('/resolved-vulnerabilities')}>
+      <h2 className="text-lg font-semibold text-gray-900 mb-2">{user.name}</h2>
+      <div className="text-sm mb-2 text-gray-700">
+        Vulnerabilidades solucionadas: {user.stats.total}<br />
+        Críticas: {user.stats.criticas} | Altas: {user.stats.altas} | Medianas: {user.stats.medianas} | Bajas: {user.stats.bajas}
+      </div>
     </div>
-    {/* Placeholder de radar chart */}
-    <div className="w-32 h-32 bg-orange-100 rounded-full flex items-center justify-center">
-      {/* Aquí iría el radar chart */}
-    </div>
-  </Tile>
-);
+  );
+};
 
 export default UserProfileCard; 

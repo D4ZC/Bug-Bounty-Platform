@@ -6,6 +6,7 @@ import UserScoreCard from './components/UserScoreCard';
 import MVPUserCard from './components/MVPUserCard';
 import UserProfileCard from './components/UserProfileCard';
 import { Button } from '@carbon/react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
   // Datos mockeados para la lógica dinámica
@@ -28,23 +29,23 @@ const Dashboard: React.FC = () => {
   ]);
   const [mvpTeam] = useState('P-TECH');
   const [mvpUser] = useState({ name: 'D4ZC', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
+  const navigate = useNavigate();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Primera fila */}
+    <div className="w-full max-w-5xl mx-auto px-2 md:px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <TeamsScoreCard teams={teams} />
         <MVPTeamCard team={mvpTeam} />
         <GulagCard gulag={gulag} />
-        {/* Segunda fila */}
         <UserScoreCard users={users} />
         <MVPUserCard user={mvpUser} />
         <UserProfileCard user={mvpUser} />
       </div>
-      {/* Botón de tienda */}
-      <div className="flex justify-center items-center mt-10">
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12">
-          <Button kind="primary" size="lg">Visit Store</Button>
+      <div className="flex justify-center items-center mt-12">
+        <div className="w-full md:w-2/3 lg:w-1/2 flex justify-center gap-4">
+          <Button kind="primary" size="lg" onClick={() => navigate('/shop')}>Visit Store</Button>
+          <Button kind="secondary" size="lg" onClick={() => navigate('/resolved-vulnerabilities')}>Vulnerabilidades Resueltas</Button>
+          <Button kind="ghost" size="lg" onClick={() => navigate('/contributions')}>Contribuciones</Button>
         </div>
       </div>
     </div>
