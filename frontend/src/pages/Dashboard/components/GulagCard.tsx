@@ -1,24 +1,30 @@
 import React from 'react';
-import { Tile } from '@carbon/react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-interface GulagUser {
-  name: string;
-  score: number;
-}
+const GulagCard: React.FC = () => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
 
-const GulagCard: React.FC<{ gulag: GulagUser[] }> = ({ gulag }) => (
-  <Tile className="dashboard-card col-span-1 min-h-[200px] bg-white flex flex-col border border-gray-200 rounded-xl shadow-sm relative p-5">
-    <h2 className="text-2xl font-bold text-danger-700 text-center">Gulag</h2>
-    <div className="font-bold text-danger-500 text-center">Top 5 Worst</div>
-    <ol className="mt-2 text-center">
-      {gulag.map((user, idx) => (
-        <li key={user.name} className="flex justify-center space-x-4 text-gray-700">
-          <span>{idx + 1}. {user.name}</span>
-          <span>{user.score} pts</span>
-        </li>
-      ))}
-    </ol>
-  </Tile>
-);
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('gulag')}</h3>
+      <div className="space-y-3">
+        <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
+          <span className="font-medium">Player A</span>
+          <span className="text-red-600 font-bold">Eliminated</span>
+        </div>
+        <div className="flex justify-between items-center p-3 bg-orange-50 rounded-lg">
+          <span className="font-medium">Player B</span>
+          <span className="text-orange-600 font-bold">Surviving</span>
+        </div>
+        <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+          <span className="font-medium">Player C</span>
+          <span className="text-yellow-600 font-bold">Champion</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default GulagCard; 

@@ -17,51 +17,77 @@ interface SocketProviderProps {
 }
 
 export function SocketProvider({ children }: SocketProviderProps) {
-  const { isAuthenticated, token } = useAuth();
+  const { isLoggedIn, user } = useAuth();
+  const token = localStorage.getItem('authToken');
+  // const { addNotification } = useNotification(); // ELIMINADO para evitar ciclo
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
   useEffect(() => {
-    if (isAuthenticated && token) {
+    if (isLoggedIn && token) {
       socketService.connect(token);
 
-      // Escuchar notificaciones
+      // Escuchar notificaciones generales
       socketService.onNotification((notification) => {
-        setNotifications(prev => [notification, ...prev]);
+        if (user?.preferences?.notifications?.push) {
+          setNotifications(prev => [notification, ...prev]);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar actualizaciones de retos
       socketService.onChallengeUpdate((data) => {
-        console.log('Actualización de reto:', data);
+        if (user?.preferences?.notifications?.challenges) {
+          console.log('Actualización de reto:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar actualizaciones de vulnerabilidades
       socketService.onVulnerabilityUpdate((data) => {
-        console.log('Actualización de vulnerabilidad:', data);
+        if (user?.preferences?.notifications?.push) {
+          console.log('Actualización de vulnerabilidad:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar anuncios de MVP
       socketService.onMVPAnnouncement((data) => {
-        console.log('Anuncio de MVP:', data);
+        if (user?.preferences?.notifications?.push) {
+          console.log('Anuncio de MVP:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar actualizaciones de Gulag
       socketService.onGulagUpdate((data) => {
-        console.log('Actualización de Gulag:', data);
+        if (user?.preferences?.notifications?.gulag) {
+          console.log('Actualización de Gulag:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar actualizaciones de contribuciones
       socketService.onContributionUpdate((data) => {
-        console.log('Actualización de contribución:', data);
+        if (user?.preferences?.notifications?.push) {
+          console.log('Actualización de contribución:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar actualizaciones de la tienda
       socketService.onShopUpdate((data) => {
-        console.log('Actualización de tienda:', data);
+        if (user?.preferences?.notifications?.push) {
+          console.log('Actualización de tienda:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       // Escuchar anuncios del sistema
       socketService.onSystemAnnouncement((data) => {
-        console.log('Anuncio del sistema:', data);
+        if (user?.preferences?.notifications?.push) {
+          console.log('Anuncio del sistema:', data);
+          // Aquí podrías disparar una notificación global si lo necesitas
+        }
       });
 
       return () => {
@@ -69,7 +95,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
         socketService.disconnect();
       };
     }
-  }, [isAuthenticated, token]);
+  }, [isLoggedIn, token, user]);
 
   const clearNotifications = () => {
     setNotifications([]);

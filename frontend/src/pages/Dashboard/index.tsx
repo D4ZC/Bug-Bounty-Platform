@@ -1,50 +1,46 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/contexts/LanguageContext';
+
+// Componentes del Dashboard
 import TeamsScoreCard from './components/TeamsScoreCard';
 import MVPTeamCard from './components/MVPTeamCard';
 import GulagCard from './components/GulagCard';
 import UserScoreCard from './components/UserScoreCard';
 import MVPUserCard from './components/MVPUserCard';
 import UserProfileCard from './components/UserProfileCard';
-import { Button } from '@carbon/react';
 
 const Dashboard: React.FC = () => {
-  // Datos mockeados para la lógica dinámica
-  const [teams] = useState([
-    { name: 'Vacio I', score: 2000 },
-    { name: 'Vacio II', score: 1900 },
-    { name: 'Vacio III', score: 1500 },
-  ]);
-  const [users] = useState([
-    { name: 'U1', score: 2000 },
-    { name: 'U2', score: 1900 },
-    { name: 'U3', score: 1500 },
-  ]);
-  const [gulag] = useState([
-    { name: 'U1', score: 50 },
-    { name: 'U2', score: 25 },
-    { name: 'U3', score: 20 },
-    { name: 'U4', score: 20 },
-    { name: 'U5', score: 10 },
-  ]);
-  const [mvpTeam] = useState('P-TECH');
-  const [mvpUser] = useState({ name: 'U1', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
+  const { t } = useTranslation();
+  const { language } = useLanguage();
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8 animate-in fade-in duration-300">
+        {t('dashboard')}
+      </h1>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
         {/* Primera fila */}
-        <TeamsScoreCard teams={teams} />
-        <MVPTeamCard team={mvpTeam} />
-        <GulagCard gulag={gulag} />
+        <div className="animate-in slide-in-from-left duration-300 delay-100">
+          <TeamsScoreCard />
+        </div>
+        <div className="animate-in slide-in-from-left duration-300 delay-200">
+          <MVPTeamCard />
+        </div>
+        <div className="animate-in slide-in-from-left duration-300 delay-300">
+          <GulagCard />
+        </div>
+        
         {/* Segunda fila */}
-        <UserScoreCard users={users} />
-        <MVPUserCard user={mvpUser} />
-        <UserProfileCard user={mvpUser} />
-      </div>
-      {/* Botón de tienda */}
-      <div className="flex justify-center items-center mt-10">
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-blue-300 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12 text-black">
-          <button className="store-button">Visit Store</button>
+        <div className="animate-in slide-in-from-left duration-300 delay-400">
+          <UserScoreCard />
+        </div>
+        <div className="animate-in slide-in-from-left duration-300 delay-500">
+          <MVPUserCard />
+        </div>
+        <div className="animate-in slide-in-from-left duration-300 delay-600">
+          <UserProfileCard />
         </div>
       </div>
     </div>

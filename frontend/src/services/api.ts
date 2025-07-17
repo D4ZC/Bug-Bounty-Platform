@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiResponse, PaginatedResponse } from '@/types';
 
 class ApiService {
-  private api: AxiosInstance;
+  public api: AxiosInstance;
 
   constructor() {
     this.api = axios.create({
@@ -122,5 +122,5 @@ class ApiService {
   }
 }
 
-export const apiService = new ApiService();
-export default apiService; 
+const apiService = new ApiService();
+export default apiService.api; 

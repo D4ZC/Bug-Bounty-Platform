@@ -1,24 +1,30 @@
 import React from 'react';
-import { Tile } from '@carbon/react';
+import { useTranslation } from 'react-i18next';
+import { useLanguage } from '@/contexts/LanguageContext';
 
-interface Team {
-  name: string;
-  score: number;
-}
+const TeamsScoreCard: React.FC = () => {
+  const { t } = useTranslation();
+  const { language } = useLanguage();
 
-const TeamsScoreCard: React.FC<{ teams: Team[] }> = ({ teams }) => (
-  <Tile className="dashboard-card col-span-1 flex flex-col gap-2 min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-    <h2 className="text-2xl font-bold text-primary-700 text-center">Teams Score</h2>
-    <div className="font-bold text-primary-500 text-center">Top 3 Teams</div>
-    <ol className="mt-2 text-center">
-      {teams.map((team, idx) => (
-        <li key={team.name} className="flex justify-center space-x-4 text-gray-700">
-          <span>{idx + 1}. {team.name}</span>
-          <span className="font-semibold">{team.score} pts</span>
-        </li>
-      ))}
-    </ol>
-  </Tile>
-);
+  return (
+    <div className="bg-white rounded-lg shadow-md p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('teams_score')}</h3>
+      <div className="space-y-3">
+        <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+          <span className="font-medium">Team Alpha</span>
+          <span className="text-blue-600 font-bold">1500 {t('points')}</span>
+        </div>
+        <div className="flex justify-between items-center p-3 bg-green-50 rounded-lg">
+          <span className="font-medium">Team Beta</span>
+          <span className="text-green-600 font-bold">1200 {t('points')}</span>
+        </div>
+        <div className="flex justify-between items-center p-3 bg-purple-50 rounded-lg">
+          <span className="font-medium">Team Gamma</span>
+          <span className="text-purple-600 font-bold">900 {t('points')}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default TeamsScoreCard; 
