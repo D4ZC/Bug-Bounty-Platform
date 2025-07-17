@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from 'react-query/devtools'
 import { Toaster } from 'react-hot-toast'
 import { HelmetProvider } from 'react-helmet-async'
 import { ErrorBoundary } from 'react-error-boundary'
+import 'echarts-gl';
 
 import App from './App'
 import { AuthProvider } from './contexts/AuthContext'

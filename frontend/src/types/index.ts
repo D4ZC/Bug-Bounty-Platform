@@ -19,7 +19,7 @@ export interface User {
   updatedAt: Date;
 }
 
-export type UserRole = 'admin' | 'team_leader' | 'member' | 'mvp' | 'gulag_participant';
+export type UserRole = 'admin' | 'moderator' | 'team_leader' | 'member' | 'mvp' | 'gulag_participant';
 
 export interface GulagStatus {
   isActive: boolean;
@@ -319,4 +319,60 @@ export interface ContributionForm {
   type: ContributionType;
   content: string;
   tags: string[];
+} 
+
+// Tipos para Publisher
+export interface Publication {
+  _id: string;
+  title: string;
+  description: string;
+  content: string;
+  author: string;
+  authorName?: string;
+  vulnerabilityId: string;
+  vulnerabilityTitle: string;
+  vulnerabilitySeverity: VulnerabilitySeverity;
+  status: PublicationStatus;
+  moderatorId?: string;
+  moderatorFeedback?: string;
+  approvedAt?: Date;
+  pointsAwarded: number;
+  views: number;
+  likes: number;
+  isLiked?: boolean;
+  tags: string[];
+  attachments: Attachment[];
+  comments: Comment[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export type PublicationStatus = 'draft' | 'pending_review' | 'approved' | 'rejected';
+
+export interface PublicationForm {
+  title: string;
+  description: string;
+  content: string;
+  vulnerabilityId: string;
+  tags: string[];
+}
+
+export interface PublicationReview {
+  publicationId: string;
+  status: PublicationStatus;
+  feedback?: string;
+  pointsAwarded: number;
+}
+
+// Tipos para el historial de publicaciones
+export interface PublicationHistory {
+  _id: string;
+  userId: string;
+  publicationId: string;
+  publicationTitle: string;
+  vulnerabilityId: string;
+  vulnerabilityTitle: string;
+  action: 'created' | 'submitted' | 'approved' | 'rejected';
+  pointsEarned: number;
+  date: Date;
 } 

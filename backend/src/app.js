@@ -20,6 +20,7 @@ const challengeRoutes = require('./routes/challenges');
 const shopRoutes = require('./routes/shop');
 const contributionRoutes = require('./routes/contributions');
 const adminRoutes = require('./routes/admin');
+const publicationRoutes = require('./routes/publications');
 
 // Eliminar importaciones de middlewares
 // Eliminar uso de authMiddleware y errorHandler en las rutas y app.use
@@ -65,6 +66,7 @@ app.use('/api/challenges', challengeRoutes);
 app.use('/api/shop', shopRoutes);
 app.use('/api/contributions', contributionRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/publications', publicationRoutes);
 
 // Ruta de salud
 app.get('/api/health', (req, res) => {
@@ -91,7 +93,8 @@ app.get('/api', (req, res) => {
       challenges: '/api/challenges',
       shop: '/api/shop',
       contributions: '/api/contributions',
-      admin: '/api/admin'
+      admin: '/api/admin',
+      publications: '/api/publications'
     }
   });
 });
