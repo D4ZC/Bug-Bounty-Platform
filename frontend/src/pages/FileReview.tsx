@@ -158,12 +158,20 @@ const FileReview: React.FC = () => {
       if (selected) {
         const exists = filesAll.some((f: FileType) => f.id === selected.id);
         if (!exists) {
-          localStorage.setItem(FILES_KEY, JSON.stringify([...filesAll, selected]));
+          // Ajustar dislikes: dislikes = max(likes - 3, 0)
+          const newDislikes = Math.max((selected.likes || 0) - 3, 0);
+          const reviewedFile = { ...selected, dislikes: newDislikes, reviewed: true };
+          const newFiles = [...filesAll, reviewedFile];
+          localStorage.setItem(FILES_KEY, JSON.stringify(newFiles));
+          window.dispatchEvent(new StorageEvent('storage', { key: FILES_KEY, newValue: JSON.stringify(newFiles) }));
+          window.dispatchEvent(new Event('files-updated'));
         }
       }
       // Actualizar review
       const reviewAll: FileType[] = JSON.parse(localStorage.getItem(REVIEW_KEY) || '[]');
-      localStorage.setItem(REVIEW_KEY, JSON.stringify(reviewAll.filter((f: FileType) => f.id !== selected?.id)));
+      const newReview = reviewAll.filter((f: FileType) => f.id !== selected?.id);
+      localStorage.setItem(REVIEW_KEY, JSON.stringify(newReview));
+      window.dispatchEvent(new StorageEvent('storage', { key: REVIEW_KEY, newValue: JSON.stringify(newReview) }));
       return updated;
     });
     setSelected(null);

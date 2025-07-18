@@ -23,6 +23,7 @@ const MOCK_FILES = [
     preview: 'Content of the SQL Injection guide... (max 1 page)',
     link: '',
     fileType: 'pdf',
+    reviewed: false, // Opcional para tipado
   },
   {
     id: 2,
@@ -163,6 +164,21 @@ const Files: React.FC = () => {
 
   const [voted, setVoted] = useState<{ [id: number]: 'like' | 'dislike' | undefined }>({});
 
+  // Estado para controlar el pago de puntos por card
+  const [paidFiles, setPaidFiles] = useState<{ [id: number]: boolean }>(() => {
+    const stored = localStorage.getItem('paid_files');
+    return stored ? JSON.parse(stored) : {};
+  });
+
+  // Guardar en localStorage cuando se paga
+  const handlePay = (id: number) => {
+    setPaidFiles(prev => {
+      const updated = { ...prev, [id]: true };
+      localStorage.setItem('paid_files', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   // Sincronizar cambios con localStorage
   useEffect(() => {
     localStorage.setItem(FILES_KEY, JSON.stringify(files));
@@ -174,10 +190,46 @@ const Files: React.FC = () => {
         const stored = localStorage.getItem(FILES_KEY);
         if (stored) setFiles(JSON.parse(stored));
       }
+      if (e.key === REVIEW_KEY) {
+        const stored = localStorage.getItem(FILES_KEY);
+        if (stored) setFiles(JSON.parse(stored));
+      }
+    };
+    const onFocus = () => {
+      const stored = localStorage.getItem(FILES_KEY);
+      if (stored) setFiles(JSON.parse(stored));
+    };
+    const onFilesUpdated = () => {
+      const stored = localStorage.getItem(FILES_KEY);
+      if (stored) setFiles(JSON.parse(stored));
     };
     window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener('focus', onFocus);
+    window.addEventListener('files-updated', onFilesUpdated);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener('focus', onFocus);
+      window.removeEventListener('files-updated', onFilesUpdated);
+    };
   }, []);
+
+  // Función para mover un archivo a revisión
+  const moveToReview = (file: typeof MOCK_FILES[0]) => {
+    const review = JSON.parse(localStorage.getItem(REVIEW_KEY) || '[]');
+    review.push(file);
+    localStorage.setItem(REVIEW_KEY, JSON.stringify(review));
+    setFiles((prev: typeof MOCK_FILES) => prev.filter(f => f.id !== file.id));
+  };
+
+  // Hook para detectar dislikes > likes y mover a revisión automáticamente
+  useEffect(() => {
+    files.forEach(file => {
+      if (file.dislikes > file.likes) {
+        moveToReview(file);
+      }
+    });
+    // eslint-disable-next-line
+  }, [files]);
 
   // Obtener archivos en revisión para filtrar duplicados
   const getReviewIds = () => {
@@ -308,52 +360,66 @@ const Files: React.FC = () => {
         />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filtered.map(file => (
-          <div key={file.id} className="rounded-xl shadow-lg p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-2 relative group cursor-pointer transition hover:shadow-xl" onClick={() => setSelected(file)}>
-            <div className="flex items-center gap-2 mb-1">
-              {file.types.map(type => (
-                <span key={type} className="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">{type}</span>
-              ))}
-              <span className={`ml-auto px-2 py-1 rounded text-xs font-bold ${DIFFICULTY_COLORS[file.difficulty]}`}>{file.difficulty}</span>
-            </div>
-            <div className="font-bold text-lg text-gray-800 dark:text-gray-100 truncate">{file.title}</div>
-            <div className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{file.description}</div>
-            <div className="flex items-center gap-2 mt-2">
-              <button className="text-blue-500 hover:text-blue-700" title="Edit" onClick={e => { e.stopPropagation(); openEditModal(file); }}>
-                <Edit size={20} />
-              </button>
-              <button className="text-red-500 hover:text-red-700" title="Delete" onClick={e => { e.stopPropagation(); handleDelete(file.id); }}>
-                <TrashCan size={20} />
-              </button>
-              {voted[file.id] ? (
-                <button
-                  className="ml-auto flex items-center gap-1 text-gray-500 hover:text-blue-600 font-semibold"
-                  title="Undo vote"
-                  onClick={e => { e.stopPropagation(); handleUndoVote(file.id); }}
-                >
-                  <Undo size={20} /> <span>Undo vote</span>
-                </button>
-              ) : (
-                <>
-                  <button
-                    className="ml-auto flex items-center gap-1 text-green-600 hover:text-green-800 font-semibold"
-                    title="Like"
-                    onClick={e => { e.stopPropagation(); handleLike(file.id); }}
-                  >
-                    <ThumbsUp size={20} /> <span>{file.likes}</span>
-                  </button>
-                  <button
-                    className="flex items-center gap-1 text-pink-600 hover:text-pink-800 font-semibold"
-                    title="Dislike"
-                    onClick={e => { e.stopPropagation(); handleDislike(file.id); }}
-                  >
-                    <ThumbsDown size={20} /> <span>{file.dislikes}</span>
-                  </button>
-                </>
-              )}
-            </div>
+        {filtered.length === 0 ? (
+          <div className="text-center text-gray-500 mt-8">
+            No files found with more dislikes than likes.
           </div>
-        ))}
+        ) : (
+          filtered.map(file => (
+            <div key={file.id} className="rounded-xl shadow-lg p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-2 relative group cursor-pointer transition hover:shadow-xl" onClick={() => setSelected(file)}>
+              <div className="flex items-center gap-2 mb-1">
+                {file.types.map(type => (
+                  <span key={type} className="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">{type}</span>
+                ))}
+                <span className={`ml-auto px-2 py-1 rounded text-xs font-bold ${DIFFICULTY_COLORS[file.difficulty]}`}>{file.difficulty}</span>
+              </div>
+              <div className="font-bold text-lg text-gray-800 dark:text-gray-100 truncate flex items-center justify-between">
+                <span>{file.title}</span>
+                {/* Badge Reviewed debajo del título, alineado a la derecha */}
+              </div>
+              {file.reviewed && (
+                <div className="flex justify-end mt-1">
+                  <span className="text-yellow-600 font-bold px-3 py-1 rounded-full text-xs shadow-none">Reviewed</span>
+                </div>
+              )}
+              <div className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{file.description}</div>
+              <div className="flex items-center gap-2 mt-2">
+                <button className="text-blue-500 hover:text-blue-700" title="Edit" onClick={e => { e.stopPropagation(); openEditModal(file); }}>
+                  <Edit size={20} />
+                </button>
+                <button className="text-red-500 hover:text-red-700" title="Delete" onClick={e => { e.stopPropagation(); handleDelete(file.id); }}>
+                  <TrashCan size={20} />
+                </button>
+                {voted[file.id] ? (
+                  <button
+                    className="ml-auto flex items-center gap-1 text-gray-500 hover:text-blue-600 font-semibold"
+                    title="Undo vote"
+                    onClick={e => { e.stopPropagation(); handleUndoVote(file.id); }}
+                  >
+                    <Undo size={20} /> <span>Undo vote</span>
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      className="ml-auto flex items-center gap-1 text-green-600 hover:text-green-800 font-semibold"
+                      title="Like"
+                      onClick={e => { e.stopPropagation(); handleLike(file.id); }}
+                    >
+                      <ThumbsUp size={20} /> <span>{file.likes}</span>
+                    </button>
+                    <button
+                      className="flex items-center gap-1 text-pink-600 hover:text-pink-800 font-semibold"
+                      title="Dislike"
+                      onClick={e => { e.stopPropagation(); handleDislike(file.id); }}
+                    >
+                      <ThumbsDown size={20} /> <span>{file.dislikes}</span>
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
       {/* Preview Modal */}
       {selected && (
@@ -363,7 +429,7 @@ const Files: React.FC = () => {
             <div className="flex-1 pr-6 border-r border-gray-200 dark:border-gray-700">
               <div className="font-bold text-xl mb-2 text-gray-800 dark:text-gray-100">{selected.title}</div>
               <div className="mb-2 text-gray-600 dark:text-gray-300 text-sm">{selected.description}</div>
-              <div className="bg-gray-100 dark:bg-gray-900 rounded p-4 text-xs text-gray-700 dark:text-gray-200 max-h-60 overflow-y-auto">
+              <div className={`bg-gray-100 dark:bg-gray-900 rounded p-4 text-xs text-gray-700 dark:text-gray-200 max-h-60 overflow-y-auto ${!paidFiles[selected.id] ? 'blur-sm select-none pointer-events-none' : ''}`}>
                 {selected.preview}
                 {selected.link && (
                   <div className="mt-2"><a href={selected.link} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">View external document</a></div>
@@ -372,9 +438,15 @@ const Files: React.FC = () => {
             </div>
             <div className="w-64 pl-6 flex flex-col justify-between">
               <div>
-                <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Pay with points</div>
-                <input type="number" min={1} max={200} defaultValue={50} className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 mb-2" />
-                <button className="w-full px-4 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 transition">Pay</button>
+                {!paidFiles[selected.id] ? (
+                  <>
+                    <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Pay with points</div>
+                    <input type="number" min={1} max={200} defaultValue={50} className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 mb-2" readOnly />
+                    <button className="w-full px-4 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 transition" onClick={() => handlePay(selected.id)}>Pay</button>
+                  </>
+                ) : (
+                  <div className="text-green-600 font-bold text-center">Access granted!</div>
+                )}
               </div>
             </div>
           </div>
@@ -397,6 +469,10 @@ const Files: React.FC = () => {
             <div className="mb-3">
               <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Title</label>
               <input className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100" value={addTitle} onChange={e => setAddTitle(e.target.value)} />
+            </div>
+            <div className="mb-3">
+              <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Description</label>
+              <textarea className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100" value={addDesc} onChange={e => setAddDesc(e.target.value)} rows={3} />
             </div>
             <div className="mb-3">
               <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Difficulty</label>
