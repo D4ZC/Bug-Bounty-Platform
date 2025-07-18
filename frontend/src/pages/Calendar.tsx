@@ -216,8 +216,8 @@ const Calendar: React.FC = () => {
             <input
               type="number"
               className="w-full mb-2 px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100"
-              placeholder="Buff de puntos"
-              value={eventBuff}
+              placeholder="0"
+              value={eventBuff === 0 ? '' : eventBuff}
               min={1}
               onChange={e => setEventBuff(Number(e.target.value))}
             />
