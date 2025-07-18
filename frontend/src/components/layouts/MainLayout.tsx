@@ -34,6 +34,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </SideNavLink>
               <SideNavLink href="/contributions">
                 <span className="group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 cursor-pointer bg-white hover:shadow-md">
+                  <Add size={24} className="text-black group-hover:text-gray-700 transition-all duration-200" />
+                </span>
+              </SideNavLink>
+              <SideNavLink href="/resolved-vulnerabilities">
+                <span className="group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 cursor-pointer bg-white hover:shadow-md">
                   {/* Icono bug SVG */}
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 32 32" className="text-black group-hover:text-gray-700 transition-all duration-200">
                     <g stroke="currentColor" stroke-width="2">
@@ -41,11 +46,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       <path d="M16 12V8m0 0V4m0 4c-3.5 0-6 2.5-6 6m6-6c3.5 0 6 2.5 6 6M4 20h4m20 0h-4M7 27l2.5-2.5M25 27l-2.5-2.5M7 13l2.5 2.5M25 13l-2.5 2.5"/>
                     </g>
                   </svg>
-                </span>
-              </SideNavLink>
-              <SideNavLink href="/resolved-vulnerabilities">
-                <span className="group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 cursor-pointer bg-white hover:shadow-md">
-                  <Document size={24} className="text-black group-hover:text-gray-700 transition-all duration-200" />
                 </span>
               </SideNavLink>
               <SideNavLink href="/tablet">
