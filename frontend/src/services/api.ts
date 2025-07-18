@@ -123,4 +123,8 @@ class ApiService {
 }
 
 export const apiService = new ApiService();
-export default apiService; 
+export default apiService;
+
+export const getProfile = () => apiService.get('/users/profile');
+export const updateProfile = (data: any) => apiService.put('/users/profile', data);
+export const uploadProfileImage = (filename: string) => apiService.post('/users/profile/upload', { filename }); 

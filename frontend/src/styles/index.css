@@ -142,6 +142,46 @@
   animation: float 3s ease-in-out infinite;
 }
 
+.form-animated {
+  transition:
+    box-shadow 0.4s cubic-bezier(0.4,0,0.2,1),
+    transform 0.3s cubic-bezier(0.4,0,0.2,1),
+    border-color 0.3s;
+  will-change: box-shadow, transform, border-color;
+  position: relative;
+}
+.form-animated::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 1.25rem;
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+  box-shadow: 0 0 10px 2px #00fff7, 0 0 20px 6px #00eaff44;
+}
+.form-animated:hover::before,
+.form-animated:focus-within::before {
+  opacity: 1;
+  animation: neon-glow 1.2s alternate infinite;
+}
+.form-animated:hover,
+.form-animated:focus-within {
+  box-shadow: 0 0 14px 3px #00eaffcc, 0 0 0 2px #00eaff44;
+  border-color: #00fff7;
+  transform: translateY(-8px) scale(1.03) rotate(-1deg);
+  outline: none;
+}
+@keyframes neon-glow {
+  0% {
+    box-shadow: 0 0 10px 2px #00fff7, 0 0 20px 6px #00eaff44;
+  }
+  100% {
+    box-shadow: 0 0 18px 6px #00fff7, 0 0 28px 10px #00eaff88;
+  }
+}
+
 /* Estilos para el modo oscuro */
 @media (prefers-color-scheme: dark) {
   .dark-mode-auto {
@@ -171,4 +211,105 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
+} 
+
+.rgb-background {
+  min-height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  background: linear-gradient(270deg, #1a0033, #002244, #003333, #222200, #33001a, #1a0033);
+  background-size: 1000% 1000%;
+  animation: rgbGradient 15s ease-in-out infinite;
+}
+
+@keyframes rgbGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+} 
+
+.neon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 2.2rem;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(10, 30, 60, 0.7);
+  border: 2px solid transparent;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 8px #00eaff55;
+  transition:
+    box-shadow 0.25s cubic-bezier(0.4,0,0.2,1),
+    border-color 0.25s,
+    background 0.25s,
+    color 0.25s,
+    transform 0.18s;
+  /* Elimina el text-shadow para que el texto sea más legible */
+  letter-spacing: 0.02em;
+  z-index: 10;
+  overflow: hidden;
+  backdrop-filter: blur(2px);
+}
+.neon-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 1.5rem;
+  padding: 2px;
+  background: linear-gradient(270deg, #00eaff, #0055ff, #00fff7, #00eaff);
+  background-size: 400% 400%;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  opacity: 0.7;
+  animation: neon-btn-border 6s linear infinite;
+}
+.neon-btn:hover::before, .neon-btn:focus::before {
+  opacity: 1;
+}
+.neon-btn > * {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 0 6px #00eaffcc, 0 0 2px #0055ff99;
+}
+.neon-btn:hover, .neon-btn:focus {
+  background: rgba(0, 40, 80, 0.95);
+  color: #00fff7;
+  box-shadow: 0 0 18px 4px #00fff7, 0 0 32px 8px #00eaff77;
+  transform: translateY(-2px) scale(1.04);
+  outline: none;
+}
+.neon-btn:active {
+  transform: scale(0.98);
+  box-shadow: 0 0 8px 2px #00eaff77;
+}
+@keyframes neon-btn-border {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+} 
+
+.neon-btn > span {
+  font-weight: 900;
+  font-size: 1.15rem;
+  color: #fff !important;
+  text-shadow: 0 1px 8px #003344, 0 0 2px #000, 0 0 1px #00eaff99;
+  letter-spacing: 0.01em;
+  z-index: 10;
+  position: relative;
+} 
+
+.neon-btn .arrow-animate {
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), filter 0.3s;
+}
+.neon-btn:hover .arrow-animate, .neon-btn:focus .arrow-animate {
+  transform: translateX(-10px) scale(1.15) rotate(-10deg);
+  filter: drop-shadow(0 0 8px #00fff7) drop-shadow(0 0 16px #00eaff);
 } 

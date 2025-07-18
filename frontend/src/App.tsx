@@ -19,6 +19,10 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
+import Reports from '@/pages/Reports';
+import Rankings from '@/pages/Rankings';
+import UserProfile from '@/pages/UserProfile';
+import Landing from '@/pages/Landing';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -36,17 +40,24 @@ function App() {
       </Helmet>
 
       <Routes>
-        <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-          <Route index element={<Dashboard />} />
+        {/* Rutas públicas de auth y landing */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
+        {/* Rutas protegidas */}
+        <Route element={<ProtectedRoute><MainLayout><Outlet /></MainLayout></ProtectedRoute>}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vulnerabilities" element={<Vulnerabilities />} />
           <Route path="challenges" element={<Challenges />} />
           <Route path="shop" element={<Shop />} />
           <Route path="contributions" element={<Contributions />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="team" element={<Team />} />
+          <Route path="profile/:id" element={<UserProfile />} />
+          <Route path="team/:id" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
-          <Route path="mvp" element={<MVP />} />
+          <Route path="reglas" element={<MVP />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="rankings" element={<Rankings />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

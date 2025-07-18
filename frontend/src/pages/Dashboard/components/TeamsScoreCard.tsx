@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface Team {
@@ -37,6 +38,7 @@ const mockTeams: Team[] = [
 
 const TeamsScoreCard: React.FC<{ teams?: Team[] }> = ({ teams = mockTeams }) => {
   const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const navigate = useNavigate();
 
   return (
     <div className="w-full h-full flex flex-col gap-2 bg-[#181c24] rounded-xl shadow-lg border border-[#23273a] p-4">
@@ -47,7 +49,7 @@ const TeamsScoreCard: React.FC<{ teams?: Team[] }> = ({ teams = mockTeams }) => 
           <li
             key={team.name}
             className={`flex justify-between items-center px-2 py-1 rounded-lg cursor-pointer group transition-all duration-200 ${idx === 0 ? 'bg-gradient-to-r from-yellow-400/20 via-yellow-100/10 to-yellow-400/20 shadow-lg border-l-4 border-yellow-400' : 'hover:bg-[#23273a]/60'}`}
-            onClick={() => setSelectedTeam(team)}
+            onClick={() => navigate(`/team/${encodeURIComponent(team.name)}`)}
           >
             {idx === 0 ? (
               <motion.span
@@ -80,7 +82,7 @@ const TeamsScoreCard: React.FC<{ teams?: Team[] }> = ({ teams = mockTeams }) => 
             ) : (
               <span className="font-semibold text-[#bfcfff] text-base">{idx + 1}. {team.name}</span>
             )}
-            <span className={`font-bold text-lg ${idx === 0 ? 'text-yellow-200' : 'text-[#bfcfff]'}`}>{team.score} pts</span>
+            <span className={`font-bold text-lg ${idx === 0 ? 'text-yellow-200' : 'text-[#bfcfff]'}`}>{team.points} pts</span>
           </li>
         ))}
       </ol>

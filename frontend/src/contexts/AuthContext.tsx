@@ -124,58 +124,68 @@ export function AuthProvider({ children }: AuthProviderProps) {
     verifyToken();
   }, []);
 
-  const login = async (credentials: LoginForm) => {
+  const login = async (credentials: { username: string; password: string }) => {
     dispatch({ type: 'AUTH_START' });
-
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/login', credentials);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
-
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el login');
-      }
+      // Simulación: aceptar cualquier usuario/contraseña
+      const user = {
+        _id: Date.now().toString(),
+        username: credentials.username,
+        email: credentials.username + '@test.com',
+        password: credentials.password,
+        role: 'member',
+        points: 0,
+        rank: 0,
+        isMVP: false,
+        isGulagParticipant: false,
+        achievements: [],
+        badges: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      const token = 'mock-token-' + user.username;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el login';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
+      dispatch({ type: 'AUTH_FAILURE', payload: error.message });
       throw error;
     }
   };
 
-  const register = async (userData: RegisterForm) => {
+  const register = async (userData: { username: string; email: string; password: string; confirmPassword: string }) => {
     dispatch({ type: 'AUTH_START' });
-
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/register', userData);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
-
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el registro');
+      let users = JSON.parse(localStorage.getItem('users') || '[]');
+      if (users.find((u: any) => u.username === userData.username)) {
+        throw new Error('El usuario ya existe');
       }
+      if (users.find((u: any) => u.email === userData.email)) {
+        throw new Error('El email ya está registrado');
+      }
+      const user = {
+        _id: Date.now().toString(),
+        username: userData.username,
+        email: userData.email,
+        password: userData.password,
+        role: 'member',
+        points: 0,
+        rank: 0,
+        isMVP: false,
+        isGulagParticipant: false,
+        achievements: [],
+        badges: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      users.push(user);
+      localStorage.setItem('users', JSON.stringify(users));
+      const token = 'mock-token-' + user.username;
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
+      dispatch({ type: 'AUTH_FAILURE', payload: error.message });
       throw error;
     }
   };

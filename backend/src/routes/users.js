@@ -81,4 +81,38 @@ router.get('/:id', (req, res) => {
   });
 });
 
+// Endpoint para obtener el perfil del usuario autenticado (simulado, id=1)
+router.get('/profile', (req, res) => {
+  const user = mockUsers.find(u => u._id === '1');
+  if (!user) {
+    return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+  }
+  res.json({ success: true, data: user });
+});
+
+// Endpoint para actualizar el perfil del usuario autenticado (simulado, id=1)
+router.put('/profile', (req, res) => {
+  const user = mockUsers.find(u => u._id === '1');
+  if (!user) {
+    return res.status(404).json({ success: false, error: 'Usuario no encontrado' });
+  }
+  // Actualizar solo los campos permitidos
+  const allowedFields = ['avatar', 'blockBg', 'selectedFrame', 'customFrame', 'badges', 'background', 'name'];
+  allowedFields.forEach(field => {
+    if (req.body[field] !== undefined) {
+      user[field] = req.body[field];
+    }
+  });
+  user.updatedAt = new Date();
+  res.json({ success: true, data: user });
+});
+
+// Endpoint para simular subida de imagen (solo devuelve una URL local)
+router.post('/profile/upload', (req, res) => {
+  // Simulación: en un backend real aquí se guardaría el archivo
+  // Aquí solo devolvemos una URL simulada
+  const { filename } = req.body;
+  res.json({ success: true, url: `/uploads/${filename}` });
+});
+
 module.exports = router; 

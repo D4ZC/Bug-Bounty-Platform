@@ -12,7 +12,7 @@ const RadarChartComponent: React.FC<RadarChartComponentProps> = ({ data }) => {
         <PolarGrid stroke="#4fc3f7" strokeDasharray="3 3" />
         <PolarAngleAxis dataKey="name" tick={{ fill: '#bfcfff', fontSize: 12 }} />
         <PolarRadiusAxis angle={30} domain={[0, Math.max(...data.map(d => d.value), 10)]} tick={{ fill: '#4fc3f7', fontSize: 10 }} />
-        <Radar name="Vulnerabilidades" dataKey="value" stroke="#4fc3f7" fill="#4fc3f7" fillOpacity={0.4} />
+        <Radar name="Vulnerabilidades" dataKey="value" stroke="#60a5fa" fill="#60a5fa" fillOpacity={0.5} />
         <Tooltip contentStyle={{ background: '#181c24', border: '1px solid #23273a', color: '#fff' }} />
       </RadarChart>
     </ResponsiveContainer>
