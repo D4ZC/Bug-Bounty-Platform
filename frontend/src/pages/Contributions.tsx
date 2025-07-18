@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Button,
   Modal,
@@ -38,6 +39,23 @@ const Contributions: React.FC = () => {
   const [form, setForm] = useState<ContributionForm>(initialForm);
   const [contribs, setContribs] = useState<any[]>([]);
   const [showFileUploader, setShowFileUploader] = useState(true);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [editIdx, setEditIdx] = useState<number | null>(null);
+  // Detectar si venimos de edición
+  useEffect(() => {
+    if (location.state && location.state.editVuln) {
+      const v = location.state.editVuln;
+      setForm({
+        type: types.find(t => t.label === v.criticidad)?.value || '',
+        title: v.vulnerabilidad,
+        description: v.descripcion,
+        file: null,
+      });
+      setEditIdx(location.state.editIdx ?? null);
+      setModalOpen(true);
+    }
+  }, [location.state]);
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target;
@@ -52,9 +70,28 @@ const Contributions: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    const resolvedVuln = {
+      fecha: new Date().toLocaleDateString(),
+      criticidad: types.find(t => t.value === form.type)?.label || '',
+      vulnerabilidad: form.title,
+      descripcion: form.description,
+      documento: form.file ? form.file.name : '',
+    };
+    const prev = JSON.parse(localStorage.getItem('resolvedVulns') || '[]');
+    if (editIdx !== null && editIdx >= 0 && editIdx < prev.length) {
+      // Edición: reemplazar el elemento
+      prev[editIdx] = { ...prev[editIdx], ...resolvedVuln };
+      localStorage.setItem('resolvedVulns', JSON.stringify(prev));
+    } else {
+      // Nuevo
+      localStorage.setItem('resolvedVulns', JSON.stringify([...prev, resolvedVuln]));
+    }
     setContribs((prev) => [...prev, form]);
     setForm(initialForm);
     setModalOpen(false);
+    setEditIdx(null);
+    // Redirigir siempre tras guardar
+    navigate('/resolved-vulnerabilities');
   };
 
   // Función para obtener la fecha local actual
@@ -94,6 +131,7 @@ const Contributions: React.FC = () => {
       <Modal
         open={modalOpen}
         modalHeading={null}
+        onRequestClose={() => setModalOpen(false)}
         size="md"
         className="animate-slide-fade"
       >
@@ -187,8 +225,18 @@ const Contributions: React.FC = () => {
               {/* Nombre del archivo subido */}
               {form.file && typeof form.file === 'object' && 'name' in form.file && (
                 <div className="flex items-center mt-2 mb-2 px-3 py-1 bg-gray-100 rounded text-blue-800 font-medium text-sm shadow-inner">
-                  <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 32 32' className='mr-2'><path d='M25 28H7a1 1 0 0 1-1-1v-6h2v5h16v-5h2v6a1 1 0 0 1-1 1ZM16 4l7 8h-5v9h-4v-9h-5l7-8Z' fill='currentColor'/></svg>
+                  {/* Icono documento simple */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 32 32" className="mr-2"><rect x="8" y="6" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M12 12h8M12 16h8M12 20h5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                   {form.file.name}
+                  <button
+                    type="button"
+                    className="ml-2 p-1 rounded hover:bg-red-100 focus:outline-none"
+                    title="Eliminar documento"
+                    onClick={() => setForm((prev) => ({ ...prev, file: null }))}
+                  >
+                    {/* Ícono bote de basura */}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m2 0v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6h16z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                  </button>
                 </div>
               )}
               {/* Descripción de archivos permitidos */}
@@ -207,7 +255,7 @@ const Contributions: React.FC = () => {
           >
             {/* Ícono clipboard con check */}
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 32 32" className="mr-1"><rect x="8" y="6" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><path d="M13 18l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Publicar
+            {editIdx !== null ? "Editar" : "Publicar"}
           </button>
         </div>
         <style>{`
