@@ -18,7 +18,15 @@ const types = [
   { value: 'critical', label: 'Critical' },
 ];
 
-const initialForm = {
+// Define el tipo para el formulario
+interface ContributionForm {
+  type: string;
+  title: string;
+  description: string;
+  file: File | null;
+}
+
+const initialForm: ContributionForm = {
   type: '',
   title: '',
   description: '',
@@ -27,7 +35,7 @@ const initialForm = {
 
 const Contributions: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState<ContributionForm>(initialForm);
   const [contribs, setContribs] = useState<any[]>([]);
   const [showFileUploader, setShowFileUploader] = useState(true);
 
@@ -86,10 +94,6 @@ const Contributions: React.FC = () => {
       <Modal
         open={modalOpen}
         modalHeading={null}
-        primaryButtonText="Publicar"
-        secondaryButtonText="Cancelar"
-        onRequestClose={() => setModalOpen(false)}
-        onRequestSubmit={handleSubmit}
         size="md"
         className="animate-slide-fade"
       >
@@ -134,6 +138,7 @@ const Contributions: React.FC = () => {
           onChange={handleChange}
           className="mt-4 text-black placeholder-gray-400"
           required
+          placeholder="Nombre de la Vulnerabilidad"
         />
         <TextArea
           id="description"
@@ -160,14 +165,16 @@ const Contributions: React.FC = () => {
         <div className="flex flex-col items-center mt-8">
           {showFileUploader && (
             <div className="w-full flex flex-col items-start custom-file-uploader text-black">
-              {/* Botón 'Elegir archivo' */}
+              {/* Botón 'Subir archivo' tipo Carbon */}
               <label htmlFor="file-uploader-input" className="block mb-2">
                 <button
                   type="button"
-                  className="cds--file-btn"
+                  className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-normal rounded-lg px-6 py-3 shadow transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
                   onClick={() => document.getElementById('file-uploader-input')?.click()}
                 >
-                  Elegir archivo
+                  {/* Ícono upload SVG estilo Carbon */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 32 32" className="mr-1"><path d="M25 28H7a1 1 0 0 1-1-1v-6h2v5h16v-5h2v6a1 1 0 0 1-1 1ZM16 4l7 8h-5v9h-4v-9h-5l7-8Z" fill="currentColor"/></svg>
+                  Subir archivo
                 </button>
                 <input
                   id="file-uploader-input"
@@ -177,18 +184,31 @@ const Contributions: React.FC = () => {
                   onChange={(e: any) => setForm((prev) => ({ ...prev, file: e.target.files[0] }))}
                 />
               </label>
-              {/* Archivos subidos */}
+              {/* Nombre del archivo subido */}
               {form.file && typeof form.file === 'object' && 'name' in form.file && (
-                <div className="cds--file__selected-file mb-2 text-black font-medium">
+                <div className="flex items-center mt-2 mb-2 px-3 py-1 bg-gray-100 rounded text-blue-800 font-medium text-sm shadow-inner">
+                  <svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 32 32' className='mr-2'><path d='M25 28H7a1 1 0 0 1-1-1v-6h2v5h16v-5h2v6a1 1 0 0 1-1 1ZM16 4l7 8h-5v9h-4v-9h-5l7-8Z' fill='currentColor'/></svg>
                   {form.file.name}
                 </div>
               )}
               {/* Descripción de archivos permitidos */}
               <div className="cds--label-description mb-4">
-                Opcional. Archivos permitidos: PDF, DOCX
+                Archivos permitidos: PDF, DOCX
               </div>
             </div>
           )}
+        </div>
+        {/* Botón 'Publicar' personalizado tipo Carbon */}
+        <div className="flex justify-center mt-8">
+          <button
+            type="button"
+            className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-normal rounded-lg px-6 py-3 shadow transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+            onClick={handleSubmit}
+          >
+            {/* Ícono clipboard con check */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 32 32" className="mr-1"><rect x="8" y="6" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><path d="M13 18l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Publicar
+          </button>
         </div>
         <style>{`
           /* Ocultar la flecha del select de Carbon */
