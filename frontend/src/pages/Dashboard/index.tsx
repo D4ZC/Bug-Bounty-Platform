@@ -67,6 +67,11 @@ const mvpUsers = teams.map(team => {
 // Rankings ordenados por puntos
 const sortedTeams = [...teams].sort((a, b) => b.points - a.points);
 const sortedUsers = [...allUsers].sort((a, b) => b.points - a.points);
+// Peores 5 usuarios para el Gulag, ordenados de mayor a menor dentro de los 5 con menos puntos
+const gulagUsers = [...allUsers]
+  .sort((a, b) => a.points - b.points)
+  .slice(0, 5)
+  .sort((a, b) => b.points - a.points);
 
 const Dashboard: React.FC = () => {
   // Estado para la pestaña activa
@@ -211,17 +216,17 @@ const Dashboard: React.FC = () => {
                 <span>🚨</span> The Gulag is Active: Bottom 5 users this week!
               </div>
               <ol className="space-y-3">
-                {[...Array(5)].map((_, idx) => (
+                {gulagUsers.map((user, idx) => (
                   <li
-                    key={idx}
+                    key={user.id}
                     className="flex items-center gap-4 p-3 rounded-lg border border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/40 text-red-900 dark:text-red-100 shadow"
                   >
                     <div className="w-8 h-8 flex items-center justify-center">{idx + 1}</div>
-                    <div className="w-10 h-10 rounded-full bg-red-200 dark:bg-red-800 flex items-center justify-center">😱</div>
+                    <img src={user.avatar} alt={user.username} className="w-10 h-10 rounded-full border-2 border-red-200 dark:border-red-700" />
                     <div className="flex-1">
-                      <div className="font-bold text-base">Usuario Gulag {idx + 1}</div>
-                      <div className="text-xs">Equipo: -</div>
-                      <div className="text-sm">Puntos: -</div>
+                      <div className="font-bold text-base">{user.username}</div>
+                      <div className="text-xs">Equipo: {user.team}</div>
+                      <div className="text-sm">Puntos: {user.points}</div>
                     </div>
                   </li>
                 ))}

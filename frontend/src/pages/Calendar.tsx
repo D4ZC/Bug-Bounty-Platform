@@ -17,6 +17,7 @@ interface CalendarEvent {
   day: number;
   title: string;
   buff: number;
+  difficulties?: string[]; // Added difficulties field
 }
 
 const Calendar: React.FC = () => {
@@ -30,6 +31,16 @@ const Calendar: React.FC = () => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'calendar' | 'events'>('calendar');
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
+
+  // Dificultades y colores
+  const DIFFICULTIES = [
+    { label: 'Critical', value: 'critical', color: 'bg-red-600 text-white' },
+    { label: 'High', value: 'high', color: 'bg-orange-500 text-white' },
+    { label: 'Medium', value: 'medium', color: 'bg-yellow-400 text-gray-900' },
+    { label: 'Low', value: 'low', color: 'bg-blue-400 text-white' },
+  ];
+  const ALL_DIFFICULTIES = DIFFICULTIES.map(d => d.value);
 
   // Navegación de mes
   const handlePrevMonth = () => {
@@ -60,33 +71,51 @@ const Calendar: React.FC = () => {
     setShowModal(true);
   };
 
-  // Guardar evento
+  // Filtro de dificultades
+  const handleDifficultyChange = (value: string) => {
+    if (value === 'all') {
+      if (selectedDifficulties.length === ALL_DIFFICULTIES.length) {
+        setSelectedDifficulties([]);
+      } else {
+        setSelectedDifficulties(ALL_DIFFICULTIES);
+      }
+    } else {
+      if (selectedDifficulties.includes(value)) {
+        setSelectedDifficulties(selectedDifficulties.filter(d => d !== value));
+      } else {
+        setSelectedDifficulties([...selectedDifficulties, value]);
+      }
+    }
+  };
+  const isAllSelected = selectedDifficulties.length === ALL_DIFFICULTIES.length;
+
+  // Guardar evento (modificado para guardar dificultades)
   const handleSaveEvent = () => {
-    if (selected && eventTitle && eventBuff > 0) {
+    if (selected && eventTitle && eventBuff > 0 && selectedDifficulties.length > 0) {
       if (editIndex !== null) {
-        // Editar evento existente
-        setEvents((prev) => prev.map((ev, idx) => idx === editIndex ? { year, month, day: selected, title: eventTitle, buff: eventBuff } : ev));
+        setEvents((prev) => prev.map((ev, idx) => idx === editIndex ? { year, month, day: selected, title: eventTitle, buff: eventBuff, difficulties: selectedDifficulties } : ev));
         setEditIndex(null);
       } else {
-        // Nuevo evento
         setEvents((prev) => [
           ...prev,
-          { year, month, day: selected, title: eventTitle, buff: eventBuff }
+          { year, month, day: selected, title: eventTitle, buff: eventBuff, difficulties: selectedDifficulties }
         ]);
       }
       setShowModal(false);
       setSelected(null);
       setEditIndex(null);
+      setSelectedDifficulties([]);
     }
   };
 
-  // Editar evento
+  // Editar evento (cargar dificultades)
   const handleEditEvent = (idx: number, event: CalendarEvent) => {
     setSelected(event.day);
     setEventTitle(event.title);
     setEventBuff(event.buff);
     setShowModal(true);
     setEditIndex(idx);
+    setSelectedDifficulties(event.difficulties || []);
   };
 
   // Eliminar evento
@@ -155,7 +184,7 @@ const Calendar: React.FC = () => {
                     ${isSelected ? 'ring-2 ring-pink-500 bg-pink-100 dark:bg-pink-900' : ''}
                   `}
                   onClick={day ? () => handleDayClick(day) : undefined}
-                  title={event ? `${event.title} (+${event.buff} pts)` : ''}
+                  title={event ? `${event.title} (+${event.buff} pts)\nDificultad: ${event.difficulties ? event.difficulties.map(d => DIFFICULTIES.find(df => df.value === d)?.label).join(', ') : ''}` : ''}
                 >
                   {day}
                   {event && (
@@ -192,17 +221,56 @@ const Calendar: React.FC = () => {
               min={1}
               onChange={e => setEventBuff(Number(e.target.value))}
             />
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-1 mt-2">Dificultades:</label>
+            <div className="flex flex-wrap gap-2 mb-2">
+              {DIFFICULTIES.map(diff => {
+                const selected = selectedDifficulties.includes(diff.value);
+                return (
+                  <span
+                    key={diff.value}
+                    className={`relative flex items-center gap-1 cursor-pointer border ${selected ? diff.color : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'} px-3 py-1 rounded-full text-xs font-semibold transition`}
+                    onClick={() => !selected && handleDifficultyChange(diff.value)}
+                    style={{ userSelect: 'none' }}
+                  >
+                    <span>{diff.label}</span>
+                    {selected && (
+                      <button
+                        type="button"
+                        className="ml-1 text-lg leading-none focus:outline-none"
+                        onClick={e => { e.stopPropagation(); handleDifficultyChange(diff.value); }}
+                        tabIndex={-1}
+                        aria-label={`Remove ${diff.label}`}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </span>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-2 mb-2">
+              <input
+                type="checkbox"
+                checked={isAllSelected}
+                onChange={() => handleDifficultyChange('all')}
+                id="all-difficulties"
+              />
+              <label htmlFor="all-difficulties" className="font-semibold cursor-pointer">All</label>
+            </div>
+            {selectedDifficulties.length === 0 && (
+              <div className="text-xs text-red-500 mb-2">Selecciona al menos una dificultad.</div>
+            )}
             <div className="flex gap-2 mt-4">
               <button
                 className="flex-1 px-3 py-1 rounded bg-blue-600 text-white font-bold hover:bg-blue-700"
                 onClick={handleSaveEvent}
-                disabled={!eventTitle || eventBuff <= 0}
+                disabled={!eventTitle || eventBuff <= 0 || selectedDifficulties.length === 0}
               >
                 Guardar
               </button>
               <button
                 className="flex-1 px-3 py-1 rounded bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-bold hover:bg-gray-400 dark:hover:bg-gray-600"
-                onClick={() => setShowModal(false)}
+                onClick={() => { setShowModal(false); setSelectedDifficulties([]); }}
               >
                 Cancelar
               </button>
@@ -224,6 +292,14 @@ const Calendar: React.FC = () => {
                   </span>
                   <span className="flex-1 text-gray-800 dark:text-gray-100">{event.title}</span>
                   <span className="font-bold text-pink-600 dark:text-pink-400">Buff: +{event.buff}</span>
+                  <span className="flex gap-1 flex-wrap">
+                    {event.difficulties && event.difficulties.map((d: string) => {
+                      const diff = DIFFICULTIES.find(df => df.value === d);
+                      return diff ? (
+                        <span key={d} className={`px-2 py-0.5 rounded text-xs font-bold ${diff.color}`}>{diff.label}</span>
+                      ) : null;
+                    })}
+                  </span>
                   <div className="flex gap-2 mt-2 md:mt-0">
                     <button
                       className="px-2 py-1 rounded bg-yellow-400 text-white font-bold hover:bg-yellow-500 text-xs"
