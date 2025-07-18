@@ -15,77 +15,84 @@ export interface Team {
   rank?: number;
 }
 
-// Datos de usuarios para Score y Gulag
-export const users: User[] = [
-  { id: 1, name: 'D4ZC', score: 2500, team: 'P-TECH', avatar: 'D4' },
-  { id: 2, name: 'Hacker Elite', score: 2200, team: 'Alpha Team', avatar: 'HE' },
-  { id: 3, name: 'Security Pro', score: 2100, team: 'Beta Squad', avatar: 'SP' },
-  { id: 4, name: 'Code Breaker', score: 2000, team: 'Gamma Force', avatar: 'CB' },
-  { id: 5, name: 'Bug Hunter', score: 1900, team: 'Delta Unit', avatar: 'BH' },
-  { id: 6, name: 'Cyber Ninja', score: 1800, team: 'Epsilon Group', avatar: 'CN' },
-  { id: 7, name: 'White Hat', score: 1700, team: 'Zeta Team', avatar: 'WH' },
-  { id: 8, name: 'Pen Tester', score: 1600, team: 'Eta Squad', avatar: 'PT' },
-  { id: 9, name: 'Vuln Finder', score: 1500, team: 'Theta Force', avatar: 'VF' },
-  { id: 10, name: 'Security Master', score: 1400, team: 'Iota Unit', avatar: 'SM' },
-  { id: 11, name: 'Hack Master', score: 1300, team: 'Kappa Group', avatar: 'HM' },
-  { id: 12, name: 'Code Master', score: 1200, team: 'Lambda Team', avatar: 'CM' },
-  { id: 13, name: 'Bug Master', score: 1100, team: 'Mu Squad', avatar: 'BM' },
-  { id: 14, name: 'Security Pro', score: 1000, team: 'Nu Force', avatar: 'SP' },
-  { id: 15, name: 'Hack Pro', score: 900, team: 'Xi Unit', avatar: 'HP' },
-  { id: 16, name: 'Code Pro', score: 800, team: 'Omicron Group', avatar: 'CP' },
-  { id: 17, name: 'Bug Pro', score: 700, team: 'Pi Team', avatar: 'BP' },
-  { id: 18, name: 'Security Elite', score: 600, team: 'Rho Squad', avatar: 'SE' },
-  { id: 19, name: 'Hack Elite', score: 500, team: 'Sigma Force', avatar: 'HE' },
-  { id: 20, name: 'Code Elite', score: 400, team: 'Tau Unit', avatar: 'CE' },
-  { id: 21, name: 'Bug Elite', score: 300, team: 'Upsilon Group', avatar: 'BE' },
-  { id: 22, name: 'Security Master', score: 250, team: 'Phi Team', avatar: 'SM' },
-  { id: 23, name: 'Hack Master', score: 200, team: 'Chi Squad', avatar: 'HM' },
-  { id: 24, name: 'Code Master', score: 150, team: 'Psi Force', avatar: 'CM' },
-  { id: 25, name: 'Bug Master', score: 100, team: 'Omega Unit', avatar: 'BM' },
-  { id: 26, name: 'Security Pro', score: 90, team: 'Alpha Group', avatar: 'SP' },
-  { id: 27, name: 'Hack Pro', score: 80, team: 'Beta Team', avatar: 'HP' },
-  { id: 28, name: 'Code Pro', score: 70, team: 'Gamma Squad', avatar: 'CP' },
-  { id: 29, name: 'Bug Pro', score: 60, team: 'Delta Force', avatar: 'BP' },
-  { id: 30, name: 'Security Elite', score: 50, team: 'Epsilon Unit', avatar: 'SE' },
-  { id: 31, name: 'Hack Elite', score: 45, team: 'Zeta Group', avatar: 'HE' },
-  { id: 32, name: 'Code Elite', score: 40, team: 'Eta Team', avatar: 'CE' },
-  { id: 33, name: 'Bug Elite', score: 35, team: 'Theta Squad', avatar: 'BE' },
-  { id: 34, name: 'Security Master', score: 30, team: 'Iota Force', avatar: 'SM' },
-  { id: 35, name: 'Hack Master', score: 25, team: 'Kappa Unit', avatar: 'HM' },
-  { id: 36, name: 'Code Master', score: 20, team: 'Lambda Group', avatar: 'CM' },
-  { id: 37, name: 'Bug Master', score: 15, team: 'Mu Team', avatar: 'BM' },
-  { id: 38, name: 'Security Pro', score: 10, team: 'Nu Squad', avatar: 'SP' },
-  { id: 39, name: 'Hack Pro', score: 8, team: 'Xi Force', avatar: 'HP' },
-  { id: 40, name: 'Code Pro', score: 6, team: 'Omicron Unit', avatar: 'CP' },
-  { id: 41, name: 'Bug Pro', score: 4, team: 'Pi Group', avatar: 'BP' },
-  { id: 42, name: 'Security Elite', score: 3, team: 'Rho Team', avatar: 'SE' },
-  { id: 43, name: 'Hack Elite', score: 2, team: 'Sigma Squad', avatar: 'HE' },
-  { id: 44, name: 'Code Elite', score: 1, team: 'Tau Force', avatar: 'CE' },
-  { id: 45, name: 'Bug Elite', score: 0, team: 'Upsilon Unit', avatar: 'BE' },
-  { id: 46, name: 'deivid', score: 50, team: 'Gulag Team', avatar: 'DV' },
-  { id: 47, name: 'runrun', score: 25, team: 'Gulag Team', avatar: 'RR' },
-  { id: 48, name: 'excel', score: 20, team: 'Gulag Team', avatar: 'EX' },
-  { id: 49, name: 'kick ass', score: 20, team: 'Gulag Team', avatar: 'KA' },
-  { id: 50, name: 'pedrito sola', score: 10, team: 'Gulag Team', avatar: 'PS' },
-].sort((a, b) => b.score - a.score);
-
-// Datos de equipos
+// Equipos
 export const teams: Team[] = [
-  { id: 1, name: 'P-TECH', score: 8500, members: 5 },
-  { id: 2, name: 'Alpha Team', score: 7800, members: 4 },
-  { id: 3, name: 'Beta Squad', score: 7200, members: 6 },
-  { id: 4, name: 'Gamma Force', score: 6800, members: 5 },
-  { id: 5, name: 'Delta Unit', score: 6200, members: 4 },
-  { id: 6, name: 'Epsilon Group', score: 5800, members: 5 },
-  { id: 7, name: 'Zeta Team', score: 5400, members: 4 },
-  { id: 8, name: 'Eta Squad', score: 5000, members: 6 },
-  { id: 9, name: 'Theta Force', score: 4600, members: 5 },
-  { id: 10, name: 'Iota Unit', score: 4200, members: 4 },
+  { id: 1, name: 'RedFox', score: 0, members: 0 },
+  { id: 2, name: 'BlueWolf', score: 0, members: 0 },
+  { id: 3, name: 'GreenBear', score: 0, members: 0 },
+  { id: 4, name: 'YellowEagle', score: 0, members: 0 },
+  { id: 5, name: 'BlackShark', score: 0, members: 0 },
+];
+
+// Usuarios (50, distribuidos en los 5 equipos)
+export const users: User[] = [
+  // RedFox (12)
+  { id: 1, name: 'Alice', score: 2500, team: 'RedFox', avatar: 'A' },
+  { id: 2, name: 'Bob', score: 2200, team: 'RedFox', avatar: 'B' },
+  { id: 3, name: 'Charlie', score: 2100, team: 'RedFox', avatar: 'C' },
+  { id: 4, name: 'Diana', score: 2000, team: 'RedFox', avatar: 'D' },
+  { id: 5, name: 'Eve', score: 1900, team: 'RedFox', avatar: 'E' },
+  { id: 6, name: 'Frank', score: 1800, team: 'RedFox', avatar: 'F' },
+  { id: 7, name: 'Grace', score: 1700, team: 'RedFox', avatar: 'G' },
+  { id: 8, name: 'Heidi', score: 1600, team: 'RedFox', avatar: 'H' },
+  { id: 9, name: 'Ivan', score: 1500, team: 'RedFox', avatar: 'I' },
+  { id: 10, name: 'Judy', score: 1400, team: 'RedFox', avatar: 'J' },
+  { id: 11, name: 'Karl', score: 1300, team: 'RedFox', avatar: 'K' },
+  { id: 12, name: 'Liam', score: 1200, team: 'RedFox', avatar: 'L' },
+  // BlueWolf (10)
+  { id: 13, name: 'Mona', score: 2400, team: 'BlueWolf', avatar: 'M' },
+  { id: 14, name: 'Nina', score: 2300, team: 'BlueWolf', avatar: 'N' },
+  { id: 15, name: 'Oscar', score: 1250, team: 'BlueWolf', avatar: 'O' },
+  { id: 16, name: 'Paul', score: 1100, team: 'BlueWolf', avatar: 'P' },
+  { id: 17, name: 'Quinn', score: 1050, team: 'BlueWolf', avatar: 'Q' },
+  { id: 18, name: 'Rita', score: 1000, team: 'BlueWolf', avatar: 'R' },
+  { id: 19, name: 'Sam', score: 950, team: 'BlueWolf', avatar: 'S' },
+  { id: 20, name: 'Tom', score: 900, team: 'BlueWolf', avatar: 'T' },
+  { id: 21, name: 'Uma', score: 850, team: 'BlueWolf', avatar: 'U' },
+  { id: 22, name: 'Vera', score: 800, team: 'BlueWolf', avatar: 'V' },
+  // GreenBear (8)
+  { id: 23, name: 'Will', score: 1750, team: 'GreenBear', avatar: 'W' },
+  { id: 24, name: 'Xena', score: 1650, team: 'GreenBear', avatar: 'X' },
+  { id: 25, name: 'Yara', score: 1550, team: 'GreenBear', avatar: 'Y' },
+  { id: 26, name: 'Zane', score: 1450, team: 'GreenBear', avatar: 'Z' },
+  { id: 27, name: 'Amy', score: 1350, team: 'GreenBear', avatar: 'AM' },
+  { id: 28, name: 'Ben', score: 1250, team: 'GreenBear', avatar: 'BN' },
+  { id: 29, name: 'Cleo', score: 1150, team: 'GreenBear', avatar: 'CL' },
+  { id: 30, name: 'Duke', score: 1050, team: 'GreenBear', avatar: 'DK' },
+  // YellowEagle (12)
+  { id: 31, name: 'Elisa', score: 1950, team: 'YellowEagle', avatar: 'EL' },
+  { id: 32, name: 'Felix', score: 1850, team: 'YellowEagle', avatar: 'FX' },
+  { id: 33, name: 'Gina', score: 1750, team: 'YellowEagle', avatar: 'GN' },
+  { id: 34, name: 'Hugo', score: 1650, team: 'YellowEagle', avatar: 'HG' },
+  { id: 35, name: 'Iris', score: 1550, team: 'YellowEagle', avatar: 'IR' },
+  { id: 36, name: 'Jon', score: 1450, team: 'YellowEagle', avatar: 'JN' },
+  { id: 37, name: 'Kira', score: 1350, team: 'YellowEagle', avatar: 'KR' },
+  { id: 38, name: 'Lars', score: 1250, team: 'YellowEagle', avatar: 'LR' },
+  { id: 39, name: 'Mick', score: 1150, team: 'YellowEagle', avatar: 'MK' },
+  { id: 40, name: 'Nora', score: 1050, team: 'YellowEagle', avatar: 'NR' },
+  { id: 41, name: 'Omar', score: 950, team: 'YellowEagle', avatar: 'OM' },
+  { id: 42, name: 'Pia', score: 850, team: 'YellowEagle', avatar: 'PI' },
+  // BlackShark (8)
+  { id: 43, name: 'Quentin', score: 1700, team: 'BlackShark', avatar: 'QT' },
+  { id: 44, name: 'Rox', score: 1600, team: 'BlackShark', avatar: 'RX' },
+  { id: 45, name: 'Sven', score: 1500, team: 'BlackShark', avatar: 'SV' },
+  { id: 46, name: 'Tina', score: 1400, team: 'BlackShark', avatar: 'TN' },
+  { id: 47, name: 'Ugo', score: 1300, team: 'BlackShark', avatar: 'UG' },
+  { id: 48, name: 'Vicky', score: 1200, team: 'BlackShark', avatar: 'VK' },
+  { id: 49, name: 'Wendy', score: 1100, team: 'BlackShark', avatar: 'WD' },
+  { id: 50, name: 'Ximena', score: 1000, team: 'BlackShark', avatar: 'XM' },
 ].sort((a, b) => b.score - a.score);
 
-// Función para obtener usuarios del Gulag (últimos 5)
+// Actualizar score y miembros de equipos
+teams.forEach(team => {
+  const teamUsers = users.filter(u => u.team === team.name);
+  team.members = teamUsers.length;
+  team.score = teamUsers.reduce((acc, u) => acc + u.score, 0);
+});
+
+// Gulag: 5 usuarios con menor score
 export const getGulagUsers = (): User[] => {
-  return users.slice(-5).reverse();
+  return [...users].sort((a, b) => a.score - b.score).slice(0, 5);
 };
 
 // Función para obtener top usuarios

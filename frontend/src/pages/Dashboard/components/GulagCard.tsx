@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tile } from '@carbon/react';
+import { useNavigate } from 'react-router-dom';
 
 // Mock insignias
 const mockBadges = [
@@ -45,6 +46,7 @@ const ProfileHoverModal: React.FC<ProfileHoverModalProps> = ({ profile, type, po
 };
 
 const GulagCard: React.FC<{ gulag: any[] }> = ({ gulag }) => {
+  const navigate = useNavigate();
   const [hoveredProfile, setHoveredProfile] = useState<any>(null);
   const [modalPos, setModalPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [showModal, setShowModal] = useState(false);
@@ -90,7 +92,9 @@ const GulagCard: React.FC<{ gulag: any[] }> = ({ gulag }) => {
   };
 
   return (
-    <Tile className="col-span-1 min-h-[200px] bg-white flex flex-col border border-gray-200 rounded-xl shadow-sm relative">
+    <Tile className="col-span-1 min-h-[200px] bg-white flex flex-col border border-gray-200 rounded-xl shadow-sm relative cursor-pointer"
+      onClick={() => navigate('/gulag')}
+    >
       <h2 className="text-2xl font-bold text-danger-700 pt-4 pl-4">Gulag</h2>
       <div className="font-bold text-danger-500 pl-4 pb-2">Top 5 Worst</div>
       <div className="overflow-x-auto w-full rounded-xl">

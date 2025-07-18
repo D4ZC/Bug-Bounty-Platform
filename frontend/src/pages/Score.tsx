@@ -168,6 +168,7 @@ const Score: React.FC = () => {
                 <tr>
                   <th className="py-2 px-4 text-left">Posición</th>
                   <th className="py-2 px-4 text-left">Usuario</th>
+                  <th className="py-2 px-4 text-left">Team</th>
                   <th className="py-2 px-4 text-right">Puntuación</th>
                 </tr>
               </thead>
@@ -178,7 +179,7 @@ const Score: React.FC = () => {
                   {users.map((user, idx) => (
                     <tr key={user.name} className="border-t">
                       <td className="py-2 px-4">{idx + 1}</td>
-                      <td className="py-2 px-4">
+                      <td className="py-2 px-4 text-left">
                         <span
                           className="cursor-pointer hover:underline"
                           onMouseEnter={e => handleMouseEnter(e, user, 'user')}
@@ -187,6 +188,7 @@ const Score: React.FC = () => {
                           {user.name}
                         </span>
                       </td>
+                      <td className="py-2 px-4">{user.team || '-'}</td>
                       <td className="py-2 px-4 text-right font-bold">{user.score}</td>
                     </tr>
                   ))}

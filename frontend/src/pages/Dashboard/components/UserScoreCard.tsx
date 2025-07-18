@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tile } from '@carbon/react';
+import { useNavigate } from 'react-router-dom';
 
 // Mock insignias
 const mockBadges = [
@@ -45,6 +46,7 @@ const ProfileHoverModal: React.FC<ProfileHoverModalProps> = ({ profile, type, po
 };
 
 const UserScoreCard: React.FC<{ users: any[] }> = ({ users }) => {
+  const navigate = useNavigate();
   const [hoveredProfile, setHoveredProfile] = useState<any>(null);
   const [modalPos, setModalPos] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [showModal, setShowModal] = useState(false);
@@ -90,7 +92,9 @@ const UserScoreCard: React.FC<{ users: any[] }> = ({ users }) => {
   };
 
   return (
-    <Tile className="col-span-1 flex flex-col gap-2 min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm relative">
+    <Tile className="col-span-1 flex flex-col gap-2 min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm relative cursor-pointer"
+      onClick={() => navigate('/score')}
+    >
       <h2 className="text-2xl font-bold text-primary-700 pt-4 pl-4">User Score</h2>
       <div className="font-bold text-primary-500 pl-4 pb-2">Top 3 Users</div>
       <div className="overflow-x-auto w-full rounded-xl">
@@ -98,7 +102,8 @@ const UserScoreCard: React.FC<{ users: any[] }> = ({ users }) => {
           <thead>
             <tr>
               <th className="py-2 px-4 text-left">Posición</th>
-              <th className="py-2 px-4 text-left">Usuario</th>
+              <th className="py-2 px-4 text-left min-w-[160px] font-medium">Usuario</th>
+              <th className="py-2 px-4 text-left">Team</th>
               <th className="py-2 px-4 text-right">Puntuación</th>
             </tr>
           </thead>
@@ -106,15 +111,16 @@ const UserScoreCard: React.FC<{ users: any[] }> = ({ users }) => {
             {users.map((user, idx) => (
               <tr key={user.name} className="border-t">
                 <td className="py-2 px-4">{idx + 1}</td>
-                <td className="py-2 px-4">
+                <td className="py-2 px-4 text-left min-w-[160px]">
                   <span
-                    className="cursor-pointer hover:underline"
+                    className="ml-4"
                     onMouseEnter={e => handleMouseEnter(e, user)}
                     onMouseLeave={handleMouseLeave}
                   >
                     {user.name}
                   </span>
                 </td>
+                <td className="py-2 px-4">{user.team || '-'}</td>
                 <td className="py-2 px-4 text-right font-bold">{user.score}</td>
               </tr>
             ))}

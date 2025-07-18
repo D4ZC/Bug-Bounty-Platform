@@ -13,8 +13,8 @@ const Dashboard: React.FC = () => {
   const [teamsData] = useState(getTopTeams(3));
   const [usersData] = useState(getTopUsers(3));
   const [gulag] = useState(getGulagUsers());
-  const [mvpTeam] = useState('P-TECH');
-  const [mvpUser] = useState({ name: 'D4ZC', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
+  const [mvpUser] = useState(users[0]);
+  const [mvpTeam] = useState(teams[0].name);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">

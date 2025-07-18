@@ -77,7 +77,8 @@ const Gulag: React.FC = () => {
             <thead className="bg-white sticky top-0 z-10">
               <tr>
                 <th className="py-2 px-4 text-left">Posición</th>
-                <th className="py-2 px-4 text-left">Usuario</th>
+                <th className="py-2 px-4 text-left min-w-[160px] font-medium">Usuario</th>
+                <th className="py-2 px-4 text-left">Team</th>
                 <th className="py-2 px-4 text-right">Puntuación</th>
               </tr>
             </thead>
@@ -88,15 +89,16 @@ const Gulag: React.FC = () => {
                 {gulagUsers.map((user, idx) => (
                   <tr key={user.name} className="border-t">
                     <td className="py-2 px-4">{idx + 1}</td>
-                    <td className="py-2 px-4">
+                    <td className="py-2 px-4 text-left min-w-[160px]">
                       <span
-                        className="cursor-pointer hover:underline"
+                        className="ml-4"
                         onMouseEnter={e => handleMouseEnter(e, user)}
                         onMouseLeave={handleMouseLeave}
                       >
                         {user.name}
                       </span>
                     </td>
+                    <td className="py-2 px-4">{user.team || '-'}</td>
                     <td className="py-2 px-4 text-right font-bold">{user.score}</td>
                   </tr>
                 ))}
