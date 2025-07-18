@@ -31,8 +31,8 @@ const MainLayout: React.FC = () => {
 
   const navigationItems = [
     { path: '/', icon: Home, label: t('dashboard') },
-    { path: '/vulnerabilities', icon: Dashboard, label: t('vulnerabilities') },
-    { path: '/challenges', icon: Dashboard, label: t('challenges') },
+    { path: '/vulnerabilities', icon: Dashboard, label: t('Vulnerabilities') },
+    { path: '/challenges', icon: Dashboard, label: t('Challenges') },
     { path: '/rankings', icon: List, label: t('rankings.title') },
     { path: '/search', icon: SearchIcon, label: t('search.title') },
     { path: '/chat', icon: UserMultiple, label: t('chat.title') },
@@ -46,7 +46,6 @@ const MainLayout: React.FC = () => {
     { path: '/notifications', icon: Notification, label: t('Notifications') },
     { path: '/profile', icon: User, label: t('Profile') },
     { path: '/settings', icon: Settings, label: t('Settings') },
-    { path: '/demo', icon: Dashboard, label: 'General'}
   ];
 
   // Add admin links only for admin users

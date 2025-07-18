@@ -3,6 +3,7 @@ node_modules/
 
 # build
 /dist/
+/build/
 
 # entorno
 .env
@@ -21,3 +22,17 @@ yarn-error.log*
 .vscode/
 .idea/
 *.swp 
+
+# coverage y testing
+coverage/
+*.lcov
+
+# artefactos de vite
+*.tsbuildinfo
+
+# archivos de producción
+*.log
+*.pid
+
+# archivos de configuración de sistema
+Thumbs.db 
