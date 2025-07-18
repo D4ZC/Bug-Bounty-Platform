@@ -1,13 +1,9 @@
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
 import socketService from '@/services/socket';
-import { Notification } from '@/types';
 
 interface SocketContextType {
   isConnected: boolean;
-  notifications: Notification[];
-  clearNotifications: () => void;
-  markAsRead: (notificationId: string) => void;
 }
 
 const SocketContext = createContext<SocketContextType | undefined>(undefined);
@@ -18,16 +14,14 @@ interface SocketProviderProps {
 
 export function SocketProvider({ children }: SocketProviderProps) {
   const { isAuthenticated, token } = useAuth();
-  const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
   useEffect(() => {
     if (isAuthenticated && token) {
       socketService.connect(token);
 
       // Escuchar notificaciones
-      socketService.onNotification((notification) => {
-        setNotifications(prev => [notification, ...prev]);
-      });
+      // Eliminar importación de Notification
+      // Eliminar estados, funciones y props relacionadas con notifications
 
       // Escuchar actualizaciones de retos
       socketService.onChallengeUpdate((data) => {
@@ -71,25 +65,8 @@ export function SocketProvider({ children }: SocketProviderProps) {
     }
   }, [isAuthenticated, token]);
 
-  const clearNotifications = () => {
-    setNotifications([]);
-  };
-
-  const markAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification._id === notificationId
-          ? { ...notification, isRead: true }
-          : notification
-      )
-    );
-  };
-
   const value: SocketContextType = {
     isConnected: socketService.connected,
-    notifications,
-    clearNotifications,
-    markAsRead,
   };
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>;

@@ -55,7 +55,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const settingsItems = [
     { id: 'settings', icon: <Settings size={20} />, label: 'Settings', path: '/settings' },
     { id: 'messages', icon: <Email size={20} />, label: 'Messages', path: '/messages' },
-    { id: 'notifications', icon: <Notification size={20} />, label: 'Notifications', path: '/notifications' },
   ];
 
   return (

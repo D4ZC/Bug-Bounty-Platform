@@ -251,31 +251,7 @@ export interface SocketEvent {
   timestamp: Date;
 }
 
-export interface Notification {
-  _id: string;
-  type: NotificationType;
-  title: string;
-  message: string;
-  recipient: string;
-  data?: any;
-  isRead: boolean;
-  createdAt: Date;
-}
-
-export type NotificationType = 
-  | 'challenge_created'
-  | 'challenge_completed'
-  | 'vulnerability_found'
-  | 'vulnerability_updated'
-  | 'mvp_announcement'
-  | 'gulag_start'
-  | 'gulag_end'
-  | 'contribution_published'
-  | 'shop_purchase'
-  | 'achievement_unlocked'
-  | 'badge_earned'
-  | 'team_invitation'
-  | 'system_announcement';
+// Eliminar definición del tipo Notification si existe
 
 // Tipos de formularios
 export interface LoginForm {
