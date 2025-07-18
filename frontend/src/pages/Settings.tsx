@@ -86,10 +86,10 @@ const QuickAccessPanel: React.FC<{ show: boolean; anchorRef: React.RefObject<HTM
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="bg-gray-50 rounded-xl p-5 flex flex-col justify-between h-36">
-          <div className="font-semibold mb-2">Almacenamiento de la cuenta</div>
+          <div className="font-semibold mb-2">Almacenamiento de reportes</div>
           <div className="flex items-center gap-2 mb-2">
             <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-              <div className="h-2 bg-blue-400 rounded-full" style={{ width: '40%' }}></div>
+              <div className="h-2 bg-blue-400 rounded-full" style={{ width: '20%' }}></div>
             </div>
             <span className="text-xs text-gray-500">84,66 GB de 2 TB en uso</span>
           </div>
@@ -192,10 +192,10 @@ const SettingsLayout: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="bg-gray-50 rounded-xl p-5 flex flex-col justify-between h-36">
-            <div className="font-semibold mb-2">Almacenamiento de la cuenta</div>
+            <div className="font-semibold mb-2">Almacenamiento de Reportes</div>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-2 bg-blue-400 rounded-full" style={{ width: '40%' }}></div>
+                <div className="h-2 bg-blue-400 rounded-full" style={{ width: '15%' }}></div>
               </div>
               <span className="text-xs text-gray-500">84,66 GB de 2 TB en uso</span>
             </div>

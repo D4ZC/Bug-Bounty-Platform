@@ -142,6 +142,41 @@ const Search: React.FC = () => {
         </p>
       </div>
 
+      {/* Sugerencias para ti */}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-blue-800 mb-4">Sugerencias para ti</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <Star size={28} className="text-yellow-500" />
+            <div>
+              <div className="font-semibold text-gray-900">Usuario destacado: Ana Torres</div>
+              <div className="text-xs text-gray-500">Top Hunter de la semana</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <Warning size={28} className="text-red-500" />
+            <div>
+              <div className="font-semibold text-gray-900">Reporte reciente: SQL Injection</div>
+              <div className="text-xs text-gray-500">Nuevo reporte crítico en login</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <Calendar size={28} className="text-blue-500" />
+            <div>
+              <div className="font-semibold text-gray-900">Noticia: Mantenimiento programado</div>
+              <div className="text-xs text-gray-500">10/06 de 2:00 a 4:00 AM</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <Trophy size={28} className="text-green-500" />
+            <div>
+              <div className="font-semibold text-gray-900">Reto recomendado: Bug Hunter del Mes</div>
+              <div className="text-xs text-gray-500">Participa y gana recompensas</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Barra de búsqueda */}
       <form onSubmit={handleSearch} className="mb-8">
         <div className="relative max-w-2xl">

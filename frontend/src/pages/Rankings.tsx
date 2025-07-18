@@ -167,8 +167,43 @@ const Rankings: React.FC = () => {
           {t('rankings.title')}
         </h1>
         <p className="text-gray-600">
-          {t('rankings.description')}
+          {t('Rankings description')}
         </p>
+      </div>
+
+      {/* Destacados y sugerencias */}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-blue-800 mb-4">Destacados y sugerencias</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <span className="text-2xl">🥇</span>
+            <div>
+              <div className="font-semibold text-gray-900">Usuario top: Ana Torres</div>
+              <div className="text-xs text-gray-500">1er lugar en el ranking semanal</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <span className="text-2xl">🚀</span>
+            <div>
+              <div className="font-semibold text-gray-900">Equipo en ascenso: CTF Masters</div>
+              <div className="text-xs text-gray-500">Subió 3 posiciones esta semana</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <span className="text-2xl">🏆</span>
+            <div>
+              <div className="font-semibold text-gray-900">Logro reciente: "Bug Hunter del Mes"</div>
+              <div className="text-xs text-gray-500">Otorgado a Carlos Pérez</div>
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-4 flex items-center gap-3">
+            <span className="text-2xl">📰</span>
+            <div>
+              <div className="font-semibold text-gray-900">Noticia: Nueva competencia</div>
+              <div className="text-xs text-gray-500">Inscríbete al CTF de verano</div>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Tabs */}
@@ -182,7 +217,7 @@ const Rankings: React.FC = () => {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            {t('rankings.users')} ({users.length})
+            {t('Rankings users')} ({users.length})
           </button>
           <button
             onClick={() => setActiveTab('teams')}
@@ -192,7 +227,7 @@ const Rankings: React.FC = () => {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            {t('rankings.teams')} ({teams.length})
+            {t('Rankings teams')} ({teams.length})
           </button>
         </nav>
       </div>
@@ -202,7 +237,7 @@ const Rankings: React.FC = () => {
         <div className="flex-1">
           <input
             type="text"
-            placeholder={t('rankings.searchPlaceholder')}
+            placeholder={t('rankings search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -214,20 +249,20 @@ const Rankings: React.FC = () => {
             onChange={(e) => setFilterRank(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="all">{t('rankings.allRanks')}</option>
-            <option value="bronze">{t('rankings.bronze')}</option>
-            <option value="silver">{t('rankings.silver')}</option>
-            <option value="gold">{t('rankings.gold')}</option>
-            <option value="platinum">{t('rankings.platinum')}</option>
-            <option value="diamond">{t('rankings.diamond')}</option>
+            <option value="all">{t('rankings all Ranks')}</option>
+            <option value="bronze">{t('rankings bronze')}</option>
+            <option value="silver">{t('rankings silver')}</option>
+            <option value="gold">{t('rankings gold')}</option>
+            <option value="platinum">{t('rankings platinum')}</option>
+            <option value="diamond">{t('rankings diamond')}</option>
           </select>
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as 'score' | 'vulnerabilities')}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="score">{t('rankings.sortByScore')}</option>
-            <option value="vulnerabilities">{t('rankings.sortByVulnerabilities')}</option>
+            <option value="score">{t('rankings sort By Score')}</option>
+            <option value="vulnerabilities">{t('rankings sort By Vulnerabilities')}</option>
           </select>
         </div>
       </div>
@@ -236,7 +271,7 @@ const Rankings: React.FC = () => {
       <div className="mb-4 flex items-center gap-2">
         <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
         <span className="text-sm text-gray-600">
-          {isConnected ? t('rankings.liveUpdates') : t('rankings.offline')}
+          {isConnected ? t('rankings live Updates') : t('rankings offline')}
         </span>
       </div>
 
@@ -267,7 +302,7 @@ const Rankings: React.FC = () => {
                           {user.nickname}
                           {user.isCurrentUser && (
                             <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              {t('rankings.you')}
+                              {t('rankings you')}
                             </span>
                           )}
                         </h3>
@@ -282,19 +317,19 @@ const Rankings: React.FC = () => {
                   
                   <div className="text-right">
                     <div className="text-2xl font-bold text-gray-900">{user.score}</div>
-                    <div className="text-sm text-gray-500">{t('rankings.points')}</div>
+                    <div className="text-sm text-gray-500">{t('rankings points')}</div>
                     <div className="flex space-x-2 mt-2">
                       <span className={`text-xs ${getVulnerabilityColor('critical')}`}>
-                        {user.vulnerabilities.critical} {t('rankings.critical')}
+                        {user.vulnerabilities.critical} {t('rankings critical')}
                       </span>
                       <span className={`text-xs ${getVulnerabilityColor('high')}`}>
-                        {user.vulnerabilities.high} {t('rankings.high')}
+                        {user.vulnerabilities.high} {t('rankings high')}
                       </span>
                       <span className={`text-xs ${getVulnerabilityColor('medium')}`}>
-                        {user.vulnerabilities.medium} {t('rankings.medium')}
+                        {user.vulnerabilities.medium} {t('rankings medium')}
                       </span>
                       <span className={`text-xs ${getVulnerabilityColor('low')}`}>
-                        {user.vulnerabilities.low} {t('rankings.low')}
+                        {user.vulnerabilities.low} {t('rankings low')}
                       </span>
                     </div>
                   </div>
@@ -302,7 +337,7 @@ const Rankings: React.FC = () => {
                 
                 {user.team && (
                   <div className="mt-3 flex items-center space-x-2">
-                    <span className="text-sm text-gray-500">{t('rankings.team')}:</span>
+                    <span className="text-sm text-gray-500">{t('rankings team')}:</span>
                     <div className="flex items-center space-x-2">
                       {user.team.logo && (
                         <img src={user.team.logo} alt={user.team.name} className="w-5 h-5 rounded" />
@@ -337,13 +372,13 @@ const Rankings: React.FC = () => {
                           {team.name}
                           {team.isCurrentUserTeam && (
                             <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                              {t('rankings.yourTeam')}
+                              {t('rankings your Team')}
                             </span>
                           )}
                         </h3>
                         <p className="text-sm text-gray-500">{team.description}</p>
                         <div className="flex items-center space-x-2 mt-1">
-                          <span className="text-sm text-gray-500">{t('rankings.leader')}:</span>
+                          <span className="text-sm text-gray-500">{t('rankings leader')}:</span>
                           <div className="flex items-center space-x-1">
                             <img
                               src={team.leader.avatar || '/default-avatar.png'}
@@ -353,7 +388,7 @@ const Rankings: React.FC = () => {
                             <span className="text-sm font-medium text-gray-700">{team.leader.nickname}</span>
                           </div>
                           <span className="text-sm text-gray-500">•</span>
-                          <span className="text-sm text-gray-500">{team.members} {t('rankings.members')}</span>
+                          <span className="text-sm text-gray-500">{team.members} {t('rankings members')}</span>
                         </div>
                       </div>
                     </div>
@@ -361,19 +396,19 @@ const Rankings: React.FC = () => {
                   
                   <div className="text-right">
                     <div className="text-2xl font-bold text-gray-900">{team.score}</div>
-                    <div className="text-sm text-gray-500">{t('rankings.points')}</div>
+                    <div className="text-sm text-gray-500">{t('rankings points')}</div>
                     <div className="flex space-x-2 mt-2">
                       <span className={`text-xs ${getVulnerabilityColor('critical')}`}>
-                        {team.vulnerabilities.critical} {t('rankings.critical')}
+                        {team.vulnerabilities.critical} {t('rankings critical')}
                       </span>
                       <span className={`text-xs ${getVulnerabilityColor('high')}`}>
-                        {team.vulnerabilities.high} {t('rankings.high')}
+                        {team.vulnerabilities.high} {t('rankings high')}
                       </span>
                       <span className={`text-xs ${getVulnerabilityColor('medium')}`}>
-                        {team.vulnerabilities.medium} {t('rankings.medium')}
+                        {team.vulnerabilities.medium} {t('rankings medium')}
                       </span>
                       <span className={`text-xs ${getVulnerabilityColor('low')}`}>
-                        {team.vulnerabilities.low} {t('rankings.low')}
+                        {team.vulnerabilities.low} {t('rankings low')}
                       </span>
                     </div>
                   </div>
@@ -387,15 +422,15 @@ const Rankings: React.FC = () => {
       {/* Estadísticas adicionales */}
       <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('rankings.totalParticipants')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('rankings total Participants')}</h3>
           <p className="text-3xl font-bold text-blue-600">{users.length}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('rankings.totalTeams')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('rankings total Teams')}</h3>
           <p className="text-3xl font-bold text-green-600">{teams.length}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('rankings.averageScore')}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">{t('rankings average Score')}</h3>
           <p className="text-3xl font-bold text-purple-600">
             {users.length > 0 ? Math.round(users.reduce((sum, user) => sum + user.score, 0) / users.length) : 0}
           </p>

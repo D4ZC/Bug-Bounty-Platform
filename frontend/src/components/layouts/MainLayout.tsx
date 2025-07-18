@@ -30,11 +30,11 @@ const MainLayout: React.FC = () => {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   const navigationItems = [
+    { path: '/search', icon: SearchIcon, label: t('search.title') },
     { path: '/', icon: Home, label: t('dashboard') },
     { path: '/vulnerabilities', icon: Dashboard, label: t('Vulnerabilities') },
     { path: '/challenges', icon: Dashboard, label: t('Challenges') },
     { path: '/rankings', icon: List, label: t('rankings.title') },
-    { path: '/search', icon: SearchIcon, label: t('search.title') },
     { path: '/chat', icon: UserMultiple, label: t('chat.title') },
     { path: '/shop', icon: ShoppingCart, label: t('Shop') },
     { path: '/contributions', icon: Report, label: t('Contributions') },
