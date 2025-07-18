@@ -8,7 +8,7 @@ const MVPUserCard: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('mvp_user')}</h3>
+      <h3 className="text-lg font-semibold text-gray-900 bg-yellow-100 mb-4">{t('MVP user')}</h3>
       <div className="text-center">
         <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-3">
           <span className="text-2xl">👑</span>

@@ -150,7 +150,7 @@ const MainLayout: React.FC = () => {
             
             <div className="flex items-center space-x-4 relative">
               <div className="text-sm text-gray-500">
-                {t('language')}: {language.toUpperCase()}
+                {t('lenguaje')}: {language.toUpperCase()}
               </div>
               {/* Menú de usuario */}
               <div className="relative" ref={userMenuRef}>
@@ -159,11 +159,7 @@ const MainLayout: React.FC = () => {
                   onClick={() => setUserMenuOpen((open) => !open)}
                   aria-label="User menu"
                 >
-                  {user?.avatar ? (
-                    <img src={user.avatar} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
-                  ) : (
-                    <span className="text-white text-sm font-semibold">{user?.nickname?.[0]?.toUpperCase() || 'U'}</span>
-                  )}
+                  <img src="https://i.pinimg.com/736x/23/8d/ad/238dad5a2186e67d9c11d47a50f5100d.jpg" alt="avatar" className="w-8 h-8 rounded-full object-cover" />
                 </button>
                 {userMenuOpen && user && (
                   <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 z-50 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
@@ -206,7 +202,35 @@ const MainLayout: React.FC = () => {
 
         {/* Page content */}
         <main className="flex-1 overflow-auto">
-          <div className="animate-in fade-in duration-200">
+          <div className="animate-in fade-in duration-1500">
+            {/* Panel general visual */}
+            {location.pathname === '/' && (
+              <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 pt-8">
+                {/* Puntos del usuario */}
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                  <span className="text-3xl font-bold text-blue-700 mb-1">2450</span>
+                  <span className="text-gray-600">Puntos acumulados</span>
+                </div>
+                {/* Notificaciones recientes */}
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                  <span className="text-2xl text-orange-500 mb-1"><Notification size={28} /></span>
+                  <span className="text-gray-900 font-semibold mb-1">Notificaciones</span>
+                  <span className="text-xs text-gray-500">2 reportes aceptados, 1 reto nuevo</span>
+                </div>
+                {/* Actividad semanal (mock) */}
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                  <span className="text-2xl text-green-500 mb-1"><Dashboard size={28} /></span>
+                  <span className="text-gray-900 font-semibold mb-1">Actividad semanal</span>
+                  <span className="text-xs text-gray-500">5 reportes, 3 retos completados</span>
+                </div>
+                {/* Ranking actual */}
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                  <span className="text-2xl text-purple-500 mb-1"><List size={28} /></span>
+                  <span className="text-gray-900 font-semibold mb-1">Ranking</span>
+                  <span className="text-xs text-gray-500">Top 12% global</span>
+                </div>
+              </div>
+            )}
             <Outlet />
           </div>
         </main>

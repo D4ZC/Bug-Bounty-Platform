@@ -8,7 +8,7 @@ const TeamsScoreCard: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('teams_score')}</h3>
+      <h3 className="text-lg font-semibold text-blue-900 mb-4 bg-blue-100">{t('Teams score')}</h3>
       <div className="space-y-3">
         <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
           <span className="font-medium">Team Alpha</span>

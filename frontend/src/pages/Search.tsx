@@ -398,24 +398,43 @@ const Search: React.FC = () => {
             ))}
           </div>
         ) : query ? (
-          <div className="p-8 text-center">
-            <SearchIcon size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {t('search.noResults', 'No se encontraron resultados')}
-            </h3>
-            <p className="text-gray-600">
-              {t('search.noResultsDescription', 'Intenta con otros términos de búsqueda o ajusta los filtros.')}
-            </p>
+          <div className="p-12 text-center text-gray-500">
+            <SearchIcon size={48} className="mx-auto mb-4 text-gray-400" />
+            <h2 className="text-xl font-bold mb-2">{t('search.noResults', 'Sin resultados')}</h2>
+            <p>{t('search.noResultsDesc', 'Intenta con otros términos o ajusta los filtros.')}</p>
           </div>
         ) : (
-          <div className="p-8 text-center">
-            <SearchIcon size={48} className="mx-auto text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {t('search.startSearching', 'Comienza a buscar')}
-            </h3>
-            <p className="text-gray-600">
-              {t('search.startSearchingDescription', 'Ingresa un término de búsqueda para encontrar usuarios, equipos, vulnerabilidades y retos.')}
-            </p>
+          <div className="p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Archivos recientes */}
+              <div className="bg-blue-50 rounded-lg p-5 flex flex-col items-center shadow">
+                <SearchIcon size={32} className="text-blue-500 mb-2" />
+                <div className="font-semibold text-gray-900">Archivo: reporte_2024_06.pdf</div>
+                <div className="text-xs text-gray-500 mb-1">Subido hace 2 días</div>
+                <div className="text-xs text-blue-700">Reporte de vulnerabilidad crítica</div>
+              </div>
+              {/* Reporte destacado */}
+              <div className="bg-red-50 rounded-lg p-5 flex flex-col items-center shadow">
+                <Warning size={32} className="text-red-500 mb-2" />
+                <div className="font-semibold text-gray-900">Reporte: SQL Injection</div>
+                <div className="text-xs text-gray-500 mb-1">Estado: Abierto</div>
+                <div className="text-xs text-red-700">Crítica en login</div>
+              </div>
+              {/* Usuario sugerido */}
+              <div className="bg-green-50 rounded-lg p-5 flex flex-col items-center shadow">
+                <User size={32} className="text-green-500 mb-2" />
+                <div className="font-semibold text-gray-900">Usuario: Ana Torres</div>
+                <div className="text-xs text-gray-500 mb-1">Top Hunter</div>
+                <div className="text-xs text-green-700">+3200 puntos</div>
+              </div>
+              {/* Reto popular */}
+              <div className="bg-yellow-50 rounded-lg p-5 flex flex-col items-center shadow">
+                <Trophy size={32} className="text-yellow-500 mb-2" />
+                <div className="font-semibold text-gray-900">Reto: Bug Hunter del Mes</div>
+                <div className="text-xs text-gray-500 mb-1">Abierto</div>
+                <div className="text-xs text-yellow-700">Participa y gana recompensas</div>
+              </div>
+            </div>
           </div>
         )}
       </div>

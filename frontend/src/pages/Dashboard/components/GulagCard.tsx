@@ -8,7 +8,7 @@ const GulagCard: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('gulag')}</h3>
+      <h3 className="text-lg font-semibold text-red-800 mb-4 bg-red-100">{t('Gulag')}</h3>
       <div className="space-y-3">
         <div className="flex justify-between items-center p-3 bg-red-50 rounded-lg">
           <span className="font-medium">Player A</span>

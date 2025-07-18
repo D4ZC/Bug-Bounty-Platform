@@ -17,9 +17,9 @@ const UserScoreCard: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <span>🏆</span>
-        {t('top_users') || 'Usuarios Destacados'}
+      <h3 className="text-lg font-semibold text-gray-800 bg-yellow-100 mb-4 flex items-center gap-2">
+        <span >🏆</span>
+        {t('Top users') || 'Usuarios Destacados'}
       </h3>
       <div className="space-y-3">
         {topUsers.map((user, index) => (
