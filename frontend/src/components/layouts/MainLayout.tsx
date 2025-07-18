@@ -3,6 +3,7 @@ import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideN
 import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
 import { Bell, User, Menu, Home as HomeIcon, FileText, Globe, Mail, ShoppingBag, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import LanguageSelector from '../LanguageSelector';
 
 const NAVBAR_HEIGHT = 64 + 50; // altura original + 50px extra
 // Elimino SIDEBAR_HEIGHT y lógica de sidebar superior
@@ -32,6 +33,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </span>
         <div className="flex-1" />
         <div className="flex items-center gap-6 mr-6">
+          <LanguageSelector />
           <button aria-label="Mensajes" className="text-white hover:text-cyber-blue transition-colors" onClick={() => setShowMsgModal(true)}>
             <Mail size={28} />
           </button>
@@ -98,40 +100,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <SettingsAdjust size={24} color="#161616" />
               <span className="font-gamer-body text-carbon-dark">Ajustes</span>
             </SideNavLink>
-            <SideNavLink
-              href="#"
-              className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base"
-              onClick={e => { e.preventDefault(); setShowLangModal(true); }}
-            >
-              <Globe size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">Idioma</span>
-            </SideNavLink>
-            {/* Modal de idioma */}
-            {showLangModal && (
-              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-                <div className="bg-carbon-light rounded-xl shadow-2xl p-6 w-[90vw] max-w-md max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in">
-                  <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Selecciona tu idioma</h2>
-                  <div className="overflow-y-auto w-full flex flex-col gap-3">
-                    {['Español', 'Inglés', 'Mandarín', 'Alemán', 'Ruso', 'Francés'].map(lang => (
-                      <button
-                        key={lang}
-                        className="w-full py-2 px-4 rounded-lg font-gamer-body text-lg text-purple-900 bg-purple-200 hover:bg-purple-300 hover:text-purple-900 transition-colors border border-purple-300 shadow-md"
-                        style={{ boxShadow: '0 0 8px #a78bfa55' }}
-                        onClick={() => setShowLangModal(false)}
-                      >
-                        {lang}
-                      </button>
-                    ))}
-                  </div>
-                  <button
-                    className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
-                    onClick={() => setShowLangModal(false)}
-                  >
-                    Cerrar
-                  </button>
-                </div>
-              </div>
-            )}
             <SideNavLink href="/shop" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2">
               <ShoppingBag size={24} color="#161616" />
               <span className="font-gamer-body text-carbon-dark">Tienda</span>

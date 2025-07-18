@@ -1,123 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ThumbsUp, ThumbsDown, Eye, Edit, Trash2 } from 'lucide-react';
 import { CardData } from '../types';
+import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
-const CARDS_KEY = 'vulnerabilidad_cards';
-const USER_KEY = 'nombre_usuario';
-const USER_EMAIL_KEY = 'usuario_email_actual';
+const getUserEmail = () => localStorage.getItem('usuario_email_actual') || '';
 
-const getCardsFromStorage = (): CardData[] => {
-  try {
-    const data = localStorage.getItem(CARDS_KEY);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-};
-
-const saveCardsToStorage = (cards: CardData[]) => {
-  localStorage.setItem(CARDS_KEY, JSON.stringify(cards));
-};
-
-const getUserFromStorage = () => localStorage.getItem(USER_KEY) || '';
-
-// Obtener email actual (mock, luego se puede obtener de contexto)
-const getCurrentUserEmail = () => {
-  return localStorage.getItem(USER_EMAIL_KEY) || 'alex.turner@email.com';
-};
-
-// Guardar voto por usuario y card
-const getVotesFromStorage = () => {
-  try {
-    const data = localStorage.getItem('votos_por_usuario');
-    return data ? JSON.parse(data) : {};
-  } catch {
-    return {};
-  }
-};
-const saveVotesToStorage = (votes: Record<string, Record<string, 'like' | 'dislike'>>) => {
-  localStorage.setItem('votos_por_usuario', JSON.stringify(votes));
-};
-
-export const SidebarSecundario: React.FC<{ modo: 'normal' | 'editar', setModo: (m: 'normal' | 'editar') => void }> = ({ modo, setModo }) => {
-  const navigate = useNavigate();
-  const opciones = [
-    { label: 'Crear', path: '/formulario/crear', key: 'crear' },
-    { label: 'Editar', path: '#', key: 'editar' },
-    { label: 'Volver', path: '/formulario', key: 'volver' },
-  ];
-  return (
-    <div
-      className="fixed z-30 transition-all duration-300 ease-in-out w-48 opacity-0 hover:opacity-100 group"
-      style={{ background: 'rgba(0,0,0,0.05)', left: '250px', top: '100px', height: 'calc(100% - 100px)', position: 'fixed' }}
-    >
-      <div className="flex flex-col h-full pt-24 gap-4 items-start overflow-hidden transition-all duration-300">
-        {opciones.map((opcion) => (
-          <div
-            key={opcion.key}
-            className={`font-bold text-lg px-4 py-2 rounded-lg shadow-[0_2px_8px_0_rgba(0,0,0,0.7)] cursor-pointer w-40 mt-2 ml-2 ${
-              (modo === 'editar' && opcion.key === 'editar') || (modo === 'normal' && opcion.key === 'volver') ? 'bg-blue-600 text-white' : 'text-black'
-            }`}
-            style={{ fontFamily: 'Arial, Arial Black, sans-serif' }}
-            onClick={() => {
-              if (opcion.key === 'crear') navigate(opcion.path);
-              else if (opcion.key === 'editar') setModo('editar');
-              else if (opcion.key === 'volver') navigate('/formulario');
-            }}
-          >
-            <span className="transition-colors duration-200 hover:text-blue-600">{opcion.label}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const FormularioPage: React.FC = () => {
+const Formulario: React.FC = () => {
   const [cards, setCards] = useState<CardData[]>([]);
   const [modalCard, setModalCard] = useState<CardData | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modo, setModo] = useState<'normal' | 'editar'>('normal');
-  const [editCard, setEditCard] = useState<CardData | null>(null);
-  const [showDelete, setShowDelete] = useState<CardData | null>(null);
-  const usuario = getUserFromStorage();
-  const [votes, setVotes] = useState<Record<string, Record<string, 'like' | 'dislike'>>>(getVotesFromStorage());
-  const usuarioEmail = getCurrentUserEmail();
+  const usuarioEmail = getUserEmail();
 
   useEffect(() => {
-    setCards(getCardsFromStorage());
-    setVotes(getVotesFromStorage());
-  }, [modalOpen, editCard, showDelete]); // recarga cada vez que cambia un modal
+    const stored = localStorage.getItem('vulnerabilidades');
+    if (stored) {
+      setCards(JSON.parse(stored));
+    }
+  }, []);
 
-  useEffect(() => {
-    saveCardsToStorage(cards);
-  }, [cards]);
+  // Guardar cards en localStorage y actualizar estado
+  const updateCards = (newCards: CardData[]) => {
+    setCards(newCards);
+    localStorage.setItem('vulnerabilidades', JSON.stringify(newCards));
+  };
 
-  useEffect(() => {
-    saveVotesToStorage(votes);
-  }, [votes]);
-
-  // Ordenar cards por likes netos y fecha
-  const sortedCards = [...cards].sort((a, b) => {
-    const netA = a.likes - a.dislikes;
-    const netB = b.likes - b.dislikes;
-    if (netA === netB) return b.createdAt - a.createdAt;
-    return netB - netA;
-  });
-
-  // Mostrar todas las tarjetas para depuración
-  const filteredCards = sortedCards;
-
-  // Log de depuración
-  console.log('Cards to render:', filteredCards);
-
+  // Votar
   const handleVote = (id: string, type: 'like' | 'dislike') => {
-    setCards(prev => prev.map(card => {
+    const newCards = cards.map(card => {
       if (card.id !== id) return card;
       let likes = card.likes;
       let dislikes = card.dislikes;
-      let userVote = votes[usuarioEmail]?.[id] || null;
+      let userVote = card.userVote;
       if (type === 'like') {
         if (userVote === 'like') return card;
         if (userVote === 'dislike') { dislikes--; likes++; userVote = 'like'; }
@@ -127,170 +38,129 @@ const FormularioPage: React.FC = () => {
         if (userVote === 'like') { likes--; dislikes++; userVote = 'dislike'; }
         else { dislikes++; userVote = 'dislike'; }
       }
-      // Actualizar votos por usuario
-      setVotes(prevVotes => {
-        const updated = { ...prevVotes };
-        if (!updated[usuarioEmail]) updated[usuarioEmail] = {};
-        updated[usuarioEmail][id] = userVote as 'like' | 'dislike';
-        return updated;
-      });
-      return { ...card, likes, dislikes };
-    }));
-  };
-
-  // Modal animado
-  const openModal = (card: CardData) => {
-    setModalCard(card);
-    setModalOpen(true);
-  };
-  const closeModal = () => {
-    setModalOpen(false);
-    setTimeout(() => setModalCard(null), 300);
-  };
-
-  // Editar
-  const openEdit = (card: CardData) => setEditCard(card);
-  const closeEdit = () => setEditCard(null);
-  const handleEditSave = (updated: CardData) => {
-    setCards(prev => prev.map(card => card.id === updated.id ? { ...card, ...updated } : card));
-    closeEdit();
-  };
-
-  // Eliminar
-  const openDelete = (card: CardData) => setShowDelete(card);
-  const closeDelete = () => setShowDelete(null);
-  const handleDelete = () => {
-    if (showDelete) {
-      setCards(prev => prev.filter(card => card.id !== showDelete.id));
-      closeDelete();
-    }
+      // Guardar voto por usuario (solo uno por usuario)
+      return { ...card, likes, dislikes, userVote };
+    });
+    // Ordenar por likes descendente
+    newCards.sort((a, b) => b.likes - a.likes);
+    updateCards(newCards);
   };
 
   return (
-    <div className="w-full flex flex-row min-h-screen">
-      <div className="flex-1 p-8 ml-2">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Vulnerabilidades Registradas</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredCards.map(card => (
-            <div key={card.id} className="bg-white border border-gray-200 rounded-xl shadow-sm w-[200px] h-[200px] flex flex-col justify-between p-4 relative">
-              <div className="flex items-center justify-between">
-                {modo === 'normal' ? (
-                  <div className="flex flex-col gap-2">
-                    <button onClick={() => handleVote(card.id, 'like')} className={`flex items-center gap-1 text-green-600 font-bold ${votes[usuarioEmail]?.[card.id] === 'like' ? 'scale-110' : ''}`}>
-                      <ThumbsUp size={20} /> {card.likes}
-                    </button>
-                    <button onClick={() => handleVote(card.id, 'dislike')} className={`flex items-center gap-1 text-red-600 font-bold ${votes[usuarioEmail]?.[card.id] === 'dislike' ? 'scale-110' : ''}`}>
-                      <ThumbsDown size={20} /> {card.dislikes}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <button onClick={() => openEdit(card)} className="flex items-center gap-1 text-blue-600 font-bold hover:scale-110"><Edit size={20} /> Editar</button>
-                    <button onClick={() => openDelete(card)} className="flex items-center gap-1 text-red-600 font-bold hover:scale-110"><Trash2 size={20} /> Eliminar</button>
-                  </div>
-                )}
-                {modo === 'normal' && (
-                  <button onClick={() => openModal(card)} className="absolute right-4 top-4 text-blue-600 hover:text-blue-800 transition"><Eye size={22} /></button>
-                )}
-              </div>
-              <div className="mt-2">
-                <div className="font-bold text-gray-900 truncate">{card.nombre}</div>
-                <div className="text-xs text-gray-500">{card.fecha}</div>
-                {/* Mostrar solo las primeras dos líneas de la descripción */}
-                <div className="text-xs text-gray-700 truncate" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{card.descripcion}</div>
-              </div>
+    <div className="min-h-screen flex flex-col items-center justify-start py-12 bg-gray-100">
+      <h2 className="text-2xl font-bold mb-8 text-carbon-dark">Vulnerabilidades registradas</h2>
+      <div className="flex flex-wrap gap-8 justify-center">
+        {cards.map(card => (
+          <div key={card.id} className="w-[200px] h-[150px] bg-white border border-gray-300 shadow-lg rounded-lg p-4 flex flex-col justify-between mb-8">
+            {/* Info */}
+            <div>
+              <h3 className="text-base font-semibold text-carbon-dark mb-1 truncate">{card.nombre}</h3>
+              <p className="text-xs text-gray-700 mb-0.5 truncate">{card.jugador}</p>
+              <p className="text-xs text-gray-500 mb-0.5 truncate">{card.email}</p>
+              <p className="text-xs text-gray-400 mb-2">{card.fecha}</p>
             </div>
-          ))}
-        </div>
-        {/* Modal de vista */}
-        {modalCard && (
-          <div className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-300 ${modalOpen ? 'bg-black/60 visible opacity-100' : 'invisible opacity-0'}`}
-            onClick={closeModal}
-          >
-            <div className={`bg-white rounded-xl shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative transition-all duration-300 ${modalOpen ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
-              onClick={e => e.stopPropagation()}
-            >
-              <button onClick={closeModal} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
-              <h3 className="text-xl font-bold text-blue-700 mb-2">{modalCard.nombre}</h3>
-              <div className="text-xs text-gray-500 mb-2">{modalCard.fecha} — {modalCard.jugador} — {modalCard.email}</div>
-              {modalCard.imagenUrl && (
-                <img src={modalCard.imagenUrl} alt="Vulnerabilidad" className="w-full max-h-48 object-contain rounded mb-4 border" />
-              )}
-              <div className="text-gray-800 whitespace-pre-line mb-2">{modalCard.descripcion}</div>
+            {/* Fila de acciones: votos y ver más */}
+            <div className="flex flex-row items-center justify-between mt-2">
+              <div className="flex flex-row items-center gap-2">
+                <button
+                  className={`p-1 rounded-full ${card.userVote === 'like' ? 'bg-green-100' : ''}`}
+                  onClick={() => handleVote(card.id, 'like')}
+                  aria-label="Like"
+                >
+                  <ThumbsUp size={20} className={card.userVote === 'like' ? 'text-green-600' : 'text-gray-400'} />
+                </button>
+                <span className="text-xs font-bold text-green-700">{card.likes}</span>
+                <button
+                  className={`p-1 rounded-full ${card.userVote === 'dislike' ? 'bg-red-100' : ''}`}
+                  onClick={() => handleVote(card.id, 'dislike')}
+                  aria-label="Dislike"
+                >
+                  <ThumbsDown size={20} className={card.userVote === 'dislike' ? 'text-red-600' : 'text-gray-400'} />
+                </button>
+                <span className="text-xs font-bold text-red-700">{card.dislikes}</span>
+              </div>
+              <button
+                className="px-3 py-1 text-xs font-semibold rounded bg-carbon-blue text-white hover:bg-carbon-dark transition-colors"
+                onClick={() => setModalCard(card)}
+              >
+                Ver más
+              </button>
             </div>
           </div>
-        )}
-        {/* Modal de edición */}
-        {editCard && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div className="bg-white rounded-xl shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 relative">
-              <button onClick={closeEdit} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
-              <h3 className="text-xl font-bold text-blue-700 mb-2">Editar Vulnerabilidad</h3>
-              <EditForm card={editCard} onSave={handleEditSave} onCancel={closeEdit} />
-            </div>
-          </div>
-        )}
-        {/* Modal de confirmación de borrado */}
-        {showDelete && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div className="bg-white rounded-xl shadow-lg max-w-sm w-full p-6 relative">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">¿Estás seguro que deseas eliminar esta vulnerabilidad?</h3>
-              <div className="flex justify-end gap-4">
-                <button onClick={closeDelete} className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold">Cancelar</button>
-                <button onClick={handleDelete} className="px-4 py-2 rounded bg-red-600 text-white font-bold">Eliminar</button>
-              </div>
-            </div>
-          </div>
-        )}
+        ))}
       </div>
+      {/* Modal de detalle */}
+      {modalCard && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-[350px] h-[500px] bg-white border border-gray-400 shadow-2xl rounded-xl flex flex-col p-6 relative animate-fade-in">
+            <h3 className="text-lg font-bold text-carbon-dark mb-2">{modalCard.nombre}</h3>
+            <p className="text-sm text-gray-700 mb-1">Creado por: <span className="font-semibold">{modalCard.jugador}</span></p>
+            <p className="text-sm text-gray-500 mb-1">Correo: {modalCard.email}</p>
+            <p className="text-sm text-gray-400 mb-3">Fecha: {modalCard.fecha}</p>
+            <div className="flex-1 overflow-y-auto w-full break-words text-sm text-gray-800 pr-1 mb-4">
+              {modalCard.descripcion}
+            </div>
+            {modalCard.imagenUrl && (
+              <div className="flex justify-center mt-2">
+                <img
+                  src={modalCard.imagenUrl}
+                  alt="Imagen de la vulnerabilidad"
+                  style={{ maxWidth: '100%', maxHeight: '180px', display: 'block' }}
+                />
+              </div>
+            )}
+            {/* Fila de acciones: borrar (si es creador) y cerrar */}
+            <div className="flex justify-between items-center mt-4">
+              {modalCard.email === usuarioEmail ? (
+                <DeleteVulnButton cardId={modalCard.id} onDeleted={() => { setModalCard(null); /* refresca cards */ const updated = cards.filter(c => c.id !== modalCard.id); setCards(updated); localStorage.setItem('vulnerabilidades', JSON.stringify(updated)); }} />
+              ) : <div />}
+              <button
+                className="px-4 py-2 text-sm font-semibold rounded bg-carbon-blue text-white hover:bg-carbon-dark transition-colors"
+                onClick={() => setModalCard(null)}
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-// Formulario de edición reutilizable
-const EditForm: React.FC<{ card: CardData; onSave: (c: CardData) => void; onCancel: () => void }> = ({ card, onSave, onCancel }) => {
-  const [nombre, setNombre] = useState(card.nombre);
-  const [descripcion, setDescripcion] = useState(card.descripcion);
-  const [imagenUrl, setImagenUrl] = useState(card.imagenUrl || '');
-  const [error, setError] = useState('');
+export default Formulario;
 
-  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = ev => setImagenUrl(ev.target?.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!nombre || !descripcion) {
-      setError('Todos los campos son obligatorios.');
-      return;
-    }
-    onSave({ ...card, nombre, descripcion, imagenUrl });
-  };
-
+function DeleteVulnButton({ cardId, onDeleted }: { cardId: string, onDeleted: () => void }) {
+  const [showConfirm, setShowConfirm] = useState(false);
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      {error && <div className="text-red-500 font-semibold">{error}</div>}
-      <label className="font-semibold text-gray-700">Nombre de la vulnerabilidad
-        <input type="text" className="input mt-1" value={nombre} onChange={e => setNombre(e.target.value)} required />
-      </label>
-      <label className="font-semibold text-gray-700">Descripción
-        <textarea className="input mt-1" value={descripcion} onChange={e => setDescripcion(e.target.value)} required rows={4} />
-      </label>
-      <label className="font-semibold text-gray-700">Subir imagen (opcional)
-        <input type="file" className="input mt-1" accept="image/*" onChange={handleImage} />
-      </label>
-      {imagenUrl && <img src={imagenUrl} alt="Vulnerabilidad" className="w-full max-h-32 object-contain rounded mb-2 border" />}
-      <div className="flex justify-end gap-4">
-        <button type="button" onClick={onCancel} className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold">Cancelar</button>
-        <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white font-bold">Guardar</button>
-      </div>
-    </form>
+    <div className="relative">
+      <button
+        className="px-4 py-2 text-sm font-semibold rounded bg-red-600 text-white hover:bg-red-700 transition-colors"
+        onClick={() => setShowConfirm(true)}
+      >
+        Borrar
+      </button>
+      {showConfirm && (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+          <div className="bg-white border border-gray-300 shadow-lg rounded-lg p-4 w-56 animate-fade-in flex flex-col gap-2">
+            <span className="text-sm text-gray-800 font-semibold mb-2">¿Estás seguro que deseas borrar esta vulnerabilidad?</span>
+            <div className="flex justify-between gap-2 mt-2">
+              <button
+                className="px-3 py-1 rounded bg-gray-200 text-gray-800 font-semibold hover:bg-gray-300"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="px-3 py-1 rounded bg-red-600 text-white font-semibold hover:bg-red-700"
+                onClick={() => { setShowConfirm(false); onDeleted(); }}
+              >
+                Borrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
-};
-
-export default FormularioPage; 
+} 

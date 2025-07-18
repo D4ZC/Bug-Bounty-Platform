@@ -8,22 +8,42 @@ const CrearVulnerabilidad: React.FC = () => {
   const [descripcion, setDescripcion] = useState('');
   const [imagen, setImagen] = useState<File | null>(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // Variables de usuario (mock, luego se puede obtener de contexto)
   const usuarioNombre = 'Alex Turner';
   const usuarioEmail = 'alex.turner@email.com';
   const fecha = new Date().toISOString().slice(0, 10);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Convertir imagen a base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nombre || !descripcion) {
       setError('Todos los campos excepto la imagen son obligatorios.');
       return;
     }
-    // Guardar usuario en localStorage para persistencia de votos y visualización
+    setLoading(true);
     localStorage.setItem('usuario_email_actual', usuarioEmail);
     localStorage.setItem('nombre_usuario', usuarioNombre);
-    // Crear nueva tarjeta
+    let imagenBase64: string | undefined = undefined;
+    if (imagen) {
+      try {
+        imagenBase64 = await fileToBase64(imagen);
+      } catch {
+        setError('Error al procesar la imagen.');
+        setLoading(false);
+        return;
+      }
+    }
     const nuevaCard: CardData = {
       id: uuidv4(),
       nombre,
@@ -31,7 +51,7 @@ const CrearVulnerabilidad: React.FC = () => {
       jugador: usuarioNombre,
       email: usuarioEmail,
       descripcion,
-      imagenUrl: imagen ? URL.createObjectURL(imagen) : undefined,
+      imagenUrl: imagenBase64,
       likes: 0,
       dislikes: 0,
       userVote: null,
@@ -40,25 +60,15 @@ const CrearVulnerabilidad: React.FC = () => {
     // Guardar en localStorage
     let prev = [];
     try {
-      prev = JSON.parse(localStorage.getItem('vulnerabilidad_cards') || '[]');
+      prev = JSON.parse(localStorage.getItem('vulnerabilidades') || '[]');
       if (!Array.isArray(prev)) prev = [];
     } catch (e) {
-      localStorage.removeItem('vulnerabilidad_cards');
+      localStorage.removeItem('vulnerabilidades');
       prev = [];
     }
-    localStorage.setItem('vulnerabilidad_cards', JSON.stringify([nuevaCard, ...prev]));
-    // Verificar guardado
-    const test = JSON.parse(localStorage.getItem('vulnerabilidad_cards') || '[]');
-    if (test && test.length > 0 && test[0].id === nuevaCard.id) {
-      alert('¡Vulnerabilidad guardada correctamente!');
-      setNombre('');
-      setDescripcion('');
-      setImagen(null);
-      setError('');
-      window.location.replace('/formulario'); // recarga completa
-    } else {
-      alert('Error: No se pudo guardar la vulnerabilidad.');
-    }
+    localStorage.setItem('vulnerabilidades', JSON.stringify([nuevaCard, ...prev]));
+    setLoading(false);
+    window.location.replace('/formulario');
   };
 
   return (
@@ -85,7 +95,7 @@ const CrearVulnerabilidad: React.FC = () => {
           <label className="font-semibold text-gray-700">Subir imagen (opcional)
             <input type="file" className="input mt-1" accept="image/*" onChange={e => setImagen(e.target.files?.[0] || null)} />
           </label>
-          <button type="submit" className="bg-blue-600 text-white font-bold py-2 rounded-lg shadow hover:bg-blue-700 transition">Crear</button>
+          <button type="submit" className="bg-blue-600 text-white font-bold py-2 rounded-lg shadow hover:bg-blue-700 transition" disabled={loading}>{loading ? 'Creando...' : 'Crear'}</button>
         </form>
       </div>
     </div>
