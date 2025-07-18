@@ -22,9 +22,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     { title: 'Actualización', content: 'Se han mejorado las funciones de la tienda. ¡Explora las novedades!' },
   ];
   return (
-    <div className="min-h-screen bg-transparent">
+    <div className="min-h-screen bg-transparent dark:bg-carbon-dark dark:text-gray-100 transition-colors duration-300">
       {/* Navbar superior */}
-      <Header aria-label="Bug Bounty Platform" className="bg-[#000000] flex items-center h-24 shadow-md transition-all duration-300 w-full">
+      <Header aria-label="Bug Bounty Platform" className="bg-[#000000] flex items-center h-24 shadow-md transition-all duration-300 w-full dark:bg-carbon-dark">
         <span
           className="font-gamer-title text-2xl font-bold tracking-wide text-white select-none ml-6"
           style={{ fontFamily: 'Orbitron, Arial, sans-serif' }}
@@ -70,7 +70,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </Header>
       <div className="flex flex-1">
         {/* Sidebar lateral restaurado */}
-        <SideNav aria-label="Menú lateral" className="bg-[#999999] shadow-md min-h-full w-[250px] flex flex-col items-start py-4">
+        <SideNav aria-label="Menú lateral" className="bg-[#999999] shadow-md min-h-full w-[250px] flex flex-col items-start py-4 dark:bg-carbon-gray">
           <SideNavItems>
             <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
               <Home size={24} color="#161616" />
@@ -111,7 +111,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </SideNavItems>
         </SideNav>
         {/* Contenido principal */}
-        <main className="flex-1 p-6 bg-gray-100 min-h-screen transition-all duration-300">{children}</main>
+        <main className="flex-1 p-6 bg-gray-100 min-h-screen transition-all duration-300 dark:bg-carbon-dark dark:text-gray-100">{children}</main>
       </div>
     </div>
   );

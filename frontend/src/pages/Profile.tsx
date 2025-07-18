@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { useShop, ShopItem } from '../contexts/ShopContext';
 import ReplaceItemModal from '../components/ReplaceItemModal';
 import { useWallet } from '../contexts/WalletContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const pieData = [
   { name: 'HARD', value: 50, color: '#f43f5e' },
@@ -40,6 +41,7 @@ const mockUser = {
 const Profile: React.FC = () => {
   const { userItems, selectItem, getSelectedItem } = useShop();
   const { coins, bluepoints } = useWallet();
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<'fondos' | 'marcos' | 'badges' | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +63,40 @@ const Profile: React.FC = () => {
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [profilePic, setProfilePic] = useState<string | null>(null);
   const [frame, setFrame] = useState('default');
+  // Likes/dislikes totales de los formularios publicados por el usuario
+  const [totals, setTotals] = useState({ likes: 0, dislikes: 0 });
+  // Estado para fondo seleccionado
+  const [selectedBg, setSelectedBg] = useState(() => {
+    return localStorage.getItem('selectedBg') || '';
+  });
+  // Estado para marco seleccionado
+  const [selectedFrame, setSelectedFrame] = useState(() => {
+    return localStorage.getItem('selectedFrame') || '';
+  });
+
+  // Actualizar fondo al seleccionar
+  const handleSelectBg = (img: string) => {
+    setSelectedBg(img);
+    localStorage.setItem('selectedBg', img);
+  };
+
+  // Actualizar marco al seleccionar
+  const handleSelectFrame = (img: string) => {
+    setSelectedFrame(img);
+    localStorage.setItem('selectedFrame', img);
+  };
+
+  // Fondos comprados
+  const fondosComprados = userItems.purchased.filter(item => item.category === 'fondo');
+
+  // Marcos comprados
+  const marcosComprados = userItems.purchased.filter(item => item.category === 'marco');
+
+  // Badges comprados (solo de vista)
+  const badgesComprados = userItems.purchased.filter(item => item.category === 'sticker');
+
+  // Usar fondo seleccionado en el div principal
+  const mainBg = selectedBg || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
 
   // Auto-slide del carrusel
   React.useEffect(() => {
@@ -69,6 +105,43 @@ const Profile: React.FC = () => {
     }, 2500);
     return () => clearInterval(interval);
   }, []);
+
+  // Likes/dislikes totales de los formularios publicados por el usuario
+  useEffect(() => {
+    function normalize(email: string) {
+      return (email || '').trim().toLowerCase();
+    }
+    function updateTotals() {
+      if (!user?.email) {
+        setTotals({ likes: 0, dislikes: 0 });
+        return;
+      }
+      const stored = localStorage.getItem('vulnerabilidades');
+      if (!stored) {
+        setTotals({ likes: 0, dislikes: 0 });
+        return;
+      }
+      const cards = JSON.parse(stored);
+      const userEmail = normalize(user.email);
+      const userCards = cards.filter((c: any) => normalize(c.email) === userEmail);
+      // Mostrar emails en pantalla si no hay coincidencias
+      if (userCards.length === 0 && cards.length > 0) {
+        setTotals({ likes: 0, dislikes: 0 });
+        (window as any).debugEmails = { perfil: userEmail, cards: cards.map((c: any) => normalize(c.email)) };
+      } else {
+        const likes = userCards.reduce((acc: number, c: any) => acc + (c.likes || 0), 0);
+        const dislikes = userCards.reduce((acc: number, c: any) => acc + (c.dislikes || 0), 0);
+        setTotals({ likes, dislikes });
+      }
+    }
+    updateTotals();
+    window.addEventListener('storage', updateTotals);
+    const interval = setInterval(updateTotals, 1000);
+    return () => {
+      window.removeEventListener('storage', updateTotals);
+      clearInterval(interval);
+    };
+  }, [user?.email]);
 
   // Modal para FONDOS, MARCOS, BADGES
   const closeSectionModal = () => setActiveSection(null);
@@ -110,177 +183,241 @@ const Profile: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-gray-50 py-8 px-2">
-      <div className="w-full max-w-6xl flex flex-col md:flex-row gap-6 bg-white rounded-2xl shadow-lg p-4 md:p-8 min-h-[700px]">
-        {/* Columna Izquierda */}
-        <div className="w-full md:w-1/4 flex flex-col items-center gap-6 justify-between min-h-full">
-          {/* Gráfica de barras de monedas */}
-          <div className="w-full flex flex-col items-center flex-1 justify-center">
-            <div className="w-full h-60">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="coins" fill="#38bdf8" radius={[8,8,0,0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="w-full flex justify-center mt-2">
-              <span className="text-lg font-bold text-purple-700 tracking-wide" style={{ marginLeft: '40px' }}>EFICIENCIA</span>
-            </div>
-          </div>
-          {/* Botones verticales */}
-          <div className="flex flex-col gap-4 w-full mt-2 flex-1 justify-end" style={{ marginTop: '-80px' }}>
-            <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'fondos' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('fondos')}>FONDOS</button>
-            <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'marcos' ? 'border-purple-600 shadow-lg' : 'border-gray-200'} bg-gray-100 hover:bg-purple-50`} onClick={() => openSectionModal('marcos')}>MARCOS</button>
-            <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'badges' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('badges')}>BADGES</button>
-          </div>
-        </div>
-        {/* Columna Central */}
-        <div className="w-full md:w-2/4 flex flex-col items-center gap-4 justify-between min-h-full">
-          {/* Barra superior */}
-          <div className="w-full flex items-center justify-between bg-gray-100 rounded-lg px-6 py-3 mb-2">
-            <span className="font-bold text-gray-700">MONEDAS: <span className="text-yellow-500">{coins}</span></span>
-            <span className="font-bold text-gray-700 ml-auto">bluepoints: <span className="text-blue-500">{bluepoints}</span></span>
-          </div>
-          {/* Avatar con marco personalizado */}
-          <div className="relative flex flex-col items-center flex-1 justify-center" style={{ marginTop: '-50px' }}>
-            <div className="flex items-center justify-center relative" style={{ background: 'rgba(243, 244, 246, 0.7)', borderRadius: '18px', width: '220px', height: '240px' }}>
-              {/* Contenedor para la imagen de perfil */}
-              <div className="bg-white flex items-center justify-center text-[8rem] z-20 overflow-hidden rounded-full border-2 border-gray-200 shadow-lg" style={{ width: '200px', height: '200px' }}>
-                {/* Aquí va la imagen del usuario, por ahora emoji */}
-                <img
-                  src={profilePic || ''}
-                  alt="avatar"
-                  className="w-full h-full object-cover"
-                  style={{ display: profilePic ? 'block' : 'none' }}
-                />
-                {!profilePic && <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>}
+      <div
+        className="w-full max-w-6xl flex flex-col md:flex-row gap-6 bg-white rounded-2xl shadow-lg p-4 md:p-8 min-h-[700px] relative overflow-hidden"
+        style={{
+          backgroundImage: `url('${mainBg}')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        {/* Capa de opacidad */}
+        <div className="absolute inset-0 z-0 pointer-events-none" style={{ background: 'rgba(255,255,255,0.7)' }} />
+        {/* Contenido principal (poner z-10 para estar sobre el fondo) */}
+        <div className="relative z-10 w-full h-full flex flex-col md:flex-row gap-6">
+          {/* Columna Izquierda */}
+          <div className="w-full md:w-1/4 flex flex-col items-center gap-6 justify-between min-h-full">
+            {/* Gráfica de barras de monedas */}
+            <div className="w-full flex flex-col items-center flex-1 justify-center">
+              <div className="w-full h-60">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="coins" fill="#38bdf8" radius={[8,8,0,0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="w-full flex justify-center mt-2">
+                <span className="text-lg font-bold text-purple-700 tracking-wide" style={{ marginLeft: '40px' }}>EFICIENCIA</span>
               </div>
             </div>
-            {/* Botones debajo del avatar */}
-            <div className="flex gap-4 mt-4">
-              <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowEditProfile(true)}>EDITAR PERFIL</button>
-              <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowPassword(true)}>CAMBIAR CONTRASEÑA</button>
+            {/* Botones verticales */}
+            <div className="flex flex-col gap-4 w-full mt-2 flex-1 justify-end" style={{ marginTop: '-80px' }}>
+              <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'fondos' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('fondos')}>FONDOS</button>
+              <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'marcos' ? 'border-purple-600 shadow-lg' : 'border-gray-200'} bg-gray-100 hover:bg-purple-50`} onClick={() => openSectionModal('marcos')}>MARCOS</button>
+              <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'badges' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('badges')}>BADGES</button>
             </div>
-            {/* Caja de descripción */}
-            <div className="w-full mt-4">
-              <div className="bg-gray-100 rounded-lg p-4 min-h-[80px] flex flex-col">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-bold text-gray-700">DESCRIPCIÓN</span>
-                  {!editDesc && <button className="text-blue-600 font-semibold" onClick={() => setEditDesc(true)}>Editar</button>}
+          </div>
+          {/* Columna Central */}
+          <div className="w-full md:w-2/4 flex flex-col items-center gap-4 justify-between min-h-full">
+            {/* Barra superior */}
+            <div className="w-full flex items-center justify-between bg-gray-100 rounded-lg px-6 py-3 mb-2">
+              <span className="font-bold text-gray-700">MONEDAS: <span className="text-yellow-500">{coins}</span></span>
+              <span className="font-bold text-gray-700 ml-auto">bluepoints: <span className="text-blue-500">{bluepoints}</span></span>
+            </div>
+            {/* Avatar con marco personalizado */}
+            <div className="relative flex flex-col items-center flex-1 justify-center" style={{ marginTop: '-50px' }}>
+              <div className="flex items-center justify-center relative" style={{ background: 'rgba(243, 244, 246, 0.7)', borderRadius: '18px', width: '220px', height: '240px' }}>
+                {/* Contenedor para la imagen de perfil */}
+                <div className="bg-white flex items-center justify-center text-[8rem] z-20 overflow-hidden rounded-full border-2 border-gray-200 shadow-lg" style={{ width: '200px', height: '200px' }}>
+                  {/* Aquí va la imagen del usuario, por ahora emoji */}
+                  <img
+                    src={profilePic || ''}
+                    alt="avatar"
+                    className="w-full h-full object-cover"
+                    style={{ display: profilePic ? 'block' : 'none' }}
+                  />
+                  {!profilePic && <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>}
                 </div>
-                {editDesc ? (
-                  <div className="flex flex-col gap-2">
-                    <textarea className="w-full rounded border p-2" value={desc} onChange={e => setDesc(e.target.value)} rows={3} />
-                    <div className="flex gap-2 justify-end">
-                      <button className="px-3 py-1 rounded bg-gray-200 text-gray-800 font-bold" onClick={() => setEditDesc(false)}>Cancelar</button>
-                      <button className="px-3 py-1 rounded bg-blue-600 text-white font-bold" onClick={() => setEditDesc(false)}>Guardar</button>
-                    </div>
+              </div>
+              {/* Botones debajo del avatar */}
+              <div className="flex gap-4 mt-4">
+                <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowEditProfile(true)}>EDITAR PERFIL</button>
+                <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowPassword(true)}>CAMBIAR CONTRASEÑA</button>
+              </div>
+              {/* Caja de descripción */}
+              <div className="w-full mt-4">
+                <div className="bg-gray-100 rounded-lg p-4 min-h-[80px] flex flex-col">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-bold text-gray-700">DESCRIPCIÓN</span>
+                    {!editDesc && <button className="text-blue-600 font-semibold" onClick={() => setEditDesc(true)}>Editar</button>}
                   </div>
-                ) : (
-                  <span className="text-gray-700">{desc}</span>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Columna Derecha */}
-        <div className="w-full md:w-1/4 flex flex-col gap-4 items-center justify-between min-h-full">
-          {/* Cuadros grandes de nombre y país */}
-          <div className="w-full flex flex-col gap-4 flex-1 justify-center">
-            <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-              <span className="font-bold text-gray-700 mb-1">NOMBRE</span>
-              <input className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={name} onChange={e => setName(e.target.value)} />
-              {/* Correo debajo del nombre */}
-              <div className="w-full mt-2 flex flex-col items-center">
-                <span className="font-bold text-gray-700 mb-1">CORREO</span>
-                <div className="flex items-center gap-2">
-                  <span className="font-carbon-base text-gray-700">{email}</span>
+                  {editDesc ? (
+                    <div className="flex flex-col gap-2">
+                      <textarea className="w-full rounded border p-2" value={desc} onChange={e => setDesc(e.target.value)} rows={3} />
+                      <div className="flex gap-2 justify-end">
+                        <button className="px-3 py-1 rounded bg-gray-200 text-gray-800 font-bold" onClick={() => setEditDesc(false)}>Cancelar</button>
+                        <button className="px-3 py-1 rounded bg-blue-600 text-white font-bold" onClick={() => setEditDesc(false)}>Guardar</button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-gray-700">{desc}</span>
+                  )}
                 </div>
               </div>
             </div>
-            <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-              <span className="font-bold text-gray-700 mb-1">PAÍS</span>
-              <select className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={country} onChange={e => setCountry(e.target.value)}>
-                <option value="Germany">🇩🇪 Germany</option>
-                <option value="Mexico">🇲🇽 Mexico</option>
-                <option value="USA">🇺🇸 USA</option>
-                <option value="Spain">🇪🇸 Spain</option>
-              </select>
-            </div>
           </div>
-          {/* Cuadros pequeños de estadísticas */}
-          <div className="w-full flex flex-row gap-4 mt-2 flex-1 justify-end">
-            <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-              <span className="font-bold text-gray-700">LIKES</span>
-              <span className="text-green-600 font-bold text-xl">{mockUser.likes}</span>
-            </div>
-            <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-              <span className="font-bold text-gray-700">DISLIKES</span>
-              <span className="text-red-600 font-bold text-xl">{mockUser.dislikes}</span>
-            </div>
-          </div>
-          {/* Carrusel de imágenes */}
-          <div className="w-full flex flex-col items-center mt-4 flex-1 justify-center">
-            <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center w-full">
-              <div className="flex items-center justify-center w-full">
-                <img src={carouselImages[carouselIdx]} alt="mock" className="w-full h-32 object-cover rounded-lg border transition-all duration-700" />
+          {/* Columna Derecha */}
+          <div className="w-full md:w-1/4 flex flex-col gap-4 items-center justify-between min-h-full">
+            {/* Cuadros grandes de nombre y país */}
+            <div className="w-full flex flex-col gap-4 flex-1 justify-center">
+              <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
+                <span className="font-bold text-gray-700 mb-1">NOMBRE</span>
+                <input className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={name} onChange={e => setName(e.target.value)} />
+                {/* Correo debajo del nombre */}
+                <div className="w-full mt-2 flex flex-col items-center">
+                  <span className="font-bold text-gray-700 mb-1">CORREO</span>
+                  <div className="flex items-center gap-2">
+                    <span className="font-carbon-base text-gray-700">{email}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex gap-1 mt-2 justify-center w-full">
-                {carouselImages.map((_, idx) => (
-                  <span key={idx} className={`inline-block w-2 h-2 rounded-full ${carouselIdx === idx ? 'bg-blue-500' : 'bg-gray-400'}`}></span>
-                ))}
+              <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
+                <span className="font-bold text-gray-700 mb-1">PAÍS</span>
+                <select className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={country} onChange={e => setCountry(e.target.value)}>
+                  <option value="Germany">🇩🇪 Germany</option>
+                  <option value="Mexico">🇲🇽 Mexico</option>
+                  <option value="USA">🇺🇸 USA</option>
+                  <option value="Spain">🇪🇸 Spain</option>
+                </select>
+              </div>
+            </div>
+            {/* Cuadros pequeños de estadísticas */}
+            <div className="w-full flex flex-row gap-4 mt-2 flex-1 justify-end">
+              <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
+                <span className="font-bold text-gray-700">LIKES</span>
+                <span className="text-green-600 font-bold text-xl">{totals.likes}</span>
+              </div>
+              <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
+                <span className="font-bold text-gray-700">DISLIKES</span>
+                <span className="text-red-600 font-bold text-xl">{totals.dislikes}</span>
+              </div>
+            </div>
+            {/* Carrusel de imágenes */}
+            <div className="w-full flex flex-col items-center mt-4 flex-1 justify-center">
+              <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center w-full">
+                <div className="flex items-center justify-center w-full">
+                  <img src={carouselImages[carouselIdx]} alt="mock" className="w-full h-32 object-cover rounded-lg border transition-all duration-700" />
+                </div>
+                <div className="flex gap-1 mt-2 justify-center w-full">
+                  {carouselImages.map((_, idx) => (
+                    <span key={idx} className={`inline-block w-2 h-2 rounded-full ${carouselIdx === idx ? 'bg-blue-500' : 'bg-gray-400'}`}></span>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       {/* Modales de sección (FONDOS, MARCOS, BADGES) */}
-      {activeSection && (
+      {activeSection === 'fondos' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 relative flex flex-col items-center">
-            <button onClick={closeSectionModal} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
-            <h2 className="text-xl font-bold mb-4">{activeSection.toUpperCase()}</h2>
-            
-            {/* Mostrar ítems comprados */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-96overflow-y-auto">
-              {getItemsByCategory(activeSection === 'badges' ? 'sticker' : activeSection).map((item) => {
-                const isSelected = getSelectedItem(item.category)?.id === item.id;
-                return (
-                  <div
-                    key={item.id}
-                    className={`relative rounded-lg border-2 cursor-pointer p-4 transition-all ${
-                      isSelected 
-                        ? 'border-blue-500 bg-blue-50 shadow-lg' 
-                        : 'border-gray-200 hover:border-blue-300'
-                    }`}
-                    onClick={() => handleItemSelection(item)}
-                  >
-                    <img 
-                      src={item.img} 
-                      alt={item.name}
-                      className="w-full h-24 object-cover rounded mb-2"
-                    />
-                    <h3 className="font-semibold text-sm text-gray-800 mb-1">{item.name}</h3>
-                    <p className="text-xs text-gray-600">{item.desc}</p>
-                    {isSelected && (
-                      <div className="absolute top-2 right-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">
-                        SELECCIONADO
-                      </div>
-                    )}
+          <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
+            <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Tus fondos comprados</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+              {fondosComprados.length === 0 ? (
+                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes fondos comprados.</span>
+              ) : (
+                fondosComprados.map(fondo => (
+                  <div key={fondo.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                    <img src={fondo.img} alt={fondo.name} className="w-28 h-20 object-cover rounded mb-2" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{fondo.name}</span>
+                    <button
+                      className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedBg === fondo.img ? 'bg-green-500 text-white' : 'bg-cyber-blue text-white hover:bg-blue-700'}`}
+                      onClick={() => handleSelectBg(fondo.img)}
+                    >
+                      {selectedBg === fondo.img ? (
+                        <span className="inline-block w-4 h-4 bg-white rounded-full flex items-center justify-center"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+                      ) : null}
+                      {selectedBg === fondo.img ? 'Seleccionado' : 'Seleccionar como fondo'}
+                    </button>
                   </div>
-                );
-              })}
-              
-              {getItemsByCategory(activeSection === 'badges' ? 'sticker' : activeSection).length === 0 && (
-                <div className="col-span-full text-center py-8">
-                  <p className="text-lg font-semibold mb-2">No tienes {activeSection} comprados</p>
-                  <p className="text-sm">Ve a la tienda para comprar algunos</p>
-                </div>
+                ))
               )}
             </div>
+            <button
+              className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
+              onClick={closeSectionModal}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para MARCOS */}
+      {activeSection === 'marcos' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
+            <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Tus marcos comprados</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+              {marcosComprados.length === 0 ? (
+                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes marcos comprados.</span>
+              ) : (
+                marcosComprados.map(marco => (
+                  <div key={marco.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                    <img src={marco.img} alt={marco.name} className="w-28 h-20 object-cover rounded mb-2" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{marco.name}</span>
+                    <button
+                      className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedFrame === marco.img ? 'bg-green-500 text-white' : 'bg-cyber-blue text-white hover:bg-blue-700'}`}
+                      onClick={() => handleSelectFrame(marco.img)}
+                    >
+                      {selectedFrame === marco.img ? (
+                        <span className="inline-block w-4 h-4 bg-white rounded-full flex items-center justify-center"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
+                      ) : null}
+                      {selectedFrame === marco.img ? 'Seleccionado' : 'Seleccionar como marco'}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
+              onClick={closeSectionModal}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para BADGES */}
+      {activeSection === 'badges' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
+            <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Tus badges</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+              {badgesComprados.length === 0 ? (
+                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes badges.</span>
+              ) : (
+                badgesComprados.map(badge => (
+                  <div key={badge.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                    <img src={badge.img} alt={badge.name} className="w-20 h-20 object-cover rounded mb-2" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{badge.name}</span>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
+              onClick={closeSectionModal}
+            >
+              Cerrar
+            </button>
           </div>
         </div>
       )}
@@ -347,6 +484,9 @@ const Profile: React.FC = () => {
             </form>
           </div>
         </div>
+      )}
+      {!user?.email && (
+        <div className="text-red-600 font-bold">No hay usuario autenticado. Inicia sesión para ver tus likes/dislikes.</div>
       )}
     </div>
   );

@@ -41,14 +41,23 @@ interface ShopProviderProps {
 }
 
 export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
-  const [userItems, setUserItems] = useState<UserItems>({
-    purchased: [],
-    selected: {
-      fondo: undefined,
-      marco: undefined,
-      sticker: undefined,
-    },
-  });
+  // Cargar de localStorage
+  const getInitialUserItems = () => {
+    try {
+      const stored = localStorage.getItem('userItems');
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return {
+      purchased: [],
+      selected: { fondo: undefined, marco: undefined, sticker: undefined },
+    };
+  };
+  const [userItems, setUserItems] = useState<UserItems>(getInitialUserItems);
+
+  // Guardar en localStorage cada vez que cambia
+  React.useEffect(() => {
+    localStorage.setItem('userItems', JSON.stringify(userItems));
+  }, [userItems]);
 
   const purchaseItem = (item: ShopItem) => {
     setUserItems(prev => ({

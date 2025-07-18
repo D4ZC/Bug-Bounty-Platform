@@ -85,11 +85,14 @@ const Shop: React.FC = () => {
   const products = PRODUCTS[selectedCategory];
   const selectedProduct = products[selectedProductIdx];
 
+  // Forzar 1000 monedas en la tienda para pruebas
+  const displayCoins = 1000;
+
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50 animate-fade-in">
       {/* Barra superior de monedas */}
       <div className="w-full flex justify-end items-center gap-4 px-8 py-4 bg-white/80 shadow-sm sticky top-0 z-20 rounded-b-xl">
-        <div className="bg-yellow-200 text-yellow-900 font-bold px-4 py-2 rounded shadow flex items-center gap-2">MONEDAS: {coins}</div>
+        <div className="bg-yellow-200 text-yellow-900 font-bold px-4 py-2 rounded shadow flex items-center gap-2">MONEDAS: {displayCoins}</div>
         <div className="bg-blue-100 text-blue-700 font-bold px-4 py-2 rounded shadow flex items-center gap-2">BLUEPOINTS: {bluepoints}</div>
       </div>
       <div className="flex flex-row flex-1 w-full">
@@ -154,12 +157,12 @@ const Shop: React.FC = () => {
               className={`px-8 py-3 rounded-xl font-bold shadow-lg transition text-lg tracking-wide mt-2 ${
                 isItemPurchased(selectedProduct.id)
                   ? 'bg-green-500 text-white cursor-not-allowed animate-pulse'
-                  : coins >= selectedProduct.price
+                  : displayCoins >= selectedProduct.price
                   ? 'bg-cyan-400 text-cyan-900 hover:bg-cyan-300'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
               onClick={() => !isItemPurchased(selectedProduct.id) && handlePurchase(selectedProduct)}
-              disabled={isItemPurchased(selectedProduct.id) || coins < selectedProduct.price}
+              disabled={isItemPurchased(selectedProduct.id) || displayCoins < selectedProduct.price}
             >
               {isItemPurchased(selectedProduct.id) ? 'COMPRADO' : 'COMPRAR'}
             </button>

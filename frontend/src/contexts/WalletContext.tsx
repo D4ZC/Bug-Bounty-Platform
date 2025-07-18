@@ -16,8 +16,8 @@ const BLUEPOINTS_KEY = 'wallet_bluepoints';
 
 export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [coins, setCoinsState] = useState<number>(() => {
-    const saved = localStorage.getItem(COINS_KEY);
-    return saved ? parseInt(saved, 10) : 100;
+    localStorage.setItem(COINS_KEY, '1000');
+    return 1000;
   });
   const [bluepoints, setBluepointsState] = useState<number>(() => {
     const saved = localStorage.getItem(BLUEPOINTS_KEY);
