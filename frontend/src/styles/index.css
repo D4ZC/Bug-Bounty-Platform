@@ -142,6 +142,44 @@
   animation: float 3s ease-in-out infinite;
 }
 
+/* Fondo original + animación de reflejo dorado al hacer hover para cards MVP */
+.mvp-gold-card {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  border: 2.5px solid #e6c15a;
+}
+.mvp-gold-card::after {
+  content: "";
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    rgba(140, 107, 31, 0.0) 60%,
+    rgba(140, 107, 31, 0.25) 70%,
+    rgba(140, 107, 31, 0.7) 75%,
+    rgba(140, 107, 31, 0.0) 80%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+.mvp-gold-card:hover::after {
+  opacity: 1;
+  animation: gold-sheen-move-diagonal 1.2s linear infinite;
+}
+@keyframes gold-sheen-move-diagonal {
+  0% {
+    transform: translate(-60px, -60px) skewX(-20deg);
+  }
+  100% {
+    transform: translate(120px, 120px) skewX(-20deg);
+  }
+}
+
 /* Estilos para el modo oscuro */
 @media (prefers-color-scheme: dark) {
   .dark-mode-auto {
