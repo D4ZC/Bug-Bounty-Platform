@@ -139,6 +139,9 @@ const Profile: React.FC = () => {
   const [framePreview, setFramePreview] = useState<string>(profileUser.frame || '');
   const [selectedFrameFile, setSelectedFrameFile] = useState<File | null>(null);
 
+  // Ruta absoluta base del proyecto (ajusta si es necesario)
+  const projectBase = '/Users/rembrandtmauricio/Desktop/Bug-Bounty-Platform/frontend/public';
+
   // Función para manejar la selección de archivos
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -285,18 +288,17 @@ const Profile: React.FC = () => {
       {/* Banner y edición */}
       <div className="w-full max-w-3xl mt-2 relative">
         {/* Banner container */}
-        <div className="rounded-2xl overflow-hidden shadow-xl border-2 border-white/30 bg-gray-800/90 backdrop-blur-md relative">
-          {/* Banner imagen */}
-          <div className="relative w-full flex items-center justify-center min-h-[384px]">
-            {containerBanner && (
-              <img
-                src={containerBanner}
-                alt="banner"
-                className="absolute inset-0 w-full h-full object-cover z-0"
-              />
-            )}
-            {/* Container transparente */}
-            <div className="flex flex-row items-center w-full max-w-2xl mx-auto p-4 rounded-xl bg-white/80 shadow-lg relative min-h-[240px] gap-6 z-10">
+        <div className="rounded-2xl overflow-hidden shadow-xl border-2 border-white/30 bg-gray-800/90 backdrop-blur-md relative min-h-[384px] flex items-center justify-center">
+          {containerBanner ? (
+            <img
+              src={containerBanner}
+              alt="banner"
+              className="absolute inset-0 w-full h-full object-cover object-center z-0"
+            />
+          ) : (
+            <div className="absolute inset-0 w-full h-full bg-gray-300 z-0" />
+          )}
+          <div className="relative z-10 w-full max-w-2xl mx-auto p-4 rounded-xl bg-white/80 shadow-lg min-h-[240px] flex flex-row items-center gap-6">
                 <div className="grid grid-cols-2 gap-6 w-full items-start mt-0">
                   {/* Columna izquierda: avatar + insignias */}
                   <div className="flex flex-col items-center gap-4">
@@ -304,12 +306,11 @@ const Profile: React.FC = () => {
                       {avatar ? (
                         <img
                           src={avatar}
-                          alt="avatar"
                           className="w-24 h-24 rounded-full border-2 border-blue-400 object-cover z-10 bg-gray-200"
                         />
                       ) : (
-                        <div className="w-24 h-24 rounded-full border-2 border-blue-400 bg-gray-200 flex items-center justify-center text-4xl text-gray-500 z-10">
-                          {profileUser.name ? profileUser.name[0] : '?'}
+                        <div className="w-24 h-24 rounded-full border-2 border-blue-400 bg-gray-300 flex items-center justify-center z-10">
+                          <FaUserEdit size={40} className="text-gray-400" />
                         </div>
                       )}
                       {profileUser.frame && (
@@ -320,14 +321,7 @@ const Profile: React.FC = () => {
                         />
                       )}
                       {/* Botón editar avatar */}
-                      <button
-                        className="absolute bottom-0 right-0 bg-gray-500 hover:bg-gray-600 text-white p-1 rounded-full shadow z-30"
-                        onClick={() => setShowAvatarEdit(true)}
-                        title="Editar foto de perfil"
-                        type="button"
-                      >
-                        <FaUserEdit size={18} />
-                      </button>
+                      
                     </div>
                     <div className="flex gap-2 items-center mt-2">
                       {profileUser.badges.map(badge => (
@@ -392,8 +386,8 @@ const Profile: React.FC = () => {
               onClick={() => setShowBannerEdit(false)}
             >
               <div 
-                className="bg-white rounded-xl p-6 shadow-xl relative w-full max-w-md"
-                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl p-8 shadow-2xl relative w-full max-w-md flex flex-col items-center"
+                onClick={e => e.stopPropagation()}
               >
                 <button
                   className="absolute top-2 right-2 text-gray-400 hover:text-gray-700 text-2xl"
@@ -401,55 +395,66 @@ const Profile: React.FC = () => {
                 >
                   <IoMdClose />
                 </button>
-                <div className="font-bold mb-2">Cambiar banner del container</div>
-                <div className="space-y-4">
-                  {/* Opción 1: Seleccionar archivo del equipo */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Seleccionar imagen del equipo
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileSelect}
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                <div className="flex flex-col items-center mb-4">
+                  <FaUserEdit size={32} className="mb-2 text-gray-500" />
+                  <div className="text-xl font-bold mb-1">Cambiar banner del container</div>
+                  <div className="text-xs text-gray-500 mb-2">Sugerencia: abre la carpeta <span className="font-semibold">{`${projectBase}/baner`}</span> para seleccionar tu banner</div>
+                </div>
+                <label className="block w-full text-sm font-medium text-gray-700 mb-2 text-center cursor-pointer">
+                  <span className="inline-block bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition">Seleccionar imagen</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </label>
+                {/* Vista previa */}
+                <div className="mt-4 flex flex-col items-center">
+                  {containerBanner ? (
+                    <img
+                      src={containerBanner}
+                      alt="preview-banner"
+                      className="w-40 h-24 object-cover rounded shadow"
                     />
-                    {selectedFile && (
-                      <div className="mt-2 flex items-center gap-2">
-                        <span className="text-sm text-gray-600">{selectedFile.name}</span>
-                        <button
-                          onClick={clearSelectedFile}
-                          className="text-red-500 hover:text-red-700 text-sm"
-                        >
-                          Limpiar
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Opción 2: URL de imagen */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      O usar URL de imagen
-                    </label>
-                    <input
-                      type="text"
-                      className="input w-full mb-4"
-                      placeholder="URL de la imagen de fondo"
-                      value={containerBanner}
-                      onChange={e => setContainerBanner(e.target.value)}
-                    />
-                  </div>
+                  ) : (
+                    <div className="w-40 h-24 rounded bg-gray-200 flex items-center justify-center text-lg text-gray-500">
+                      Sin banner
+                    </div>
+                  )}
+                  {selectedFile && (
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className="text-sm text-gray-600">{selectedFile.name}</span>
+                      <button
+                        onClick={clearSelectedFile}
+                        className="text-red-500 hover:text-red-700 text-xs border border-red-200 rounded px-2 py-1"
+                      >
+                        Limpiar
+                      </button>
+                    </div>
+                  )}
+                </div>
+                {/* Opción 2: URL de imagen */}
+                <div className="w-full mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    O usar URL de imagen
+                  </label>
+                  <input
+                    type="text"
+                    className="input w-full mb-4"
+                    placeholder="URL de la imagen de fondo"
+                    value={containerBanner}
+                    onChange={e => setContainerBanner(e.target.value)}
+                  />
                 </div>
                 <button
-                  className="btn-primary w-full"
+                  className="btn-primary w-full mt-6"
                   onClick={() => setShowBannerEdit(false)}
                 >Guardar</button>
               </div>
             </div>
           )}
         </div>
-      </div>
       {/* Estadísticas rápidas (con animación y modal) */}
       <div className="w-full max-w-3xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-2 mb-6">
         {/* Reportes */}
@@ -533,7 +538,7 @@ const Profile: React.FC = () => {
           }}
         >
           <div 
-            className="bg-white rounded-xl p-6 shadow-xl relative w-full max-w-md"
+            className="bg-white rounded-2xl p-8 shadow-2xl relative w-full max-w-md flex flex-col items-center"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -545,41 +550,42 @@ const Profile: React.FC = () => {
             >
               <IoMdClose />
             </button>
-            <div className="font-bold mb-2">Cambiar foto de perfil</div>
-            <div className="space-y-4">
-              <div className="flex flex-col items-center">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Seleccionar imagen de tu equipo
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarFileSelect}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                />
-                {/* Vista previa */}
-                <div className="mt-4">
-                  <img
-                    src={selectedAvatarFile ? avatarPreview : avatar}
-                    alt="preview-avatar"
-                    className="w-24 h-24 rounded-full border-2 border-blue-400 object-cover bg-gray-200"
-                  />
+            <div className="flex flex-col items-center mb-4">
+              <FaUserEdit size={32} className="mb-2 text-gray-500" />
+              <div className="text-xl font-bold mb-1">Cambiar foto de perfil</div>
+              <div className="text-xs text-gray-500 mb-2">Sugerencia: abre la carpeta <span className="font-semibold">{`${projectBase}/img`}</span> para seleccionar tu foto</div>
+            </div>
+            <label className="block w-full text-sm font-medium text-gray-700 mb-2 text-center cursor-pointer">
+              <span className="inline-block bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition">Seleccionar imagen</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarFileSelect}
+                className="hidden"
+              />
+            </label>
+            {/* Vista previa */}
+            <div className="mt-4 flex flex-col items-center">
+              <img
+                src={selectedAvatarFile ? avatarPreview : avatar}
+
+                
+                className="w-24 h-24 rounded-full border-2 border-blue-400 object-cover bg-gray-200 shadow"
+              />
+              {selectedAvatarFile && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm text-gray-600">{selectedAvatarFile.name}</span>
+                  <button
+                    onClick={clearSelectedAvatarFile}
+                    className="text-red-500 hover:text-red-700 text-xs border border-red-200 rounded px-2 py-1"
+                  >
+                    Limpiar
+                  </button>
                 </div>
-                {selectedAvatarFile && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-sm text-gray-600">{selectedAvatarFile.name}</span>
-                    <button
-                      onClick={clearSelectedAvatarFile}
-                      className="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      Limpiar
-                    </button>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
             <button
-              className="btn-primary w-full mt-4"
+              className="btn-primary w-full mt-6"
               onClick={() => {
                 // Actualiza el usuario global (mock) para que el Home lo vea
                 const idx = users.findIndex(u => u.name === profileUser.name);
@@ -604,7 +610,7 @@ const Profile: React.FC = () => {
           }}
         >
           <div 
-            className="bg-white rounded-xl p-6 shadow-xl relative w-full max-w-md"
+            className="bg-white rounded-2xl p-8 shadow-2xl relative w-full max-w-md flex flex-col items-center"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -616,47 +622,47 @@ const Profile: React.FC = () => {
             >
               <IoMdClose />
             </button>
-            <div className="font-bold mb-2">Agregar marco a la foto de perfil</div>
-            <div className="space-y-4">
-              <div className="flex flex-col items-center">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Selecciona una imagen de marco
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFrameFileSelect}
-                  className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            <div className="flex flex-col items-center mb-4">
+              <FaUserEdit size={32} className="mb-2 text-gray-500" />
+              <div className="text-xl font-bold mb-1">Agregar marco a la foto de perfil</div>
+              <div className="text-xs text-gray-500 mb-2">Sugerencia: abre la carpeta <span className="font-semibold">{`${projectBase}/marco`}</span> para seleccionar tu marco</div>
+            </div>
+            <label className="block w-full text-sm font-medium text-gray-700 mb-2 text-center cursor-pointer">
+              <span className="inline-block bg-gray-100 px-4 py-2 rounded hover:bg-gray-200 transition">Seleccionar imagen</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFrameFileSelect}
+                className="hidden"
+              />
+            </label>
+            {/* Vista previa */}
+            <div className="mt-4 flex flex-col items-center">
+              {framePreview ? (
+                <img
+                  src={framePreview}
+                  alt="preview-frame"
+                  className="w-24 h-24 rounded-full object-cover border-2 border-blue-400"
                 />
-                {/* Vista previa */}
-                <div className="mt-4">
-                  {framePreview ? (
-                    <img
-                      src={framePreview}
-                      alt="preview-frame"
-                      className="w-24 h-24 rounded-full object-cover border-2 border-blue-400"
-                    />
-                  ) : (
-                    <div className="w-24 h-24 rounded-full border-2 border-blue-400 bg-gray-200 flex items-center justify-center text-4xl text-gray-500">
-                      Sin marco
-                    </div>
-                  )}
+              ) : (
+                <div className="w-24 h-24 rounded-full border-2 border-blue-400 bg-gray-200 flex items-center justify-center text-4xl text-gray-500">
+                  Sin marco
                 </div>
-                {selectedFrameFile && (
-                  <div className="mt-2 flex items-center gap-2">
-                    <span className="text-sm text-gray-600">{selectedFrameFile.name}</span>
-                    <button
-                      onClick={clearSelectedFrameFile}
-                      className="text-red-500 hover:text-red-700 text-sm"
-                    >
-                      Limpiar
-                    </button>
-                  </div>
-                )}
-              </div>
+              )}
+              {selectedFrameFile && (
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="text-sm text-gray-600">{selectedFrameFile.name}</span>
+                  <button
+                    onClick={clearSelectedFrameFile}
+                    className="text-red-500 hover:text-red-700 text-xs border border-red-200 rounded px-2 py-1"
+                  >
+                    Limpiar
+                  </button>
+                </div>
+              )}
             </div>
             <button
-              className="btn-primary w-full mt-4"
+              className="btn-primary w-full mt-6"
               onClick={() => {
                 // Actualiza el usuario global (mock) para que el Home lo vea
                 const idx = users.findIndex(u => u.name === profileUser.name);
