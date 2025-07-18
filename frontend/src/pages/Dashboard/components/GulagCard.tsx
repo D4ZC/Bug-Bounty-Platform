@@ -139,8 +139,6 @@ const GulagCard: React.FC<{ gulag: any[] }> = ({ gulag }) => {
           />
         </div>
       )}
-      {/* Placeholder de imagen de fondo */}
-      <div className="absolute right-4 top-4 w-20 h-16 bg-gray-300 rounded shadow-inner opacity-40" />
     </Tile>
   );
 };

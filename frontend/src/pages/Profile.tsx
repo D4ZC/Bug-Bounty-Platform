@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { IoMdClose } from 'react-icons/io';
 import { FaCrown, FaMedal, FaUserEdit } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { users } from '@/data/usersData';
+import { teams } from '@/data/usersData';
 
 // Usuario global extendido para perfil
 const user = {
@@ -87,7 +88,7 @@ const Profile: React.FC = () => {
       vulns: 55,
       points: 305,
       duels: 40,
-      effectiveness: 30,
+      effectiveness: 0, // Se calculará dinámicamente
     },
     radar: [
       { subject: 'Vulns', A: 55, fullMark: 100 },
@@ -280,6 +281,24 @@ const Profile: React.FC = () => {
     }
   }, [avatar, profileUser.name]);
 
+  // Calcular efectividad dinámica
+  const maxVulns = 100;
+  const maxDuels = 100;
+  const maxBugs = 100;
+  const maxDocs = 100;
+  // Duelos ganados
+  const duelsWon = Array.isArray(profileUser.duels)
+    ? profileUser.duels.filter((d: any) => d.result === 'Ganado').length
+    : 0;
+  // Bugs reportados
+  const bugs = profileUser.radar?.find((r: any) => r.subject === 'Bugs')?.A || 0;
+  // Documentación subida
+  const docs = profileUser.radar?.find((r: any) => r.subject === 'Docs')?.A || 0;
+  // Vulnerabilidades resueltas
+  const vulns = profileUser.radar?.find((r: any) => r.subject === 'Vulns')?.A || 0;
+  // Fórmula de efectividad
+  const effectiveness = Math.round(((vulns / maxVulns) + (duelsWon / maxDuels) + (bugs / maxBugs) + (docs / maxDocs)) / 4 * 100);
+
   return (
     <div
       className="min-h-screen w-full flex flex-col items-center justify-start bg-cover bg-center relative"
@@ -360,18 +379,33 @@ const Profile: React.FC = () => {
                       {profileUser.role} <span className="mx-1">|</span> <span className="font-semibold text-blue-700">{profileUser.team}</span>
                     </div>
                     <div className="flex gap-2 justify-center">
-                      <span className="bg-yellow-300 text-yellow-900 px-2 py-1 rounded text-xs font-bold">Top #{profileUser.topIndividual} Individual</span>
-                      <span className="bg-blue-300 text-blue-900 px-2 py-1 rounded text-xs font-bold">Top #{profileUser.topTeam} Equipo</span>
+                      {/* Ranking real del usuario */}
+                      <span className="bg-yellow-300 text-yellow-900 px-2 py-1 rounded text-xs font-bold">
+                        Top #{users.findIndex(u => u.name === profileUser.name) + 1} Individual
+                      </span>
+                      {/* Ranking real del equipo */}
+                      <span className="bg-blue-300 text-blue-900 px-2 py-1 rounded text-xs font-bold">
+                        Top #{teams.findIndex(t => t.name === profileUser.team) + 1} Equipo
+                      </span>
                     </div>
-                    <button className="w-full px-3 py-1 bg-purple-600 text-white rounded font-semibold hover:bg-purple-700 transition text-base">Simular datos</button>
                     {/* Radar chart */}
                     <div className="w-full max-w-sm">
                       <ResponsiveContainer width="100%" height={150}>
                         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={profileUser.radar}>
                           <PolarGrid />
                           <PolarAngleAxis dataKey="subject" />
-                          <PolarRadiusAxis angle={30} domain={[0, 100]} />
                           <Radar name="Stats" dataKey="A" stroke="#8884d8" fill="#8884d8" fillOpacity={0.5} />
+                          <Tooltip content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="bg-white border border-gray-300 rounded px-3 py-2 text-xs shadow">
+                                  <div><b>{payload[0].payload.subject}</b></div>
+                                  <div>Resueltos: {payload[0].payload.A}</div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }} />
                         </RadarChart>
                       </ResponsiveContainer>
                     </div>
@@ -434,19 +468,6 @@ const Profile: React.FC = () => {
                     </div>
                   )}
                 </div>
-                {/* Opción 2: URL de imagen */}
-                <div className="w-full mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    O usar URL de imagen
-                  </label>
-                  <input
-                    type="text"
-                    className="input w-full mb-4"
-                    placeholder="URL de la imagen de fondo"
-                    value={containerBanner}
-                    onChange={e => setContainerBanner(e.target.value)}
-                  />
-                </div>
                 <button
                   className="btn-primary w-full mt-6"
                   onClick={() => setShowBannerEdit(false)}
@@ -484,11 +505,11 @@ const Profile: React.FC = () => {
           onClick={() => { setModal('duels'); setModalMonth(''); }}
         >
           <div className="text-2xl font-bold group-hover:scale-110 transition-transform">{profileUser.stats.duels}</div>
-          <div className="text-xs uppercase tracking-wider group-hover:scale-105 transition-transform">Duelos Ganados</div>
+          <div className="text-xs uppercase tracking-wider group-hover:scale-105 transition-transform">Duelos</div>
         </div>
         {/* Efectividad */}
         <div className="bg-black/80 text-white rounded-xl p-4 flex flex-col items-center">
-          <div className="text-2xl font-bold">{profileUser.stats.effectiveness}%</div>
+          <div className="text-2xl font-bold">{effectiveness}%</div>
           <div className="text-xs uppercase tracking-wider">Efectividad</div>
         </div>
       </div>
@@ -646,7 +667,7 @@ const Profile: React.FC = () => {
                 />
               ) : (
                 <div className="w-24 h-24 rounded-full border-2 border-blue-400 bg-gray-200 flex items-center justify-center text-4xl text-gray-500">
-                  Sin marco
+                  
                 </div>
               )}
               {selectedFrameFile && (
