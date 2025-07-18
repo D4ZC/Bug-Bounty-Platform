@@ -139,6 +139,95 @@ const ProfileCustomization: React.FC = () => {
     }
   }, []);
 
+  // Leer selección personalizada de localStorage
+  const [customAvatar, setCustomAvatar] = useState(() => localStorage.getItem('profile_custom_avatar'));
+  const [customFrame, setCustomFrame] = useState(() => localStorage.getItem('profile_custom_frame'));
+  const [customBg, setCustomBg] = useState(() => localStorage.getItem('profile_custom_background'));
+
+  // Actualizar preview en tiempo real al volver de selección
+  useEffect(() => {
+    const onStorage = () => {
+      setCustomAvatar(localStorage.getItem('profile_custom_avatar'));
+      setCustomFrame(localStorage.getItem('profile_custom_frame'));
+      setCustomBg(localStorage.getItem('profile_custom_background'));
+      setCustomTitle(localStorage.getItem('profile_custom_title') || t('Sin título'));
+    };
+    window.addEventListener('storage', onStorage);
+    onStorage();
+    return () => window.removeEventListener('storage', onStorage);
+  }, [t]);
+
+  // Obtener datos visuales de avatar, marco y fondo
+  const avatarObj = (() => {
+    // Mapeo de IDs a imágenes reales de avatares (de la carpeta Avatars)
+    const map: Record<string, string> = {
+      Analista: '/avatars/Analista.png',
+      Ciberseguridad: '/avatars/Ciberseguridad.png',
+      Cyber_God: '/avatars/Cyber_God.png',
+      Cyber_Ninja: '/avatars/Cyber_Ninja.png',
+      Digital_Overlord: '/avatars/Digital_Overlord.png',
+      Digital_Phantom: '/avatars/Digital_Phantom.png',
+      Ghost_Hacker: '/avatars/Ghost_Hacker.png',
+      Hacker_Básico: '/avatars/Hacker_Básico.png',
+      Legendary_Hacker: '/avatars/Legendary_Hacker.png',
+      Pantester: '/avatars/Pantester.png',
+      Programador: '/avatars/Programador.png',
+      Stealth_Master: '/avatars/Stealth_Master.png',
+      // Puedes agregar más avatares aquí siguiendo el mismo formato
+    };
+    return customAvatar && map[customAvatar] ? map[customAvatar] : '/default-avatar.png';
+  })();
+  const frameObj = mockFrames.find(f => f.id === customFrame) || mockFrames[0];
+  const bgObj = mockBackgrounds.find(bg => bg.id === customBg) || mockBackgrounds[0];
+
+  // Copiar la lista de títulos predefinidos y sus estilos aquí también
+  const predefinedTitles = [
+    { label: 'Maestro de la Seguridad', color: 'from-blue-700 to-cyan-400', icon: '🛡️' },
+    { label: 'Cazador de Vulnerabilidades', color: 'from-green-700 to-green-400', icon: '🐞' },
+    { label: 'Leyenda Digital', color: 'from-purple-700 to-pink-400', icon: '🌟' },
+    { label: 'El MVP', color: 'from-yellow-600 to-yellow-300', icon: '🏆' },
+    { label: 'Capitán del Equipo', color: 'from-indigo-700 to-indigo-400', icon: '👑' },
+    { label: 'Héroe Anónimo', color: 'from-gray-700 to-gray-400', icon: '🦸' },
+    { label: 'Analista Supremo', color: 'from-cyan-700 to-cyan-300', icon: '📊' },
+    { label: 'Pentester Pro', color: 'from-red-700 to-pink-400', icon: '💻' },
+    { label: 'Ciberdefensor', color: 'from-blue-900 to-blue-400', icon: '🛡️' },
+    { label: 'Shadow Walker', color: 'from-black to-gray-700', icon: '👤' },
+    { label: 'Overlord del Código', color: 'from-yellow-800 to-yellow-400', icon: '🤖' },
+    { label: 'Phantom Debugger', color: 'from-pink-700 to-pink-300', icon: '👻' },
+    { label: 'Blue Team Leader', color: 'from-blue-800 to-blue-300', icon: '🔵' },
+    { label: 'Red Team Specialist', color: 'from-red-800 to-red-400', icon: '🔴' },
+    { label: 'Bug Slayer', color: 'from-green-800 to-green-300', icon: '🗡️' },
+  ];
+
+  // En la sección de visualización del título en el perfil:
+  const selectedTitleObj = predefinedTitles.find(t => t.label === customTitle);
+
+  // Estado para detectar cambios
+  const [pendingChanges, setPendingChanges] = useState(false);
+
+  // Detectar cambios en avatar, marco, título y fondo
+  useEffect(() => {
+    const storedAvatar = localStorage.getItem('profile_custom_avatar');
+    const storedFrame = localStorage.getItem('profile_custom_frame');
+    const storedTitle = localStorage.getItem('profile_custom_title');
+    const storedBg = localStorage.getItem('profile_custom_background');
+    setPendingChanges(
+      customAvatar !== storedAvatar ||
+      customFrame !== storedFrame ||
+      customTitle !== storedTitle ||
+      customBg !== storedBg
+    );
+  }, [customAvatar, customFrame, customTitle, customBg]);
+
+  // Función para guardar cambios
+  const handleSaveAll = () => {
+    if (customAvatar) localStorage.setItem('profile_custom_avatar', customAvatar);
+    if (customFrame) localStorage.setItem('profile_custom_frame', customFrame);
+    if (customTitle) localStorage.setItem('profile_custom_title', customTitle);
+    if (customBg) localStorage.setItem('profile_custom_background', customBg);
+    window.location.reload(); // Recargar para reflejar los cambios
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-app text-app flex items-center justify-center">
@@ -199,65 +288,120 @@ const ProfileCustomization: React.FC = () => {
       <main className="flex-1 p-8">
         {/* BASIC TAB: Tarjeta de vista principal */}
         {activeTab === 0 && (
-          <div className="flex justify-center">
-            <div className="bg-gradient-to-br from-cyan-900 via-gray-900 to-black rounded-2xl p-10 border-4 border-cyan-500/40 shadow-2xl flex flex-col items-center w-full max-w-2xl relative overflow-hidden animate-fade-in">
-              {/* Partículas SVG animadas */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ opacity: 0.18 }}>
-                <circle cx="80" cy="80" r="60" fill="#00fff7" opacity="0.12">
-                  <animate attributeName="r" values="60;80;60" dur="4s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="300" cy="120" r="40" fill="#FFD700" opacity="0.10">
-                  <animate attributeName="r" values="40;60;40" dur="5s" repeatCount="indefinite" />
-                </circle>
-                <circle cx="200" cy="200" r="30" fill="#ff00cc" opacity="0.10">
-                  <animate attributeName="r" values="30;50;30" dur="6s" repeatCount="indefinite" />
-                </circle>
-              </svg>
-              {/* Eliminado: showConfetti y animación de confeti */}
-              {/* Glow y partículas decorativas */}
-              <div className="absolute -top-10 -left-10 w-40 h-40 bg-cyan-400/20 rounded-full blur-2xl animate-pulse z-0" />
-              <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-yellow-400/20 rounded-full blur-2xl animate-pulse z-0" />
-              <div
-                className="relative cursor-pointer group mb-4 z-10"
-                onClick={handleAvatarEdit}
-                title={t('Seleccionar Avatar')}
-              >
-                <img
-                  src={profile.avatar || '/default-avatar.png'}
-                  alt="Avatar"
-                  className="w-40 h-40 object-cover rounded-2xl border-4 border-cyan-400 shadow-2xl transition-all duration-200 group-hover:scale-105 group-hover:border-yellow-400 animate-glow"
-                  style={{ aspectRatio: '1 / 1', boxShadow: '0 0 32px 0 #00fff7, 0 0 0 4px #222' }}
-                />
-                <div className="absolute -top-2 -right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-lg shadow-lg animate-bounce">{t('Editar')}</div>
-              </div>
-              <div className="text-3xl font-extrabold text-cyan-200 mb-1 drop-shadow-lg tracking-wide flex items-center gap-2">
-                {customUsername}
-                <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-2 py-1 rounded-lg text-xs font-bold ml-2 shadow">{t('PRO')}</span>
-              </div>
-              <div className="text-cyan-400 text-lg mb-2 font-semibold tracking-wide">{customTitle}</div>
-              <div className="flex gap-2 mb-2">
-                <span className="bg-gray-800/80 px-2 py-1 rounded text-xs border border-cyan-500/30 shadow">UID: {profile._id}</span>
-                <span className="bg-gray-800/80 px-2 py-1 rounded text-xs border border-cyan-500/30 shadow">{t('Puntos')}: <span className="text-yellow-300 font-bold">{profile.points}</span></span>
-                <span className="bg-gray-800/80 px-2 py-1 rounded text-xs border border-cyan-500/30 shadow">{t('Ranking')}: <span className="text-cyan-300 font-bold">#{profile.rank}</span></span>
-              </div>
-              <div className="grid grid-cols-3 gap-6 mt-6 w-full">
-                <div className="bg-gradient-to-br from-cyan-800/80 to-cyan-400/20 rounded-xl p-6 border-2 border-cyan-400/40 shadow-lg flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-pop-in">
-                  <div className="text-xs text-cyan-200 mb-1 tracking-wider">{t('Tarjeta de Juego')}</div>
-                  <span className="text-2xl font-bold text-cyan-100">{profile.rank}</span>
+          <div className="flex flex-col items-center w-full min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black relative">
+            {/* Tarjeta de vista seleccionada como fondo decorativo */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 z-0">
+              <div className="w-[520px] h-[320px] bg-gradient-to-br from-cyan-900/80 via-gray-900/90 to-black/90 rounded-3xl border-4 border-cyan-400/60 shadow-2xl" style={{ backgroundImage: `url(${bgObj.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+            </div>
+            {/* Contenido principal */}
+            <div className="relative z-10 w-full max-w-2xl mt-12">
+              {/* Header con avatar, nombre, nivel, insignias */}
+              <div className="flex items-center gap-6 px-8 pt-8 pb-4">
+                {/* Avatar clickable */}
+                <div className="relative flex flex-col items-center group" style={{ minWidth: '120px' }}>
+                  <div onClick={handleAvatarEdit} title={t('Seleccionar Avatar')} className="cursor-pointer">
+                    <img
+                      src={avatarObj}
+                      alt="Avatar"
+                      className="w-28 h-28 object-cover rounded-2xl border-4 border-cyan-300 shadow-xl bg-black/40"
+                      style={{ aspectRatio: '1 / 1' }}
+                    />
+                  </div>
+                  {/* Marco visual */}
+                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-cyan-700/90 text-cyan-100 px-4 py-1 rounded-full text-xs font-bold border-2 border-cyan-400/40 shadow z-20">
+                    {frameObj.name}
+                  </span>
                 </div>
-                <div className="bg-gradient-to-br from-yellow-700/80 to-yellow-400/20 rounded-xl p-6 border-2 border-yellow-400/40 shadow-lg flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-pop-in">
-                  <div className="text-xs text-yellow-200 mb-1 tracking-wider">{t('Me gusta')}</div>
-                  <span className="text-2xl font-bold text-yellow-100">1226</span>
+                {/* Info principal */}
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    {editingUsername ? (
+                      <>
+                        <input value={usernameInput} onChange={e => setUsernameInput(e.target.value)} className="px-2 py-1 rounded text-black text-sm border border-cyan-400/40" />
+                        <button onClick={handleSaveUsername} className="ml-2 px-2 py-1 bg-green-700 text-white rounded text-xs border border-green-400/40 hover:bg-green-500 transition">{t('Guardar')}</button>
+                        <button onClick={() => { setEditingUsername(false); setUsernameInput(customUsername); }} className="ml-1 px-2 py-1 bg-gray-700 text-white rounded text-xs border border-gray-400/40 hover:bg-gray-500 transition">{t('Cancelar')}</button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-2xl font-extrabold text-cyan-100 tracking-wide">{customUsername}</span>
+                        <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-black px-2 py-1 rounded text-xs font-bold border border-yellow-300 ml-2">PRO</span>
+                        <button onClick={() => setEditingUsername(true)} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs border border-cyan-400/40 hover:bg-cyan-500 transition">{t('Editar Usuario')}</button>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mb-1">
+                    {editingTitle ? (
+                      <>
+                        <input value={titleInput} onChange={e => setTitleInput(e.target.value)} className="px-2 py-1 rounded text-black text-sm border border-cyan-400/40" />
+                        <button onClick={handleSaveTitle} className="ml-2 px-2 py-1 bg-green-700 text-white rounded text-xs border border-green-400/40 hover:bg-green-500 transition">{t('Guardar')}</button>
+                        <button onClick={() => { setEditingTitle(false); setTitleInput(customTitle); }} className="ml-1 px-2 py-1 bg-gray-700 text-white rounded text-xs border border-gray-400/40 hover:bg-gray-500 transition">{t('Cancelar')}</button>
+                      </>
+                    ) : (
+                      <>
+                        {selectedTitleObj ? (
+                          <span className={`
+                            flex items-center gap-2 px-6 py-2 rounded-full font-extrabold text-lg border-4 border-yellow-400 shadow-xl
+                            bg-gradient-to-r ${selectedTitleObj.color} text-white uppercase tracking-widest relative overflow-hidden
+                          `} style={{ letterSpacing: '0.08em' }}>
+                            <span className="text-2xl drop-shadow-lg">{selectedTitleObj.icon}</span>
+                            <span className="drop-shadow-lg" style={{
+                              WebkitTextStroke: '1.5px #222',
+                              textShadow: '0 2px 8px #000, 0 0 16px #fff8',
+                              fontSize: '1.35em',
+                              fontWeight: 900,
+                              textTransform: 'uppercase',
+                            }}>
+                              {selectedTitleObj.label}
+                            </span>
+                            {/* Brillo superior */}
+                            <span className="absolute left-0 top-0 w-full h-1/2 bg-gradient-to-b from-white/40 to-transparent rounded-full pointer-events-none" />
+                          </span>
+                        ) : (
+                          <span className="text-cyan-300 text-lg font-semibold">{customTitle}</span>
+                        )}
+                        <button onClick={() => setEditingTitle(true)} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs border border-cyan-400/40 hover:bg-cyan-500 transition">{t('Editar Título')}</button>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex gap-2 mt-2">
+                    <span className="bg-gray-800/80 px-3 py-1 rounded text-xs border border-cyan-500/30 shadow">UID: {profile._id}</span>
+                    <span className="bg-gray-800/80 px-3 py-1 rounded text-xs border border-cyan-500/30 shadow">{t('Puntos')}: <span className="text-yellow-300 font-bold">{profile.points}</span></span>
+                    <span className="bg-gray-800/80 px-3 py-1 rounded text-xs border border-cyan-500/30 shadow">{t('Ranking')}: <span className="text-cyan-300 font-bold">#{profile.rank}</span></span>
+                  </div>
                 </div>
-                <div className="bg-gradient-to-br from-pink-800/80 to-pink-400/20 rounded-xl p-6 border-2 border-pink-400/40 shadow-lg flex flex-col items-center hover:scale-105 transition-transform duration-300 animate-pop-in">
-                  <div className="text-xs text-pink-200 mb-1 tracking-wider">{t('Tasa de MVP')}</div>
-                  <span className="text-2xl font-bold text-pink-100">-</span>
+                {/* Likes y nivel */}
+                <div className="flex flex-col items-end gap-2">
+                  <span className="text-yellow-300 font-bold text-lg flex items-center gap-1"><svg width='18' height='18' fill='currentColor' className='inline'><circle cx='9' cy='9' r='8' stroke='#FFD700' strokeWidth='2' fill='none'/><path d='M6 9l2 2 4-4' stroke='#FFD700' strokeWidth='2' fill='none'/></svg>1226</span>
+                  <span className="bg-cyan-800/80 text-cyan-200 px-2 py-1 rounded text-xs font-bold border border-cyan-400/30 shadow">LV. 1</span>
                 </div>
               </div>
-              {/* Botón para editar marco */}
-              <button onClick={handleFrameEdit} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs hover:bg-cyan-500 transition">{t('Editar Marco')}</button>
-              <button onClick={handleTitleEdit} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs hover:bg-cyan-500 transition">{t('Editar Título')}</button>
-              <button onClick={handleBackgroundEdit} className="ml-2 px-2 py-1 bg-cyan-700 text-white rounded text-xs hover:bg-cyan-500 transition">{t('Editar Fondo')}</button>
+              {/* Barra de stats principales */}
+              <div className="flex justify-between items-center px-8 py-3 bg-black/40 border-t border-cyan-400/20">
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-cyan-200 mb-1 tracking-wider">{t('Tarjeta de Juego')}</span>
+                  <span className="text-lg font-bold text-cyan-100">{profile.rank}</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-yellow-200 mb-1 tracking-wider">{t('Me gusta')}</span>
+                  <span className="text-lg font-bold text-yellow-100">1226</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-pink-200 mb-1 tracking-wider">{t('Tasa de MVP')}</span>
+                  <span className="text-lg font-bold text-pink-100">-</span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-cyan-200 mb-1 tracking-wider">{t('Victorias')}</span>
+                  <span className="text-lg font-bold text-cyan-100">-</span>
+                </div>
+              </div>
+            </div>
+            {/* Sección para la tarjeta de vista seleccionada */}
+            <div className="relative z-10 w-full max-w-2xl mb-12 bg-gradient-to-br from-cyan-900/80 via-gray-900/90 to-black/90 rounded-3xl border-4 border-cyan-400/60 shadow-2xl p-8 flex flex-col items-center">
+              <h3 className="text-xl font-bold text-cyan-200 mb-4">{t('Tarjeta de Vista Seleccionada')}</h3>
+              <div className="w-full flex flex-col items-center">
+                <img src={bgObj.image} alt={bgObj.name} className="w-full max-w-md h-48 object-cover rounded-2xl border-2 border-cyan-400/40 shadow mb-4" />
+                <span className="px-4 py-2 bg-cyan-900/80 text-cyan-200 rounded-full text-sm font-bold border border-cyan-400/30 shadow">{bgObj.name}</span>
+              </div>
             </div>
           </div>
         )}
@@ -322,6 +466,16 @@ const ProfileCustomization: React.FC = () => {
           </div>
         )}
       </main>
+      {/* Botón de Guardar Cambios */}
+      <div className="w-full flex justify-center mt-12">
+        <button
+          onClick={handleSaveAll}
+          className="px-8 py-4 bg-cyan-700 text-white rounded-xl text-lg font-bold border-2 border-cyan-400 hover:bg-cyan-800 transition disabled:opacity-60"
+          disabled={!pendingChanges}
+        >
+          {t('Guardar Cambios')}
+        </button>
+      </div>
     </div>
   );
 };

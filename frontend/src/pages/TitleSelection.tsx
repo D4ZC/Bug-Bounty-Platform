@@ -32,8 +32,7 @@ const TitleSelection: React.FC = () => {
     confettiTimeout.current = setTimeout(() => setShowConfetti(false), 2000);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      // Aquí iría la llamada real a la API
-      // await apiService.updateTitle(selectedTitle);
+      localStorage.setItem('profile_custom_title', selectedTitle);
       navigate('/profile-customization');
     } catch (error) {
       console.error('Error al guardar título:', error);
@@ -75,19 +74,19 @@ const TitleSelection: React.FC = () => {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => navigate('/profile-customization')}
-            className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+            className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg glass-effect border-2 border-cyan-400/40"
           >
             <ArrowLeft size={20} />
             <span>{t('Volver')}</span>
           </button>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent animate-pulse">
+          <h1 className="text-4xl font-extrabold text-gradient drop-shadow-lg animate-pulse tracking-widest">
             {t('Seleccionar Título')}
           </h1>
           {selectedTitle && (
             <button
               onClick={handleSaveTitle}
               disabled={saving}
-              className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed animate-pop-in"
+              className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed animate-pop-in glass-effect border-2 border-cyan-400/40"
             >
               {saving ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -103,16 +102,18 @@ const TitleSelection: React.FC = () => {
           {titles.map((title, index) => (
             <div
               key={title}
-              className={`relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-105 cursor-pointer animate-pop-in ${
+              className={`relative p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-105 cursor-pointer animate-pop-in glass-effect shadow-lg ${
                 selectedTitle === title
-                  ? 'bg-gradient-to-br from-cyan-600/50 via-cyan-600/50 to-blue-600/50 border-cyan-400 shadow-2xl shadow-cyan-500/50 animate-glow'
-                  : 'bg-gradient-to-br from-gray-800/50 via-blue-900/50 to-gray-900/50 border-cyan-500/30 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25'
+                  ? 'bg-gradient-to-br from-cyan-600/60 via-cyan-600/60 to-blue-600/60 border-yellow-400 shadow-2xl shadow-cyan-500/50 animate-glow scale-105'
+                  : 'bg-gradient-to-br from-gray-800/60 via-blue-900/60 to-gray-900/60 border-cyan-500/30 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25'
               }`}
               onClick={() => handleTitleSelect(title)}
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-center">
-                <h3 className="text-base font-bold text-cyan-200">{title}</h3>
+              <div className="text-center flex flex-col items-center">
+                <h3 className="text-base font-bold text-cyan-200 text-shadow-lg">{title}</h3>
+                {title === t('MVP') && <span className="badge badge-warning mt-1 animate-float">MVP</span>}
+                {title === t('Pentester') && <span className="badge badge-primary mt-1 animate-float">Pro</span>}
               </div>
               {selectedTitle === title && (
                 <div className="absolute top-2 right-2 w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce border-2 border-white shadow-lg">

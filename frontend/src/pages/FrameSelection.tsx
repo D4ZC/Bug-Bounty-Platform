@@ -46,8 +46,7 @@ const FrameSelection: React.FC = () => {
     confettiTimeout.current = setTimeout(() => setShowConfetti(false), 2000);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
-      // Aquí iría la llamada real a la API
-      // await apiService.updateFrame(selectedFrame);
+      localStorage.setItem('profile_custom_frame', selectedFrame);
       navigate('/profile-customization');
     } catch (error) {
       console.error('Error al guardar marco:', error);
@@ -89,19 +88,19 @@ const FrameSelection: React.FC = () => {
         <div className="flex items-center justify-between mb-8">
           <button
             onClick={() => navigate('/profile-customization')}
-            className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg"
+            className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 text-white px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg glass-effect border-2 border-cyan-400/40"
           >
             <ArrowLeft size={20} />
             <span>{t('Volver')}</span>
           </button>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent animate-pulse">
+          <h1 className="text-4xl font-extrabold text-gradient drop-shadow-lg animate-pulse tracking-widest">
             {t('Seleccionar Marco')}
           </h1>
           {selectedFrame && (
             <button
               onClick={handleSaveFrame}
               disabled={saving}
-              className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed animate-pop-in"
+              className="flex items-center space-x-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-2 rounded-lg transition-all duration-200 hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed animate-pop-in glass-effect border-2 border-cyan-400/40"
             >
               {saving ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -117,11 +116,11 @@ const FrameSelection: React.FC = () => {
           {frames.map((frame, index) => (
             <div
               key={frame.id}
-              className={`relative p-4 rounded-xl border-2 transition-all duration-300 transform hover:scale-110 cursor-pointer animate-pop-in ${
+              className={`relative p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-110 cursor-pointer animate-pop-in glass-effect shadow-lg ${
                 frame.unlocked
                   ? selectedFrame === frame.id
-                    ? 'bg-gradient-to-br from-cyan-600/50 via-cyan-600/50 to-blue-600/50 border-cyan-400 shadow-2xl shadow-cyan-500/50 animate-glow'
-                    : 'bg-gradient-to-br from-gray-800/50 via-blue-900/50 to-gray-900/50 border-cyan-500/30 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25'
+                    ? 'bg-gradient-to-br from-cyan-600/60 via-cyan-600/60 to-blue-600/60 border-yellow-400 shadow-2xl shadow-cyan-500/50 animate-glow scale-105'
+                    : 'bg-gradient-to-br from-gray-800/60 via-blue-900/60 to-gray-900/60 border-cyan-500/30 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25'
                   : 'bg-gradient-to-br from-gray-800/30 via-gray-700/30 to-gray-900/30 border-gray-600/50 opacity-50 cursor-not-allowed'
               }`}
               onClick={() => handleFrameSelect(frame.id)}
@@ -130,7 +129,7 @@ const FrameSelection: React.FC = () => {
             >
               {/* Frame Image */}
               <div className="flex justify-center mb-3">
-                <div className={`w-20 h-20 rounded-2xl border-4 flex items-center justify-center transition-all duration-300 ${
+                <div className={`w-24 h-24 rounded-2xl border-4 flex items-center justify-center transition-all duration-300 ${
                   frame.unlocked
                     ? selectedFrame === frame.id
                       ? 'border-yellow-400 bg-gradient-to-br from-cyan-600 to-blue-600 animate-glow scale-110'
@@ -138,15 +137,17 @@ const FrameSelection: React.FC = () => {
                     : 'border-gray-600 bg-gradient-to-br from-gray-700 to-gray-800'
                 }`}>
                   {frame.unlocked ? (
-                    <img src={frame.image} alt={frame.name} className="w-16 h-16 object-contain rounded-xl" />
+                    <img src={frame.image} alt={frame.name} className="w-20 h-20 object-contain rounded-xl shadow-lg" />
                   ) : (
                     <div className="text-3xl opacity-50">🔒</div>
                   )}
                 </div>
               </div>
-              {/* Frame Name */}
-              <div className="text-center">
-                <h3 className={`text-base font-bold ${frame.unlocked ? 'text-cyan-200' : 'text-gray-400'}`}>{frame.name}</h3>
+              {/* Frame Name y Badge */}
+              <div className="text-center flex flex-col items-center">
+                <h3 className={`text-base font-bold ${frame.unlocked ? 'text-cyan-200' : 'text-gray-400'} text-shadow-lg`}>{frame.name}</h3>
+                {frame.id === 'frame2' && <span className="badge badge-warning mt-1 animate-float">Premium</span>}
+                {frame.id === 'frame3' && <span className="badge badge-primary mt-1 animate-float">Special</span>}
               </div>
               {/* Selection Indicator */}
               {selectedFrame === frame.id && frame.unlocked && (
