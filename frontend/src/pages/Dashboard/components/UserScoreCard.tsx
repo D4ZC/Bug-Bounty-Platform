@@ -39,7 +39,7 @@ const UserScoreCard: React.FC = () => {
       </div>
       <div className="mt-4 pt-3 border-t border-gray-100">
         <p className="text-sm text-gray-600 text-center">
-          {t('updated_daily') || 'Actualizado diariamente'}
+          {t('') || 'Actualizado diariamente'}
         </p>
       </div>
     </div>

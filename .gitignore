@@ -5,6 +5,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+bun.lockb
 
 # Build outputs
 build/
@@ -13,6 +14,7 @@ out/
 .next/
 .nuxt/
 .vuepress/dist/
+.svelte-kit/
 
 # Environment variables
 .env
@@ -20,6 +22,7 @@ out/
 .env.development.local
 .env.test.local
 .env.production.local
+.env.staging
 
 # IDE and Editor files
 .vscode/
@@ -27,6 +30,7 @@ out/
 *.swp
 *.swo
 *~
+.vscode-server/
 
 # OS generated files
 .DS_Store
@@ -36,6 +40,7 @@ out/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
 # Logs
 logs/
@@ -44,6 +49,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 lerna-debug.log*
 
 # Runtime data
@@ -124,6 +130,160 @@ temp/
 # Testing
 coverage/
 .nyc_output/
+
+# Misc
+frontend/PLATAFORMA_BUG_BOUNTY_CAMBIOS.txt
+
+# Additional development tools
+.eslintcache
+.prettierignore
+.prettierrc
+.editorconfig
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Compressed files
+*.zip
+*.tar.gz
+*.rar
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Serverless
+.serverless/
+
+# Sentry
+.sentryclirc
+
+# Bundle analyzer
+bundle-analyzer-report.html
+
+# PWA
+sw.js
+workbox-*.js
+
+# Local SSL certificates
+*.pem
+*.key
+*.crt
+
+# Local development databases
+data/
+db/
+
+# IDE specific
+.vscode/settings.json
+.vscode/launch.json
+.vscode/extensions.json
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Package manager specific
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Development server
+.vercel
+.netlify
+
+# Monitoring
+.sentryclirc
+
+# Local environment
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging
+
+# Build artifacts
+build/
+dist/
+.next/
+.nuxt/
+.vuepress/dist/
+.svelte-kit/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Test coverage
+coverage/
+.nyc_output/
+*.lcov
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# TypeScript
+*.tsbuildinfo
 
 # Misc
 frontend/PLATAFORMA_BUG_BOUNTY_CAMBIOS.txt 
