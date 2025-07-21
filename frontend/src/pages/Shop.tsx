@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useShop, ShopItem } from '../contexts/ShopContext';
 import { useWallet } from '../contexts/WalletContext';
+import Ruleta from '../components/Ruleta';
 
 const CATEGORIES = [
   { key: 'fondo', label: 'FONDO' },
   { key: 'marco', label: 'MARCO' },
   { key: 'sticker', label: 'STICKER' },
-  { key: 'etc', label: 'ETC' },
+  { key: 'etc', label: 'RULETA' },
 ];
 
 const PRODUCTS = {
@@ -101,7 +102,11 @@ const Shop: React.FC = () => {
           {CATEGORIES.map((cat) => (
             <div
               key={cat.key}
-              className={`px-4 py-3 rounded-lg font-bold text-center cursor-pointer transition border-2 ${selectedCategory === cat.key ? 'bg-cyan-100 border-cyan-400 text-cyan-700 shadow-lg scale-105' : 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-cyan-50'}`}
+              className={`px-4 py-3 rounded-lg font-bold text-center cursor-pointer transition border-2 ${selectedCategory === cat.key
+                ? (cat.key === 'etc'
+                  ? 'bg-gradient-to-br from-orange-400 to-red-500 border-orange-500 text-white shadow-lg scale-105'
+                  : 'bg-cyan-100 border-cyan-400 text-cyan-700 shadow-lg scale-105')
+                : 'bg-gray-100 border-gray-200 text-gray-700 hover:bg-cyan-50'}`}
               onClick={() => setSelectedCategory(cat.key)}
             >
               {cat.label}
@@ -110,64 +115,69 @@ const Shop: React.FC = () => {
         </div>
         {/* Contenedor 2: Productos */}
         <div className="flex-1 flex flex-col items-center justify-center p-6 gap-6">
-          <div className="grid grid-cols-2 gap-8 w-full max-w-lg">
-            {products.map((prod, idx) => (
+          {selectedCategory === 'etc' ? (
+            <Ruleta />
+          ) : (
+            <div className="grid grid-cols-2 gap-8 w-full max-w-lg">
+              {products.map((prod, idx) => (
+                <div
+                  key={prod.id}
+                  className={`relative rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-hidden`}
+                  onClick={() => setSelectedProductIdx(idx)}
+                  style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined }}
+                >
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-200 opacity-70 group-hover:h-2 transition-all duration-300" />
+                  <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
+                  <span className="font-semibold text-gray-700 text-center text-lg group-hover:text-cyan-700 transition-colors">{prod.name}</span>
+                  <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded-full text-xs shadow">${prod.price}</span>
+                  {isItemPurchased(prod.id) && (
+                    <div className="absolute top-2 left-2 bg-green-400 text-white font-bold px-2 py-1 rounded-full text-xs shadow animate-bounce">✓ COMPRADO</div>
+                  )}
+                  {/* Badge de oferta o nuevo */}
+                  {prod.price < 100 && (
+                    <span className="absolute bottom-2 left-2 bg-cyan-200 text-cyan-800 font-bold px-2 py-1 rounded-full text-xs shadow">OFERTA</span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        {selectedCategory !== 'etc' && (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white/90 relative rounded-l-3xl shadow-xl">
+            <div className="flex flex-col items-center">
               <div
-                key={prod.id}
-                className={`relative rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-hidden`}
-                onClick={() => setSelectedProductIdx(idx)}
-                style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined }}
+                className="w-56 h-56 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 shadow-xl flex items-center justify-center mb-6 select-none border-4 border-cyan-200 animate-fade-in"
+                style={{
+                  transform: `perspective(600px) rotateY(${rotation}deg)`,
+                  transition: dragStartRef.current ? 'none' : 'transform 0.3s',
+                  boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
+                  cursor: 'grab',
+                  position: 'relative',
+                  zIndex: 20,
+                }}
+                onMouseDown={handleMouseDown}
               >
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-200 opacity-70 group-hover:h-2 transition-all duration-300" />
-                <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
-                <span className="font-semibold text-gray-700 text-center text-lg group-hover:text-cyan-700 transition-colors">{prod.name}</span>
-                <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded-full text-xs shadow">${prod.price}</span>
-                {isItemPurchased(prod.id) && (
-                  <div className="absolute top-2 left-2 bg-green-400 text-white font-bold px-2 py-1 rounded-full text-xs shadow animate-bounce">✓ COMPRADO</div>
-                )}
-                {/* Badge de oferta o nuevo */}
-                {prod.price < 100 && (
-                  <span className="absolute bottom-2 left-2 bg-cyan-200 text-cyan-800 font-bold px-2 py-1 rounded-full text-xs shadow">OFERTA</span>
-                )}
+                <img src={selectedProduct.img} alt={selectedProduct.name} className="w-40 h-40 object-contain drop-shadow-2xl" draggable={false} />
               </div>
-            ))}
-          </div>
-        </div>
-        {/* Contenedor 3: Vista detallada */}
-        <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white/90 relative rounded-l-3xl shadow-xl">
-          <div className="flex flex-col items-center">
-            <div
-              className="w-56 h-56 rounded-full bg-gradient-to-br from-cyan-100 to-blue-100 shadow-xl flex items-center justify-center mb-6 select-none border-4 border-cyan-200 animate-fade-in"
-              style={{
-                transform: `perspective(600px) rotateY(${rotation}deg)`,
-                transition: dragStartRef.current ? 'none' : 'transform 0.3s',
-                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-                cursor: 'grab',
-                position: 'relative',
-                zIndex: 20,
-              }}
-              onMouseDown={handleMouseDown}
-            >
-              <img src={selectedProduct.img} alt={selectedProduct.name} className="w-40 h-40 object-contain drop-shadow-2xl" draggable={false} />
+              <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg p-4 mb-4 w-64 text-center font-semibold text-gray-700 shadow border border-cyan-100 animate-fade-in">
+                {selectedProduct.desc}
+              </div>
+              <button 
+                className={`px-8 py-3 rounded-xl font-bold shadow-lg transition text-lg tracking-wide mt-2 ${
+                  isItemPurchased(selectedProduct.id)
+                    ? 'bg-green-500 text-white cursor-not-allowed animate-pulse'
+                    : displayCoins >= selectedProduct.price
+                    ? 'bg-cyan-400 text-cyan-900 hover:bg-cyan-300'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+                onClick={() => !isItemPurchased(selectedProduct.id) && handlePurchase(selectedProduct)}
+                disabled={isItemPurchased(selectedProduct.id) || displayCoins < selectedProduct.price}
+              >
+                {isItemPurchased(selectedProduct.id) ? 'COMPRADO' : 'COMPRAR'}
+              </button>
             </div>
-            <div className="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-lg p-4 mb-4 w-64 text-center font-semibold text-gray-700 shadow border border-cyan-100 animate-fade-in">
-              {selectedProduct.desc}
-            </div>
-            <button 
-              className={`px-8 py-3 rounded-xl font-bold shadow-lg transition text-lg tracking-wide mt-2 ${
-                isItemPurchased(selectedProduct.id)
-                  ? 'bg-green-500 text-white cursor-not-allowed animate-pulse'
-                  : displayCoins >= selectedProduct.price
-                  ? 'bg-cyan-400 text-cyan-900 hover:bg-cyan-300'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
-              onClick={() => !isItemPurchased(selectedProduct.id) && handlePurchase(selectedProduct)}
-              disabled={isItemPurchased(selectedProduct.id) || displayCoins < selectedProduct.price}
-            >
-              {isItemPurchased(selectedProduct.id) ? 'COMPRADO' : 'COMPRAR'}
-            </button>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
