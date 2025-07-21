@@ -9,13 +9,15 @@ const exampleDocs = [
         name: 'SQL Injection en login',
         cve: 'CVE-2021-1234',
         files: ['evidencia1.png', 'poc.txt'],
-        description: 'Inyección SQL encontrada en el formulario de login que permite el acceso no autorizado.'
+        description: 'Inyección SQL encontrada en el formulario de login que permite el acceso no autorizado.',
+        url: 'https://example.com/sql-injection-login'
       },
       {
         name: 'SQLi en parámetro de búsqueda',
         cve: 'CVE-2022-5678',
         files: ['captura.png'],
-        description: 'El parámetro de búsqueda no filtra correctamente las entradas, permitiendo inyección.'
+        description: 'El parámetro de búsqueda no filtra correctamente las entradas, permitiendo inyección.',
+        url: 'https://example.com/sql-injection-search'
       }
     ]
   },
@@ -26,13 +28,15 @@ const exampleDocs = [
         name: 'XSS en comentarios',
         cve: 'CVE-2020-1111',
         files: ['xss-demo.png'],
-        description: 'Permite la ejecución de scripts en los comentarios públicos.'
+        description: 'Permite la ejecución de scripts en los comentarios públicos.',
+        url: 'https://example.com/xss-comments'
       },
       {
         name: 'XSS en perfil de usuario',
         cve: 'CVE-2021-2222',
         files: ['perfil-xss.png'],
-        description: 'El campo de perfil permite inyección de scripts.'
+        description: 'El campo de perfil permite inyección de scripts.',
+        url: 'https://example.com/xss-profile'
       }
     ]
   },
@@ -43,13 +47,15 @@ const exampleDocs = [
         name: 'SSRF en carga de imágenes',
         cve: 'CVE-2019-3333',
         files: ['ssrf-ejemplo.png'],
-        description: 'El endpoint de carga de imágenes permite hacer peticiones a servidores internos.'
+        description: 'El endpoint de carga de imágenes permite hacer peticiones a servidores internos.',
+        url: 'https://example.com/ssrf-image-upload'
       },
       {
         name: 'SSRF en importación de feeds',
         cve: 'CVE-2022-4444',
         files: ['feed-ssrf.png'],
-        description: 'La importación de feeds permite acceder a recursos internos.'
+        description: 'La importación de feeds permite acceder a recursos internos.',
+        url: 'https://example.com/ssrf-feed-import'
       }
     ]
   }
@@ -96,13 +102,16 @@ const DocumentationDetail: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {instances.map((vuln, idx) => (
             <div key={idx} className="bg-white rounded-lg shadow p-6 flex flex-col">
-              <span className="text-lg font-bold mb-2">{vuln.name}</span>
+              <span className="text-lg font-bold mb-2">{vuln.name || vuln.cve}</span>
               <span className="text-sm text-gray-500 mb-1">CVE: {vuln.cve}</span>
               <span className="mb-2 text-gray-700">{vuln.description}</span>
+              {vuln.url && (
+                <a href={vuln.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 text-xs underline mb-2">{vuln.url}</a>
+              )}
               <div className="mb-2">
                 <strong>Archivos:</strong>
                 <ul className="list-disc ml-6">
-                  {vuln.files.map((file, i) => (
+                  {vuln.files && vuln.files.map((file, i) => (
                     <li key={i} className="text-blue-600 underline cursor-pointer">{file}</li>
                   ))}
                 </ul>

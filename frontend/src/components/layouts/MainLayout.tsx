@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
-import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
+import { Home, TableSplit, Book, Rule, ShoppingBag, GameConsole, Notification, UserAvatar } from '@carbon/icons-react';
 
 const initialNotifications = [
   { id: 1, text: 'Nueva vulnerabilidad reportada', read: false, link: '/documentation' },
@@ -100,20 +100,23 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* Sidebar lateral */}
         <SideNav aria-label="Menú lateral" className="bg-white shadow-md min-h-full w-16 flex flex-col items-center py-4">
           <SideNavItems className="flex flex-col gap-6">
-            <SideNavLink href="/">
+            <SideNavLink href="/" title="Inicio">
               <Home size={24} />
             </SideNavLink>
-            <SideNavLink href="/list">
-              <List size={24} />
+            <SideNavLink href="/tables" title="Tablas">
+              <TableSplit size={24} />
             </SideNavLink>
-            <SideNavLink href="/settings">
-              <SettingsAdjust size={24} />
+            <SideNavLink href="/documentation" title="Documentación">
+              <Book size={24} />
             </SideNavLink>
-            <SideNavLink href="/documentation">
-              <Tablet size={24} />
+            <SideNavLink href="/rules" title="Reglas">
+              <Rule size={24} />
             </SideNavLink>
-            <SideNavLink href="/add">
-              <Add size={24} />
+            <SideNavLink href="/store" title="Tienda">
+              <ShoppingBag size={24} />
+            </SideNavLink>
+            <SideNavLink href="/duels" title="Duelos">
+              <GameConsole size={24} />
             </SideNavLink>
           </SideNavItems>
         </SideNav>

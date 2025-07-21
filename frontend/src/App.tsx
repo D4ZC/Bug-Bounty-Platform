@@ -21,6 +21,7 @@ import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
 import Documentation from '@/pages/Documentation';
 import DocumentationDetail from '@/pages/DocumentationDetail';
+import Tables from '@/pages/Tables';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -51,6 +52,7 @@ function App() {
           <Route path="mvp" element={<MVP />} />
           <Route path="documentation" element={<Documentation />} />
           <Route path="documentation/:vulnName" element={<DocumentationDetail />} />
+          <Route path="tables" element={<Tables />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
