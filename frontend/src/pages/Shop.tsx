@@ -63,137 +63,139 @@ const Shop: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full max-w-5xl mx-auto py-8">
-      <h2 className="text-3xl font-bold mb-6 text-blue-800">Tienda</h2>
-      <div className="flex flex-wrap gap-6 mb-8">
-        <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center min-w-[220px]">
-          <div className="text-lg font-semibold text-gray-700 mb-2">Tus puntos</div>
-          <div className="text-3xl font-bold text-blue-600 mb-1">{userPoints}</div>
-          <div className="text-sm text-blue-400">Puntos</div>
+    <div className="w-full min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center py-12 px-2">
+      <div className="w-full max-w-5xl">
+        <h2 className="text-4xl font-extrabold mb-8 text-blue-800 drop-shadow">Tienda</h2>
+        <div className="flex flex-wrap gap-6 mb-8">
+          <div className="bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center min-w-[220px] border-2 border-blue-100">
+            <div className="text-lg font-semibold text-gray-700 mb-2">Tus puntos</div>
+            <div className="text-4xl font-extrabold text-blue-600 mb-1">{userPoints}</div>
+            <div className="text-sm text-blue-400">Puntos</div>
+          </div>
         </div>
-      </div>
 
-      {/* Perfiles */}
-      <div className="flex items-center gap-2 mb-4 mt-8">
-        <h3 className="text-2xl font-bold text-blue-700">Perfiles</h3>
-        <button className="ml-2 text-xs text-blue-400 hover:underline" onClick={() => handleEditSection('perfiles')}>Editar</button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        {profileProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-xl shadow p-6 flex flex-col items-center relative">
-            {editMode.perfiles && (
-              <div className="absolute top-2 right-2 z-10">
-                <button onClick={() => handleMenuToggle(product.id)} className="p-1 rounded-full hover:bg-gray-100">
-                  <FaEllipsisV size={18} />
-                </button>
-                {menuOpen[product.id] && (
-                  <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg text-sm">
-                    <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left">Editar</button>
-                    <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500">Eliminar</button>
-                  </div>
-                )}
-              </div>
-            )}
-            <img src={product.img} alt={product.name} className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-blue-200" />
-            <div className="text-lg font-bold mb-2">{product.name}</div>
-            <div className="text-blue-600 font-bold mb-2">{product.price} puntos</div>
-            <button
-              className={`px-4 py-2 rounded font-semibold transition text-white ${userPoints >= product.price && !acquired.includes(product.id) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
-              disabled={userPoints < product.price || acquired.includes(product.id)}
-              onClick={() => handleAcquire(product.id, product.price)}
-            >
-              {acquired.includes(product.id) ? 'Adquirido' : 'Adquirir'}
-            </button>
-          </div>
-        ))}
-        {editMode.perfiles && (
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 border-2 border-dashed border-blue-300 min-h-[220px]" onClick={() => handleAddCard('perfiles')}>
-            <FaPlus size={36} className="text-blue-400 mb-2" />
-            <span className="text-blue-400 font-semibold">Agregar</span>
-          </div>
-        )}
-      </div>
+        {/* Perfiles */}
+        <div className="flex items-center gap-2 mb-4 mt-8">
+          <h3 className="text-2xl font-bold text-blue-700">Perfiles</h3>
+          <button className="ml-2 text-xs text-blue-400 hover:underline" onClick={() => handleEditSection('perfiles')}>Editar</button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
+          {profileProducts.map(product => (
+            <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center relative border border-blue-100 hover:scale-[1.03] hover:shadow-xl transition-transform duration-200">
+              {editMode.perfiles && (
+                <div className="absolute top-2 right-2 z-10">
+                  <button onClick={() => handleMenuToggle(product.id)} className="p-1 rounded-full hover:bg-gray-100">
+                    <FaEllipsisV size={18} />
+                  </button>
+                  {menuOpen[product.id] && (
+                    <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg text-sm">
+                      <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left">Editar</button>
+                      <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500">Eliminar</button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <img src={product.img} alt={product.name} className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-blue-200 shadow" />
+              <div className="text-lg font-bold mb-2 text-blue-900">{product.name}</div>
+              <div className="text-blue-600 font-bold mb-2">{product.price} puntos</div>
+              <button
+                className={`px-4 py-2 rounded font-semibold transition text-white ${userPoints >= product.price && !acquired.includes(product.id) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                disabled={userPoints < product.price || acquired.includes(product.id)}
+                onClick={() => handleAcquire(product.id, product.price)}
+              >
+                {acquired.includes(product.id) ? 'Adquirido' : 'Adquirir'}
+              </button>
+            </div>
+          ))}
+          {editMode.perfiles && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 border-2 border-dashed border-blue-300 min-h-[220px]" onClick={() => handleAddCard('perfiles')}>
+              <FaPlus size={36} className="text-blue-400 mb-2" />
+              <span className="text-blue-400 font-semibold">Agregar</span>
+            </div>
+          )}
+        </div>
 
-      {/* Marcos */}
-      <div className="flex items-center gap-2 mb-4 mt-8">
-        <h3 className="text-2xl font-bold text-blue-700">Marcos</h3>
-        <button className="ml-2 text-xs text-blue-400 hover:underline" onClick={() => handleEditSection('marcos')}>Editar</button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        {frameProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-xl shadow p-6 flex flex-col items-center relative">
-            {editMode.marcos && (
-              <div className="absolute top-2 right-2 z-10">
-                <button onClick={() => handleMenuToggle(product.id)} className="p-1 rounded-full hover:bg-gray-100">
-                  <FaEllipsisV size={18} />
-                </button>
-                {menuOpen[product.id] && (
-                  <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg text-sm">
-                    <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left">Editar</button>
-                    <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500">Eliminar</button>
-                  </div>
-                )}
-              </div>
-            )}
-            <img src={product.img} alt={product.name} className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-yellow-300" />
-            <div className="text-lg font-bold mb-2">{product.name}</div>
-            <div className="text-blue-600 font-bold mb-2">{product.price} puntos</div>
-            <button
-              className={`px-4 py-2 rounded font-semibold transition text-white ${userPoints >= product.price && !acquired.includes(product.id) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
-              disabled={userPoints < product.price || acquired.includes(product.id)}
-              onClick={() => handleAcquire(product.id, product.price)}
-            >
-              {acquired.includes(product.id) ? 'Adquirido' : 'Adquirir'}
-            </button>
-          </div>
-        ))}
-        {editMode.marcos && (
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 border-2 border-dashed border-blue-300 min-h-[220px]" onClick={() => handleAddCard('marcos')}>
-            <FaPlus size={36} className="text-blue-400 mb-2" />
-            <span className="text-blue-400 font-semibold">Agregar</span>
-          </div>
-        )}
-      </div>
+        {/* Marcos */}
+        <div className="flex items-center gap-2 mb-4 mt-8">
+          <h3 className="text-2xl font-bold text-blue-700">Marcos</h3>
+          <button className="ml-2 text-xs text-blue-400 hover:underline" onClick={() => handleEditSection('marcos')}>Editar</button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
+          {frameProducts.map(product => (
+            <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center relative border border-yellow-100 hover:scale-[1.03] hover:shadow-xl transition-transform duration-200">
+              {editMode.marcos && (
+                <div className="absolute top-2 right-2 z-10">
+                  <button onClick={() => handleMenuToggle(product.id)} className="p-1 rounded-full hover:bg-gray-100">
+                    <FaEllipsisV size={18} />
+                  </button>
+                  {menuOpen[product.id] && (
+                    <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg text-sm">
+                      <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left">Editar</button>
+                      <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500">Eliminar</button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <img src={product.img} alt={product.name} className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-yellow-300 shadow" />
+              <div className="text-lg font-bold mb-2 text-yellow-900">{product.name}</div>
+              <div className="text-blue-600 font-bold mb-2">{product.price} puntos</div>
+              <button
+                className={`px-4 py-2 rounded font-semibold transition text-white ${userPoints >= product.price && !acquired.includes(product.id) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                disabled={userPoints < product.price || acquired.includes(product.id)}
+                onClick={() => handleAcquire(product.id, product.price)}
+              >
+                {acquired.includes(product.id) ? 'Adquirido' : 'Adquirir'}
+              </button>
+            </div>
+          ))}
+          {editMode.marcos && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 border-2 border-dashed border-blue-300 min-h-[220px]" onClick={() => handleAddCard('marcos')}>
+              <FaPlus size={36} className="text-blue-400 mb-2" />
+              <span className="text-blue-400 font-semibold">Agregar</span>
+            </div>
+          )}
+        </div>
 
-      {/* Baners */}
-      <div className="flex items-center gap-2 mb-4 mt-8">
-        <h3 className="text-2xl font-bold text-blue-700">Baners</h3>
-        <button className="ml-2 text-xs text-blue-400 hover:underline" onClick={() => handleEditSection('baners')}>Editar</button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        {bannerProductsState.map(product => (
-          <div key={product.id} className="bg-white rounded-xl shadow p-6 flex flex-col items-center relative">
-            {editMode.baners && (
-              <div className="absolute top-2 right-2 z-10">
-                <button onClick={() => handleMenuToggle(product.id)} className="p-1 rounded-full hover:bg-gray-100">
-                  <FaEllipsisV size={18} />
-                </button>
-                {menuOpen[product.id] && (
-                  <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg text-sm">
-                    <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left" onClick={() => { setMenuOpen({}); handleEditBanner(product); }}>Editar</button>
-                    <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500">Eliminar</button>
-                  </div>
-                )}
-              </div>
-            )}
-            <img src={product.img} alt={product.name} className="w-32 h-20 rounded object-cover mb-4 border-4 border-purple-300" />
-            <div className="text-lg font-bold mb-2">{product.name}</div>
-            <div className="text-blue-600 font-bold mb-2">{product.price} puntos</div>
-            <button
-              className={`px-4 py-2 rounded font-semibold transition text-white ${userPoints >= product.price && !acquired.includes(product.id) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
-              disabled={userPoints < product.price || acquired.includes(product.id)}
-              onClick={() => handleAcquire(product.id, product.price)}
-            >
-              {acquired.includes(product.id) ? 'Adquirido' : 'Adquirir'}
-            </button>
-          </div>
-        ))}
-        {editMode.baners && (
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 border-2 border-dashed border-blue-300 min-h-[120px]" onClick={() => handleAddCard('baners')}>
-            <FaPlus size={36} className="text-blue-400 mb-2" />
-            <span className="text-blue-400 font-semibold">Agregar</span>
-          </div>
-        )}
+        {/* Baners */}
+        <div className="flex items-center gap-2 mb-4 mt-8">
+          <h3 className="text-2xl font-bold text-blue-700">Baners</h3>
+          <button className="ml-2 text-xs text-blue-400 hover:underline" onClick={() => handleEditSection('baners')}>Editar</button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8">
+          {bannerProductsState.map(product => (
+            <div key={product.id} className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center relative border border-purple-100 hover:scale-[1.03] hover:shadow-xl transition-transform duration-200">
+              {editMode.baners && (
+                <div className="absolute top-2 right-2 z-10">
+                  <button onClick={() => handleMenuToggle(product.id)} className="p-1 rounded-full hover:bg-gray-100">
+                    <FaEllipsisV size={18} />
+                  </button>
+                  {menuOpen[product.id] && (
+                    <div className="absolute right-0 mt-2 w-28 bg-white border rounded shadow-lg text-sm">
+                      <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left" onClick={() => { setMenuOpen({}); handleEditBanner(product); }}>Editar</button>
+                      <button className="block w-full px-4 py-2 hover:bg-gray-100 text-left text-red-500">Eliminar</button>
+                    </div>
+                  )}
+                </div>
+              )}
+              <img src={product.img} alt={product.name} className="w-32 h-20 rounded object-cover mb-4 border-4 border-purple-300 shadow" />
+              <div className="text-lg font-bold mb-2 text-purple-900">{product.name}</div>
+              <div className="text-blue-600 font-bold mb-2">{product.price} puntos</div>
+              <button
+                className={`px-4 py-2 rounded font-semibold transition text-white ${userPoints >= product.price && !acquired.includes(product.id) ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-400 cursor-not-allowed'}`}
+                disabled={userPoints < product.price || acquired.includes(product.id)}
+                onClick={() => handleAcquire(product.id, product.price)}
+              >
+                {acquired.includes(product.id) ? 'Adquirido' : 'Adquirir'}
+              </button>
+            </div>
+          ))}
+          {editMode.baners && (
+            <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 border-2 border-dashed border-blue-300 min-h-[120px]" onClick={() => handleAddCard('baners')}>
+              <FaPlus size={36} className="text-blue-400 mb-2" />
+              <span className="text-blue-400 font-semibold">Agregar</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal para editar baner */}

@@ -42,11 +42,18 @@ const UserProfileCard: React.FC<{ user: User }> = ({ user }) => {
       onClick={() => navigate('/profile')}
     >
       {/* Avatar grande */}
-      <div className="w-24 h-24 rounded-full border-4 border-blue-400 shadow-lg flex items-center justify-center overflow-hidden mb-2 bg-white">
-        {user.avatar && (user.avatar.startsWith('http') || user.avatar.startsWith('blob:')) ? (
-          <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
-        ) : (
-          <span className="text-4xl font-bold text-blue-600">{user.avatar ? user.avatar : user.name[0]}</span>
+      <div className="relative w-32 h-32 flex items-center justify-center mb-2">
+        {/* Círculo azul */}
+        <div className="absolute left-1/2 top-1/2 w-24 h-24 rounded-full border-4 border-blue-400 shadow-lg flex items-center justify-center overflow-hidden bg-white z-10 -translate-x-1/2 -translate-y-1/2">
+          {user.avatar && typeof user.avatar === 'string' && (user.avatar.startsWith('http') || user.avatar.startsWith('blob:')) ? (
+            <img src={user.avatar} alt="avatar" className="w-full h-full object-cover" />
+          ) : (
+            <span className="text-4xl font-bold text-blue-600">{user.name ? user.name[0] : '?'}</span>
+          )}
+        </div>
+        {/* Marco por encima y más grande */}
+        {user.frame && (
+          <img src={user.frame} alt="marco" className="absolute left-1/2 top-1/2 w-[120%] h-[120%] object-cover pointer-events-none z-30 -translate-x-1/2 -translate-y-1/2" />
         )}
       </div>
       {/* Nombre y equipo */}

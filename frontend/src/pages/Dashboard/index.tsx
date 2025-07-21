@@ -12,7 +12,7 @@ import { teams, users, getGulagUsers, getTopTeams, getTopUsers } from '@/data/us
 const Dashboard: React.FC = () => {
   // Datos dinámicos desde el módulo de datos
   const [teamsData] = useState(getTopTeams(3));
-  const [usersData] = useState(getTopUsers(3));
+  const [usersData] = useState(getTopUsers(5));
   const [gulag] = useState(getGulagUsers());
   const [mvpUser] = useState(users[0]);
   const [mvpTeam] = useState(teams[0].name);
