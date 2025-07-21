@@ -24,6 +24,7 @@ import Duels from '@/pages/Duels';
 import Messages from '@/pages/Messages';
 import Files from '@/pages/Files';
 import FileReview from '@/pages/FileReview';
+import Settings from '@/pages/Settings';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -57,6 +58,7 @@ function App() {
           <Route path="messages" element={<Messages />} />
           <Route path="files" element={<Files />} />
           <Route path="file-review" element={<FileReview />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

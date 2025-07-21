@@ -366,13 +366,13 @@ const Files: React.FC = () => {
           </div>
         ) : (
           filtered.map(file => (
-            <div key={file.id} className="rounded-xl shadow-lg p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-2 relative group cursor-pointer transition hover:shadow-xl" onClick={() => setSelected(file)}>
-              <div className="flex items-center gap-2 mb-1">
-                {file.types.map(type => (
-                  <span key={type} className="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">{type}</span>
-                ))}
-                <span className={`ml-auto px-2 py-1 rounded text-xs font-bold ${DIFFICULTY_COLORS[file.difficulty]}`}>{file.difficulty}</span>
-              </div>
+          <div key={file.id} className="rounded-xl shadow-lg p-5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex flex-col gap-2 relative group cursor-pointer transition hover:shadow-xl" onClick={() => setSelected(file)}>
+            <div className="flex items-center gap-2 mb-1">
+              {file.types.map(type => (
+                <span key={type} className="px-2 py-1 rounded bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold">{type}</span>
+              ))}
+              <span className={`ml-auto px-2 py-1 rounded text-xs font-bold ${DIFFICULTY_COLORS[file.difficulty]}`}>{file.difficulty}</span>
+            </div>
               <div className="font-bold text-lg text-gray-800 dark:text-gray-100 truncate flex items-center justify-between">
                 <span>{file.title}</span>
                 {/* Badge Reviewed debajo del título, alineado a la derecha */}
@@ -382,42 +382,42 @@ const Files: React.FC = () => {
                   <span className="text-yellow-600 font-bold px-3 py-1 rounded-full text-xs shadow-none">Reviewed</span>
                 </div>
               )}
-              <div className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{file.description}</div>
-              <div className="flex items-center gap-2 mt-2">
-                <button className="text-blue-500 hover:text-blue-700" title="Edit" onClick={e => { e.stopPropagation(); openEditModal(file); }}>
-                  <Edit size={20} />
+            <div className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">{file.description}</div>
+            <div className="flex items-center gap-2 mt-2">
+              <button className="text-blue-500 hover:text-blue-700" title="Edit" onClick={e => { e.stopPropagation(); openEditModal(file); }}>
+                <Edit size={20} />
+              </button>
+              <button className="text-red-500 hover:text-red-700" title="Delete" onClick={e => { e.stopPropagation(); handleDelete(file.id); }}>
+                <TrashCan size={20} />
+              </button>
+              {voted[file.id] ? (
+                <button
+                  className="ml-auto flex items-center gap-1 text-gray-500 hover:text-blue-600 font-semibold"
+                  title="Undo vote"
+                  onClick={e => { e.stopPropagation(); handleUndoVote(file.id); }}
+                >
+                  <Undo size={20} /> <span>Undo vote</span>
                 </button>
-                <button className="text-red-500 hover:text-red-700" title="Delete" onClick={e => { e.stopPropagation(); handleDelete(file.id); }}>
-                  <TrashCan size={20} />
-                </button>
-                {voted[file.id] ? (
+              ) : (
+                <>
                   <button
-                    className="ml-auto flex items-center gap-1 text-gray-500 hover:text-blue-600 font-semibold"
-                    title="Undo vote"
-                    onClick={e => { e.stopPropagation(); handleUndoVote(file.id); }}
+                    className="ml-auto flex items-center gap-1 text-green-600 hover:text-green-800 font-semibold"
+                    title="Like"
+                    onClick={e => { e.stopPropagation(); handleLike(file.id); }}
                   >
-                    <Undo size={20} /> <span>Undo vote</span>
+                    <ThumbsUp size={20} /> <span>{file.likes}</span>
                   </button>
-                ) : (
-                  <>
-                    <button
-                      className="ml-auto flex items-center gap-1 text-green-600 hover:text-green-800 font-semibold"
-                      title="Like"
-                      onClick={e => { e.stopPropagation(); handleLike(file.id); }}
-                    >
-                      <ThumbsUp size={20} /> <span>{file.likes}</span>
-                    </button>
-                    <button
-                      className="flex items-center gap-1 text-pink-600 hover:text-pink-800 font-semibold"
-                      title="Dislike"
-                      onClick={e => { e.stopPropagation(); handleDislike(file.id); }}
-                    >
-                      <ThumbsDown size={20} /> <span>{file.dislikes}</span>
-                    </button>
-                  </>
-                )}
-              </div>
+                  <button
+                    className="flex items-center gap-1 text-pink-600 hover:text-pink-800 font-semibold"
+                    title="Dislike"
+                    onClick={e => { e.stopPropagation(); handleDislike(file.id); }}
+                  >
+                    <ThumbsDown size={20} /> <span>{file.dislikes}</span>
+                  </button>
+                </>
+              )}
             </div>
+          </div>
           ))
         )}
       </div>
@@ -440,7 +440,7 @@ const Files: React.FC = () => {
               <div>
                 {!paidFiles[selected.id] ? (
                   <>
-                    <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Pay with points</div>
+                <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Pay with points</div>
                     <input type="number" min={1} max={200} defaultValue={50} className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 mb-2" readOnly />
                     <button className="w-full px-4 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 transition" onClick={() => handlePay(selected.id)}>Pay</button>
                   </>
