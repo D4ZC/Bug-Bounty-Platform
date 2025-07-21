@@ -1,13 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import tienda from '../assets/images/otros/Tienda.png';
+import tienda2 from '../assets/images/otros/Tienda2.png';
+import tienda3 from '../assets/images/otros/Tienda3.png';
+import tienda4 from '../assets/images/otros/Tienda4.png';
+import tienda5 from '../assets/images/otros/Tienda5.png';
 
 // Imágenes ficticias relacionadas con tienda
 const shopImages = [
-  'https://images.unsplash.com/photo-1515168833906-d2a3b82b1a5e?auto=format&fit=crop&w=400&q=80', // Carrito de compras
-  'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80', // Zapatos
-  'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=400&q=80', // Reloj
-  'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=400&q=80', // Promoción/descuento
-  'https://images.unsplash.com/photo-1513708927688-890a1e2b6b94?auto=format&fit=crop&w=400&q=80', // Audífonos
+  tienda,
+  tienda2,
+  tienda3,
+  tienda4,
+  tienda5,
 ];
 
 const ShopCard: React.FC = () => {

@@ -2,29 +2,42 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useShop, ShopItem } from '../contexts/ShopContext';
 import { useWallet } from '../contexts/WalletContext';
 import Ruleta from '../components/Ruleta';
+import avatar from '../assets/images/Avatar/Avatar.png';
+import avatar1 from '../assets/images/Avatar/Avatar1.png';
+import avatar3 from '../assets/images/Avatar/Avatar3.png';
+import avatar4 from '../assets/images/Avatar/Avatar4.png';
+import avatar5 from '../assets/images/Avatar/Avatar5.png';
+import fondoGamer from '../assets/images/fondos/FONDO_GAMER.webp';
+import fondoGamer1 from '../assets/images/fondos/FONDO_GAMER1.webp';
+import fondoGamer2 from '../assets/images/fondos/FONDO_GAMER2.jpg';
+import marco from '../assets/images/marcos/Marco.png';
+import marco1 from '../assets/images/marcos/Marco1.png';
+import marco2 from '../assets/images/marcos/Marco2.png';
 
 const CATEGORIES = [
-  { key: 'fondo', label: 'FONDO' },
-  { key: 'marco', label: 'MARCO' },
-  { key: 'sticker', label: 'STICKER' },
+  { key: 'avatar', label: 'AVATAR' },
+  { key: 'fondo', label: 'FONDOS' },
+  { key: 'marco', label: 'MARCOS' },
   { key: 'etc', label: 'RULETA' },
 ];
 
 const PRODUCTS = {
+  avatar: [
+    { id: 1, name: 'Avatar Gamer', price: 80, img: avatar, desc: 'Avatar gamer clásico.', category: 'avatar' as const },
+    { id: 2, name: 'Avatar Pro', price: 90, img: avatar1, desc: 'Avatar profesional.', category: 'avatar' as const },
+    { id: 3, name: 'Avatar Retro', price: 100, img: avatar3, desc: 'Avatar retro.', category: 'avatar' as const },
+    { id: 4, name: 'Avatar 4', price: 110, img: avatar4, desc: 'Avatar especial 4.', category: 'avatar' as const },
+    { id: 5, name: 'Avatar 5', price: 120, img: avatar5, desc: 'Avatar especial 5.', category: 'avatar' as const },
+  ],
   fondo: [
-    { id: 1, name: 'Fondo Azul', price: 100, img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo azul para tu perfil.', category: 'fondo' as const },
-    { id: 2, name: 'Fondo Gris', price: 120, img: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo gris elegante.', category: 'fondo' as const },
-    { id: 3, name: 'Fondo Verde', price: 90, img: 'https://images.unsplash.com/photo-1519340333755-c6e2a6a1b49a?auto=format&fit=facearea&w=400&q=80', desc: 'Fondo verde vibrante.', category: 'fondo' as const },
+    { id: 4, name: 'Fondo Gamer', price: 100, img: fondoGamer, desc: 'Fondo gamer neón.', category: 'fondo' as const },
+    { id: 5, name: 'Fondo Gamer 1', price: 120, img: fondoGamer1, desc: 'Fondo gamer alternativo.', category: 'fondo' as const },
+    { id: 6, name: 'Fondo Gamer 2', price: 90, img: fondoGamer2, desc: 'Fondo gamer clásico.', category: 'fondo' as const },
   ],
   marco: [
-    { id: 1, name: 'Marco Fuego', price: 200, img: 'https://cdn.pixabay.com/photo/2017/01/06/19/15/fire-1959824_1280.png', desc: 'Marco animado de fuego.', category: 'marco' as const },
-    { id: 2, name: 'Marco Oro', price: 250, img: 'https://cdn.pixabay.com/photo/2016/03/31/19/56/gold-1294463_1280.png', desc: 'Marco dorado brillante.', category: 'marco' as const },
-    { id: 3, name: 'Marco Flores', price: 180, img: 'https://cdn.pixabay.com/photo/2017/01/31/13/14/flowers-2021755_1280.png', desc: 'Marco decorado con flores.', category: 'marco' as const },
-  ],
-  sticker: [
-    { id: 1, name: 'Sticker Hacker', price: 50, img: 'https://cdn.pixabay.com/photo/2014/04/03/10/32/hacker-312817_1280.png', desc: 'Sticker de hacker.', category: 'sticker' as const },
-    { id: 2, name: 'Sticker Bug', price: 60, img: 'https://cdn.pixabay.com/photo/2013/07/12/13/57/bug-147909_1280.png', desc: 'Sticker de bug.', category: 'sticker' as const },
-    { id: 3, name: 'Sticker Escudo', price: 70, img: 'https://cdn.pixabay.com/photo/2012/04/13/00/22/shield-31234_1280.png', desc: 'Sticker de escudo.', category: 'sticker' as const },
+    { id: 7, name: 'Marco Neon', price: 200, img: marco, desc: 'Marco neón brillante.', category: 'marco' as const },
+    { id: 8, name: 'Marco Pro', price: 250, img: marco1, desc: 'Marco profesional.', category: 'marco' as const },
+    { id: 9, name: 'Marco Retro', price: 180, img: marco2, desc: 'Marco retro.', category: 'marco' as const },
   ],
   etc: [
     { id: 1, name: 'Producto X', price: 80, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294471_1280.png', desc: 'Producto especial X.', category: 'etc' as const },

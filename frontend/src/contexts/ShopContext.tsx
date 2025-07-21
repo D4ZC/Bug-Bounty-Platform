@@ -49,7 +49,7 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
     } catch {}
     return {
       purchased: [],
-      selected: { fondo: undefined, marco: undefined, sticker: undefined },
+      selected: { fondo: undefined, marco: undefined, sticker: undefined, avatar: undefined },
     };
   };
   const [userItems, setUserItems] = useState<UserItems>(getInitialUserItems);

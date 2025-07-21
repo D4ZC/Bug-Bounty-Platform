@@ -4,6 +4,10 @@ import { useShop, ShopItem } from '../contexts/ShopContext';
 import ReplaceItemModal from '../components/ReplaceItemModal';
 import { useWallet } from '../contexts/WalletContext';
 import { useAuth } from '../contexts/AuthContext';
+import carrusel from '../assets/images/otros/Carrussel.png';
+import carrusel1 from '../assets/images/otros/Carrussel1.png';
+import carrusel2 from '../assets/images/otros/Carrussel2.png';
+import carrusel3 from '../assets/images/otros/Carrussel3.png';
 
 const pieData = [
   { name: 'HARD', value: 50, color: '#f43f5e' },
@@ -21,12 +25,14 @@ const barData = [
 ];
 
 const carouselImages = [
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=facearea&w=200&q=80',
-  'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=facearea&w=200&q=80',
-  'https://images.unsplash.com/photo-1519340333755-c6e2a6a1b49a?auto=format&fit=facearea&w=200&q=80',
+  carrusel,
+  carrusel1,
+  carrusel2,
+  carrusel3,
 ];
 
 const mockUser = {
+  id: 'USR-001',
   name: 'Alex Turner',
   country: 'Germany',
   flag: '🇩🇪',
@@ -42,7 +48,7 @@ const Profile: React.FC = () => {
   const { userItems, selectItem, getSelectedItem } = useShop();
   const { coins, bluepoints } = useWallet();
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState<'fondos' | 'marcos' | 'badges' | null>(null);
+  const [activeSection, setActiveSection] = useState<'avatar' | 'fondos' | 'marcos' | 'badges' | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [desc, setDesc] = useState(mockUser.description);
@@ -73,6 +79,10 @@ const Profile: React.FC = () => {
   const [selectedFrame, setSelectedFrame] = useState(() => {
     return localStorage.getItem('selectedFrame') || '';
   });
+  // Estado para avatar seleccionado
+  const [selectedAvatar, setSelectedAvatar] = useState(() => {
+    return localStorage.getItem('selectedAvatar') || '';
+  });
 
   // Actualizar fondo al seleccionar
   const handleSelectBg = (img: string) => {
@@ -86,6 +96,12 @@ const Profile: React.FC = () => {
     localStorage.setItem('selectedFrame', img);
   };
 
+  // Actualizar avatar al seleccionar
+  const handleSelectAvatar = (img: string) => {
+    setSelectedAvatar(img);
+    localStorage.setItem('selectedAvatar', img);
+  };
+
   // Fondos comprados
   const fondosComprados = userItems.purchased.filter(item => item.category === 'fondo');
 
@@ -94,6 +110,9 @@ const Profile: React.FC = () => {
 
   // Badges comprados (solo de vista)
   const badgesComprados = userItems.purchased.filter(item => item.category === 'sticker');
+
+  // Avatares comprados
+  const avatarsComprados = userItems.purchased.filter(item => item.category === 'avatar');
 
   // Usar fondo seleccionado en el div principal
   const mainBg = selectedBg || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
@@ -145,7 +164,7 @@ const Profile: React.FC = () => {
 
   // Modal para FONDOS, MARCOS, BADGES
   const closeSectionModal = () => setActiveSection(null);
-  const openSectionModal = (section: 'fondos' | 'marcos' | 'badges') => setActiveSection(section);
+  const openSectionModal = (section: 'avatar' | 'fondos' | 'marcos' | 'badges') => setActiveSection(section);
 
   // Función para manejar la selección de ítems
   const handleItemSelection = (item: ShopItem) => {
@@ -216,7 +235,8 @@ const Profile: React.FC = () => {
               </div>
             </div>
             {/* Botones verticales */}
-            <div className="flex flex-col gap-4 w-full mt-2 flex-1 justify-end" style={{ marginTop: '-80px' }}>
+            <div className="flex flex-col gap-4 w-full mt-[-50px] flex-1 justify-end">
+              <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'avatar' ? 'border-yellow-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-yellow-50`} onClick={() => openSectionModal('avatar')}>AVATAR</button>
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'fondos' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('fondos')}>FONDOS</button>
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'marcos' ? 'border-purple-600 shadow-lg' : 'border-gray-200'} bg-gray-100 hover:bg-purple-50`} onClick={() => openSectionModal('marcos')}>MARCOS</button>
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'badges' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('badges')}>BADGES</button>
@@ -230,18 +250,21 @@ const Profile: React.FC = () => {
               <span className="font-bold text-gray-700 ml-auto">bluepoints: <span className="text-blue-500">{bluepoints}</span></span>
             </div>
             {/* Avatar con marco personalizado */}
-            <div className="relative flex flex-col items-center flex-1 justify-center" style={{ marginTop: '-50px' }}>
-              <div className="flex items-center justify-center relative" style={{ background: 'rgba(243, 244, 246, 0.7)', borderRadius: '18px', width: '220px', height: '240px' }}>
-                {/* Contenedor para la imagen de perfil */}
-                <div className="bg-white flex items-center justify-center text-[8rem] z-20 overflow-hidden rounded-full border-2 border-gray-200 shadow-lg" style={{ width: '200px', height: '200px' }}>
-                  {/* Aquí va la imagen del usuario, por ahora emoji */}
-                  <img
-                    src={profilePic || ''}
-                    alt="avatar"
-                    className="w-full h-full object-cover"
-                    style={{ display: profilePic ? 'block' : 'none' }}
-                  />
-                  {!profilePic && <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>}
+            <div className="relative flex flex-col items-center flex-1 justify-center" style={{ marginTop: '-10px' }}>
+              <div className="flex items-center justify-center relative" style={{ background: 'rgba(243, 244, 246, 0.7)', borderRadius: '18px', width: '270px', height: '290px' }}>
+                {/* Marco seleccionado debajo del avatar */}
+                {selectedFrame && (
+                  <img src={selectedFrame} alt="marco" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[230px] h-[230px] z-10 pointer-events-none" style={{ objectFit: 'contain' }} />
+                )}
+                {/* Avatar seleccionado encima del marco */}
+                <div className="bg-white flex items-center justify-center text-[8rem] z-20 overflow-hidden rounded-full border-2 border-gray-200 shadow-lg" style={{ width: '200px', height: '200px', position: 'relative' }}>
+                  {selectedAvatar ? (
+                    <img src={selectedAvatar} alt="avatar" className="w-full h-full object-cover rounded-full" />
+                  ) : profilePic ? (
+                    <img src={profilePic} alt="avatar" className="w-full h-full object-cover rounded-full" />
+                  ) : (
+                    <span role="img" aria-label="avatar" className="w-full h-full flex items-center justify-center">👤</span>
+                  )}
                 </div>
               </div>
               {/* Botones debajo del avatar */}
@@ -269,6 +292,38 @@ const Profile: React.FC = () => {
                   )}
                 </div>
               </div>
+              {/* Caja de vulnerabilidades */}
+              <div className="w-full mt-4">
+                <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
+                  <span className="font-bold text-gray-700 text-center mb-3 text-lg">VULNERABILIDADES</span>
+                  <div className="flex flex-row justify-center gap-8 w-full">
+                    {/* Críticas */}
+                    <div className="flex flex-col items-center">
+                      <span className="text-3xl mb-1">💀</span>
+                      <span className="text-red-800 font-bold">Críticas</span>
+                      <span className="text-xl font-bold text-gray-700">3</span>
+                    </div>
+                    {/* High */}
+                    <div className="flex flex-col items-center">
+                      <span className="text-3xl mb-1">💀</span>
+                      <span className="text-red-600 font-bold">High</span>
+                      <span className="text-xl font-bold text-gray-700">7</span>
+                    </div>
+                    {/* Medium */}
+                    <div className="flex flex-col items-center">
+                      <span className="text-3xl mb-1">🕷️</span>
+                      <span className="text-orange-500 font-bold">Medium</span>
+                      <span className="text-xl font-bold text-gray-700">12</span>
+                    </div>
+                    {/* Low */}
+                    <div className="flex flex-col items-center">
+                      <span className="text-3xl mb-1">⚡</span>
+                      <span className="text-green-500 font-bold">Low</span>
+                      <span className="text-xl font-bold text-gray-700">4</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           {/* Columna Derecha */}
@@ -284,6 +339,18 @@ const Profile: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <span className="font-carbon-base text-gray-700">{email}</span>
                   </div>
+                  <span className="text-xs text-gray-500 mt-1">ID: {mockUser.id}</span>
+                </div>
+                {/* Cuadros pequeños de estadísticas */}
+                <div className="w-full flex flex-row gap-2 mt-2 justify-center">
+                  <div className="flex-1 bg-gray-100 rounded-lg p-2 flex flex-col items-center max-w-[80px]">
+                    <span className="font-bold text-gray-700 text-xs">LIKES</span>
+                    <span className="text-green-600 font-bold text-base">{totals.likes}</span>
+                  </div>
+                  <div className="flex-1 bg-gray-100 rounded-lg p-2 flex flex-col items-center max-w-[80px]">
+                    <span className="font-bold text-gray-700 text-xs">DISLIKES</span>
+                    <span className="text-red-600 font-bold text-base">{totals.dislikes}</span>
+                  </div>
                 </div>
               </div>
               <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
@@ -294,17 +361,6 @@ const Profile: React.FC = () => {
                   <option value="USA">🇺🇸 USA</option>
                   <option value="Spain">🇪🇸 Spain</option>
                 </select>
-              </div>
-            </div>
-            {/* Cuadros pequeños de estadísticas */}
-            <div className="w-full flex flex-row gap-4 mt-2 flex-1 justify-end">
-              <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-                <span className="font-bold text-gray-700">LIKES</span>
-                <span className="text-green-600 font-bold text-xl">{totals.likes}</span>
-              </div>
-              <div className="flex-1 bg-gray-100 rounded-lg p-4 flex flex-col items-center">
-                <span className="font-bold text-gray-700">DISLIKES</span>
-                <span className="text-red-600 font-bold text-xl">{totals.dislikes}</span>
               </div>
             </div>
             {/* Carrusel de imágenes */}
@@ -324,6 +380,39 @@ const Profile: React.FC = () => {
         </div>
       </div>
       {/* Modales de sección (FONDOS, MARCOS, BADGES) */}
+      {activeSection === 'avatar' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-yellow-400 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
+            <h2 className="font-gamer-title text-2xl text-yellow-500 mb-4">Tus avatares comprados</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+              {avatarsComprados.length === 0 ? (
+                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes avatares comprados.</span>
+              ) : (
+                avatarsComprados.map(avatar => (
+                  <div key={avatar.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                    <img src={avatar.img} alt={avatar.name} className="w-28 h-28 object-cover rounded-full mb-2" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{avatar.name}</span>
+                    <button
+                      className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedAvatar === avatar.img ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white hover:bg-yellow-500'}`}
+                      onClick={() => handleSelectAvatar(avatar.img)}
+                    >
+                      {selectedAvatar === avatar.img ? 'Seleccionado' : 'Seleccionar como avatar'}
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+            <button
+              className="mt-6 px-4 py-2 rounded font-gamer-body bg-yellow-200 text-yellow-900 hover:bg-yellow-300 transition-colors border border-yellow-300"
+              onClick={closeSectionModal}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para FONDOS */}
       {activeSection === 'fondos' && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
@@ -445,14 +534,6 @@ const Profile: React.FC = () => {
               </label>
               <label className="font-bold text-gray-700">Foto de perfil
                 <input type="file" accept="image/*" className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" onChange={e => setProfilePic(e.target.files?.[0] ? URL.createObjectURL(e.target.files[0]) : null)} />
-              </label>
-              <label className="font-bold text-gray-700">Marco
-                <select className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" value={frame} onChange={e => setFrame(e.target.value)}>
-                  <option value="default">Sin marco</option>
-                  <option value="fire">Fuego</option>
-                  <option value="neon">Neón</option>
-                  <option value="pixel">Pixel</option>
-                </select>
               </label>
             </div>
             <div className="flex gap-2 justify-center mt-6">

@@ -3,13 +3,16 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Autoplay } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import carrusel from '../assets/images/otros/Carrussel.png';
+import carrusel1 from '../assets/images/otros/Carrussel1.png';
+import carrusel2 from '../assets/images/otros/Carrussel2.png';
+import carrusel3 from '../assets/images/otros/Carrussel3.png';
 
 const images = [
-  // Productos y promociones (Unsplash, Pexels, etc.)
-  'https://images.unsplash.com/photo-1513708927688-890a1e2b6b94?auto=format&fit=crop&w=800&q=80', // Audífonos
-  'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80', // Reloj
-  'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=800&q=80', // Zapatos
-  'https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?auto=format&fit=crop&w=800&q=80', // Promoción/descuento
+  carrusel,
+  carrusel1,
+  carrusel2,
+  carrusel3,
 ];
 
 const Carousel: React.FC = () => {

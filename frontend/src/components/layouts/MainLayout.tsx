@@ -4,6 +4,7 @@ import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } fro
 import { Bell, User, Menu, Home as HomeIcon, FileText, Globe, Mail, ShoppingBag, Landmark } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import LanguageSelector from '../LanguageSelector';
+import ChatModal from '../ChatModal';
 
 const NAVBAR_HEIGHT = 64 + 50; // altura original + 50px extra
 // Elimino SIDEBAR_HEIGHT y lógica de sidebar superior
@@ -13,6 +14,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showLangModal, setShowLangModal] = useState(false);
   const [showMsgModal, setShowMsgModal] = useState(false);
   const [selectedMsg, setSelectedMsg] = useState(0);
+  const [showChat, setShowChat] = useState(false);
   // Elimino lógica de menú hamburguesa y sidebar superior
   const navigate = useNavigate();
   // Mock de mensajes
@@ -108,10 +110,15 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <Landmark size={24} color="#161616" />
               <span className="font-gamer-body text-carbon-dark">Gulag</span>
             </SideNavLink>
+            <SideNavLink href="/chat" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2" onClick={e => { e.preventDefault(); setShowChat(true); }}>
+              <Mail size={24} color="#161616" />
+              <span className="font-gamer-body text-carbon-dark">CHAT</span>
+            </SideNavLink>
           </SideNavItems>
         </SideNav>
         {/* Contenido principal */}
         <main className="flex-1 p-6 bg-gray-100 min-h-screen transition-all duration-300 dark:bg-carbon-dark dark:text-gray-100">{children}</main>
+        <ChatModal open={showChat} onClose={() => setShowChat(false)} />
       </div>
     </div>
   );
