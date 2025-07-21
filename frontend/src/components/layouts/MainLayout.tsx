@@ -92,6 +92,28 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
   const sidebarSize = sizeMap[settings.sidebarFontSize as 'text-xs' | 'text-base' | 'text-lg'] || sizeMap['text-base'];
 
+  // Contador de mensajes en inbox (no en papelera)
+  const getInboxCount = () => {
+    try {
+      const stored = localStorage.getItem('messages');
+      if (!stored) return 0;
+      const msgs = JSON.parse(stored);
+      return Array.isArray(msgs) ? msgs.filter((m) => !m.trashed).length : 0;
+    } catch {
+      return 0;
+    }
+  };
+  const [inboxCount, setInboxCount] = useState(getInboxCount());
+
+  // Actualizar contador cuando cambian los mensajes
+  useEffect(() => {
+    const handler = () => setInboxCount(getInboxCount());
+    window.addEventListener('storage', handler);
+    // También actualizar cada vez que se monta el layout
+    handler();
+    return () => window.removeEventListener('storage', handler);
+  }, []);
+
   return (
     <ThemeContext.Provider value={{ isDarkMode: settings.appColor === 'black', toggleTheme: () => {} }}>
       <div className={`min-h-screen flex flex-col ${settings.appColor === 'black' ? 'bg-gray-900' : settings.appColor === 'white' ? 'bg-gray-50' : settings.greyVariant === 'grey-darkbar' ? 'bg-gray-900' : 'bg-gray-50'}`}>
@@ -195,8 +217,16 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             : 'text-gray-600 hover:bg-gray-100'
                       }`}
                     >
-                      <span className={isActive ? 'text-white' : settings.appColor === 'black' || settings.greyVariant === 'grey-darkbar' ? 'text-gray-400' : 'text-gray-500'}>
-                        {React.cloneElement(item.icon, { size: sidebarSize.icon })}
+                      <span className={isActive ? 'text-white' : settings.appColor === 'black' || settings.greyVariant === 'grey-darkbar' ? 'text-gray-400' : 'text-gray-500'} style={{ position: 'relative', display: 'inline-flex', alignItems: 'center', minWidth: sidebarSize.icon, minHeight: sidebarSize.icon }}>
+                        <span style={{ position: 'relative', display: 'inline-block', width: sidebarSize.icon, height: sidebarSize.icon }}>
+                          {React.cloneElement(item.icon, { size: sidebarSize.icon })}
+                          {/* Badge para Messages */}
+                          {item.id === 'messages' && inboxCount > 0 && (
+                            <span className="badge badge-danger" style={{ position: 'absolute', top: '-8px', right: '-8px', minWidth: 16, height: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, zIndex: 1, padding: 0 }}>
+                              {inboxCount}
+                            </span>
+                          )}
+                        </span>
                       </span>
                       {expanded && (
                         <span className="font-medium truncate">{item.label}</span>

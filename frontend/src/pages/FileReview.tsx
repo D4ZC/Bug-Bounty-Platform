@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const FILES_KEY = 'files';
 const REVIEW_KEY = 'files_review';
@@ -73,8 +74,7 @@ const FileReview: React.FC = () => {
   type FileType = typeof MOCK_FILES[0];
   const [files, setFiles] = useState<FileType[]>(getReviewFiles());
   const [selected, setSelected] = useState<typeof MOCK_FILES[0] | null>(null);
-  const [penalty, setPenalty] = useState(0);
-  const [successMsg, setSuccessMsg] = useState('');
+  const [penalty, setPenalty] = useState<number>(0);
   const [showPenaltyModal, setShowPenaltyModal] = useState(false);
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [otherReason, setOtherReason] = useState('');
@@ -143,11 +143,12 @@ const FileReview: React.FC = () => {
     setFinalMsg(`${selected.creator} has been penalized by ${penalty} points for: ${reasons}`);
     setSelectedReasons([]);
     setOtherReason('');
+    // Toast de éxito
+    toast.success('Penalty applied successfully', { position: 'top-right' });
     setTimeout(() => {
-      setFinalMsg('');
       setPenaltyStep('none');
       setSelected(null);
-    }, 3500);
+    }, 350);
   };
   // Return: mover a files y eliminar de review
   const handleReturn = () => {
@@ -159,7 +160,7 @@ const FileReview: React.FC = () => {
         const exists = filesAll.some((f: FileType) => f.id === selected.id);
         if (!exists) {
           // Ajustar dislikes: dislikes = max(likes - 3, 0)
-          const newDislikes = Math.max((selected.likes || 0) - 3, 0);
+          const newDislikes = Math.max((Number(selected.likes) || 0) - 3, 0);
           const reviewedFile = { ...selected, dislikes: newDislikes, reviewed: true };
           const newFiles = [...filesAll, reviewedFile];
           localStorage.setItem(FILES_KEY, JSON.stringify(newFiles));
@@ -175,13 +176,12 @@ const FileReview: React.FC = () => {
       return updated;
     });
     setSelected(null);
+    toast.success('File returned successfully', { position: 'top-right' });
   };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-4">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-gray-100">File Review</h2>
-      {successMsg && <div className="mb-4 p-3 rounded bg-green-100 text-green-800 text-center font-semibold">{successMsg}</div>}
-      {finalMsg && <div className="mb-4 p-3 rounded bg-green-200 text-green-900 text-center font-semibold">{finalMsg}</div>}
       {files.length === 0 ? (
         <div className="text-gray-600 dark:text-gray-300 text-center">No files require review at this time.</div>
       ) : (
@@ -224,7 +224,18 @@ const FileReview: React.FC = () => {
               <div>
                 <div className="font-semibold text-gray-700 dark:text-gray-200 mb-2">Actions</div>
                 <label className="block text-sm font-semibold mb-1 text-gray-700 dark:text-gray-200">Penalty points</label>
-                <input type="number" min={1} max={200} value={penalty} onChange={e => setPenalty(Number(e.target.value))} className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 mb-2" />
+                <input
+                  type="number"
+                  min={1}
+                  max={200}
+                  value={penalty === 0 ? '' : penalty}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setPenalty(val === '' ? 0 : Math.max(0, Number(val)));
+                  }}
+                  className="w-full px-2 py-1 rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-100 mb-2"
+                  placeholder="0"
+                />
                 <button className="w-full px-4 py-2 rounded bg-red-600 text-white font-bold hover:bg-red-700 transition mb-2" onClick={handlePenalize} disabled={penalty <= 0}>Penalize</button>
                 <button className="w-full px-4 py-2 rounded bg-blue-600 text-white font-bold hover:bg-blue-700 transition" onClick={handleReturn}>Return</button>
               </div>
