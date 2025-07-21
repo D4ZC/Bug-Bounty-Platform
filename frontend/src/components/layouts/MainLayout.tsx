@@ -28,6 +28,13 @@ const MainLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+  // Estado de expansión para múltiples cards
+  const [expandedCards, setExpandedCards] = useState<number[]>([]);
+  const handleExpand = (idx: number) => {
+    setExpandedCards((prev) =>
+      prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
+    );
+  };
 
   const navigationItems = [
     { path: '/search', icon: SearchIcon, label: t('search.title') },
@@ -207,27 +214,71 @@ const MainLayout: React.FC = () => {
             {location.pathname === '/' && (
               <div className="mb-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4 pt-8">
                 {/* Puntos del usuario */}
-                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center relative cursor-pointer" onClick={() => handleExpand(0)}>
                   <span className="text-3xl font-bold text-blue-700 mb-1">2450</span>
                   <span className="text-gray-600">Puntos acumulados</span>
+                  <div className={`transition-all duration-300 overflow-hidden w-full ${expandedCards.includes(0) ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                    <div className="text-xs text-gray-500 mt-2 text-center">
+                      <div>Historial de puntos:</div>
+                      <ul className="list-disc ml-6 text-left">
+                        <li>+1200 por retos completados</li>
+                        <li>+800 por reportes aceptados</li>
+                        <li>+450 por logros especiales</li>
+                      </ul>
+                      <div className="mt-2">Última actualización: 2024-07-18</div>
+                    </div>
+                  </div>
                 </div>
                 {/* Notificaciones recientes */}
-                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center relative cursor-pointer" onClick={() => handleExpand(1)}>
                   <span className="text-2xl text-orange-500 mb-1"><Notification size={28} /></span>
                   <span className="text-gray-900 font-semibold mb-1">Notificaciones</span>
                   <span className="text-xs text-gray-500">2 reportes aceptados, 1 reto nuevo</span>
+                  <div className={`transition-all duration-300 overflow-hidden w-full ${expandedCards.includes(1) ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                    <div className="text-xs text-gray-500 mt-2 text-center">
+                      <div>Últimas notificaciones:</div>
+                      <ul className="list-disc ml-6 text-left">
+                        <li>Reporte #123 aceptado</li>
+                        <li>Nuevo reto: SQL Injection</li>
+                        <li>Tu equipo subió de ranking</li>
+                      </ul>
+                      <div className="mt-2">Ver todas en la sección de notificaciones</div>
+                    </div>
+                  </div>
                 </div>
                 {/* Actividad semanal (mock) */}
-                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center relative cursor-pointer" onClick={() => handleExpand(2)}>
                   <span className="text-2xl text-green-500 mb-1"><Dashboard size={28} /></span>
                   <span className="text-gray-900 font-semibold mb-1">Actividad semanal</span>
                   <span className="text-xs text-gray-500">5 reportes, 3 retos completados</span>
+                  <div className={`transition-all duration-300 overflow-hidden w-full ${expandedCards.includes(2) ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                    <div className="text-xs text-gray-500 mt-2 text-center">
+                      <div>Detalle de actividad:</div>
+                      <ul className="list-disc ml-6 text-left">
+                        <li>Lunes: 2 reportes enviados</li>
+                        <li>Miércoles: 1 reto completado</li>
+                        <li>Viernes: 3 reportes aceptados</li>
+                      </ul>
+                      <div className="mt-2">Ver historial completo en actividad</div>
+                    </div>
+                  </div>
                 </div>
                 {/* Ranking actual */}
-                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center">
+                <div className="flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition items-center relative cursor-pointer" onClick={() => handleExpand(3)}>
                   <span className="text-2xl text-purple-500 mb-1"><List size={28} /></span>
                   <span className="text-gray-900 font-semibold mb-1">Ranking</span>
                   <span className="text-xs text-gray-500">Top 12% global</span>
+                  <div className={`transition-all duration-300 overflow-hidden w-full ${expandedCards.includes(3) ? 'max-h-40 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
+                    <div className="text-xs text-gray-500 mt-2 text-center">
+                      <div>Ranking detallado:</div>
+                      <ul className="list-disc ml-6 text-left">
+                        <li>Global: Top 12%</li>
+                        <li>Equipos: Top 5%</li>
+                        <li>Histórico personal: Top 8%</li>
+                      </ul>
+                      <div className="mt-2">Ver ranking completo</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

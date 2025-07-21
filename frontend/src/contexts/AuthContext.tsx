@@ -104,28 +104,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [isLoggedIn, user, isLoading]);
 
-  // Login con backend
+  // Login mock/demo: siempre permite el acceso
   const login = async (email: string, pass: string): Promise<boolean> => {
-    try {
-      const response: any = await api.post('/auth/login', { email, password: pass });
-      
-      if (response.data.success) {
-        const { user: userData, token } = response.data;
-        
-        // Configurar token
-        localStorage.setItem('authToken', token);
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        setUser(userData);
-        setIsLoggedIn(true);
-        setPassword(pass);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Login error:', error);
-      return false;
-    }
+    const userData: AuthUser = {
+      _id: '157207692',
+      nombre: 'Pedro Ramiro',
+      apellidos: 'Mayorga Jofre',
+      email,
+      nickname: 'bughunter',
+      avatar: 'https://i.pinimg.com/736x/23/8d/ad/238dad5a2186e67d9c11d47a50f5100d.jpg',
+      rango: 'Oro',
+      rangoIcon: '🥇',
+      role: 'user',
+      preferences: {
+        language: 'es' as 'es',
+        theme: 'light' as 'light',
+        notifications: {
+          email: true,
+          push: true,
+          challenges: true,
+          gulag: false,
+        },
+      },
+    };
+    localStorage.setItem('authToken', 'demo-token');
+    localStorage.setItem('authUser', JSON.stringify({ user: userData }));
+    setUser(userData);
+    setIsLoggedIn(true);
+    setPassword(pass);
+    return true;
   };
 
   // Logout
@@ -138,36 +145,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     delete api.defaults.headers.common['Authorization'];
   };
 
-  // Registro con backend
+  // Registro mock/demo: siempre permite el registro
   const register = async (data: Omit<AuthUser, 'rango' | 'rangoIcon' | 'nickname'> & { password: string; avatar?: string }): Promise<boolean> => {
-    try {
-      const response: any = await api.post('/auth/register', {
-        firstName: data.nombre,
-        lastName: data.apellidos,
-        email: data.email,
-        password: data.password,
-        confirmPassword: data.password, // Confirmar contraseña igual
-        teamId: '000000000000000000000000', // Dummy ObjectId válido
-        avatar: data.avatar
-      });
-      
-      if (response.data.success) {
-        const { user: userData, token } = response.data;
-        
-        // Configurar token
-        localStorage.setItem('authToken', token);
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        
-        setUser(userData);
-        setIsLoggedIn(true);
-        setPassword(data.password);
-        return true;
-      }
-      return false;
-    } catch (error) {
-      console.error('Register error:', error);
-      return false;
-    }
+    const userData: AuthUser = {
+      _id: '157207692',
+      nombre: 'Pedro Ramiro',
+      apellidos: 'Mayorga Jofre',
+      email: data.email,
+      nickname: 'bughunter',
+      avatar: 'https://i.pinimg.com/736x/23/8d/ad/238dad5a2186e67d9c11d47a50f5100d.jpg',
+      rango: 'Oro',
+      rangoIcon: '🥇',
+      role: 'user',
+      preferences: {
+        language: 'es' as 'es',
+        theme: 'light' as 'light',
+        notifications: {
+          email: true,
+          push: true,
+          challenges: true,
+          gulag: false,
+        },
+      },
+    };
+    localStorage.setItem('authToken', 'demo-token');
+    localStorage.setItem('authUser', JSON.stringify({ user: userData }));
+    setUser(userData);
+    setIsLoggedIn(true);
+    setPassword(data.password);
+    return true;
   };
 
   // Actualizar perfil con backend

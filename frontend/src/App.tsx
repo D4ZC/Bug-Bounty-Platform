@@ -28,6 +28,8 @@ function App() {
   return (
     <div className="App">
       <Routes>
+        {/* Redirección de la raíz al login */}
+        <Route path="/" element={<Navigate to="/login" replace />} />
         {/* Rutas públicas */}
         <Route path="/login" element={<AuthLayout />}>
           <Route index element={<Login />} />
@@ -35,7 +37,6 @@ function App() {
         <Route path="/register" element={<AuthLayout />}>
           <Route index element={<Register />} />
         </Route>
-
         {/* Rutas protegidas: todo lo demás va bajo MainLayout */}
         <Route
           path="/*"
@@ -63,7 +64,6 @@ function App() {
           <Route path="search" element={<Search />} />
           <Route path="demo" element={<Demo />} />
         </Route>
-
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

@@ -14,7 +14,7 @@ const UserProfileCard: React.FC = () => {
     <div className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow duration-200">
       <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
         <span>👤</span>
-        {t('user_profile') || 'Perfil de Usuario'}
+        {t('User profile') || 'Perfil de Usuario'}
       </h3>
       <div className="text-center">
         {user.avatar ? (

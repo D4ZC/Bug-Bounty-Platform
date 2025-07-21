@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -11,6 +13,7 @@ const Register: React.FC = () => {
     confirmPassword: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -21,10 +24,25 @@ const Register: React.FC = () => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      navigate('/', { replace: true });
+    setError(null);
+    if (formData.password !== formData.confirmPassword) {
+      setError('Las contraseñas no coinciden');
       setIsSubmitting(false);
-    }, 500);
+      return;
+    }
+    const success = await register({
+      nombre: formData.nombre,
+      apellidos: formData.apellidos,
+      email: formData.email,
+      password: formData.password,
+      avatar: undefined,
+    });
+    if (success) {
+      navigate('/', { replace: true });
+    } else {
+      setError('No se pudo crear la cuenta. Intenta con otro email o revisa los datos.');
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -118,6 +136,7 @@ const Register: React.FC = () => {
               placeholder="Repite tu contraseña"
             />
           </div>
+          {error && <div className="text-red-600 text-sm text-center">{error}</div>}
           <div>
             <button
               type="submit"

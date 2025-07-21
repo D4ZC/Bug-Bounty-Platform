@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useToast } from '@/hooks/useToast';
 
 
 const CHALLENGE_CATEGORIES = {
@@ -134,12 +135,6 @@ const cardExtraDetails = {
     tips: 'Prueba diferentes tipos de clickjacking y asegúrate de que el iframe sea visible.',
     descripcionLarga: 'Este reto implica demostrar la capacidad de engañar a un usuario para que haga clic en un botón o enlace que no es el que parece ser, lo que puede permitir la ejecución de código malicioso en el contexto del usuario.',
   },
-  'Reverse APK': {
-    fecha: '2024-06-09',
-    pasos: ['Descarga la APK', 'Usa apktool o jadx', 'Busca credenciales hardcodeadas'],
-    tips: 'Analiza los strings y los archivos de configuración.',
-    descripcionLarga: 'Analiza y revierte una APK para encontrar credenciales o secretos embebidos. El reto es demostrar cómo un atacante puede obtener información sensible de una app móvil.',
-  },
   'Insecure Storage': {
     fecha: '2024-06-08',
     pasos: ['Identifica un punto de entrada vulnerable', 'Genera un payload de almacenamiento', 'Prueba la persistencia'],
@@ -200,12 +195,6 @@ const cardExtraDetails = {
     tips: 'Utiliza herramientas como Nmap o Metasploit.',
     descripcionLarga: 'Este reto consiste en identificar servicios expuestos en la red, lo que puede revelar información sobre la infraestructura y la configuración de la red.',
   },
-  'MitM Attack': {
-    fecha: '2024-06-08',
-    pasos: ['Configura un proxy', 'Intercepta tráfico', 'Busca datos sensibles'],
-    tips: 'Utiliza Burp Suite o mitmproxy para facilitar el ataque.',
-    descripcionLarga: 'Realiza un ataque Man-in-the-Middle exitoso en la red objetivo. El objetivo es interceptar y modificar el tráfico entre cliente y servidor.',
-  },
   'DNS Spoofing': {
     fecha: '2024-06-07',
     pasos: ['Configura un servidor DNS', 'Envenena la caché DNS', 'Redirige tráfico'],
@@ -258,11 +247,17 @@ const cardExtraDetails = {
 
 const ChallengeCard: React.FC<{ch: any, categoria?: string}> = ({ ch, categoria }) => {
   const [expanded, setExpanded] = useState(false);
-  const extra = cardExtraDetails[ch.name] || {
+  const { showSuccess } = useToast();
+  const extra = cardExtraDetails[ch.name as keyof typeof cardExtraDetails] || {
     fecha: '2024-06-01',
     pasos: ['Lee la descripción', 'Sigue los pasos sugeridos', 'Envía tu reporte'],
     tips: 'Lee la documentación y prueba diferentes enfoques.',
     descripcionLarga: ch.desc,
+  };
+  const handleParticipar = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    showSuccess('¡Participación exitosa! Comienza el reto.', { duration: 2000 });
+    setExpanded(false);
   };
   return (
     <div
@@ -293,7 +288,7 @@ const ChallengeCard: React.FC<{ch: any, categoria?: string}> = ({ ch, categoria 
           <span className="font-semibold text-xs text-gray-600">Tip:</span>
           <span className="ml-2 text-xs text-blue-700">{extra.tips}</span>
         </div>
-        <button className="mt-2 bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm">Participar</button>
+        <button className="mt-2 bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm" onClick={handleParticipar}>Participar</button>
       </div>
     </div>
   );

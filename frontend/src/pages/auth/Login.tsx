@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
-    setTimeout(() => {
+    setError(null);
+    const success = await login(email, password);
+    if (success) {
       navigate('/', { replace: true });
+    } else {
+      setError('Email o contraseña incorrectos.');
       setIsSubmitting(false);
-    }, 500);
+    }
   };
 
   return (
@@ -57,6 +64,7 @@ const Login: React.FC = () => {
               placeholder="Tu contraseña"
             />
           </div>
+          {error && <div className="text-red-600 text-sm text-center">{error}</div>}
           <div>
             <button
               type="submit"
