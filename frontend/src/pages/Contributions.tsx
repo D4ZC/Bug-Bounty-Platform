@@ -24,7 +24,7 @@ interface ContributionForm {
   type: string;
   title: string;
   description: string;
-  file: File | null;
+  file: File | { name: string } | null;
 }
 
 const initialForm: ContributionForm = {
@@ -50,7 +50,7 @@ const Contributions: React.FC = () => {
         type: types.find(t => t.label === v.criticidad)?.value || '',
         title: v.vulnerabilidad,
         description: v.descripcion,
-        file: null,
+        file: v.documento ? { name: v.documento } as { name: string } : null,
       });
       setEditIdx(location.state.editIdx ?? null);
       setModalOpen(true);
@@ -63,13 +63,71 @@ const Contributions: React.FC = () => {
       ...prev,
       [name]: files ? files[0] : value,
     }));
+    
+    // Limpiar errores cuando el usuario empiece a escribir
+    if (name === 'title' && titleError) {
+      setTitleError('');
+    }
+    if (name === 'description' && descriptionError) {
+      setDescriptionError('');
+    }
   };
 
   const handleSelect = (e: any) => {
     setForm((prev) => ({ ...prev, type: e.target.value }));
   };
 
+  // Estados para mostrar errores de validación
+  const [titleError, setTitleError] = useState<string>('');
+  const [descriptionError, setDescriptionError] = useState<string>('');
+  const [fileError, setFileError] = useState<string>('');
+
+  // Función para limpiar errores después de 4 segundos
+  const clearErrorAfterDelay = (setErrorFunction: (error: string) => void, errorMessage: string) => {
+    setErrorFunction(errorMessage);
+    setTimeout(() => {
+      // Limpiar directamente sin animación adicional
+      setErrorFunction('');
+    }, 4000);
+  };
+
+  // Función de validación
+  const validateForm = () => {
+    let isValid = true;
+    
+    // Validar título (mínimo 1 carácter)
+    if (!form.title || form.title.trim().length < 1) {
+      clearErrorAfterDelay(setTitleError, 'El título debe tener al menos 1 carácter');
+      isValid = false;
+    } else {
+      setTitleError('');
+    }
+    
+    // Validar descripción (mínimo 10 caracteres)
+    if (!form.description || form.description.trim().length < 10) {
+      clearErrorAfterDelay(setDescriptionError, 'La descripción debe tener al menos 10 caracteres');
+      isValid = false;
+    } else {
+      setDescriptionError('');
+    }
+    
+    // Validar archivo si el interruptor está activado
+    if (showFileUploader && !form.file) {
+      clearErrorAfterDelay(setFileError, 'Debes adjuntar al menos 1 archivo');
+      isValid = false;
+    } else {
+      setFileError('');
+    }
+    
+    return isValid;
+  };
+
   const handleSubmit = () => {
+    // Validar antes de enviar
+    if (!validateForm()) {
+      return;
+    }
+    
     const resolvedVuln = {
       fecha: new Date().toLocaleDateString(),
       criticidad: types.find(t => t.value === form.type)?.label || '',
@@ -163,31 +221,57 @@ const Contributions: React.FC = () => {
           required
           className="text-black"
         >
-          <SelectItem value="" text="Selecciona una opción" />
           {types.map((t) => (
             <SelectItem key={t.value} value={t.value} text={t.label} />
           ))}
         </Select>
-        <TextInput
-          id="title"
-          name="title"
-          labelText={<span className="text-black">Vulnerabilidad</span>}
-          value={form.title}
-          onChange={handleChange}
-          className="mt-4 text-black placeholder-gray-400"
-          required
-          placeholder="Nombre de la Vulnerabilidad"
-        />
-        <TextArea
-          id="description"
-          name="description"
-          labelText={<span className="text-black">Descripción</span>}
-          value={form.description}
-          onChange={handleChange}
-          className="mt-4 text-black placeholder-gray-400 resize-none"
-          placeholder="¿Como lo Hiciste?, ¿Que herramientas utilizaste?, ¿Cuanto tiempo te tomo?... "
-          required
-        />
+        <div className="relative">
+          <TextInput
+            id="title"
+            name="title"
+            labelText={<span className="text-black">Vulnerabilidad</span>}
+            value={form.title}
+            onChange={handleChange}
+            className={`mt-4 text-black placeholder-gray-400 ${titleError ? 'border-red-500' : ''}`}
+            required
+            placeholder="Nombre de la Vulnerabilidad"
+          />
+          {titleError && (
+            <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
+              <div className="flex items-start">
+                <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <span className="text-black text-sm font-medium">{titleError}</span>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          <div className="relative">
+            <span className="text-black">Descripción</span>
+            {descriptionError && (
+              <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-black text-sm font-medium">{descriptionError}</span>
+                </div>
+              </div>
+            )}
+          </div>
+          <TextArea
+            id="description"
+            name="description"
+            labelText={<span className="text-black">Descripción</span>}
+            value={form.description}
+            onChange={handleChange}
+            className={`mt-4 text-black placeholder-gray-400 resize-none ${descriptionError ? 'border-red-500' : ''}`}
+            placeholder="¿Como lo Hiciste?, ¿Que herramientas utilizaste?, ¿Cuanto tiempo te tomo?... "
+            required
+          />
+        </div>
         {/* Interruptor para mostrar/ocultar FileUploader debajo de Descripción */}
         <div className="flex flex-col items-start mb-6 mt-2">
           <span className="mb-2 text-black text-sm font-medium">¿Deseas subir documentacion? (Te dara puntos extra)</span>
@@ -202,12 +286,14 @@ const Contributions: React.FC = () => {
         </div>
         <div className="flex flex-col items-center mt-8">
           {showFileUploader && (
-            <div className="w-full flex flex-col items-start custom-file-uploader text-black">
+            <div className="w-full flex flex-col items-start custom-file-uploader text-black relative">
               {/* Botón 'Subir archivo' tipo Carbon */}
               <label htmlFor="file-uploader-input" className="block mb-2">
                 <button
                   type="button"
-                  className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-normal rounded-lg px-6 py-3 shadow transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+                  className={`flex items-center gap-1 font-normal rounded-lg px-6 py-3 shadow transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 ${
+                    fileError ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
                   onClick={() => document.getElementById('file-uploader-input')?.click()}
                 >
                   {/* Ícono upload SVG estilo Carbon */}
@@ -219,9 +305,25 @@ const Contributions: React.FC = () => {
                   type="file"
                   accept=".pdf,.docx"
                   style={{ display: 'none' }}
-                  onChange={(e: any) => setForm((prev) => ({ ...prev, file: e.target.files[0] }))}
+                  onChange={(e: any) => {
+                    setForm((prev) => ({ ...prev, file: e.target.files[0] }));
+                    // Limpiar error de archivo cuando se selecciona uno
+                    if (fileError) {
+                      setFileError('');
+                    }
+                  }}
                 />
               </label>
+              {fileError && (
+                <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-black text-sm font-medium">{fileError}</span>
+                  </div>
+                </div>
+              )}
               {/* Nombre del archivo subido */}
               {form.file && typeof form.file === 'object' && 'name' in form.file && (
                 <div className="flex items-center mt-2 mb-2 px-3 py-1 bg-gray-100 rounded text-blue-800 font-medium text-sm shadow-inner">
@@ -303,6 +405,20 @@ const Contributions: React.FC = () => {
           from { opacity: 0; transform: translateY(-30px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        .animate-fade-in {
+          animation: fadeIn 0.8s ease-in-out;
+        }
+        @keyframes fadeIn {
+          from { 
+            opacity: 0; 
+            transform: translateX(5px) scale(0.98);
+          }
+          to { 
+            opacity: 1; 
+            transform: translateX(0) scale(1);
+          }
+        }
+
       `}</style>
     </div>
   );

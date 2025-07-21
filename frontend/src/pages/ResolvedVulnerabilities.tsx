@@ -34,6 +34,9 @@ const ResolvedVulnerabilities: React.FC = () => {
   const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailVuln, setDetailVuln] = useState<any>(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
+  const [deleteTimer, setDeleteTimer] = useState(5);
 
   // Leer de localStorage al cargar
   useEffect(() => {
@@ -69,10 +72,51 @@ const ResolvedVulnerabilities: React.FC = () => {
     setEditData(null);
   };
 
+  // Eliminar vulnerabilidad
+  const handleDelete = (idx: number) => {
+    const updated = vulns.filter((_, i) => i !== idx);
+    setVulns(updated);
+    localStorage.setItem('resolvedVulns', JSON.stringify(updated));
+  };
+
   // Descargar documento
   const handleDownload = (docName: string) => {
     // No hay archivo real, solo nombre, así que muestra alerta
     alert('Solo se almacena el nombre del archivo. No hay archivo real para descargar: ' + docName);
+  };
+
+  // Iniciar proceso de eliminación
+  const startDeleteProcess = (idx: number) => {
+    setDeleteIdx(idx);
+    setShowDeleteConfirm(true);
+    setDeleteTimer(5);
+    
+    const interval = setInterval(() => {
+      setDeleteTimer(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  // Cancelar eliminación
+  const cancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setDeleteIdx(null);
+    setDeleteTimer(5);
+  };
+
+  // Confirmar eliminación
+  const confirmDelete = () => {
+    if (deleteIdx !== null) {
+      handleDelete(deleteIdx);
+      setShowDeleteConfirm(false);
+      setDeleteIdx(null);
+      setDeleteTimer(5);
+    }
   };
 
   return (
@@ -101,7 +145,7 @@ const ResolvedVulnerabilities: React.FC = () => {
                       (v.criticidad === 'Low' ? 'text-green-600' :
                        v.criticidad === 'Medium' ? 'text-yellow-500' :
                        v.criticidad === 'High' ? 'text-red-500' :
-                       v.criticidad === 'Critical' ? 'text-red-900' :
+                       v.criticidad === 'Critical' ? 'critical-breathing' :
                        'text-black')
                     }
                   >
@@ -128,11 +172,15 @@ const ResolvedVulnerabilities: React.FC = () => {
                   )}
                 </div>
               </>
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2 mt-4 justify-end">
                 <button
                   className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
                   onClick={() => navigate('/contributions', { state: { editVuln: v, editIdx: idx } })}
                 >Editar</button>
+                <button
+                  className="px-3 py-1 bg-black text-white rounded hover:bg-white hover:text-black border border-black transition-all duration-300 ease-in-out"
+                  onClick={() => startDeleteProcess(idx)}
+                >Borrar</button>
               </div>
             </div>
           ))
@@ -146,20 +194,19 @@ const ResolvedVulnerabilities: React.FC = () => {
           {/* Cuadro modal */}
           <div className="relative z-50 w-full max-w-2xl h-auto overflow-y-visible mx-auto bg-white rounded-lg shadow-lg p-6 animate-slide-fade-modal">
             <button
-              className="fixed top-6 right-6 p-3 rounded-full bg-white border border-blue-200 shadow-lg hover:bg-blue-100 z-[100] transition-colors"
+              className="fixed top-6 right-6 p-3 rounded-full bg-white shadow-lg hover:bg-gray-200 z-[100] transition-colors"
               onClick={() => setShowDetail(false)}
               title="Minimizar"
-              style={{outline: '2px solid #3b82f6', outlineOffset: '2px'}}
             >
               {/* Ícono minimizar */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M5 12h14" stroke="#2563eb" strokeWidth="3" strokeLinecap="round"/></svg>
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24"><path d="M5 12h14" stroke="#000" strokeWidth="3" strokeLinecap="round"/></svg>
             </button>
             <div className="flex items-center justify-between mb-4">
               <span className={`font-bold text-lg ${
                 detailVuln.criticidad === 'Low' ? 'text-green-600' :
                 detailVuln.criticidad === 'Medium' ? 'text-yellow-500' :
                 detailVuln.criticidad === 'High' ? 'text-red-500' :
-                detailVuln.criticidad === 'Critical' ? 'text-red-900' :
+                detailVuln.criticidad === 'Critical' ? 'critical-breathing' :
                 'text-black'
               }`}>{detailVuln.criticidad}</span>
               <span className="font-bold text-base text-black ml-8">{detailVuln.fecha}</span>
@@ -213,6 +260,46 @@ const ResolvedVulnerabilities: React.FC = () => {
           `}</style>
         </div>
       )}
+      {/* Modal de confirmación de eliminación */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Fondo semitransparente */}
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-40 animate-fade-in" onClick={cancelDelete} />
+          {/* Cuadro modal */}
+          <div className="relative z-50 w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 animate-slide-fade-modal">
+            <div className="text-center">
+              <div className="mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" className="mx-auto mb-4 text-red-500">
+                  <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">¿Eliminar?</h3>
+                <p className="text-gray-600 mb-6">
+                  ¿Estás seguro que quieres eliminar la vulnerabilidad? <span className="text-red-600 font-bold uppercase">ESTO NO SE PUEDE DESHACER.</span>
+                </p>
+              </div>
+              <div className="flex gap-3 justify-center">
+                <button
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+                  onClick={cancelDelete}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className={`px-4 py-2 rounded transition-colors ${
+                    deleteTimer > 0 
+                      ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
+                      : 'bg-red-600 text-white hover:bg-red-700'
+                  }`}
+                  onClick={confirmDelete}
+                  disabled={deleteTimer > 0}
+                >
+                  {deleteTimer > 0 ? `Eliminar (${deleteTimer}s)` : 'Eliminar'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       <style>{`
         .truncate-3-lines {
           display: -webkit-box;
@@ -227,6 +314,38 @@ const ResolvedVulnerabilities: React.FC = () => {
         @keyframes slideFadeIn {
           from { opacity: 0; transform: translateY(-30px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .critical-breathing {
+          animation: alarm 1.5s ease-in-out infinite;
+          color: #dc2626;
+          font-weight: 900;
+          text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+        }
+        @keyframes alarm {
+          0%, 100% {
+            opacity: 1;
+            color: #dc2626;
+            transform: scale(1);
+            text-shadow: 0 0 10px rgba(220, 38, 38, 0.5);
+          }
+          25% {
+            opacity: 0.8;
+            color: #ef4444;
+            transform: scale(1.1);
+            text-shadow: 0 0 15px rgba(239, 68, 68, 0.8);
+          }
+          50% {
+            opacity: 1;
+            color: #b91c1c;
+            transform: scale(1);
+            text-shadow: 0 0 20px rgba(185, 28, 28, 0.9);
+          }
+          75% {
+            opacity: 0.9;
+            color: #dc2626;
+            transform: scale(1.05);
+            text-shadow: 0 0 12px rgba(220, 38, 38, 0.7);
+          }
         }
       `}</style>
     </div>

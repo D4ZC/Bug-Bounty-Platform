@@ -22,6 +22,7 @@ import NotFound from '@/pages/NotFound';
 import ResolvedVulnerabilities from '@/pages/ResolvedVulnerabilities';
 import Notifications from '@/pages/Notifications';
 import Users from '@/pages/Users';
+import Eventos from '@/pages/Stats';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -53,6 +54,7 @@ function App() {
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
           <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />
+          <Route path="eventos" element={<Eventos />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
