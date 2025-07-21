@@ -20,6 +20,7 @@ export interface AuthUser {
   rango: string;
   rangoIcon: string;
   role?: string;
+  points: number; // <-- agregado
   preferences?: {
     language: 'es' | 'en';
     theme: 'light' | 'dark';
@@ -116,6 +117,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       rango: 'Oro',
       rangoIcon: '🥇',
       role: 'user',
+      points: 70000, // Cambiado a 70,000 puntos iniciales
       preferences: {
         language: 'es' as 'es',
         theme: 'light' as 'light',
@@ -157,6 +159,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       rango: 'Oro',
       rangoIcon: '🥇',
       role: 'user',
+      points: 70000, // Cambiado a 70,000 puntos iniciales
       preferences: {
         language: 'es' as 'es',
         theme: 'light' as 'light',

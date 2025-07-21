@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { CartIcon, CartDrawer } from '@/components/ui/CartWidget';
+import { useAuth } from '@/contexts/AuthContext';
+import Modal from '@/components/ui/Modal';
 
 const SHOP_CATEGORIES = {
   REWARDS: 'rewards',
@@ -46,6 +49,37 @@ const Shop: React.FC = () => {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const [selected, setSelected] = useState<string | null>(null);
+  const [cart, setCart] = useState<any[]>([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const { user, isLoggedIn } = useAuth();
+  const [userPoints, setUserPoints] = useState(user?.points ?? 0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMsg, setModalMsg] = useState('');
+  useEffect(() => {
+    if ((user?.points ?? 0) < 70000) {
+      setUserPoints(70000);
+    } else {
+      setUserPoints(user?.points ?? 0);
+    }
+  }, [user]);
+
+  const handleRemoveFromCart = (id: number) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const handleCheckout = () => {
+    const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+    if (total > userPoints) {
+      setModalMsg('No tienes suficientes puntos para canjear estos productos.');
+      setModalOpen(true);
+      return;
+    }
+    setUserPoints(prev => prev - total);
+    setModalMsg('¡Canje realizado con éxito!');
+    setModalOpen(true);
+    setCart([]);
+    setCartOpen(false);
+  };
 
   const renderProducts = (products: any[], title: string) => (
     <div className="bg-white rounded-lg shadow-md p-8 mt-8">
@@ -57,7 +91,13 @@ const Shop: React.FC = () => {
             <div className="font-semibold text-gray-900 mb-1">{prod.name}</div>
             <div className="text-xs text-gray-500 mb-2 text-center">{prod.desc}</div>
             <div className="font-bold text-blue-700 mb-2">{prod.price} puntos</div>
-            <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm">Canjear</button>
+            <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm mb-1" onClick={() => setCart(prev => {
+              const found = prev.find((p) => p.id === prod.id);
+              if (found) {
+                return prev.map(p => p.id === prod.id ? { ...p, qty: p.qty + 1 } : p);
+              }
+              return [...prev, { ...prod, qty: 1 }];
+            })}>Agregar al carrito</button>
           </div>
         ))}
       </div>
@@ -66,51 +106,39 @@ const Shop: React.FC = () => {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Tienda</h1>
-      <p className="text-lg text-gray-600 mb-8">Canjea tus puntos por recompensas, insignias y funciones premium</p>
-
-      {/* Destacados de la tienda */}
-      <div className="mb-8">
-        <h2 className="text-xl font-bold text-blue-800 mb-4">Destacados de la tienda</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Productos destacados de rewards */}
-          <div className="flex flex-col gap-4">
-            {[rewards[0], rewards[1]].map((item) => (
-              <div key={item.id} className="flex flex-col items-center bg-white rounded-lg p-4 shadow hover:shadow-lg transition">
-                <img src={item.img} alt={item.name} className="w-14 h-14 mb-2" />
-                <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
-                <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
-                <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
-              </div>
-            ))}
-          </div>
-          {/* Productos destacados de achievements */}
-          <div className="flex flex-col gap-4">
-            {[achievements[0], achievements[1]].map((item) => (
-              <div key={item.id} className="flex flex-col items-center bg-white rounded-lg p-4 shadow hover:shadow-lg transition">
-                <img src={item.img} alt={item.name} className="w-14 h-14 mb-2" />
-                <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
-                <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
-                <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
-              </div>
-            ))}
-          </div>
-          {/* Productos destacados de premium */}
-          <div className="flex flex-col gap-4">
-            {[premium[0], premium[1]].map((item) => (
-              <div key={item.id} className="flex flex-col items-center bg-white rounded-lg p-4 shadow hover:shadow-lg transition">
-                <img src={item.img} alt={item.name} className="w-14 h-14 mb-2" />
-                <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
-                <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
-                <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
-              </div>
-            ))}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          {/* Card de puntos */}
+          <div className="bg-white rounded-lg shadow px-4 py-2 flex items-center gap-2 border border-blue-100 min-w-[110px]">
+            <span className="text-yellow-500 text-xl">⭐</span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-xs text-gray-500">Puntos</span>
+              <span className="font-bold text-blue-700 text-lg">{userPoints.toLocaleString()}</span>
+            </div>
           </div>
         </div>
+        <CartIcon count={cart.reduce((acc, item) => acc + item.qty, 0)} onClick={() => setCartOpen(true)} />
       </div>
+      <CartDrawer
+        open={cartOpen}
+        items={cart}
+        onClose={() => setCartOpen(false)}
+        onRemove={handleRemoveFromCart}
+        onCheckout={handleCheckout}
+      />
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        <div className="flex flex-col items-center gap-2">
+          <span className="text-3xl">{modalMsg.includes('éxito') ? '🎉' : '⚠️'}</span>
+          <p className="text-lg font-semibold text-center">{modalMsg}</p>
+          <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={() => setModalOpen(false)}>Cerrar</button>
+        </div>
+      </Modal>
+      <p className="text-lg text-gray-600 mb-8">Canjea tus puntos por recompensas, insignias y funciones premium</p>
+
+      {/* Bloque de selección de categorías */}
       {!selected && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <button
             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg border-2 border-green-200 hover:border-green-400 transition-all text-left"
             onClick={() => setSelected(SHOP_CATEGORIES.REWARDS)}
@@ -134,6 +162,67 @@ const Shop: React.FC = () => {
           </button>
         </div>
       )}
+
+      {/* Destacados de la tienda */}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-blue-800 mb-4">Destacados de la tienda</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Productos destacados de rewards */}
+          <div className="flex flex-col gap-4">
+            {[rewards[0], rewards[1], rewards[2]].map((item) => (
+              <div key={item.id} className="flex flex-col items-center bg-white rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src={item.img} alt={item.name} className="w-14 h-14 mb-2" />
+                <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
+                <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
+                <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => setCart(prev => {
+                  const found = prev.find((p) => p.id === item.id);
+                  if (found) {
+                    return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
+                  }
+                  return [...prev, { ...item, qty: 1 }];
+                })}>Agregar al carrito</button>
+              </div>
+            ))}
+          </div>
+          {/* Productos destacados de achievements */}
+          <div className="flex flex-col gap-4">
+            {[achievements[0], achievements[1], achievements[2]].map((item) => (
+              <div key={item.id} className="flex flex-col items-center bg-white rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src={item.img} alt={item.name} className="w-14 h-14 mb-2" />
+                <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
+                <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
+                <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => setCart(prev => {
+                  const found = prev.find((p) => p.id === item.id);
+                  if (found) {
+                    return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
+                  }
+                  return [...prev, { ...item, qty: 1 }];
+                })}>Agregar al carrito</button>
+              </div>
+            ))}
+          </div>
+          {/* Productos destacados de premium */}
+          <div className="flex flex-col gap-4">
+            {[premium[0], premium[1], premium[2]].map((item) => (
+              <div key={item.id} className="flex flex-col items-center bg-white rounded-lg p-4 shadow hover:shadow-lg transition">
+                <img src={item.img} alt={item.name} className="w-14 h-14 mb-2" />
+                <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
+                <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
+                <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => setCart(prev => {
+                  const found = prev.find((p) => p.id === item.id);
+                  if (found) {
+                    return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
+                  }
+                  return [...prev, { ...item, qty: 1 }];
+                })}>Agregar al carrito</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       {selected === SHOP_CATEGORIES.REWARDS && renderProducts(rewards, 'Recompensas disponibles')}
       {selected === SHOP_CATEGORIES.ACHIEVEMENTS && renderProducts(achievements, 'Insignias y logros')}
       {selected === SHOP_CATEGORIES.PREMIUM && renderProducts(premium, 'Funciones premium')}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/useToast';
@@ -245,9 +245,104 @@ const cardExtraDetails = {
   },
 };
 
-const ChallengeCard: React.FC<{ch: any, categoria?: string}> = ({ ch, categoria }) => {
+// Modal de éxito reutilizable
+const SuccessModal: React.FC<{ open: boolean; onClose: () => void; message: string }> = ({ open, onClose, message }) => {
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(onClose, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 animate-fade-in">
+      <div className="bg-green-50 border border-green-400 rounded-lg shadow-lg p-8 flex flex-col items-center animate-in fade-in duration-200">
+        <span className="text-4xl mb-2 text-green-500">✔️</span>
+        <div className="text-lg font-semibold text-green-700 mb-1">{message}</div>
+        <div className="text-sm text-green-600">¡Comienza el reto!</div>
+      </div>
+    </div>
+  );
+};
+
+// Modal reutilizable
+const Modal: React.FC<{ open: boolean; onClose: () => void; message: string; color?: 'green' | 'red' }> = ({ open, onClose, message, color = 'green' }) => {
+  useEffect(() => {
+    if (open) {
+      const timer = setTimeout(onClose, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 animate-fade-in">
+      <div className={`rounded-lg shadow-lg p-8 flex flex-col items-center animate-in fade-in duration-200 border ${color === 'green' ? 'bg-green-50 border-green-400' : 'bg-red-50 border-red-400'}`}>
+        <span className={`text-4xl mb-2 ${color === 'green' ? 'text-green-500' : 'text-red-500'}`}>{color === 'green' ? '✔️' : '❌'}</span>
+        <div className={`text-lg font-semibold mb-1 ${color === 'green' ? 'text-green-700' : 'text-red-700'}`}>{message}</div>
+      </div>
+    </div>
+  );
+};
+
+// Contador flotante por reto
+const ChallengeTimer: React.FC<{
+  id: string;
+  name: string;
+  difficulty: 'Alta' | 'Media' | 'Baja';
+  onTimeout: () => void;
+  onAbandon: () => void;
+}> = ({ id, name, difficulty, onTimeout, onAbandon }) => {
+  // Duración según dificultad
+  const getDuration = () => {
+    if (difficulty === 'Alta') return 60 * 60; // 1h
+    if (difficulty === 'Media') return 30 * 60; // 30min
+    return 10 * 60; // 10min
+  };
+  const [seconds, setSeconds] = useState(getDuration());
   const [expanded, setExpanded] = useState(false);
-  const { showSuccess } = useToast();
+  const intervalRef = useRef<NodeJS.Timeout>();
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setSeconds(s => {
+        if (s <= 1) {
+          clearInterval(intervalRef.current);
+          onTimeout();
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  const format = (s: number) => {
+    const h = Math.floor(s / 3600).toString().padStart(2, '0');
+    const m = Math.floor((s % 3600) / 60).toString().padStart(2, '0');
+    const sec = (s % 60).toString().padStart(2, '0');
+    return `${h}:${m}:${sec}`;
+  };
+
+  return (
+    <div className="fixed top-6 right-6 z-50 cursor-pointer select-none animate-fade-in" onClick={() => setExpanded(e => !e)}>
+      <div className="bg-white border-2 border-green-400 shadow-lg rounded-lg px-6 py-3 flex flex-col items-center min-w-[180px]">
+        <span className="text-green-700 font-bold text-lg">{format(seconds)}</span>
+        <span className="text-xs text-gray-600">Tiempo restante</span>
+        {expanded && (
+          <div className="mt-2 w-full text-center">
+            <div className="font-semibold text-gray-800 text-sm mb-1">{name}</div>
+            <div className="text-xs text-gray-500 mb-2">Dificultad: {difficulty}</div>
+            <button className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700" onClick={e => { e.stopPropagation(); onAbandon(); }}>Abandonar reto</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ChallengeCard: React.FC<{ch: any, categoria?: string, onParticipar: () => void}> = ({ ch, categoria, onParticipar }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const extra = cardExtraDetails[ch.name as keyof typeof cardExtraDetails] || {
     fecha: '2024-06-01',
     pasos: ['Lee la descripción', 'Sigue los pasos sugeridos', 'Envía tu reporte'],
@@ -256,41 +351,45 @@ const ChallengeCard: React.FC<{ch: any, categoria?: string}> = ({ ch, categoria 
   };
   const handleParticipar = (e: React.MouseEvent) => {
     e.stopPropagation();
-    showSuccess('¡Participación exitosa! Comienza el reto.', { duration: 2000 });
+    setModalOpen(true);
     setExpanded(false);
+    onParticipar();
   };
   return (
-    <div
-      className={`flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer ${expanded ? 'ring-2 ring-blue-300' : ''}`}
-      onClick={() => setExpanded(e => !e)}
-    >
-      <div className="font-semibold text-gray-900 mb-1">{ch.name}</div>
-      <div className="text-xs text-gray-500 mb-1">Categoría: {categoria || ''}</div>
-      <div className="flex gap-2 mb-2">
-        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${difficultyColors[ch.difficulty as Difficulty]}`}>{ch.difficulty}</span>
-        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusColors[ch.status as Status]}`}>{ch.status}</span>
-      </div>
-      <div className="font-bold text-blue-700 mb-2">Recompensa: {ch.reward} puntos</div>
-      <div className="text-xs text-gray-500 mb-2">{ch.desc}</div>
-      {/* Detalles expandibles */}
+    <>
       <div
-        className={`transition-all duration-300 overflow-hidden ${expanded ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}
+        className={`flex flex-col bg-white rounded-lg p-6 shadow hover:shadow-lg transition cursor-pointer ${expanded ? 'ring-2 ring-blue-300' : ''}`}
+        onClick={() => setExpanded(e => !e)}
       >
-        <div className="text-xs text-gray-400 mb-1">Fecha de publicación: {extra.fecha}</div>
-        <div className="text-sm text-gray-700 mb-2">{extra.descripcionLarga}</div>
-        <div className="mb-2">
-          <span className="font-semibold text-xs text-gray-600">Pasos sugeridos:</span>
-          <ul className="list-disc ml-5 text-xs text-gray-600">
-            {extra.pasos.map((p: string, i: number) => <li key={i}>{p}</li>)}
-          </ul>
+        <div className="font-semibold text-gray-900 mb-1">{ch.name}</div>
+        <div className="text-xs text-gray-500 mb-1">Categoría: {categoria || ''}</div>
+        <div className="flex gap-2 mb-2">
+          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${difficultyColors[ch.difficulty as Difficulty]}`}>{ch.difficulty}</span>
+          <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${statusColors[ch.status as Status]}`}>{ch.status}</span>
         </div>
-        <div className="mb-2">
-          <span className="font-semibold text-xs text-gray-600">Tip:</span>
-          <span className="ml-2 text-xs text-blue-700">{extra.tips}</span>
+        <div className="font-bold text-blue-700 mb-2">Recompensa: {ch.reward} puntos</div>
+        <div className="text-xs text-gray-500 mb-2">{ch.desc}</div>
+        {/* Detalles expandibles */}
+        <div
+          className={`transition-all duration-300 overflow-hidden ${expanded ? 'max-h-96 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}
+        >
+          <div className="text-xs text-gray-400 mb-1">Fecha de publicación: {extra.fecha}</div>
+          <div className="text-sm text-gray-700 mb-2">{extra.descripcionLarga}</div>
+          <div className="mb-2">
+            <span className="font-semibold text-xs text-gray-600">Pasos sugeridos:</span>
+            <ul className="list-disc ml-5 text-xs text-gray-600">
+              {extra.pasos.map((p: string, i: number) => <li key={i}>{p}</li>)}
+            </ul>
+          </div>
+          <div className="mb-2">
+            <span className="font-semibold text-xs text-gray-600">Tip:</span>
+            <span className="ml-2 text-xs text-blue-700">{extra.tips}</span>
+          </div>
+          <button className="mt-2 bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm" onClick={handleParticipar}>Participar</button>
         </div>
-        <button className="mt-2 bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm" onClick={handleParticipar}>Participar</button>
       </div>
-    </div>
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)} message="¡Participación exitosa!" color="green" />
+    </>
   );
 };
 
@@ -298,13 +397,32 @@ const Challenges: React.FC = () => {
   const { t } = useTranslation();
   const { language } = useLanguage();
   const [selected, setSelected] = useState<string | null>(null);
+  // Estado para temporizadores activos y modales de fallo
+  const [activeTimers, setActiveTimers] = useState<Array<{ id: string; name: string; difficulty: 'Alta' | 'Media' | 'Baja' }>>([]);
+  const [failModal, setFailModal] = useState<{ open: boolean; message: string } | null>(null);
+
+  // Maneja el fin del tiempo del reto
+  const handleTimeout = (id: string) => {
+    setActiveTimers(prev => prev.filter(t => t.id !== id));
+    setFailModal({ open: true, message: 'Se terminó el tiempo, reto fallido.' });
+  };
+  // Maneja el abandono del reto
+  const handleAbandon = (id: string) => {
+    setActiveTimers(prev => prev.filter(t => t.id !== id));
+    setFailModal({ open: true, message: 'Reto fallido, has abandonado el reto.' });
+  };
 
   const renderChallenges = (challenges: ReadonlyArray<any>, title: string) => (
     <div className="bg-white rounded-lg shadow-md p-8 mt-8">
       <h2 className="text-xl font-bold mb-4">{title}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {challenges.map(ch => (
-          <ChallengeCard key={ch.id} ch={ch} categoria={title.replace('Retos de ', '')} />
+          <ChallengeCard
+            key={ch.id}
+            ch={ch}
+            categoria={title.replace('Retos de ', '')}
+            onParticipar={() => setActiveTimers(prev => [...prev, { id: ch.name, name: ch.name, difficulty: ch.difficulty }])}
+          />
         ))}
       </div>
       <button className="mt-6 bg-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-gray-300" onClick={() => setSelected(null)}>Volver</button>
@@ -315,30 +433,30 @@ const Challenges: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Retos y Competencias</h1>
       <p className="text-lg text-gray-600 mb-8">Participa en retos de seguridad y gana recompensas</p>
-
+      
       {/* Retos destacados */}
       <div className="mb-8">
         <h2 className="text-xl font-bold text-blue-800 mb-4">Retos destacados</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Ejemplo de retos destacados de distintas categorías */}
-          <ChallengeCard ch={{ name: 'SQL Injection', difficulty: 'Alta', status: 'Abierto', reward: 500, desc: 'Encuentra y explota una vulnerabilidad de inyección SQL.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'Reverse APK', difficulty: 'Alta', status: 'Abierto', reward: 600, desc: 'Analiza y revierte una APK para encontrar credenciales.' }} categoria="Mobile" />
-          <ChallengeCard ch={{ name: 'MitM Attack', difficulty: 'Alta', status: 'Abierto', reward: 700, desc: 'Realiza un ataque Man-in-the-Middle.' }} categoria="Network" />
-          <ChallengeCard ch={{ name: 'XSS Persistente', difficulty: 'Media', status: 'Abierto', reward: 300, desc: 'Demuestra un XSS persistente en el foro.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'Insecure Storage', difficulty: 'Media', status: 'Abierto', reward: 350, desc: 'Detecta almacenamiento inseguro en la app.' }} categoria="Mobile" />
-          <ChallengeCard ch={{ name: 'CSRF en perfil', difficulty: 'Baja', status: 'Cerrado', reward: 200, desc: 'Realiza un ataque CSRF exitoso en la edición de perfil.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'File Upload Bypass', difficulty: 'Alta', status: 'Abierto', reward: 400, desc: 'Sube un archivo no permitido por validación.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'Root/Jailbreak Detection Bypass', difficulty: 'Alta', status: 'Abierto', reward: 500, desc: 'Evita la detección de root/jailbreak.' }} categoria="Mobile" />
-          <ChallengeCard ch={{ name: 'Packet Sniffing', difficulty: 'Media', status: 'Abierto', reward: 350, desc: 'Captura paquetes sensibles en la red.' }} categoria="Network" />
-          <ChallengeCard ch={{ name: 'Open Redirect', difficulty: 'Media', status: 'Cerrado', reward: 250, desc: 'Encuentra una redirección abierta en la app.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'Hardcoded Credentials', difficulty: 'Alta', status: 'Cerrado', reward: 400, desc: 'Encuentra credenciales hardcodeadas en la app.' }} categoria="Mobile" />
-          <ChallengeCard ch={{ name: 'SSL Strip', difficulty: 'Alta', status: 'Abierto', reward: 600, desc: 'Elimina cifrado SSL en una conexión.' }} categoria="Network" />
-          <ChallengeCard ch={{ name: 'Directory Traversal', difficulty: 'Alta', status: 'Abierto', reward: 450, desc: 'Accede a archivos fuera del directorio permitido.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'Intercepción de tráfico', difficulty: 'Baja', status: 'Cerrado', reward: 150, desc: 'Intercepta tráfico no cifrado.' }} categoria="Mobile" />
-          <ChallengeCard ch={{ name: 'ARP Poisoning', difficulty: 'Alta', status: 'Abierto', reward: 500, desc: 'Envenena la caché ARP de la red.' }} categoria="Network" />
-          <ChallengeCard ch={{ name: 'Sensitive Data Exposure', difficulty: 'Media', status: 'Abierto', reward: 300, desc: 'Encuentra datos sensibles expuestos en la web.' }} categoria="Web" />
-          <ChallengeCard ch={{ name: 'Weak Authentication', difficulty: 'Alta', status: 'Abierto', reward: 380, desc: 'Demuestra autenticación débil en la app.' }} categoria="Mobile" />
-          <ChallengeCard ch={{ name: 'Network Segmentation Bypass', difficulty: 'Alta', status: 'Abierto', reward: 550, desc: 'Accede a segmentos de red restringidos.' }} categoria="Network" />
+          <ChallengeCard ch={{ name: 'SQL Injection', difficulty: 'Alta', status: 'Abierto', reward: 500, desc: 'Encuentra y explota una vulnerabilidad de inyección SQL.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'SQL Injection', name: 'SQL Injection', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Reverse APK', difficulty: 'Alta', status: 'Abierto', reward: 600, desc: 'Analiza y revierte una APK para encontrar credenciales.' }} categoria="Mobile" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Reverse APK', name: 'Reverse APK', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'MitM Attack', difficulty: 'Alta', status: 'Abierto', reward: 700, desc: 'Realiza un ataque Man-in-the-Middle.' }} categoria="Network" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'MitM Attack', name: 'MitM Attack', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'XSS Persistente', difficulty: 'Media', status: 'Abierto', reward: 300, desc: 'Demuestra un XSS persistente en el foro.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'XSS Persistente', name: 'XSS Persistente', difficulty: 'Media' }])} />
+          <ChallengeCard ch={{ name: 'Insecure Storage', difficulty: 'Media', status: 'Abierto', reward: 350, desc: 'Detecta almacenamiento inseguro en la app.' }} categoria="Mobile" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Insecure Storage', name: 'Insecure Storage', difficulty: 'Media' }])} />
+          <ChallengeCard ch={{ name: 'CSRF en perfil', difficulty: 'Baja', status: 'Cerrado', reward: 200, desc: 'Realiza un ataque CSRF exitoso en la edición de perfil.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'CSRF en perfil', name: 'CSRF en perfil', difficulty: 'Baja' }])} />
+          <ChallengeCard ch={{ name: 'File Upload Bypass', difficulty: 'Alta', status: 'Abierto', reward: 400, desc: 'Sube un archivo no permitido por validación.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'File Upload Bypass', name: 'File Upload Bypass', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Root/Jailbreak Detection Bypass', difficulty: 'Alta', status: 'Abierto', reward: 500, desc: 'Evita la detección de root/jailbreak.' }} categoria="Mobile" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Root/Jailbreak Detection Bypass', name: 'Root/Jailbreak Detection Bypass', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Packet Sniffing', difficulty: 'Media', status: 'Abierto', reward: 350, desc: 'Captura paquetes sensibles en la red.' }} categoria="Network" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Packet Sniffing', name: 'Packet Sniffing', difficulty: 'Media' }])} />
+          <ChallengeCard ch={{ name: 'Open Redirect', difficulty: 'Media', status: 'Cerrado', reward: 250, desc: 'Encuentra una redirección abierta en la app.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Open Redirect', name: 'Open Redirect', difficulty: 'Media' }])} />
+          <ChallengeCard ch={{ name: 'Hardcoded Credentials', difficulty: 'Alta', status: 'Cerrado', reward: 400, desc: 'Encuentra credenciales hardcodeadas en la app.' }} categoria="Mobile" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Hardcoded Credentials', name: 'Hardcoded Credentials', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'SSL Strip', difficulty: 'Alta', status: 'Abierto', reward: 600, desc: 'Elimina cifrado SSL en una conexión.' }} categoria="Network" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'SSL Strip', name: 'SSL Strip', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Directory Traversal', difficulty: 'Alta', status: 'Abierto', reward: 450, desc: 'Accede a archivos fuera del directorio permitido.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Directory Traversal', name: 'Directory Traversal', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Intercepción de tráfico', difficulty: 'Baja', status: 'Cerrado', reward: 150, desc: 'Intercepta tráfico no cifrado.' }} categoria="Mobile" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Intercepción de tráfico', name: 'Intercepción de tráfico', difficulty: 'Baja' }])} />
+          <ChallengeCard ch={{ name: 'ARP Poisoning', difficulty: 'Alta', status: 'Abierto', reward: 500, desc: 'Envenena la caché ARP de la red.' }} categoria="Network" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'ARP Poisoning', name: 'ARP Poisoning', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Sensitive Data Exposure', difficulty: 'Media', status: 'Abierto', reward: 300, desc: 'Encuentra datos sensibles expuestos en la web.' }} categoria="Web" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Sensitive Data Exposure', name: 'Sensitive Data Exposure', difficulty: 'Media' }])} />
+          <ChallengeCard ch={{ name: 'Weak Authentication', difficulty: 'Alta', status: 'Abierto', reward: 380, desc: 'Demuestra autenticación débil en la app.' }} categoria="Mobile" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Weak Authentication', name: 'Weak Authentication', difficulty: 'Alta' }])} />
+          <ChallengeCard ch={{ name: 'Network Segmentation Bypass', difficulty: 'Alta', status: 'Abierto', reward: 550, desc: 'Accede a segmentos de red restringidos.' }} categoria="Network" onParticipar={() => setActiveTimers(prev => [...prev, { id: 'Network Segmentation Bypass', name: 'Network Segmentation Bypass', difficulty: 'Alta' }])} />
         </div>
       </div>
       {/* Subtítulo antes de los cards de categorías */}
@@ -356,14 +474,14 @@ const Challenges: React.FC = () => {
             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg border-2 border-green-200 hover:border-green-400 transition-all text-left"
             onClick={() => setSelected(CHALLENGE_CATEGORIES.MOBILE)}
           >
-            <h3 className="text-lg font-semibold text-green-800 mb-2">📱 Mobile</h3>
+          <h3 className="text-lg font-semibold text-green-800 mb-2">📱 Mobile</h3>
             <p className="text-green-700 text-sm">Seguridad en aplicaciones móviles</p>
           </button>
           <button
             className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg border-2 border-purple-200 hover:border-purple-400 transition-all text-left"
             onClick={() => setSelected(CHALLENGE_CATEGORIES.NETWORK)}
           >
-            <h3 className="text-lg font-semibold text-purple-800 mb-2">🌍 Network</h3>
+          <h3 className="text-lg font-semibold text-purple-800 mb-2">🌍 Network</h3>
             <p className="text-purple-700 text-sm">Redes e infraestructura</p>
           </button>
         </div>
@@ -371,6 +489,17 @@ const Challenges: React.FC = () => {
       {selected === CHALLENGE_CATEGORIES.WEB && renderChallenges(webChallenges, 'Retos de Web')}
       {selected === CHALLENGE_CATEGORIES.MOBILE && renderChallenges(mobileChallenges, 'Retos de Mobile')}
       {selected === CHALLENGE_CATEGORIES.NETWORK && renderChallenges(networkChallenges, 'Retos de Network')}
+      {activeTimers.map(timer => (
+        <ChallengeTimer
+          key={timer.id}
+          id={timer.id}
+          name={timer.name}
+          difficulty={timer.difficulty}
+          onTimeout={() => handleTimeout(timer.id)}
+          onAbandon={() => handleAbandon(timer.id)}
+        />
+      ))}
+      <Modal open={!!failModal?.open} onClose={() => setFailModal(null)} message={failModal?.message || ''} color="red" />
     </div>
   );
 };

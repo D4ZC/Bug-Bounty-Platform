@@ -266,7 +266,7 @@ const ExpandableVulnCard: React.FC<{ vuln: any }> = ({ vuln }) => {
         </div>
         <a href={extra.referencia} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline mb-4 inline-block">Referencia OWASP</a>
         <div className="h-2" />
-        <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm">Mitigar</button>
+        <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm">Ver menos</button>
       </div>
     </div>
   );

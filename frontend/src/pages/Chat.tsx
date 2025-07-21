@@ -165,16 +165,16 @@ const Chat: React.FC = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-gray-600 truncate">{chat.lastMessage}</p>
-                    {chat.unread > 0 && (
+              {chat.unread > 0 && (
                       <span className="bg-green-500 text-white text-xs rounded-full px-2 py-0.5 min-w-[20px] text-center">
                         {chat.unread}
                       </span>
-                    )}
+              )}
                   </div>
                 </div>
-              </li>
-            ))}
-          </ul>
+            </li>
+          ))}
+        </ul>
         </div>
       </aside>
 
@@ -237,8 +237,8 @@ const Chat: React.FC = () => {
               {msg.sender === 'Tú' && (
                 <img src={msg.avatar} alt={msg.sender} className="w-8 h-8 rounded-full flex-shrink-0" />
               )}
-            </div>
-          ))}
+                  </div>
+                ))}
           {isTyping && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <div className="flex gap-1">
