@@ -1,19 +1,12 @@
-const cors = require('cors');
+// Ordena los imports según eslint
+const path = require('path');
 const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
 const helmet = require('helmet');
-const knex = require('knex')({
-  client: 'sqlite3',
-  connection: {
-    filename: process.env.SQLITE_DB_PATH || './db/database.sqlite3'
-  },
-  useNullAsDefault: true
-});
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-const dotenv = require('dotenv');
-
-const path = require('path');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -29,28 +22,28 @@ const teamRoutes = require('./routes/teams');
 const userRoutes = require('./routes/users');
 const vulnerabilityRoutes = require('./routes/vulnerabilities');
 
-// Eliminar importaciones de middlewares
-// Eliminar uso de authMiddleware y errorHandler en las rutas y app.use
-
-// Eliminar importación y uso de socketService
-
-// Eliminar importación y uso de cronService
-
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Inicializar Knex con SQLite
+const knex = require('knex')({
+  client: 'sqlite3',
+  connection: {
+    filename: process.env.SQLITE_DB_PATH || './db/database.sqlite3',
+  },
+  useNullAsDefault: true,
+});
 
 // Configuración de rate limiting
 const limiter = rateLimit({
-  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutos
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // límite por IP
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) || 15 * 60 * 1000, // 15 minutos
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) || 100, // límite por IP
   message: {
     error: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.'
   }
 });
 
-// Middlewares de seguridad y utilidadclear
+// Middlewares de seguridad y utilidad
 app.use(helmet());
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -68,7 +61,6 @@ app.use('/uploads/avatars', express.static(path.join(__dirname, '../uploads/avat
 
 // Servir archivos estáticos del frontend (React build)
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
-
 // Para cualquier ruta que no sea API, devolver el index.html del frontend
 app.get(/^\/(?!api).*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
@@ -174,4 +166,4 @@ if (require.main === module) {
   startServer();
 }
 
-module.exports = { app, knex };
+module.exports = { app, knex }; 

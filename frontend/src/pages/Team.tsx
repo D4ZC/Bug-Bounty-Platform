@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserAvatar, Trophy, Star } from '@carbon/icons-react';
 import { useTranslation } from 'react-i18next';
+import TeamChat from '../components/TeamChat';
 
 interface TeamMember {
   username: string;
@@ -10,24 +11,74 @@ interface TeamMember {
   achievements: string[];
 }
 
+const avatarList = [
+  '/avatars/Analista.png',
+  '/avatars/Ciberseguridad.png',
+  '/avatars/Cyber_God.png',
+  '/avatars/Cyber_Ninja.png',
+  '/avatars/Digital_Overlord.png',
+  '/avatars/Digital_Phantom.png',
+  '/avatars/Ghost_Hacker.png',
+  '/avatars/Hacker_Básico.png',
+  '/avatars/Legendary_Hacker.png',
+  '/avatars/Pantester.png',
+  '/avatars/Programador.png',
+  '/avatars/Stealth_Master.png',
+  '/avatars/ninja.png',
+];
+function getRandomAvatar() {
+  return avatarList[Math.floor(Math.random() * avatarList.length)];
+}
+
+// Generar avatares únicos para los perfiles simulados
+function getUniqueRandomAvatars(count: number) {
+  const shuffled = [...avatarList].sort(() => 0.5 - Math.random());
+  if (count <= shuffled.length) return shuffled.slice(0, count);
+  // Si hay más perfiles que avatares, permite repeticiones después de agotar la lista
+  const result = [...shuffled];
+  while (result.length < count) {
+    result.push(avatarList[Math.floor(Math.random() * avatarList.length)]);
+  }
+  return result;
+}
+
+// Mapeo fijo de avatares para cada usuario simulado
+const avatarMap: Record<string, string> = {
+  'alice_smith': '/avatars/Analista.png',
+  'cyberwarrior': '/avatars/Ciberseguridad.png',
+  'net_ninja': '/avatars/Cyber_Ninja.png',
+  'darksentinel': '/avatars/Stealth_Master.png',
+  'hackerx': '/avatars/Ghost_Hacker.png',
+  'firewall': '/avatars/Ciberseguridad.png',
+  'rootkit': '/avatars/Digital_Phantom.png',
+  'packetqueen': '/avatars/Pantester.png',
+  'cryptomaster': '/avatars/Digital_Overlord.png',
+  'forensicfox': '/avatars/Analista.png',
+  'phishking': '/avatars/Legendary_Hacker.png',
+  'bughunter': '/avatars/Hacker_Básico.png',
+  'malwareman': '/avatars/Programador.png',
+  'zeroday': '/avatars/Cyber_God.png',
+};
+
 const initialMembers = [
-  { username: 'alice_smith', role: 'Team Leader', _id: 'USER001', avatar: undefined, achievements: ['first_vulnerability', 'top_10_ranking', 'mvp_winner'] },
-  { username: 'cyberwarrior', role: 'Security Analyst', _id: 'USER002', avatar: undefined, achievements: ['first_vulnerability'] },
-  { username: 'net_ninja', role: 'Penetration Tester', _id: 'USER003', avatar: undefined, achievements: ['first_vulnerability', 'top_10_ranking'] },
-  { username: 'darksentinel', role: 'Engineer', _id: 'USER004', avatar: undefined, achievements: [] },
+  { username: 'alice_smith', role: 'Team Leader', _id: 'USER001', avatar: avatarMap['alice_smith'], achievements: ['first_vulnerability', 'top_10_ranking', 'mvp_winner'] },
+  { username: 'cyberwarrior', role: 'Security Analyst', _id: 'USER002', avatar: avatarMap['cyberwarrior'], achievements: ['first_vulnerability'] },
+  { username: 'net_ninja', role: 'Penetration Tester', _id: 'USER003', avatar: avatarMap['net_ninja'], achievements: ['first_vulnerability', 'top_10_ranking'] },
+  { username: 'darksentinel', role: 'Engineer', _id: 'USER004', avatar: avatarMap['darksentinel'], achievements: [] },
 ];
 
+const mockAvatars = getUniqueRandomAvatars(10);
 const mockUsers = [
-  { username: 'hackerx', role: 'Reverse Engineer', _id: 'USER005', avatar: undefined, achievements: ['first_vulnerability'] },
-  { username: 'firewall', role: 'SOC Analyst', _id: 'USER006', avatar: undefined, achievements: [] },
-  { username: 'rootkit', role: 'Exploit Developer', _id: 'USER007', avatar: undefined, achievements: ['top_10_ranking'] },
-  { username: 'packetqueen', role: 'Network Specialist', _id: 'USER008', avatar: undefined, achievements: [] },
-  { username: 'cryptomaster', role: 'Cryptographer', _id: 'USER009', avatar: undefined, achievements: [] },
-  { username: 'forensicfox', role: 'Forensic Analyst', _id: 'USER010', avatar: undefined, achievements: [] },
-  { username: 'phishking', role: 'Social Engineer', _id: 'USER011', avatar: undefined, achievements: [] },
-  { username: 'bughunter', role: 'Bug Bounty Hunter', _id: 'USER012', avatar: undefined, achievements: [] },
-  { username: 'malwareman', role: 'Malware Analyst', _id: 'USER013', avatar: undefined, achievements: [] },
-  { username: 'zeroday', role: 'Vulnerability Researcher', _id: 'USER014', avatar: undefined, achievements: [] },
+  { username: 'hackerx', role: 'Reverse Engineer', _id: 'USER005', avatar: avatarMap['hackerx'], achievements: ['first_vulnerability'] },
+  { username: 'firewall', role: 'SOC Analyst', _id: 'USER006', avatar: avatarMap['firewall'], achievements: [] },
+  { username: 'rootkit', role: 'Exploit Developer', _id: 'USER007', avatar: avatarMap['rootkit'], achievements: ['top_10_ranking'] },
+  { username: 'packetqueen', role: 'Network Specialist', _id: 'USER008', avatar: avatarMap['packetqueen'], achievements: [] },
+  { username: 'cryptomaster', role: 'Cryptographer', _id: 'USER009', avatar: avatarMap['cryptomaster'], achievements: [] },
+  { username: 'forensicfox', role: 'Forensic Analyst', _id: 'USER010', avatar: avatarMap['forensicfox'], achievements: [] },
+  { username: 'phishking', role: 'Social Engineer', _id: 'USER011', avatar: avatarMap['phishking'], achievements: [] },
+  { username: 'bughunter', role: 'Bug Bounty Hunter', _id: 'USER012', avatar: avatarMap['bughunter'], achievements: [] },
+  { username: 'malwareman', role: 'Malware Analyst', _id: 'USER013', avatar: avatarMap['malwareman'], achievements: [] },
+  { username: 'zeroday', role: 'Vulnerability Researcher', _id: 'USER014', avatar: avatarMap['zeroday'], achievements: [] },
 ];
 
 const allAchievements = [
@@ -72,6 +123,12 @@ function isCurrentUserLeader(members: TeamMember[]) {
 const Team: React.FC = () => {
   const { t } = useTranslation();
   
+  // Limpia localStorage para forzar recarga de datos simulados (solo para desarrollo)
+  useEffect(() => {
+    localStorage.removeItem('bugbounty_team_members');
+    localStorage.removeItem('bugbounty_team_name');
+  }, []);
+  
   // Eliminar la función translateRole y su uso.
   
   const [members, setMembers] = useState<TeamMember[]>(() => {
@@ -98,6 +155,7 @@ const Team: React.FC = () => {
   const [searchTeam, setSearchTeam] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // NEW
   const [teamDeleted, setTeamDeleted] = useState(false); // NEW
+  const [showTeamChat, setShowTeamChat] = useState(false);
   
   // Guardar en localStorage cada vez que cambian los miembros
   useEffect(() => {
@@ -214,7 +272,7 @@ const Team: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-app text-app font-mono p-8">
+    <div className="min-h-screen bg-app text-app font-mono flex flex-col items-center p-8">
       {/* Modal de confirmación de eliminación de equipo o salir del equipo */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 animate-fade-in">
@@ -424,9 +482,9 @@ const Team: React.FC = () => {
       )}
       {/* Renderizar panel de miembros solo si el equipo no ha sido eliminado y hay miembros */}
       {!teamDeleted && (members.length > 0 ? (
-        <div className="flex flex-col md:flex-row gap-8 w-full max-w-3xl animate-fade-in">
-          {/* Team Members Panel */}
-          <div className="flex-1 bg-black/30 border-2 border-cyan-700 rounded-xl p-8 shadow-2xl animate-slide-up">
+        <div className="w-full max-w-5xl flex flex-col md:flex-row gap-8">
+          {/* Panel de miembros */}
+          <div className="flex-1 bg-black/30 border-2 border-cyan-700 rounded-xl p-8 shadow-2xl animate-slide-up mb-8 md:mb-0">
             <h2 className="text-3xl font-bold mb-2 tracking-widest text-cyan-400 text-left flex items-center gap-2">
               {editingTeamName ? (
                 <>
@@ -492,12 +550,12 @@ const Team: React.FC = () => {
               ))}
             </div>
           </div>
-          {/* Actions Panel */}
-          <div className="flex flex-col gap-8 justify-between bg-black/30 border-2 border-cyan-700 rounded-xl p-8 shadow-2xl min-w-[220px] animate-slide-up">
-            {/* Mostrar botón de agregar miembro si es el líder */}
-            {isLeader && (
+          {/* Panel de acciones */}
+          <div className="flex flex-col gap-6 bg-black/30 border-2 border-cyan-700 rounded-xl p-8 shadow-2xl min-w-[220px] animate-slide-up">
+            {/* Botón para abrir/cerrar chat grupal */}
+            {!teamDeleted && members.length > 0 && teamName && (
               <button
-                className={`w-full border-2 border-cyan-700 rounded-lg py-6 text-xl font-bold text-cyan-400 hover:bg-cyan-900/20 transition-all duration-200 tracking-widest ${members.length >= 10 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`w-full border-2 border-green-700 rounded-lg py-4 text-lg font-bold text-green-400 hover:bg-green-900/20 transition-all duration-200 tracking-widest mb-2 ${members.length >= 10 ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={() => setShowAddMenu(true)}
                 disabled={members.length >= 10}
               >
@@ -604,6 +662,26 @@ const Team: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+      {/* Elimina el renderizado del chat grupal debajo del contenido principal.
+          Agrega un widget flotante en la esquina inferior derecha: */}
+      {!teamDeleted && members.length > 0 && teamName && (
+        <>
+          <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
+            <button
+              className={`rounded-full shadow-lg border-2 border-cyan-400 bg-gradient-to-br from-cyan-700 to-purple-700 text-white font-bold px-6 py-3 text-lg hover:scale-105 transition-all duration-200 ${showTeamChat ? 'ring-4 ring-cyan-400/40' : ''}`}
+              onClick={() => setShowTeamChat((prev) => !prev)}
+              style={{ minWidth: '56px' }}
+            >
+              {showTeamChat ? t('Cerrar chat') : t('Chat de equipo')}
+            </button>
+            {showTeamChat && (
+              <div className="w-[350px] max-w-[90vw] h-[480px] bg-transparent">
+                <TeamChat teamName={teamName} username={getCurrentUserProfile().username} members={members} />
+              </div>
+            )}
+          </div>
+        </>
       )}
       {/* Animaciones personalizadas */}
       <style>{`

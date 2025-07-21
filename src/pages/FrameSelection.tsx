@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Checkmark } from '@carbon/icons-react';
+import React, { useState, useEffect } from 'react';
+// Icono Checkmark SVG inline
 import { useTranslation } from 'react-i18next';
+import ProfileCustomizationTabs from '../components/ProfileCustomizationTabs';
 
 interface Frame {
   id: string;
@@ -10,23 +10,18 @@ interface Frame {
   unlocked: boolean;
 }
 
-const FrameSelection: React.FC = () => {
+function FrameSelection() {
   const { t } = useTranslation();
-  const [frames, setFrames] = useState<Frame[]>([]);
-  const [selectedFrame, setSelectedFrame] = useState<string | null>(null);
+  const [frames, setFrames] = useState([]);
+  const [selectedFrame, setSelectedFrame] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const navigate = useNavigate();
-  const [showConfetti, setShowConfetti] = useState(false);
-  const confettiTimeout = useRef<NodeJS.Timeout | null>(null);
-
   // NUEVO: estados para búsqueda y filtro
   const [search, setSearch] = useState('');
   const [showOnlyUnlocked, setShowOnlyUnlocked] = useState(false);
 
   useEffect(() => {
     // Simular carga de marcos
-    const mockFrames: Frame[] = [
+    const mockFrames = [
       { id: 'frame1', name: t('Marco Verde'), image: '/frames/green.png', unlocked: true },
       { id: 'frame2', name: t('Marco Dorado'), image: '/frames/gold.png', unlocked: true },
       { id: 'frame3', name: t('Marco Platino'), image: '/frames/platinum.png', unlocked: false },
@@ -54,6 +49,13 @@ const FrameSelection: React.FC = () => {
     return 'default';
   };
 
+  const handleFrameSelect = (frameId: string) => {
+    const frame = frames.find(f => f.id === frameId);
+    if (frame && frame.unlocked) {
+      setSelectedFrame(frameId);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-app text-app flex items-center justify-center">
@@ -64,6 +66,7 @@ const FrameSelection: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-app text-app p-8 font-mono relative overflow-hidden">
+      <ProfileCustomizationTabs />
       {/* Barra de búsqueda y filtro */}
       <div className="w-full max-w-3xl mx-auto mb-8 flex flex-col md:flex-row items-center gap-4 z-20 relative">
         <input
@@ -136,7 +139,7 @@ const FrameSelection: React.FC = () => {
                   {/* Selection Indicator */}
                   {selectedFrame === frame.id && frame.unlocked && (
                     <div className="absolute top-2 right-2 w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce border-2 border-white shadow-lg">
-                      <Checkmark size={16} className="text-white" />
+                      <svg width="16" height="16" fill="none" viewBox="0 0 16 16"><path d="M4 8l3 3 5-5" stroke="#fff" strokeWidth="2"/></svg>
                     </div>
                   )}
                   {/* Lock Icon for locked frames */}

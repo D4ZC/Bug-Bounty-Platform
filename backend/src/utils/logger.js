@@ -8,14 +8,10 @@ if (!fs.existsSync(logsDir)) {
 }
 
 // Función para formatear fecha
-const formatDate = (date) => {
-  return date.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-};
+const formatDate = (date) => date.toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
 // Función para obtener nivel de log
-const getLogLevel = () => {
-  return process.env.LOG_LEVEL || 'info';
-};
+const getLogLevel = () => process.env.LOG_LEVEL || 'info';
 
 // Función para escribir log
 const writeLog = (level, message, meta = {}) => {
@@ -27,8 +23,8 @@ const writeLog = (level, message, meta = {}) => {
     ...meta
   };
 
-  const logString = JSON.stringify(logEntry) + '\n';
-  
+  const logString = `${JSON.stringify(logEntry)}\n`;
+
   // Escribir a archivo
   const logFile = path.join(logsDir, `${level}.log`);
   fs.appendFileSync(logFile, logString);
@@ -37,16 +33,16 @@ const writeLog = (level, message, meta = {}) => {
   if (process.env.NODE_ENV === 'development') {
     const colors = {
       error: '\x1b[31m', // Rojo
-      warn: '\x1b[33m',  // Amarillo
-      info: '\x1b[36m',  // Cyan
-      debug: '\x1b[35m'  // Magenta
+      warn: '\x1b[33m', // Amarillo
+      info: '\x1b[36m', // Cyan
+      debug: '\x1b[35m' // Magenta
     };
-    
+
     const reset = '\x1b[0m';
     const color = colors[level] || '';
-    
+
     console.log(`${color}[${timestamp}] ${level.toUpperCase()}: ${message}${reset}`);
-    
+
     if (Object.keys(meta).length > 0) {
       console.log(`${color}  Meta: ${JSON.stringify(meta, null, 2)}${reset}`);
     }
@@ -61,10 +57,10 @@ const shouldLog = (level) => {
     info: 2,
     debug: 3
   };
-  
+
   const currentLevel = levels[getLogLevel()] || 2;
   const messageLevel = levels[level] || 2;
-  
+
   return messageLevel <= currentLevel;
 };
 
@@ -108,7 +104,7 @@ const logger = {
 
     const level = res.statusCode >= 400 ? 'warn' : 'info';
     const message = `${req.method} ${req.originalUrl} - ${res.statusCode}`;
-    
+
     logger[level](message, meta);
   },
 
@@ -116,7 +112,7 @@ const logger = {
   database: (operation, collection, error = null, meta = {}) => {
     const message = `Database ${operation} on ${collection}`;
     const level = error ? 'error' : 'info';
-    
+
     const logMeta = {
       operation,
       collection,
@@ -135,7 +131,7 @@ const logger = {
   auth: (action, userId, success, meta = {}) => {
     const message = `Authentication ${action} - ${success ? 'SUCCESS' : 'FAILED'}`;
     const level = success ? 'info' : 'warn';
-    
+
     const logMeta = {
       action,
       userId,
@@ -150,7 +146,7 @@ const logger = {
   file: (operation, filename, success, meta = {}) => {
     const message = `File ${operation} - ${filename} - ${success ? 'SUCCESS' : 'FAILED'}`;
     const level = success ? 'info' : 'error';
-    
+
     const logMeta = {
       operation,
       filename,
@@ -165,7 +161,7 @@ const logger = {
   websocket: (event, userId, success, meta = {}) => {
     const message = `WebSocket ${event} - ${success ? 'SUCCESS' : 'FAILED'}`;
     const level = success ? 'info' : 'warn';
-    
+
     const logMeta = {
       event,
       userId,
@@ -180,7 +176,7 @@ const logger = {
   cron: (jobName, success, meta = {}) => {
     const message = `Cron job ${jobName} - ${success ? 'SUCCESS' : 'FAILED'}`;
     const level = success ? 'info' : 'error';
-    
+
     const logMeta = {
       jobName,
       success,
@@ -194,7 +190,7 @@ const logger = {
   email: (to, subject, success, meta = {}) => {
     const message = `Email to ${to} - ${subject} - ${success ? 'SENT' : 'FAILED'}`;
     const level = success ? 'info' : 'error';
-    
+
     const logMeta = {
       to,
       subject,
@@ -209,7 +205,7 @@ const logger = {
   api: (service, endpoint, method, success, meta = {}) => {
     const message = `API ${service} ${method} ${endpoint} - ${success ? 'SUCCESS' : 'FAILED'}`;
     const level = success ? 'info' : 'error';
-    
+
     const logMeta = {
       service,
       endpoint,
@@ -228,11 +224,11 @@ const logger = {
       cutoffDate.setDate(cutoffDate.getDate() - daysToKeep);
 
       const logFiles = fs.readdirSync(logsDir);
-      
-      logFiles.forEach(filename => {
+
+      logFiles.forEach((filename) => {
         const filePath = path.join(logsDir, filename);
         const stats = fs.statSync(filePath);
-        
+
         if (stats.mtime < cutoffDate) {
           fs.unlinkSync(filePath);
           logger.info(`Deleted old log file: ${filename}`);
@@ -248,18 +244,18 @@ const logger = {
     try {
       const stats = {};
       const levels = ['error', 'warn', 'info', 'debug'];
-      
-      levels.forEach(level => {
+
+      levels.forEach((level) => {
         const logFile = path.join(logsDir, `${level}.log`);
         if (fs.existsSync(logFile)) {
           const content = fs.readFileSync(logFile, 'utf8');
-          const lines = content.split('\n').filter(line => line.trim());
+          const lines = content.split('\n').filter((line) => line.trim());
           stats[level] = lines.length;
         } else {
           stats[level] = 0;
         }
       });
-      
+
       return stats;
     } catch (error) {
       logger.error('Error getting log stats', { error: error.message });
@@ -271,13 +267,13 @@ const logger = {
 // Middleware para Express
 logger.middleware = (req, res, next) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     logger.request(req, res, duration);
   });
-  
+
   next();
 };
 
-module.exports = logger; 
+module.exports = logger;

@@ -10,16 +10,21 @@ const shopCategories = [
     key: 'frames',
     label: 'Marcos',
     products: [
-      { id: 'frame1', name: 'Marco Verde', price: 100, currency: 'bugcoin', image: '/frames/green.png', animated: false },
-      { id: 'frame2', name: 'Marco Dorado', price: 250, currency: 'bugcoin', image: '/frames/gold.png', animated: false },
+      { id: 'frame1', name: 'Marco Verde', price: 100, currency: 'bugcoin', image: '/public/Moneda/Moneda.png', animated: false },
+      { id: 'frame2', name: 'Marco Dorado', price: 250, currency: 'bugcoin', image: '/public/Moneda/Moneda.png', animated: false },
     ],
   },
   {
     key: 'avatars',
     label: 'Avatares',
     products: [
-      { id: 'avatar1', name: 'Hacker Pro', price: 200, currency: 'bugcoin', image: '/avatars/hackerpro.png', animated: false },
-      { id: 'avatar2', name: 'Cyber Ninja', price: 350, currency: 'bugcoin', image: '/avatars/ninja.png', animated: false },
+      { id: 'Ghost_Hacker', name: 'Ghost Hacker', price: 200, currency: 'bugcoin', image: '/avatars/Ghost_Hacker.png', animated: false, description: 'Invisible y letal en el ciberespacio.' },
+      { id: 'Cyber_Ninja', name: 'Cyber Ninja', price: 200, currency: 'bugcoin', image: '/avatars/Cyber_Ninja.png', animated: false, description: 'Sigiloso y rápido, como un ninja digital.' },
+      { id: 'Digital_Phantom', name: 'Digital Phantom', price: 200, currency: 'bugcoin', image: '/avatars/Digital_Phantom.png', animated: false, description: 'Un fantasma en la red, imposible de rastrear.' },
+      { id: 'Stealth_Master', name: 'Stealth Master', price: 200, currency: 'bugcoin', image: '/avatars/Stealth_Master.png', animated: false, description: 'Maestro del sigilo y la infiltración.' },
+      { id: 'Legendary_Hacker', name: 'Legendary Hacker', price: 400, currency: 'bugcoin', image: '/avatars/Legendary_Hacker.png', animated: false, description: 'Solo para los hackers más legendarios.' },
+      { id: 'Cyber_God', name: 'Cyber God', price: 400, currency: 'bugcoin', image: '/avatars/Cyber_God.png', animated: false, description: 'Domina el ciberespacio como un dios.' },
+      { id: 'Digital_Overlord', name: 'Digital Overlord', price: 400, currency: 'bugcoin', image: '/avatars/Digital_Overlord.png', animated: false, description: 'Gobierna el mundo digital con poder absoluto.' },
     ],
   },
   {
@@ -80,10 +85,28 @@ const Shop: React.FC = () => {
           return;
         }
         setBugcoins(bugcoins - product.price);
-        if (categoryKey) {
-          setInventory((prev: any) => ({ ...prev, [categoryKey]: [...prev[categoryKey], product.id] }));
+        if (categoryKey === 'avatars') {
+          setInventory((prev: any) => {
+            const currentAvatars = Array.isArray(prev.avatars) ? prev.avatars : [];
+            if (!currentAvatars.includes(product.id)) {
+              const newInventory = { ...prev, avatars: [...currentAvatars, product.id] };
+              localStorage.setItem('user_inventory', JSON.stringify(newInventory));
+              return newInventory;
+            }
+            return prev;
+          });
+          alert(t('¡Compra exitosa!') + ' ' + product.name + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
+          if (window.location.pathname.includes('avatar-selection')) {
+            window.location.reload();
+          }
+        } else if (categoryKey) {
+          setInventory((prev: any) => {
+            const newInventory = { ...prev, [categoryKey]: [...prev[categoryKey], product.id] };
+            localStorage.setItem('user_inventory', JSON.stringify(newInventory));
+            return newInventory;
+          });
+          alert(t('¡Compra exitosa!') + ' ' + product.name);
         }
-        alert(t('¡Compra exitosa!') + ' ' + product.name);
       } else {
         alert(t('No tienes suficientes bugcoins.'));
       }
@@ -107,14 +130,24 @@ const Shop: React.FC = () => {
   return (
     <div className="min-h-screen bg-app text-app p-8 font-mono">
       <div className="max-w-5xl mx-auto">
+        {/* Botón de reset solo para desarrollo */}
+        {process.env.NODE_ENV !== 'production' && (
+          <button
+            className="mb-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold shadow-lg"
+            onClick={() => {
+              localStorage.removeItem('user_inventory');
+              localStorage.setItem('bugcoins', '1000');
+              window.location.reload();
+            }}
+          >
+            Resetear tienda y bugcoins (DEV)
+          </button>
+        )}
         <h1 className="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
           {t('Tienda de Personalización')}
         </h1>
         <div className="flex justify-center gap-8 mb-8">
-          <div className="flex items-center gap-2 text-lg">
-            <img src="/bugcoin.png" alt="bugcoin" className="w-6 h-6" />
-            <span>{bugcoins} Bugcoins</span>
-          </div>
+          <span className="flex items-center gap-2 font-bold text-green-300">{bugcoins} <img src="/Moneda/Bugcoin.png" alt="bugcoin" className="w-6 h-6 inline" /> Bugcoins</span>
           {isMVP && (
             <div className="flex items-center gap-2 text-lg">
               <img src="/bluepoint.png" alt="bluepoint" className="w-6 h-6" />
@@ -152,7 +185,7 @@ const Shop: React.FC = () => {
                     <img src={product.image} alt={product.name} className={`w-20 h-20 mb-2 ${product.animated ? 'animate-pulse' : ''}`} />
                   )}
                   <h3 className="font-bold text-lg mb-1 text-yellow-800">{t(product.name)}</h3>
-                  <div className="mb-2 text-yellow-700">{product.price} {product.currency === 'bugcoin' ? 'Bugcoin' : 'Bluepoint'}</div>
+                  <div className="mb-2 text-yellow-700 flex items-center gap-1">{product.price} <img src="/Moneda/Bugcoin.png" alt="bugcoin" className="w-5 h-5 inline" />{product.currency === 'bluepoint' && ' Bluepoint'}</div>
                   <button
                     onClick={() => handleBuy(product, activeTab)}
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-bold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"

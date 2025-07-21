@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Ruta de prueba para admin
@@ -28,4 +29,4 @@ router.get('/stats', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

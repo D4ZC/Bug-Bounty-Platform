@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Datos simulados de la tienda
@@ -51,7 +52,7 @@ router.get('/', (req, res) => {
 
 // Comprar un item (placeholder)
 router.post('/buy', (req, res) => {
-  const item = mockShopItems.find(i => i._id === req.body.itemId);
+  const item = mockShopItems.find((i) => i._id === req.body.itemId);
   if (!item) {
     return res.status(404).json({ success: false, error: 'Item no encontrado' });
   }
@@ -63,4 +64,4 @@ router.post('/buy', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

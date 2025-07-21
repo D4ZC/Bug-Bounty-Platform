@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Datos simulados de equipos
@@ -37,7 +38,7 @@ router.get('/', (req, res) => {
 
 // Obtener un equipo específico
 router.get('/:id', (req, res) => {
-  const team = mockTeams.find(t => t._id === req.params.id);
+  const team = mockTeams.find((t) => t._id === req.params.id);
   if (!team) {
     return res.status(404).json({ success: false, error: 'Equipo no encontrado' });
   }
@@ -47,4 +48,4 @@ router.get('/:id', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

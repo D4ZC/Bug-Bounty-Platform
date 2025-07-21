@@ -1,10 +1,11 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Ruta de prueba para verificar que el servidor funciona
 router.get('/test', (req, res) => {
-  res.json({ 
-    success: true, 
+  res.json({
+    success: true,
     message: 'Auth route working!',
     timestamp: new Date().toISOString()
   });
@@ -78,4 +79,4 @@ router.post('/register', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

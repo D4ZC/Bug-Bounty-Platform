@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Datos simulados de vulnerabilidades
@@ -51,7 +52,7 @@ router.get('/', (req, res) => {
 
 // Obtener una vulnerabilidad específica
 router.get('/:id', (req, res) => {
-  const vuln = mockVulns.find(v => v._id === req.params.id);
+  const vuln = mockVulns.find((v) => v._id === req.params.id);
   if (!vuln) {
     return res.status(404).json({ success: false, error: 'Vulnerabilidad no encontrada' });
   }
@@ -76,4 +77,4 @@ router.post('/', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

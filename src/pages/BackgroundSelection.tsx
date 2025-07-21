@@ -1,55 +1,81 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Checkmark } from '@carbon/icons-react';
 import { useTranslation } from 'react-i18next';
+import { FaShoppingCart } from 'react-icons/fa';
+import ProfileCustomizationTabs from '../components/ProfileCustomizationTabs';
 
 interface Background {
   id: string;
   name: string;
-  image: string;
+  imageUrl: string;
   unlocked: boolean;
+  category: 'default' | 'premium' | 'special';
 }
 
-const BackgroundSelection: React.FC = () => {
+type CategoryType = 'default' | 'premium' | 'special';
+
+function BackgroundSelection() {
   const { t } = useTranslation();
   const [backgrounds, setBackgrounds] = useState<Background[]>([]);
   const [selectedBackground, setSelectedBackground] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const navigate = useNavigate();
-  const [showConfetti, setShowConfetti] = useState(false);
-  const confettiTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  // NUEVO: estados para búsqueda y filtro
+  const confettiTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [search, setSearch] = useState('');
   const [showOnlyUnlocked, setShowOnlyUnlocked] = useState(false);
+  const [categoryFilter, setCategoryFilter] = useState<'all' | CategoryType>('all');
 
   useEffect(() => {
-    // Simular carga de fondos
+    let userInventory: { backgrounds: string[] } = { backgrounds: [] };
+    try {
+      const inv = localStorage.getItem('user_inventory');
+      if (inv) userInventory = JSON.parse(inv);
+    } catch {}
     const mockBackgrounds: Background[] = [
-      { id: 'bg1', name: t('Fondo Estático'), image: '/backgrounds/static1.jpg', unlocked: true },
-      { id: 'bg2', name: t('Fondo Animado'), image: '/backgrounds/animated1.gif', unlocked: true },
-      { id: 'bg3', name: t('Fondo Premium'), image: '/backgrounds/premium.jpg', unlocked: false },
+      { id: 'bg1', name: 'Fondo Estático', imageUrl: '/backgrounds/static1.jpg', unlocked: true, category: 'default' },
+      { id: 'bg2', name: 'Fondo Animado', imageUrl: '/backgrounds/animated1.gif', unlocked: userInventory.backgrounds.includes('bg2'), category: 'premium' },
+      { id: 'bg3', name: 'Fondo Premium', imageUrl: '/backgrounds/premium.jpg', unlocked: userInventory.backgrounds.includes('bg3'), category: 'special' },
     ];
     setBackgrounds(mockBackgrounds);
     setLoading(false);
   }, [t]);
 
-  // NUEVO: lógica de filtrado
   const filteredBackgrounds = backgrounds.filter(bg => {
     const matchesSearch = bg.name.toLowerCase().includes(search.toLowerCase());
     const matchesUnlocked = showOnlyUnlocked ? bg.unlocked : true;
-    return matchesSearch && matchesUnlocked;
+    const matchesCategory = categoryFilter === 'all' ? true : bg.category === categoryFilter;
+    return matchesSearch && matchesUnlocked && matchesCategory;
   });
 
-  // Categorías de fondos
-  const categories = [
-    { key: 'default', label: t('Por Defecto'), color: 'from-cyan-500 to-cyan-700' },
-    { key: 'premium', label: t('Premium'), color: 'from-yellow-500 to-yellow-700' },
-  ];
-  const getCategory = (bg: Background) => {
-    if (bg.id === 'bg3') return 'premium';
-    return 'default';
+  const getCategoryColor = (category: CategoryType) => {
+    switch (category) {
+      case 'default':
+        return 'from-blue-500 to-purple-500';
+      case 'premium':
+        return 'from-green-500 to-teal-500';
+      case 'special':
+        return 'from-red-500 to-orange-500';
+      default:
+        return 'from-gray-500 to-gray-700';
+    }
+  };
+
+  const getCategoryName = (category: CategoryType) => {
+    switch (category) {
+      case 'default':
+        return t('Por Defecto');
+      case 'premium':
+        return t('Premium');
+      case 'special':
+        return t('Especial');
+      default:
+        return t('Desconocido');
+    }
+  };
+
+  const handleBackgroundSelect = (bgId: string) => {
+    const bg = backgrounds.find(b => b.id === bgId);
+    if (bg && bg.unlocked) {
+      setSelectedBackground(bgId);
+    }
   };
 
   if (loading) {
@@ -62,8 +88,9 @@ const BackgroundSelection: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-app text-app p-8 font-mono relative overflow-hidden">
-      {/* Barra de búsqueda y filtro */}
-      <div className="w-full max-w-3xl mx-auto mb-8 flex flex-col md:flex-row items-center gap-4 z-20 relative">
+      <ProfileCustomizationTabs />
+      {/* Barra de búsqueda y filtros */}
+      <div className="w-full max-w-6xl mx-auto mb-8 flex flex-col md:flex-row items-center gap-4 z-20 relative">
         <input
           type="text"
           placeholder={t('Buscar fondo...')}
@@ -80,67 +107,67 @@ const BackgroundSelection: React.FC = () => {
           />
           <span className="text-cyan-200 text-sm">{t('Solo desbloqueados')}</span>
         </label>
+        <select
+          value={categoryFilter}
+          onChange={e => setCategoryFilter(e.target.value as CategoryType)}
+          className="px-3 py-2 rounded-lg border-2 border-cyan-400 bg-gray-900 text-white focus:outline-none focus:border-yellow-400 text-sm shadow"
+        >
+          <option value="all">{t('Todas las categorías')}</option>
+          <option value="default">{t('Por Defecto')}</option>
+          <option value="premium">{t('Premium')}</option>
+          <option value="special">{t('Especial')}</option>
+        </select>
       </div>
-      {/* Visualización por categorías */}
-      {categories.map(cat => {
-        const catBackgrounds = filteredBackgrounds.filter(bg => getCategory(bg) === cat.key);
-        if (catBackgrounds.length === 0) return null;
+      {/* Categorías visuales */}
+      {(['default', 'premium', 'special'] as CategoryType[]).map(category => {
+        const categoryBackgrounds = filteredBackgrounds.filter(bg => bg.category === category);
+        if (categoryBackgrounds.length === 0) return null;
         return (
-          <div key={cat.key} className="mb-8">
+          <div key={category} className="mb-8">
             <div className="flex items-center mb-4">
-              <div className={`w-4 h-4 bg-gradient-to-r ${cat.color} rounded-full mr-3 animate-pulse`}></div>
-              <h2 className="text-2xl font-bold text-gradient drop-shadow-lg tracking-wide">{cat.label}</h2>
-              <span className="ml-4 text-sm text-gray-400">
-                ({catBackgrounds.filter(bg => bg.unlocked).length}/{catBackgrounds.length} {t('desbloqueados')})
-              </span>
+              <div className={`w-4 h-4 bg-gradient-to-r ${getCategoryColor(category)} rounded-full mr-3 animate-pulse`} />
+              <span className="font-bold text-lg">{getCategoryName(category)}</span>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-              {catBackgrounds.map((bg, index) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+              {categoryBackgrounds.map(bg => (
                 <div
                   key={bg.id}
-                  className={`relative p-4 rounded-2xl border-2 transition-all duration-300 transform hover:scale-110 cursor-pointer animate-pop-in glass-effect shadow-lg ${
-                    bg.unlocked
-                      ? selectedBackground === bg.id
-                        ? 'bg-gradient-to-br from-cyan-600/60 via-cyan-600/60 to-blue-600/60 border-yellow-400 shadow-2xl shadow-cyan-500/50 animate-glow scale-105'
-                        : 'bg-gradient-to-br from-gray-800/60 via-blue-900/60 to-gray-900/60 border-cyan-500/30 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25'
-                      : 'bg-gradient-to-br from-gray-800/30 via-gray-700/30 to-gray-900/30 border-gray-600/50 opacity-50 cursor-not-allowed'
-                  }`}
-                  onClick={() => bg.unlocked && setSelectedBackground(bg.id)}
-                  title={bg.unlocked ? t('Selecciona este fondo') : t('Desbloquea este fondo para usarlo')}
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  className={`relative flex flex-col items-center p-4 rounded-xl shadow-lg transition-all duration-200 ${bg.unlocked ? 'bg-gradient-to-br from-cyan-900 to-cyan-700' : 'bg-gradient-to-br from-gray-800 to-gray-700 opacity-60'}`}
+                  onClick={() => {
+                    if (bg.unlocked) {
+                      handleBackgroundSelect(bg.id);
+                    } else {
+                      alert('Debes comprar este fondo en la tienda para seleccionarlo.');
+                    }
+                  }}
                 >
-                  {/* Background Image */}
-                  <div className="flex justify-center mb-3">
-                    <div className={`w-24 h-16 rounded-2xl border-4 flex items-center justify-center transition-all duration-300 ${
-                      bg.unlocked
-                        ? selectedBackground === bg.id
-                          ? 'border-yellow-400 bg-gradient-to-br from-cyan-600 to-blue-600 animate-glow scale-110'
-                          : 'border-cyan-400 bg-gradient-to-br from-cyan-600 to-blue-600'
-                        : 'border-gray-600 bg-gradient-to-br from-gray-700 to-gray-800'
-                    }`}>
-                      {bg.unlocked ? (
-                        <img src={bg.image} alt={bg.name} className="w-20 h-12 object-cover rounded-xl shadow-lg" />
-                      ) : (
-                        <div className="text-3xl opacity-50">🔒</div>
-                      )}
-                    </div>
-                  </div>
-                  {/* Background Name y Badge */}
-                  <div className="text-center flex flex-col items-center">
-                    <h3 className={`text-base font-bold ${bg.unlocked ? 'text-cyan-200' : 'text-gray-400'} text-shadow-lg`}>{bg.name}</h3>
-                    {bg.id === 'bg3' && <span className="badge badge-warning mt-1 animate-float">Premium</span>}
-                  </div>
-                  {/* Selection Indicator */}
-                  {selectedBackground === bg.id && bg.unlocked && (
-                    <div className="absolute top-2 right-2 w-7 h-7 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce border-2 border-white shadow-lg">
-                      <Checkmark size={16} className="text-white" />
-                    </div>
-                  )}
-                  {/* Lock Icon for locked backgrounds */}
+                  <img src={bg.imageUrl} alt={bg.name} className="w-20 h-20 mb-2 rounded-full border-4 border-cyan-400" />
+                  <span className="font-bold text-white mb-1 text-center">{bg.name}</span>
                   {!bg.unlocked && (
-                    <div className="absolute top-2 right-2 w-7 h-7 bg-gray-600 rounded-full flex items-center justify-center border-2 border-white shadow">
-                      <div className="text-lg">🔒</div>
-                    </div>
+                    <>
+                      <span className="absolute top-2 right-2 bg-red-600 text-white text-xs px-2 py-1 rounded">{t('Bloqueado')}</span>
+                      <div className="relative w-full flex justify-center">
+                        <button
+                          className="mt-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm rounded-lg font-bold flex items-center gap-2 animate-pulse shadow-lg border-2 border-yellow-300 transition-all duration-200"
+                          style={{ fontSize: '1rem' }}
+                          onClick={e => { e.stopPropagation(); window.location.href = '/shop'; }}
+                          onMouseOver={e => {
+                            const tooltip = document.createElement('div');
+                            tooltip.innerText = 'Este fondo solo se puede obtener en la tienda.';
+                            tooltip.className = 'absolute z-50 left-1/2 -translate-x-1/2 -top-10 bg-black text-white text-xs rounded px-2 py-1 shadow-lg';
+                            tooltip.id = `tooltip-${bg.id}`;
+                            e.currentTarget.parentElement?.appendChild(tooltip);
+                          }}
+                          onMouseOut={e => {
+                            const tooltip = document.getElementById(`tooltip-${bg.id}`);
+                            if (tooltip) tooltip.remove();
+                          }}
+                        >
+                          <FaShoppingCart />
+                          ¡Desbloquéalo en la tienda!
+                        </button>
+                      </div>
+                    </>
                   )}
                 </div>
               ))}
@@ -150,6 +177,6 @@ const BackgroundSelection: React.FC = () => {
       })}
     </div>
   );
-};
+}
 
 export default BackgroundSelection; 

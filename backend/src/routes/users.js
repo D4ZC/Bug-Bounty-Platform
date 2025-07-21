@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Mock data for users
@@ -45,7 +46,7 @@ router.get('/', (req, res) => {
 
 // Get user by ID
 router.get('/:id', (req, res) => {
-  const user = users.find(u => u.id === parseInt(req.params.id));
+  const user = users.find((u) => u.id === parseInt(req.params.id));
   if (!user) {
     return res.status(404).json({
       success: false,
@@ -61,7 +62,7 @@ router.get('/:id', (req, res) => {
 // Create new user
 router.post('/', (req, res) => {
   const { username, email, role } = req.body;
-  
+
   if (!username || !email) {
     return res.status(400).json({
       success: false,
@@ -81,7 +82,7 @@ router.post('/', (req, res) => {
   };
 
   users.push(newUser);
-  
+
   res.status(201).json({
     success: true,
     data: newUser
@@ -90,7 +91,7 @@ router.post('/', (req, res) => {
 
 // Update user
 router.put('/:id', (req, res) => {
-  const userIndex = users.findIndex(u => u.id === parseInt(req.params.id));
+  const userIndex = users.findIndex((u) => u.id === parseInt(req.params.id));
   if (userIndex === -1) {
     return res.status(404).json({
       success: false,
@@ -98,8 +99,10 @@ router.put('/:id', (req, res) => {
     });
   }
 
-  const { username, email, role, points, team } = req.body;
-  
+  const {
+    username, email, role, points, team
+  } = req.body;
+
   users[userIndex] = {
     ...users[userIndex],
     ...(username && { username }),
@@ -117,7 +120,7 @@ router.put('/:id', (req, res) => {
 
 // Delete user
 router.delete('/:id', (req, res) => {
-  const userIndex = users.findIndex(u => u.id === parseInt(req.params.id));
+  const userIndex = users.findIndex((u) => u.id === parseInt(req.params.id));
   if (userIndex === -1) {
     return res.status(404).json({
       success: false,
@@ -126,11 +129,11 @@ router.delete('/:id', (req, res) => {
   }
 
   users.splice(userIndex, 1);
-  
+
   res.json({
     success: true,
     message: 'User deleted successfully'
   });
 });
 
-module.exports = router; 
+module.exports = router;

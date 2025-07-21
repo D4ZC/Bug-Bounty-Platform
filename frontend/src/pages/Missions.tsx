@@ -105,7 +105,7 @@ const Missions: React.FC = () => {
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-green-300">{t('Recompensa')}:</span>
                   {mission.reward.type === 'bugcoin' && (
-                    <span className="flex items-center gap-1 text-yellow-300 font-bold">+{mission.reward.amount} <img src="/bugcoin.png" alt="bugcoin" className="w-5 h-5 inline" /></span>
+                    <span className="flex items-center gap-1 text-yellow-300 font-bold">+{mission.reward.amount}</span>
                   )}
                   {mission.reward.type === 'frame' && (
                     <span className="flex items-center gap-1 text-green-300 font-bold">{t('Marco')}: <img src={mission.reward.image} alt={mission.reward.name} className="w-8 h-8 inline rounded-full border-2 border-green-400" /></span>

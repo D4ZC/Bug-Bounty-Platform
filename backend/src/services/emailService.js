@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+
 const logger = require('../utils/logger');
 
 class EmailService {
@@ -43,9 +44,9 @@ class EmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      
+
       logger.email(to, subject, true, { messageId: result.messageId });
-      
+
       return result;
     } catch (error) {
       logger.email(to, subject, false, { error: error.message });
@@ -256,7 +257,7 @@ class EmailService {
   async sendPasswordResetEmail(email, resetToken) {
     const subject = 'Recuperación de Contraseña - Bug Bounty Platform';
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
-    
+
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #007bff;">Recuperación de Contraseña</h2>
@@ -280,7 +281,7 @@ class EmailService {
   async sendAccountVerificationEmail(email, verificationToken) {
     const subject = 'Verificación de Cuenta - Bug Bounty Platform';
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-account?token=${verificationToken}`;
-    
+
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #28a745;">Verificación de Cuenta</h2>
@@ -300,4 +301,4 @@ class EmailService {
   }
 }
 
-module.exports = new EmailService(); 
+module.exports = new EmailService();

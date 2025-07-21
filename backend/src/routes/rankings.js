@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Datos simulados de ranking
@@ -29,4 +30,4 @@ router.get('/teams', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

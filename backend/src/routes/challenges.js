@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Datos simulados de retos
@@ -57,7 +58,7 @@ router.get('/', (req, res) => {
 
 // Obtener un reto específico
 router.get('/:id', (req, res) => {
-  const challenge = mockChallenges.find(c => c._id === req.params.id);
+  const challenge = mockChallenges.find((c) => c._id === req.params.id);
   if (!challenge) {
     return res.status(404).json({ success: false, error: 'Reto no encontrado' });
   }
@@ -67,4 +68,4 @@ router.get('/:id', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;

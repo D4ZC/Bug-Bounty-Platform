@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 
 // Datos simulados de contribuciones
@@ -57,7 +58,7 @@ router.get('/', (req, res) => {
 
 // Obtener una contribución específica
 router.get('/:id', (req, res) => {
-  const contrib = mockContributions.find(c => c._id === req.params.id);
+  const contrib = mockContributions.find((c) => c._id === req.params.id);
   if (!contrib) {
     return res.status(404).json({ success: false, error: 'Contribución no encontrada' });
   }
@@ -82,4 +83,4 @@ router.post('/', (req, res) => {
   });
 });
 
-module.exports = router; 
+module.exports = router;
