@@ -25,6 +25,7 @@ import RankingEquipos from '@/pages/RankingEquipos';
 import RankingEquiposGulag from './pages/RankingEquiposGulag';
 import RankingUsuarios from './pages/RankingUsuarios';
 import GulagDetail from '@/pages/GulagDetail';
+import Equipos from '@/pages/Equipos';
 
 // Components
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -50,6 +51,7 @@ function App() {
           <Route path="contributions" element={<Contributions />} />
           <Route path="profile" element={<Profile />} />
           <Route path="team" element={<Team />} />
+          <Route path="equipos" element={<Equipos />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="gulag/:id" element={<GulagDetail />} />
           <Route path="mvp" element={<MVP />} />

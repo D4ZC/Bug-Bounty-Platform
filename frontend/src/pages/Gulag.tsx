@@ -170,11 +170,9 @@ const Gulag: React.FC = () => {
   });
 
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-[#101014]'}`}
-      aria-label="Zona de desafíos y pruebas especiales"
-    >
-      <h1 className="text-4xl font-extrabold font-mono text-center mb-2" style={{ color: ACCENT }}>GULAG</h1>
-      <p className="text-center text-lg font-mono mb-8" style={{ color: '#39ff14' }}>Zona de desafíos y pruebas especiales</p>
+    <div className={`min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono`} aria-label="Zona de desafíos y pruebas especiales">
+      <h1 className="text-4xl font-extrabold font-mono text-center mb-2 drop-shadow-[0_0_16px_#00fff7]" style={{ color: ACCENT }}>GULAG</h1>
+      <p className="text-center text-lg font-mono mb-8 text-[#39ff14]">Zona de desafíos y pruebas especiales</p>
       <ChallengeTabs tab={tab} setTab={setTab} />
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl mx-auto justify-items-center">
         {filtered.map(ch => (
@@ -187,7 +185,22 @@ const Gulag: React.FC = () => {
           />
         ))}
         {filtered.length === 0 && (
-          <div className="col-span-full text-center text-red-400 font-mono text-xl">No hay desafíos en esta categoría.</div>
+          <div className="col-span-full w-full max-w-3xl mx-auto bg-[#181c2b]/90 border-2 border-[#00fff7] rounded-3xl shadow-[0_0_48px_#00fff7] p-10 flex flex-col items-center justify-center animate-fade-in-up">
+            <div className="flex flex-col items-center">
+              <span className="text-5xl mb-4 animate-pulse">
+                {/* Ícono SVG gamer/futurista */}
+                <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
+                  <path d="M24 4v8M24 36v8M8 24h8M32 24h8M12.2 12.2l5.6 5.6M30.2 30.2l5.6 5.6M12.2 35.8l5.6-5.6M30.2 17.8l5.6-5.6" stroke="#00fff7" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="24" cy="24" r="10" fill="#181c2b" stroke="#00fff7" strokeWidth="2"/>
+                  <circle cx="20" cy="22" r="2" fill="#ff3b3b"/>
+                  <circle cx="28" cy="22" r="2" fill="#ff3b3b"/>
+                </svg>
+              </span>
+              <h2 className="text-3xl font-extrabold text-[#00fff7] mb-2 drop-shadow-[0_0_8px_#00fff7] font-mono">Gulag</h2>
+              <p className="text-xl text-[#ff3b3b] font-mono animate-fade-in-up">¡Sin desafíos en el Gulag por ahora!</p>
+              {/* <button className="mt-6 px-6 py-2 bg-[#00fff7] text-black font-bold rounded-xl shadow-lg hover:bg-[#39ff14] transition animate-glow">Ver historial</button> */}
+            </div>
+          </div>
         )}
       </div>
     </div>

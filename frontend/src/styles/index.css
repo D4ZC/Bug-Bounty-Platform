@@ -172,3 +172,10 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
 } 
+
+html, body, #root {
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(135deg, #1a0033 0%, #2d003e 50%, #0a183d 100%);
+} 

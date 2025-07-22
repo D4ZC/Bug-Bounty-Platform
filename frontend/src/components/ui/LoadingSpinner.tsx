@@ -18,7 +18,14 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   return (
-    <div className={cn('loading-spinner', sizeClasses[size], className)} />
+    <div
+      className={cn(
+        'loading-spinner',
+        sizeClasses[size],
+        'border-4 border-[#00fff7] border-t-transparent rounded-full animate-spin shadow-[0_0_16px_#00fff7] bg-transparent',
+        className
+      )}
+    />
   );
 };
 

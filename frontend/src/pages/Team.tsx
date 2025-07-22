@@ -22,16 +22,16 @@ const TeamPage: React.FC = () => {
   }, []);
 
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-white'}`}>
+    <div className="min-h-screen w-full flex flex-col items-center py-10 px-2 bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500">
       <div className="max-w-4xl w-full">
-        <h1 className="text-3xl md:text-4xl font-bold font-mono mb-8 text-center text-[#00fff7] drop-shadow">Ranking de Equipos</h1>
+        <h1 className="text-3xl md:text-4xl font-bold font-mono mb-8 text-center text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]">Ranking de Equipos</h1>
         {loading ? (
-          <div className="text-center text-lg text-[#00fff7]">Cargando equipos...</div>
+          <div className="text-center text-lg text-[#00fff7] font-mono animate-fade-in-up">Cargando equipos...</div>
         ) : error ? (
-          <div className="text-center text-red-500">{error}</div>
+          <div className="text-center text-red-500 font-mono animate-fade-in-up">{error}</div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-gradient-to-br from-black to-[#0ff0fc] border-2 border-[#00fff7] rounded-2xl font-mono text-[#00fff7] shadow-lg">
+            <table className="min-w-full bg-[#181a20]/90 border-2 border-[#00fff7] rounded-2xl font-mono text-[#00fff7] shadow-[0_0_24px_#00fff7] animate-fade-in-up">
               <thead>
                 <tr className="text-left text-xl">
                   <th className="py-3 px-4">#</th>
@@ -43,7 +43,7 @@ const TeamPage: React.FC = () => {
               </thead>
               <tbody>
                 {teams.sort((a, b) => b.points - a.points).map((team, idx) => (
-                  <tr key={team._id} className="border-t border-[#00fff7] hover:bg-[#112233]/40 transition">
+                  <tr key={team._id} className="border-t border-[#00fff7] hover:bg-[#112233]/40 transition font-mono animate-fade-in-up">
                     <td className="py-2 px-4 font-bold">{idx + 1}</td>
                     <td className="py-2 px-4 font-bold text-lg">{team.name}</td>
                     <td className="py-2 px-4">{team.points}</td>

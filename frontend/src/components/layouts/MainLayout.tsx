@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Home, List, Chat, UserAvatar, Edit } from '@carbon/icons-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { FaUsers } from 'react-icons/fa';
 
 const neon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
 const neonIcon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
@@ -26,21 +27,22 @@ const SidebarIcon = ({ to, children, className }: { to: string; children: React.
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isDark } = useTheme();
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   return (
-    <div className={`min-h-screen flex flex-col transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-white'}`}>
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500">
       {/* Navbar superior */}
-      <header className={`w-full py-4 flex justify-center items-center transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-white'}`}>
+      <header className="w-full py-4 flex justify-center items-center bg-[#181c2bcc] border-b-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] backdrop-blur-md">
         <h1
-          className={`text-4xl md:text-5xl font-extrabold tracking-wide uppercase ${neon}`}
-          style={{ letterSpacing: '2px', fontFamily: 'sans-serif', textAlign: 'center' }}
+          className="text-4xl md:text-5xl font-extrabold tracking-wide uppercase text-[#00fff7] drop-shadow-[0_0_8px_#00fff7] font-mono"
+          style={{ letterSpacing: '2px', textAlign: 'center' }}
         >
           BUG BOUNTY PLATFORM
         </h1>
       </header>
       <div className="flex flex-1">
         {/* Sidebar lateral */}
-        <nav className={`min-h-full w-20 flex flex-col items-center pb-4 transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-gray-100'}`}>
+        <nav className="min-h-full w-20 flex flex-col items-center pb-4 bg-[#181c2bcc] border-r-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] backdrop-blur-md">
           {/* Icono de usuario con margen superior y mismo efecto de hover/click */}
           <SidebarIcon to="/profile" className="mt-8">
             <UserAvatar size={36} className={neonIcon} />
@@ -62,10 +64,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <SidebarIcon to="/feedback">
               <Chat size={36} className={neonIcon} />
             </SidebarIcon>
+            <button onClick={() => navigate('/equipos')} className="text-[#00fff7] hover:text-[#39ff14] transition text-2xl" title="Equipos">
+              <FaUsers />
+            </button>
           </div>
         </nav>
         {/* Contenido principal */}
-        <main className={`flex-1 p-6 transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-white'}`}>{children}</main>
+        <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
   );

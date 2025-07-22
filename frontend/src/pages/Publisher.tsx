@@ -230,18 +230,18 @@ const Publisher: React.FC = () => {
   });
 
   return (
-    <div className={`min-h-screen flex items-center justify-center transition-colors duration-500 ${isDark ? 'bg-black' : 'bg-white'}`}> 
-      <div className={`w-full max-w-2xl mx-auto p-8 rounded-2xl shadow-xl border-2 ${isDark ? 'bg-[#101926] border-[#00fff7]' : 'bg-white border-[#00fff7]'}`}> 
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500"> 
+      <div className="w-full max-w-2xl mx-auto p-8 rounded-2xl shadow-xl border-2 bg-[#101926]/90 border-[#00fff7] backdrop-blur-md animate-fade-in-up"> 
         {/* Tabs */}
         <div className="flex gap-2 mb-8">
           <button
-            className={`px-4 py-2 rounded-t-lg font-bold text-lg transition ${tab === 'publicar' ? 'bg-[#00fff7] text-black shadow' : isDark ? 'bg-[#101926] text-[#00fff7]' : 'bg-white text-[#00fff7]'}`}
+            className={`px-4 py-2 rounded-t-lg font-bold text-lg transition font-mono ${tab === 'publicar' ? 'bg-[#00fff7] text-black shadow-[0_0_16px_#00fff7]' : 'bg-[#101926] text-[#00fff7]'}`}
             onClick={() => setTab('publicar')}
           >
             📝 Publicar Explicación
           </button>
           <button
-            className={`px-4 py-2 rounded-t-lg font-bold text-lg transition ${tab === 'moderacion' ? 'bg-[#00fff7] text-black shadow' : isDark ? 'bg-[#101926] text-[#00fff7]' : 'bg-white text-[#00fff7]'}`}
+            className={`px-4 py-2 rounded-t-lg font-bold text-lg transition font-mono ${tab === 'moderacion' ? 'bg-[#00fff7] text-black shadow-[0_0_16px_#00fff7]' : 'bg-[#101926] text-[#00fff7]'}`}
             onClick={() => setTab('moderacion')}
           >
             🧑‍⚖️ Revisión Moderador
@@ -250,7 +250,7 @@ const Publisher: React.FC = () => {
         {/* Tab: Publicar Explicación */}
         {tab === 'publicar' && (
           <>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-[#00fff7] mb-8 text-center drop-shadow-[0_0_8px_#00fff7]">Nueva Explicación Técnica</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-[#00fff7] mb-8 text-center drop-shadow-[0_0_8px_#00fff7] font-mono">Nueva Explicación Técnica</h1>
             {/* Selector de vulnerabilidad o campo libre */}
             <div className="mb-6">
               {vulnerabilities.length > 0 ? (
@@ -261,7 +261,7 @@ const Publisher: React.FC = () => {
                     setFormData({ ...formData, vulnerabilityId: e.target.value });
                     setSelectedVulnerability(vuln || null);
                   }}
-                  className={`w-full px-4 py-3 rounded-lg border-2 border-[#00fff7] text-[#00fff7] font-mono bg-transparent focus:outline-none focus:ring-2 focus:ring-[#00fff7] transition-colors duration-500 ${isDark ? 'bg-[#101926]' : 'bg-white'}`}
+                  className="w-full px-4 py-3 rounded-lg border-2 border-[#00fff7] text-[#00fff7] font-mono bg-transparent focus:outline-none focus:ring-2 focus:ring-[#00fff7] transition-colors duration-500 bg-[#101926]"
                 >
                   <option value="">Selecciona una vulnerabilidad resuelta</option>
                   {vulnerabilities.map(vuln => (
@@ -275,12 +275,12 @@ const Publisher: React.FC = () => {
                   type="text"
                   value={formData.vulnerabilityId}
                   onChange={e => setFormData({ ...formData, vulnerabilityId: e.target.value })}
-                  className={`w-full px-4 py-3 rounded-lg border-2 border-[#00fff7] text-[#00fff7] font-mono bg-transparent focus:outline-none focus:ring-2 focus:ring-[#00fff7] transition-colors duration-500 ${isDark ? 'bg-[#101926]' : 'bg-white'}`}
+                  className="w-full px-4 py-3 rounded-lg border-2 border-[#00fff7] text-[#00fff7] font-mono bg-transparent focus:outline-none focus:ring-2 focus:ring-[#00fff7] transition-colors duration-500 bg-[#101926]"
                   placeholder="Describe la vulnerabilidad resuelta (ej: SQL Injection en login)"
                 />
               )}
               {showValidation && formData.vulnerabilityId.trim() === '' && (
-                <div className="text-red-400 text-sm mt-1">Este campo es obligatorio.</div>
+                <div className="text-red-400 text-sm mt-1 font-mono animate-fade-in-up">Este campo es obligatorio.</div>
               )}
             </div>
             {/* Área de texto para explicación */}
@@ -289,21 +289,21 @@ const Publisher: React.FC = () => {
                 value={formData.content}
                 onChange={e => setFormData({ ...formData, content: e.target.value })}
                 rows={8}
-                className={`w-full px-4 py-4 rounded-lg border-2 border-[#00fff7] text-[#00fff7] font-mono bg-transparent focus:outline-none focus:ring-2 focus:ring-[#00fff7] transition-colors duration-500 ${isDark ? 'bg-[#101926]' : 'bg-white'}`}
+                className="w-full px-4 py-4 rounded-lg border-2 border-[#00fff7] text-[#00fff7] font-mono bg-transparent focus:outline-none focus:ring-2 focus:ring-[#00fff7] transition-colors duration-500 bg-[#101926]"
                 placeholder="Escribe un resumen de la vulnerabilidad o explica cómo la resolviste..."
               />
               {showValidation && formData.content.trim() === '' && (
-                <div className="text-red-400 text-sm mt-1">Este campo es obligatorio.</div>
+                <div className="text-red-400 text-sm mt-1 font-mono animate-fade-in-up">Este campo es obligatorio.</div>
               )}
             </div>
             {/* En el formulario (tab === 'publicar'), debajo del textarea: */}
             <div className="mb-8">
-              <label className="block text-[#00fff7] font-bold mb-2">Adjuntar archivos (PDF, Word, imágenes)</label>
+              <label className="block text-[#00fff7] font-bold mb-2 font-mono">Adjuntar archivos (PDF, Word, imágenes)</label>
               <div className="flex items-center gap-4 mb-2">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2 bg-[#00fff7] text-black font-bold rounded-lg hover:bg-[#39ff14] transition"
+                  className="px-4 py-2 bg-[#00fff7] text-black font-bold rounded-lg hover:bg-[#39ff14] transition font-mono animate-glow"
                 >
                   📎 Agregar Archivos
                 </button>
@@ -319,12 +319,12 @@ const Publisher: React.FC = () => {
               {attachments.length > 0 && (
                 <div className="space-y-2">
                   {attachments.map((file, idx) => (
-                    <div key={idx} className="flex items-center gap-2 text-[#00fff7]">
+                    <div key={idx} className="flex items-center gap-2 text-[#00fff7] font-mono">
                       <span className="text-sm">{file.name}</span>
                       <button
                         type="button"
                         onClick={() => removeAttachment(idx)}
-                        className="text-red-400 hover:text-red-600 text-lg"
+                        className="text-red-400 hover:text-red-600 text-lg font-mono"
                       >
                         ×
                       </button>
@@ -337,7 +337,7 @@ const Publisher: React.FC = () => {
             <button
               onClick={handleSubmit}
               disabled={submitting || !isFormValid}
-              className="w-full py-4 text-lg font-bold rounded-xl shadow-lg transition bg-[#00fff7] text-black hover:bg-[#39ff14] focus:ring-2 focus:ring-[#00fff7] focus:outline-none disabled:opacity-60"
+              className="w-full py-4 text-lg font-bold rounded-xl shadow-lg transition bg-[#00fff7] text-black hover:bg-[#39ff14] focus:ring-2 focus:ring-[#00fff7] focus:outline-none disabled:opacity-60 font-mono animate-glow"
             >
               {submitting ? 'Enviando...' : 'Enviar para Revisión'}
             </button>
@@ -346,19 +346,19 @@ const Publisher: React.FC = () => {
         {/* Tab: Revisión Moderador */}
         {tab === 'moderacion' && (
           <>
-            <h1 className="text-2xl font-extrabold text-[#00fff7] mb-6">Explicaciones Pendientes</h1>
+            <h1 className="text-2xl font-extrabold text-[#00fff7] mb-6 font-mono">Explicaciones Pendientes</h1>
             {pendingPublications.length === 0 ? (
-              <div className="text-center text-[#00fff7] py-8">No hay explicaciones pendientes.</div>
+              <div className="text-center text-[#00fff7] py-8 font-mono">No hay explicaciones pendientes.</div>
             ) : (
               pendingPublications.map(pub => (
-                <div key={pub._id} className="mb-8 p-6 rounded-xl border border-gray-200 shadow bg-white">
-                  <div className="mb-2 font-bold text-lg text-gray-800">Vulnerabilidad: {pub.vulnerabilityTitle || pub.vulnerabilityId}</div>
-                  <div className="mb-1 text-gray-700">Autor: {pub.authorName || pub.author || 'Anónimo'}</div>
-                  <div className="mb-1 text-gray-700">Fecha: {pub.createdAt ? new Date(pub.createdAt).toISOString().slice(0,10) : ''}</div>
-                  <div className="mb-4 p-3 bg-gray-100 text-gray-900 rounded font-mono whitespace-pre-wrap">{pub.content}</div>
+                <div key={pub._id} className="mb-8 p-6 rounded-xl border-2 border-[#00fff7] shadow bg-[#181a20]/90 font-mono animate-fade-in-up">
+                  <div className="mb-2 font-bold text-lg text-[#00fff7]">Vulnerabilidad: {pub.vulnerabilityTitle || pub.vulnerabilityId}</div>
+                  <div className="mb-1 text-[#00fff7]">Autor: {pub.authorName || pub.author || 'Anónimo'}</div>
+                  <div className="mb-1 text-[#00fff7]">Fecha: {pub.createdAt ? new Date(pub.createdAt).toISOString().slice(0,10) : ''}</div>
+                  <div className="mb-4 p-3 bg-[#232b36]/80 text-[#00fff7] rounded font-mono whitespace-pre-wrap">{pub.content}</div>
                   <div className="flex gap-4">
                     <button
-                      className="flex-1 py-3 rounded-lg font-bold text-lg bg-[#111827] text-[#00ff7f] border-2 border-[#00ff7f] flex items-center justify-center gap-2 hover:bg-[#00ff7f] hover:text-black transition"
+                      className="flex-1 py-3 rounded-lg font-bold text-lg bg-[#111827] text-[#00ff7f] border-2 border-[#00ff7f] flex items-center justify-center gap-2 hover:bg-[#00ff7f] hover:text-black transition font-mono animate-glow"
                       onClick={async () => {
                         if (window.confirm('¿Estás seguro de que deseas aprobar esta explicación?')) {
                           await handleModeration(pub._id, 'approved');
@@ -369,7 +369,7 @@ const Publisher: React.FC = () => {
                       ✅ Aprobar
                     </button>
                     <button
-                      className="flex-1 py-3 rounded-lg font-bold text-lg bg-red-600 text-white border-2 border-red-600 flex items-center justify-center gap-2 hover:bg-red-700 transition"
+                      className="flex-1 py-3 rounded-lg font-bold text-lg bg-red-600 text-white border-2 border-red-600 flex items-center justify-center gap-2 hover:bg-red-700 transition font-mono animate-glow"
                       onClick={async () => {
                         if (window.confirm('¿Estás seguro de que deseas rechazar esta explicación?')) {
                           await handleModeration(pub._id, 'rejected');
@@ -380,7 +380,7 @@ const Publisher: React.FC = () => {
                       ❌ Rechazar
                     </button>
                     <button
-                      className="flex-1 py-3 rounded-lg font-bold text-lg bg-[#f3f4f6] text-[#ff7f00] border-2 border-[#ff7f00] flex items-center justify-center gap-2 hover:bg-[#ff7f00] hover:text-black transition"
+                      className="flex-1 py-3 rounded-lg font-bold text-lg bg-[#f3f4f6] text-[#ff7f00] border-2 border-[#ff7f00] flex items-center justify-center gap-2 hover:bg-[#ff7f00] hover:text-black transition font-mono animate-glow"
                       onClick={async () => {
                         if (window.confirm('¿Solicitar modificación al autor?')) {
                           await handleModeration(pub._id, 'needs_revision');
