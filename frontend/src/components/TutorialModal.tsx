@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronLeft, FaChevronRight, FaTimes, FaPlay } from 'react-icons/fa';
 import { useTutorial } from '../contexts/TutorialContext';
@@ -15,6 +16,34 @@ const TutorialModal: React.FC = () => {
   } = useTutorial();
 
   const [isVisible, setIsVisible] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const currentStepData = steps[currentStep];
+
+  // Reproduce el audio correspondiente al id del paso
+  useEffect(() => {
+    if (isTutorialActive && currentStepData && currentStepData.id) {
+      const audioPath = `/audios/${currentStepData.id}.mp3`;
+      if (!audioRef.current) {
+        audioRef.current = new window.Audio(audioPath);
+      } else {
+        audioRef.current.src = audioPath;
+      }
+      audioRef.current.currentTime = 0;
+      audioRef.current.play().catch(() => {});
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    }
+    // Al desmontar o cambiar de paso, detener audio
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }
+    };
+  }, [isTutorialActive, currentStep]);
 
   useEffect(() => {
     if (isTutorialActive) {
@@ -26,7 +55,6 @@ const TutorialModal: React.FC = () => {
 
   if (!isVisible) return null;
 
-  const currentStepData = steps[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === steps.length - 1;
 

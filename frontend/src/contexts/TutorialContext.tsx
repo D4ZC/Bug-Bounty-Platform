@@ -94,7 +94,7 @@ const tutorialSteps: TutorialStep[] = [
   {
     id: 'duelos',
     title: 'Duelos',
-    description: 'Participa en desafíos y duelos contra otros hackers. Demuestra tus habilidades.',
+    description: 'Participa en desafíos y duelos contra otros equipos. Demuestra tus habilidades.',
     position: 'top-right',
     route: '/challenges',
     tip: 'Los duelos son una excelente forma de mejorar tus habilidades y ganar reconocimiento.'
