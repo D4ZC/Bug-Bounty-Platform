@@ -85,6 +85,7 @@ function AvatarSelection() {
     const avatar = avatars.find(a => a.id === avatarId);
     if (avatar && avatar.unlocked) {
       setSelectedAvatar(avatarId);
+      localStorage.setItem('profile_custom_avatar', avatar.imageUrl); // Guarda el avatar seleccionado
     }
   };
 

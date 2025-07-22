@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
 // Layouts
-import MainLayout from '@/components/layouts/MainLayout';
+import HackerLayout from '@/components/layouts/MainLayout'; // <- Cambia MainLayout por HackerLayout
 import AuthLayout from '@/components/layouts/AuthLayout';
 import Settings from '@/pages/Settings';
 
@@ -28,6 +28,7 @@ import Missions from '@/pages/Missions';
 import FrameSelection from '@/pages/FrameSelection';
 import TitleSelection from '@/pages/TitleSelection';
 import BackgroundSelection from '@/pages/BackgroundSelection';
+import Duelos from '@/pages/Duelos';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -45,7 +46,7 @@ function App() {
       </Helmet>
 
       <Routes>
-        <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
+        <Route path="/" element={<HackerLayout><Outlet /></HackerLayout>}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vulnerabilities" element={<Vulnerabilities />} />
@@ -57,6 +58,7 @@ function App() {
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
           <Route path="missions" element={<Missions />} />
+          <Route path="duelos" element={<Duelos />} />
           <Route path="mensual-ranking" element={<MensualRanking />} />
           <Route path="cuatrimestral-ranking-teams" element={<CuatrimestralRankingTeams />} />
           <Route path="profile-customization" element={<ProfileCustomization />} />

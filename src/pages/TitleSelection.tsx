@@ -121,7 +121,7 @@ function TitleSelection() {
       {(['default', 'premium', 'special'] as CategoryType[]).map(category => {
         const categoryTitles = filteredTitles.filter(title => title.category === category);
         if (categoryTitles.length === 0) return null;
-        return (
+          return (
           <div key={category} className="mb-8">
             <div className="flex items-center mb-4">
               <div className={`w-4 h-4 bg-gradient-to-r ${getCategoryColor(category)} rounded-full mr-3 animate-pulse`} />
@@ -139,7 +139,7 @@ function TitleSelection() {
                       alert('Debes comprar este título en la tienda para seleccionarlo.');
                     }
                   }}
-                >
+            >
                   <span className="font-bold text-white mb-1 text-center text-lg">{title.name}</span>
                   {!title.unlocked && (
                     <>
@@ -164,15 +164,15 @@ function TitleSelection() {
                           <FaShoppingCart />
                           ¡Desbloquéalo en la tienda!
                         </button>
-                      </div>
+              </div>
                     </>
                   )}
                 </div>
               ))}
             </div>
-          </div>
-        );
-      })}
+            </div>
+          );
+        })}
     </div>
   );
 }

@@ -166,7 +166,7 @@ function BackgroundSelection() {
                           <FaShoppingCart />
                           ¡Desbloquéalo en la tienda!
                         </button>
-                      </div>
+                    </div>
                     </>
                   )}
                 </div>

@@ -1,10 +1,58 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
+const fontFamily = `'Share Tech Mono', 'Fira Mono', 'Consolas', monospace`;
 // Simulación de usuario MVP (en producción, esto vendría del backend o contexto de usuario)
 const isMVP = true; // Cambia a false para probar acceso normal
 
-// Productos de ejemplo
+function getRandomPrice(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+const bannersList = [
+  {src:'/Banners/Firewall_Rookie.png', name:'Firewall Rookie'},
+  {src:'/Banners/Script_Kiddie _Ascendente.png', name:'Script Kiddie Ascendente'},
+  {src:'/Banners/Código_Fantasma.png', name:'Código Fantasma'},
+  {src:'/Banners/Kernel_Knight.png', name:'Kernel Knight'},
+  {src:'/Banners/Root_Mastermind.png', name:'Root Mastermind'},
+  {src:'/Banners/Placeholder6.png', name:'Cazador de Exploits'},
+  {src:'/Banners/Placeholder7.png', name:'Dominador del Backdoor'},
+  {src:'/Banners/Placeholder8.png', name:'Overlord del Zero Day'},
+  {src:'/Banners/Placeholder9.png', name:'Guardian del Ciberespacio'},
+  {src:'/Banners/Placeholder10.png', name:'Sniffer Supremo'},
+  {src:'/Banners/Placeholder11.png', name:'El Crackeador Silencioso'},
+  {src:'/Banners/Placeholder12.png', name:'La Sombra del Sistema'},
+  {src:'/Banners/Placeholder13.png', name:'RompeFirewalls'},
+  {src:'/Banners/Placeholder14.png', name:'Proxy Phantom'},
+  {src:'/Banners/Placeholder15.png', name:'El Intruso Elegante'},
+  {src:'/Banners/Placeholder16.png', name:'Cifrador de Realidades'},
+  {src:'/Banners/Placeholder17.png', name:'Rooteador Profesional'},
+  {src:'/Banners/Placeholder18.png', name:'Ninja del Netcat'},
+  {src:'/Banners/Placeholder19.png', name:'El Espectro del Ping'},
+  {src:'/Banners/Placeholder20.png', name:'Le Hice Ping a tu Corazón 💔'},
+  {src:'/Banners/Placeholder21.png', name:'1337 pero con estilo'},
+  {src:'/Banners/Placeholder22.png', name:'Ctrl+C / Ctrl+P Hacker'},
+  {src:'/Banners/Placeholder23.png', name:'Bug Bounty Baby'},
+  {src:'/Banners/Placeholder24.png', name:'Me hackeo solo'},
+  {src:'/Banners/Placeholder25.png', name:'Error 404: Miedo no encontrado'},
+  {src:'/Banners/Placeholder26.png', name:'Ghost Hacker del Mes'},
+  {src:'/Banners/Placeholder27.png', name:'Rey del CTF'},
+  {src:'/Banners/Placeholder28.png', name:'Maestro del Terminal'},
+  {src:'/Banners/Placeholder29.png', name:'Ganador del Torneo Eclipse'},
+  {src:'/Banners/Placeholder30.png', name:'Cazador Nocturno del Sistema'},
+  {src:'/Banners/Placeholder31.png', name:'Top Exploiter'},
+];
+const bannersCategory = {
+  key: 'banners',
+  label: 'Banners',
+  products: bannersList.map((b, i) => ({
+    id: `banner${i+1}`,
+    name: b.name,
+    price: getRandomPrice(200, 1000),
+    currency: 'bugcoin',
+    image: b.src,
+    animated: false
+  }))
+};
 const shopCategories = [
   {
     key: 'frames',
@@ -35,6 +83,7 @@ const shopCategories = [
       { id: 'title2', name: 'Pentester', price: 180, currency: 'bugcoin', image: '', animated: false },
     ],
   },
+  bannersCategory,
   {
     key: 'backgrounds',
     label: 'Fondos',
@@ -58,18 +107,20 @@ const mvpExclusive = [
 const getInitialInventory = () => {
   try {
     const inv = localStorage.getItem('user_inventory');
-    return inv ? JSON.parse(inv) : { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
+    return inv ? JSON.parse(inv) : { frames: [], avatars: [], titles: [], backgrounds: [], banners: [], bluepoints: 0 };
   } catch {
-    return { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
+    return { frames: [], avatars: [], titles: [], backgrounds: [], banners: [], bluepoints: 0 };
   }
 };
 
 const Shop: React.FC = () => {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('frames');
-  const [bugcoins, setBugcoins] = useState(() => Number(localStorage.getItem('bugcoins')) || 1000); // Simulación de saldo
+  const [bugcoins, setBugcoins] = useState(() => Number(localStorage.getItem('bugcoins')) || 1000);
   const [bluepoints, setBluepoints] = useState(() => getInitialInventory().bluepoints || 0);
   const [inventory, setInventory] = useState(getInitialInventory);
+  const [feedbackMsg, setFeedbackMsg] = useState<string | null>(null);
+  const [feedbackType, setFeedbackType] = useState<'success' | 'error' | null>(null);
 
   useEffect(() => {
     localStorage.setItem('bugcoins', String(bugcoins));
@@ -81,7 +132,12 @@ const Shop: React.FC = () => {
       if (bugcoins >= product.price) {
         // Evitar comprar dos veces
         if (categoryKey && inventory[categoryKey]?.includes(product.id)) {
-          alert(t('Ya tienes este ítem.'));
+          setFeedbackMsg(t('Ya tienes este ítem.'));
+          setFeedbackType('error');
+          setTimeout(() => {
+            setFeedbackMsg(null);
+            setFeedbackType(null);
+          }, 2500);
           return;
         }
         setBugcoins(bugcoins - product.price);
@@ -95,29 +151,70 @@ const Shop: React.FC = () => {
             }
             return prev;
           });
-          alert(t('¡Compra exitosa!') + ' ' + product.name + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
+          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + product.name + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
+          setFeedbackType('success');
+          setTimeout(() => {
+            setFeedbackMsg(null);
+            setFeedbackType(null);
+          }, 2500);
           if (window.location.pathname.includes('avatar-selection')) {
             window.location.reload();
           }
+        } else if (categoryKey === 'banners') {
+          setInventory((prev: any) => {
+            const currentBanners = Array.isArray(prev.banners) ? prev.banners : [];
+            if (!currentBanners.includes(product.id)) {
+              const newInventory = { ...prev, banners: [...currentBanners, product.id] };
+              localStorage.setItem('user_inventory', JSON.stringify(newInventory));
+              return newInventory;
+            }
+            return prev;
+          });
+          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + product.name + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
+          setFeedbackType('success');
+          setTimeout(() => {
+            setFeedbackMsg(null);
+            setFeedbackType(null);
+          }, 2500);
         } else if (categoryKey) {
           setInventory((prev: any) => {
             const newInventory = { ...prev, [categoryKey]: [...prev[categoryKey], product.id] };
             localStorage.setItem('user_inventory', JSON.stringify(newInventory));
             return newInventory;
           });
-          alert(t('¡Compra exitosa!') + ' ' + product.name);
+          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + product.name);
+          setFeedbackType('success');
+          setTimeout(() => {
+            setFeedbackMsg(null);
+            setFeedbackType(null);
+          }, 2500);
         }
       } else {
-        alert(t('No tienes suficientes bugcoins.'));
+        setFeedbackMsg(t('No tienes suficientes bugcoins.'));
+        setFeedbackType('error');
+        setTimeout(() => {
+          setFeedbackMsg(null);
+          setFeedbackType(null);
+        }, 2500);
       }
     } else if (product.currency === 'bluepoint') {
       if (product.stock && product.stock > 0) {
         setInventory((prev: any) => ({ ...prev, bluepoints: (prev.bluepoints || 0) + 1 }));
         product.stock -= 1;
         setBluepoints(bluepoints + 1);
-        alert(t('¡Has comprado una Bluepoint IBM!'));
+        setFeedbackMsg(t('¡Has comprado una Bluepoint IBM!'));
+        setFeedbackType('success');
+        setTimeout(() => {
+          setFeedbackMsg(null);
+          setFeedbackType(null);
+        }, 2500);
       } else {
-        alert(t('No hay stock disponible para este producto.'));
+        setFeedbackMsg(t('No hay stock disponible para este producto.'));
+        setFeedbackType('error');
+        setTimeout(() => {
+          setFeedbackMsg(null);
+          setFeedbackType(null);
+        }, 2500);
       }
     }
   };
@@ -127,29 +224,45 @@ const Shop: React.FC = () => {
     return inventory[category]?.includes(id);
   };
 
+  // Botón para resetear tienda y bugcoins (solo para desarrollo/admin)
+  const handleResetTienda = () => {
+    localStorage.removeItem('user_inventory');
+    localStorage.setItem('bugcoins', '1000');
+    window.location.reload();
+  };
+
+  const renderFeedback = () =>
+    feedbackMsg ? (
+      <div
+        className={`fixed top-8 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg text-lg font-bold shadow-lg transition-all duration-300
+          ${feedbackType === 'success' ? 'bg-green-600 text-white border-2 border-green-300' : 'bg-red-700 text-white border-2 border-red-400 animate-shake'}`}
+        style={{ minWidth: 220, textAlign: 'center' }}
+      >
+        {feedbackMsg}
+      </div>
+    ) : null;
+
   return (
-    <div className="min-h-screen bg-app text-app p-8 font-mono">
+    <div className="min-h-screen p-8" style={{fontFamily}}>
+      {/* Botón de reset tienda/dev */}
+      <button
+        onClick={handleResetTienda}
+        className="fixed top-6 right-6 z-50 px-4 py-2 rounded-lg bg-red-700 hover:bg-red-800 text-white font-bold border-2 border-red-400 shadow animate-glitch-btn"
+        title="Resetear tienda y bugcoins (solo desarrollo)"
+      >
+        Resetear Tienda
+      </button>
+      {renderFeedback()}
       <div className="max-w-5xl mx-auto">
-        {/* Botón de reset solo para desarrollo */}
-        {process.env.NODE_ENV !== 'production' && (
-          <button
-            className="mb-4 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-bold shadow-lg"
-            onClick={() => {
-              localStorage.removeItem('user_inventory');
-              localStorage.setItem('bugcoins', '1000');
-              window.location.reload();
-            }}
-          >
-            Resetear tienda y bugcoins (DEV)
-          </button>
-        )}
-        <h1 className="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-yellow-400 to-yellow-600 bg-clip-text text-transparent">
+        <h1 className="text-4xl font-extrabold mb-8 text-center text-cyan-300 drop-shadow-lg tracking-widest font-mono animate-glitch-text">
           {t('Tienda de Personalización')}
         </h1>
         <div className="flex justify-center gap-8 mb-8">
-          <span className="flex items-center gap-2 font-bold text-green-300">{bugcoins} <img src="/Moneda/Bugcoin.png" alt="bugcoin" className="w-6 h-6 inline" /> Bugcoins</span>
+          <span className="flex items-center gap-2 font-bold text-green-300 text-lg font-mono bg-black/40 px-4 py-2 rounded-xl border-2 border-cyan-400 shadow animate-glow">
+            {bugcoins} <img src="/Moneda/Bugcoin.png" alt="bugcoin" className="w-6 h-6 inline" />
+          </span>
           {isMVP && (
-            <div className="flex items-center gap-2 text-lg">
+            <div className="flex items-center gap-2 text-lg font-mono bg-black/40 px-4 py-2 rounded-xl border-2 border-blue-400 shadow animate-glow">
               <img src="/bluepoint.png" alt="bluepoint" className="w-6 h-6" />
               <span>{bluepoints} Bluepoints</span>
             </div>
@@ -161,7 +274,7 @@ const Shop: React.FC = () => {
             <button
               key={cat.key}
               onClick={() => setActiveTab(cat.key)}
-              className={`px-4 py-2 rounded-t-lg font-bold transition-all duration-200 ${activeTab === cat.key ? 'bg-yellow-500 text-white' : 'bg-card text-yellow-700'}`}
+              className={`px-6 py-3 rounded-t-xl font-bold font-mono border-2 border-cyan-400 bg-black/60 text-cyan-200 shadow transition-all duration-200 hover:bg-cyan-900/40 hover:text-cyan-100 animate-glitch-btn ${activeTab === cat.key ? 'bg-cyan-700 text-white border-pink-400' : ''}`}
             >
               {t(cat.label)}
             </button>
@@ -169,26 +282,34 @@ const Shop: React.FC = () => {
           {isMVP && (
             <button
               onClick={() => setActiveTab('mvp')}
-              className={`px-4 py-2 rounded-t-lg font-bold transition-all duration-200 ${activeTab === 'mvp' ? 'bg-blue-700 text-white' : 'bg-card text-blue-700'}`}
+              className={`px-6 py-3 rounded-t-xl font-bold font-mono border-2 border-blue-400 bg-black/60 text-blue-200 shadow transition-all duration-200 hover:bg-blue-900/40 hover:text-blue-100 animate-glitch-btn ${activeTab === 'mvp' ? 'bg-blue-700 text-white border-pink-400' : ''}`}
             >
               {t('Exclusivo MVP')}
             </button>
           )}
         </div>
         {/* Contenido de la categoría activa */}
-        <div className="bg-card rounded-b-xl p-8 shadow-lg border-2 border-yellow-400">
+        <div className="rounded-b-3xl p-8 shadow-2xl border-4 border-cyan-400 glassmorphism relative overflow-hidden" style={{clipPath:'polygon(0 0, 100% 0, 98% 100%, 2% 100%)'}}>
+          {/* SVG decorativo glitch/graffiti */}
+          <svg className="absolute left-0 top-0 w-full h-full pointer-events-none" style={{opacity:0.10, zIndex:0}}>
+            <g className="animate-glitch-move">
+              <rect x="10%" y="8%" width="120" height="18" fill="#00fff7" opacity="0.18" transform="skewY(-12)" />
+              <rect x="70%" y="18%" width="90" height="12" fill="#ff00cc" opacity="0.13" transform="skewX(-18)" />
+              <polygon points="80,400 120,420 100,440" fill="#ffe600" opacity="0.10" />
+            </g>
+          </svg>
           {activeTab !== 'mvp' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 z-10 relative">
               {shopCategories.find((cat) => cat.key === activeTab)?.products.map((product) => (
-                <div key={product.id} className="bg-gradient-to-br from-yellow-100 to-yellow-200 rounded-xl p-4 flex flex-col items-center shadow-md">
+                <div key={product.id} className="relative bg-black/60 rounded-2xl border-2 border-cyan-400 p-6 flex flex-col items-center shadow-xl glassmorphism animate-fade-in" style={{clipPath:'polygon(0 0, 100% 0, 98% 100%, 2% 100%)'}}>
                   {product.image && (
-                    <img src={product.image} alt={product.name} className={`w-20 h-20 mb-2 ${product.animated ? 'animate-pulse' : ''}`} />
+                    <img src={product.image} alt={product.name} className={`w-20 h-20 mb-2 rounded-xl border-2 border-pink-400 ${product.animated ? 'animate-pulse' : ''}`} />
                   )}
-                  <h3 className="font-bold text-lg mb-1 text-yellow-800">{t(product.name)}</h3>
-                  <div className="mb-2 text-yellow-700 flex items-center gap-1">{product.price} <img src="/Moneda/Bugcoin.png" alt="bugcoin" className="w-5 h-5 inline" />{product.currency === 'bluepoint' && ' Bluepoint'}</div>
+                  <h3 className="font-bold text-lg mb-1 text-cyan-200 font-mono animate-glitch-text">{t(product.name)}</h3>
+                  <div className="mb-2 text-cyan-400 flex items-center gap-1 font-mono">{product.price} <img src="/Moneda/Bugcoin.png" alt="bugcoin" className="w-5 h-5 inline" />{product.currency === 'bluepoint' && ' Bluepoint'}</div>
                   <button
                     onClick={() => handleBuy(product, activeTab)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg font-bold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-cyan-700 hover:bg-cyan-800 text-white px-6 py-2 rounded-lg font-bold font-mono border-2 border-cyan-400 shadow animate-glitch-btn transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                     disabled={isInInventory(activeTab, product.id)}
                   >
                     {isInInventory(activeTab, product.id) ? t('Comprado') : t('Comprar')}
@@ -197,20 +318,20 @@ const Shop: React.FC = () => {
               ))}
             </div>
           ) : isMVP ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 z-10 relative">
               {mvpExclusive.map((product) => (
-                <div key={product.id} className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl p-4 flex flex-col items-center shadow-md border-2 border-blue-400">
+                <div key={product.id} className="relative bg-black/60 rounded-2xl border-2 border-blue-400 p-6 flex flex-col items-center shadow-xl glassmorphism animate-fade-in" style={{clipPath:'polygon(0 0, 100% 0, 98% 100%, 2% 100%)'}}>
                   {product.image && (
-                    <img src={product.image} alt={product.name} className={`w-20 h-20 mb-2 ${product.animated ? 'animate-pulse' : ''}`} />
+                    <img src={product.image} alt={product.name} className={`w-20 h-20 mb-2 rounded-xl border-2 border-yellow-400 ${product.animated ? 'animate-pulse' : ''}`} />
                   )}
-                  <h3 className="font-bold text-lg mb-1 text-blue-800">{t(product.name)}</h3>
-                  <div className="mb-2 text-blue-700">{product.price} {product.currency === 'bugcoin' ? 'Bugcoin' : 'Bluepoint'}</div>
+                  <h3 className="font-bold text-lg mb-1 text-blue-200 font-mono animate-glitch-text">{t(product.name)}</h3>
+                  <div className="mb-2 text-blue-400 flex items-center gap-1 font-mono">{product.price} {product.currency === 'bugcoin' ? 'Bugcoin' : 'Bluepoint'}</div>
                   {product.currency === 'bluepoint' && (
                     <div className="text-xs text-blue-600 mb-1">{t('Stock')}: {product.stock}</div>
                   )}
                   <button
                     onClick={() => handleBuy(product, 'mvp')}
-                    className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg font-bold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-bold font-mono border-2 border-blue-400 shadow animate-glitch-btn transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-2"
                     disabled={product.currency === 'bugcoin' && isInInventory('mvp', product.id)}
                   >
                     {product.currency === 'bugcoin' && isInInventory('mvp', product.id) ? t('Comprado') : t('Comprar')}
@@ -219,12 +340,24 @@ const Shop: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-center text-red-500 font-bold text-lg">
+            <div className="text-center text-red-500 font-bold text-lg font-mono animate-glitch-text">
               {t('Solo el MVP del mes puede acceder a esta sección.')}
             </div>
           )}
         </div>
       </div>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        .glassmorphism { backdrop-filter: blur(8px) saturate(1.2); background: rgba(30,40,60,0.25); }
+        .animate-glitch-move { animation: glitchMove 7s infinite alternate linear; }
+        @keyframes glitchMove { 0%{transform:translateY(0);} 100%{transform:translateY(10px) skewX(-2deg);} }
+        .animate-glitch-btn { animation: glitchBtn 1.5s infinite steps(2, end); }
+        @keyframes glitchBtn { 0%{filter:none;} 20%{filter:brightness(1.2) hue-rotate(20deg);} 40%{filter:contrast(1.2) blur(0.5px);} 60%{filter:none;} 100%{filter:none;} }
+        .animate-glitch-text { animation: glitchText 1.2s infinite steps(2, end); }
+        @keyframes glitchText { 0%{text-shadow:2px 0 #00fff7, -2px 0 #ff00cc;} 50%{text-shadow:-2px 0 #ffe600, 2px 0 #00ff6a;} 100%{text-shadow:2px 0 #00fff7, -2px 0 #ff00cc;} }
+        .animate-fade-in { animation: fadeIn 1.2s both; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: none;} }
+      `}</style>
     </div>
   );
 };
