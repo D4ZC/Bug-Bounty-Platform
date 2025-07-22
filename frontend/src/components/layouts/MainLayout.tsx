@@ -41,6 +41,17 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <button aria-label="Perfil" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/profile')}>
             <User size={28} />
           </button>
+          {/* EQUIPOS - Lucide Users, ahora en navbar */}
+          <button aria-label="Equipos" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/equipos')}>
+            <span className="inline-block" style={{ width: 28, height: 28 }}>
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </span>
+          </button>
         </div>
         {/* Modal de mensajes */}
         {showMsgModal && (
@@ -71,47 +82,60 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </Header>
       <div className="flex flex-1">
         {/* Sidebar lateral restaurado */}
-        <SideNav aria-label="Menú lateral" className="bg-[#999999] shadow-md min-h-full w-[250px] flex flex-col items-start py-4 dark:bg-carbon-gray">
+        <SideNav aria-label="Menú lateral" className="bg-gradient-to-b from-black to-blue-900 shadow-md min-h-full w-[250px] flex flex-col items-start py-4">
           <SideNavItems>
-            <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
-              <Home size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">Inicio</span>
+            <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base">
+              <Home size={24} color="#fff" />
+              <span className="font-gamer-body text-white">Inicio</span>
             </SideNavLink>
             {/* Formulario con submenú */}
             <div className="w-full">
               <button
                 type="button"
-                className="flex flex-row items-center gap-3 px-4 py-2 w-full focus:outline-none text-left text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base"
+                className="flex flex-row items-center gap-3 px-4 py-2 w-full focus:outline-none text-left text-white hover:text-cyber-blue transition-colors font-carbon-base"
                 onClick={() => setFormOpen((v) => !v)}
                 aria-expanded={formOpen}
                 aria-controls="submenu-formulario"
               >
-                <FileText size={24} color="#161616" />
-                <span className="font-gamer-body text-carbon-dark">Formulario</span>
-                <svg className={`ml-auto w-4 h-4 transition-transform ${formOpen ? 'rotate-90' : ''}`} fill="none" stroke="#161616" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
+                <FileText size={24} color="#fff" />
+                <span className="font-gamer-body text-white">Formulario</span>
+                <svg className={`ml-auto w-4 h-4 transition-transform ${formOpen ? 'rotate-90' : ''}`} fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </button>
               {formOpen && (
                 <div id="submenu-formulario" className="pl-10 flex flex-col gap-1">
-                  <SideNavLink href="/formulario/crear" className="px-2 py-1 text-carbon-dark hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
-                  <SideNavLink href="/formulario" className="px-2 py-1 text-carbon-dark hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
+                  <SideNavLink href="/formulario/crear" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
+                  <SideNavLink href="/formulario" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
                 </div>
               )}
             </div>
-            <SideNavLink href="/ajustes" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
-              <SlidersHorizontal size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">Ajustes</span>
+            <SideNavLink href="/ajustes" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base">
+              <SlidersHorizontal size={24} color="#fff" />
+              <span className="font-gamer-body text-white">Ajustes</span>
             </SideNavLink>
-            <SideNavLink href="/shop" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2">
-              <ShoppingBag size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">Tienda</span>
+            <SideNavLink href="/shop" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base mt-2">
+              <ShoppingBag size={24} color="#fff" />
+              <span className="font-gamer-body text-white">Tienda</span>
             </SideNavLink>
-            <SideNavLink href="/gulag" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2">
-              <Landmark size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">Gulag</span>
+            <SideNavLink href="/gulag" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base mt-2">
+              <Landmark size={24} color="#fff" />
+              <span className="font-gamer-body text-white">Gulag</span>
             </SideNavLink>
-            <SideNavLink href="/chat" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2" onClick={e => { e.preventDefault(); setShowChat(true); }}>
-              <Mail size={24} color="#161616" />
-              <span className="font-gamer-body text-carbon-dark">CHAT</span>
+            <SideNavLink href="/chat" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base mt-2" onClick={e => { e.preventDefault(); setShowChat(true); }}>
+              <Mail size={24} color="#fff" />
+              <span className="font-gamer-body text-white">CHAT</span>
+            </SideNavLink>
+            {/* DUELOS - Espadas cruzadas Heroicons */}
+            <SideNavLink href="/duelos" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base mt-2">
+              <span className="inline-block" style={{ width: 24, height: 24 }}>
+                {/* Heroicons Swords SVG */}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 2L11 12" />
+                  <path d="M22 7L17 2L2 17L7 22L22 7Z" />
+                  <path d="M16 5L19 8" />
+                  <path d="M5 16L8 19" />
+                </svg>
+              </span>
+              <span className="font-gamer-body text-white">DUELOS</span>
             </SideNavLink>
           </SideNavItems>
         </SideNav>

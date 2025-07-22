@@ -1,5 +1,6 @@
 import React from 'react';
 import UserRankingTable from '../components/UserRankingTable';
+import TeamRankingTable from '../components/TeamRankingTable';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const mockUsers = [
@@ -29,9 +30,35 @@ const mockUsers = [
   },
 ];
 
+const mockTeams = [
+  {
+    id: 'T001',
+    name: 'P-TECH',
+    description: 'Equipo líder en ciberseguridad.',
+    members: ['U001', 'U002', 'U003'],
+    stats: { puntos: 2000, retos: 15, vulnerabilidades: 30 },
+  },
+  {
+    id: 'T002',
+    name: 'Data',
+    description: 'Expertos en análisis de datos.',
+    members: ['U004', 'U005'],
+    stats: { puntos: 1900, retos: 12, vulnerabilidades: 25 },
+  },
+  {
+    id: 'T003',
+    name: 'Apps',
+    description: 'Desarrolladores de aplicaciones.',
+    members: ['U006'],
+    stats: { puntos: 1500, retos: 10, vulnerabilidades: 14 },
+  },
+];
+
 // Ordenar por vulnerabilidades resueltas (descendente)
 const sortedUsers = [...mockUsers].sort((a, b) => b.stats.vulnerabilidades - a.stats.vulnerabilidades);
 const totalVulns = sortedUsers.reduce((acc, u) => acc + u.stats.vulnerabilidades, 0);
+const sortedTeams = [...mockTeams].sort((a, b) => b.stats.vulnerabilidades - a.stats.vulnerabilidades);
+const totalTeamVulns = sortedTeams.reduce((acc, t) => acc + t.stats.vulnerabilidades, 0);
 
 function getCurrentMonthName() {
   return new Date().toLocaleString('es-ES', { month: 'long' });
@@ -245,8 +272,6 @@ const UsersScorePage: React.FC = () => {
           ))}
         </div>
       </div>
-      {/* Sección de copas y estrellas */}
-      <TrophySection />
       {/* Contenido principal */}
       <div className="max-w-4xl mx-auto py-8">
         <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
@@ -254,7 +279,11 @@ const UsersScorePage: React.FC = () => {
         </div>
         <div className="mb-2 text-lg font-bold text-gray-700">{totalVulns} vulnerabilidades resueltas</div>
         <div className="mb-4 text-base font-semibold text-gray-600">Usuarios</div>
-        <UserRankingTable users={sortedUsers} />
+        <UserRankingTable users={sortedUsers.map(u => ({ ...u, nivel: 1 }))} />
+        {/* Tabla de equipos debajo */}
+        <div className="mt-12 mb-2 text-lg font-bold text-gray-700">{totalTeamVulns} vulnerabilidades resueltas por equipos</div>
+        <div className="mb-4 text-base font-semibold text-gray-600">Equipos</div>
+        <TeamRankingTable teams={sortedTeams} />
       </div>
     </>
   );

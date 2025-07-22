@@ -352,6 +352,7 @@ const Profile: React.FC = () => {
                     <span className="text-red-600 font-bold text-base">{totals.dislikes}</span>
                   </div>
                 </div>
+                <div className="text-xs text-gray-500 mt-2">NIVEL 1</div>
               </div>
               <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
                 <span className="font-bold text-gray-700 mb-1">PAÍS</span>
