@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -108,6 +109,79 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+  
+  .matrix-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.18;
+    background: repeating-linear-gradient(
+      to bottom,
+      #0f0 0px,
+      #0f0 2px,
+      transparent 2px,
+      transparent 16px
+    );
+    animation: matrix-fall 1.8s linear infinite;
+  }
+  
+  .glitch-card .glitch-text {
+    position: relative;
+    color: #6ee7b7; /* verde bajito */
+    font-family: inherit;
+    letter-spacing: 2px;
+    animation: glitch-move 1.2s infinite linear alternate;
+  }
+  .glitch-card .glitch-text::before,
+  .glitch-card .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    top: 0;
+    opacity: 0.7;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .glitch-card .glitch-text::before {
+    color: #00f;
+    transform: translate(-2px, -1px);
+    text-shadow: 2px 0 2px #00f;
+    animation: glitch-before 1.2s infinite linear alternate;
+  }
+  .glitch-card .glitch-text::after {
+    color: #f00;
+    transform: translate(2px, 1px);
+    text-shadow: -2px 0 2px #f00;
+    animation: glitch-after 1.2s infinite linear alternate;
+  }
+  @keyframes glitch-move {
+    0% { transform: none; }
+    20% { transform: translate(-1px, 1px) skew(-1deg, 0deg); }
+    40% { transform: translate(1px, -1px) skew(1deg, 1deg); }
+    60% { transform: translate(-1px, 2px) skew(-2deg, 0deg); }
+    80% { transform: translate(2px, 1px) skew(1deg, -1deg); }
+    100% { transform: none; }
+  }
+  @keyframes glitch-before {
+    0% { clip-path: inset(0 0 80% 0); }
+    20% { clip-path: inset(0 0 60% 0); }
+    40% { clip-path: inset(0 0 40% 0); }
+    60% { clip-path: inset(0 0 20% 0); }
+    80% { clip-path: inset(0 0 10% 0); }
+    100% { clip-path: inset(0 0 80% 0); }
+  }
+  @keyframes glitch-after {
+    0% { clip-path: inset(80% 0 0 0); }
+    20% { clip-path: inset(60% 0 0 0); }
+    40% { clip-path: inset(40% 0 0 0); }
+    60% { clip-path: inset(20% 0 0 0); }
+    80% { clip-path: inset(10% 0 0 0); }
+    100% { clip-path: inset(80% 0 0 0); }
+  }
 }
 
 @layer utilities {
@@ -189,4 +263,100 @@
 .bg-carbon-light { background-color: #f4f4f4; } 
 .text-strong-blue { color: #0000FF; }
 .bg-strong-blue { background-color: #0000FF; }
-.border-strong-blue { border-color: #0000FF; } 
+.border-strong-blue { border-color: #0000FF; }
+@keyframes matrix-fall {
+  0% { background-position-y: 0; }
+  100% { background-position-y: 32px; }
+}
+
+.carbon-fiber-bg {
+  background-color: #111;
+  background-image:
+    repeating-linear-gradient(135deg, #222 0px, #222 2px, transparent 2px, transparent 8px),
+    repeating-linear-gradient(45deg, #222 0px, #222 2px, transparent 2px, transparent 8px);
+  background-size: 16px 16px, 16px 16px;
+  background-blend-mode: overlay;
+}
+
+.pixel-card {
+  background: #111;
+  border: 4px solid #3b3b3b;
+  box-shadow: 0 0 0 4px #2196f3, 0 8px 32px 0 rgba(0,0,0,0.5);
+  image-rendering: pixelated;
+  position: relative;
+  overflow: hidden;
+  filter: contrast(1.2) brightness(1.1);
+  animation: pixel-glow 2.2s infinite alternate;
+}
+.pixel-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: repeating-linear-gradient(135deg, #222 0px, #222 8px, #2196f3 8px, #2196f3 16px, #111 16px, #111 32px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+@keyframes pixel-glow {
+  0% { box-shadow: 0 0 0 4px #2196f3, 0 8px 32px 0 rgba(0,0,0,0.5); }
+  100% { box-shadow: 0 0 0 8px #2196f3, 0 8px 32px 0 rgba(0,0,0,0.7); }
+}
+.pixel-text {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 2rem;
+  color: #2196f3;
+  text-shadow: 2px 2px 0 #111, 4px 4px 0 #3b3b3b;
+  letter-spacing: 2px;
+  filter: contrast(1.5) brightness(1.2);
+  animation: pixel-flicker 1.2s infinite alternate;
+}
+@keyframes pixel-flicker {
+  0% { opacity: 1; filter: brightness(1.2); }
+  80% { opacity: 0.95; filter: brightness(1.1); }
+  100% { opacity: 1; filter: brightness(1.3); }
+}
+
+.pixel-card-mvp {
+  background: #2d0036;
+  border: 4px solid #a1003a;
+  box-shadow: 0 0 0 4px #a1003a, 0 8px 32px 0 rgba(0,0,0,0.5);
+  image-rendering: pixelated;
+  position: relative;
+  overflow: hidden;
+  filter: contrast(1.2) brightness(1.1);
+  animation: pixel-glow-mvp 2.2s infinite alternate;
+}
+.pixel-card-mvp::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: repeating-linear-gradient(135deg, #a1003a 0px, #a1003a 8px, #7c3aed 8px, #7c3aed 16px, #2d0036 16px, #2d0036 32px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+@keyframes pixel-glow-mvp {
+  0% { box-shadow: 0 0 0 4px #a1003a, 0 8px 32px 0 rgba(0,0,0,0.5); }
+  100% { box-shadow: 0 0 0 8px #a1003a, 0 8px 32px 0 rgba(0,0,0,0.7); }
+}
+.pixel-text-mvp {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 2rem;
+  color: #ff1744;
+  text-shadow: 2px 2px 0 #7c3aed, 4px 4px 0 #2d0036;
+  letter-spacing: 2px;
+  filter: contrast(1.5) brightness(1.2);
+  animation: pixel-flicker-mvp 1.2s infinite alternate;
+}
+@keyframes pixel-flicker-mvp {
+  0% { opacity: 1; filter: brightness(1.2); }
+  80% { opacity: 0.95; filter: brightness(1.1); }
+  100% { opacity: 1; filter: brightness(1.3); }
+}
+
+.mvp-shadow-text {
+  text-shadow:
+    2px 2px 0 #ff1744,   /* sombra roja abajo-derecha */
+    -2px -2px 0 #7c3aed, /* sombra morada arriba-izquierda */
+    0 0 2px #000;
+} 

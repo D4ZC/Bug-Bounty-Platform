@@ -13,6 +13,7 @@ const CrearVulnerabilidad: React.FC = () => {
   // Variables de usuario (mock, luego se puede obtener de contexto)
   const usuarioNombre = 'Alex Turner';
   const usuarioEmail = 'alex.turner@email.com';
+  const usuarioId = 'USR-001'; // Aquí deberías obtener el ID real del perfil
   const fecha = new Date().toISOString().slice(0, 10);
 
   // Convertir imagen a base64
@@ -83,9 +84,17 @@ const CrearVulnerabilidad: React.FC = () => {
           <label className="font-semibold text-gray-700">Nombre del usuario
             <input type="text" className="input mt-1 bg-gray-100" value={usuarioNombre} readOnly />
           </label>
-          <label className="font-semibold text-gray-700">Email
-            <input type="text" className="input mt-1 bg-gray-100" value={usuarioEmail} readOnly />
-          </label>
+          {/* Fila Email + ID */}
+          <div className="flex flex-row gap-2 items-center">
+            <label className="font-semibold text-gray-700 flex-1">
+              Email
+              <input type="text" className="input mt-1 bg-gray-100" style={{ width: '242px' }} value={usuarioEmail} readOnly />
+            </label>
+            <label className="font-semibold text-gray-700 flex-1 text-right ml-[50px]">
+              <span style={{ marginLeft: '-150px', display: 'inline-block' }}>ID</span>
+              <input type="text" className="input mt-1 bg-gray-100 w-32 text-right font-mono border-l-2 border-blue-400" value={usuarioId} readOnly />
+            </label>
+          </div>
           <label className="font-semibold text-gray-700">Fecha
             <input type="text" className="input mt-1 bg-gray-100" value={fecha} readOnly />
           </label>

@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
-import { Home, List, SettingsAdjust, Tablet, Add, Notification, UserAvatar } from '@carbon/icons-react';
-import { Bell, User, Menu, Home as HomeIcon, FileText, Globe, Mail, ShoppingBag, Landmark } from 'lucide-react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LanguageSelector from '../LanguageSelector';
 import ChatModal from '../ChatModal';
+import { Header, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
+import { Mail, User, Home, FileText, SlidersHorizontal, ShoppingBag, Landmark } from 'lucide-react';
 
 const NAVBAR_HEIGHT = 64 + 50; // altura original + 50px extra
 // Elimino SIDEBAR_HEIGHT y lógica de sidebar superior
@@ -46,13 +45,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* Modal de mensajes */}
         {showMsgModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <div className="bg-carbon-light rounded-xl shadow-2xl flex w-[500px] h-[300px] border-2 border-strong-blue animate-fade-in">
+            <div className="bg-carbon-light rounded-xl shadow-2xl flex w-[500px] h-[300px] border-2 border-black animate-fade-in">
               {/* Sección izquierda: lista de títulos */}
               <div className="w-[120px] h-full border-r border-carbon-gray flex flex-col overflow-y-auto">
                 {mensajes.map((msg, idx) => (
                   <button
                     key={msg.title}
-                    className={`w-full px-2 py-2 text-left font-gamer-body text-sm border-b border-carbon-gray hover:bg-strong-blue hover:text-white transition-colors ${selectedMsg === idx ? 'bg-strong-blue text-white' : 'bg-transparent text-carbon-dark'}`}
+                    className={`w-full px-2 py-2 text-left font-gamer-body text-sm border-b border-carbon-gray hover:bg-black hover:text-white transition-colors ${selectedMsg === idx ? 'bg-black text-white' : 'bg-transparent text-carbon-dark'}`}
                     onClick={() => setSelectedMsg(idx)}
                   >
                     {msg.title}
@@ -64,7 +63,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <div className="font-gamer-body text-carbon-dark text-base mb-2">
                   {mensajes[selectedMsg].content}
                 </div>
-                <button className="self-end mt-auto px-3 py-1 rounded bg-strong-blue text-white font-bold hover:bg-carbon-blue transition-colors" onClick={() => setShowMsgModal(false)}>Cerrar</button>
+                <button className="self-end mt-auto px-3 py-1 rounded bg-black text-white font-bold hover:bg-gray-800 transition-colors" onClick={() => setShowMsgModal(false)}>Cerrar</button>
               </div>
             </div>
           </div>
@@ -99,7 +98,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               )}
             </div>
             <SideNavLink href="/ajustes" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base">
-              <SettingsAdjust size={24} color="#161616" />
+              <SlidersHorizontal size={24} color="#161616" />
               <span className="font-gamer-body text-carbon-dark">Ajustes</span>
             </SideNavLink>
             <SideNavLink href="/shop" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-carbon-dark hover:text-cyber-blue transition-colors font-carbon-base mt-2">

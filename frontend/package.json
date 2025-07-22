@@ -18,6 +18,7 @@
     "jwt-decode": "^3.1.2",
     "lucide-react": "^0.263.0",
     "react": "^18.2.0",
+    "react-country-flag": "^3.1.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.0",
     "react-error-boundary": "^4.0.0",
@@ -30,10 +31,12 @@
     "react-query": "^3.39.0",
     "react-router-dom": "^6.8.0",
     "react-syntax-highlighter": "^15.5.0",
+    "react-tsparticles": "^1.43.1",
     "react-virtualized": "^9.22.0",
     "recharts": "^2.5.0",
     "socket.io-client": "^4.6.0",
     "tailwind-merge": "^1.13.0",
+    "tsparticles": "^1.43.1",
     "zustand": "^4.3.0"
   },
   "devDependencies": {

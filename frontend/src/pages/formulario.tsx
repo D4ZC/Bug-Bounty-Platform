@@ -3,11 +3,13 @@ import { CardData } from '../types';
 import { ThumbsUp, ThumbsDown } from 'lucide-react';
 
 const getUserEmail = () => localStorage.getItem('usuario_email_actual') || '';
+const getUserId = () => localStorage.getItem('usuario_id_actual') || 'USR-001';
 
 const Formulario: React.FC = () => {
   const [cards, setCards] = useState<CardData[]>([]);
   const [modalCard, setModalCard] = useState<CardData | null>(null);
   const usuarioEmail = getUserEmail();
+  const usuarioId = getUserId();
 
   useEffect(() => {
     const stored = localStorage.getItem('vulnerabilidades');
@@ -51,12 +53,13 @@ const Formulario: React.FC = () => {
       <h2 className="text-2xl font-bold mb-8 text-carbon-dark">Vulnerabilidades registradas</h2>
       <div className="flex flex-wrap gap-8 justify-center">
         {cards.map(card => (
-          <div key={card.id} className="w-[200px] h-[150px] bg-white border border-gray-300 shadow-lg rounded-lg p-4 flex flex-col justify-between mb-8">
+          <div key={card.id} className="w-[260px] h-[180px] bg-white border border-gray-300 shadow-lg rounded-lg p-5 flex flex-col justify-between mb-8">
             {/* Info */}
             <div>
               <h3 className="text-base font-semibold text-carbon-dark mb-1 truncate">{card.nombre}</h3>
               <p className="text-xs text-gray-700 mb-0.5 truncate">{card.jugador}</p>
               <p className="text-xs text-gray-500 mb-0.5 truncate">{card.email}</p>
+              <p className="text-xs font-mono text-blue-500 mb-0.5 hover:underline transition-all">ID: {usuarioId}</p>
               <p className="text-xs text-gray-400 mb-2">{card.fecha}</p>
             </div>
             {/* Fila de acciones: votos y ver más */}

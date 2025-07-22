@@ -217,42 +217,42 @@ const GulagDesafio: React.FC = () => {
   const border = 'border-cyan-400';
 
   return (
-    <div className="max-w-2xl mx-auto mt-8 p-6 rounded-2xl shadow-2xl bg-[#bdb76b] border-2 border-[#228B22] animate-glow">
-      <button onClick={() => navigate('/gulag')} className="mb-4 text-[#228B22] hover:underline hover:text-green-700 transition-all">&larr; Regresar</button>
-      <h1 className="text-3xl font-bold mb-2 text-[#228B22] drop-shadow-glow">{desafio.titulo}</h1>
-      <div className="mb-2 text-green-900">{desafio.descripcion}</div>
+    <div className="max-w-2xl mx-auto mt-8 p-6 rounded-2xl shadow-2xl bg-gray-100 border-2 border-black animate-glow">
+      <button onClick={() => navigate('/gulag')} className="mb-4 text-black hover:underline hover:text-gray-700 transition-all">&larr; Regresar</button>
+      <h1 className="text-3xl font-bold mb-2 text-black drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]">{desafio.titulo}</h1>
+      <div className="mb-2 text-gray-800">{desafio.descripcion}</div>
       <div className="mb-2">
-        <span className="font-bold text-[#228B22]">Reglas:</span>
-        <ul className="list-disc ml-6 text-green-900">
+        <span className="font-bold text-black">Reglas:</span>
+        <ul className="list-disc ml-6 text-gray-700">
           {desafio.reglas.map((r, i) => <li key={i}>{r}</li>)}
         </ul>
       </div>
       <div className="mb-2">
-        <span className="font-bold text-[#228B22]">Archivos:</span>
+        <span className="font-bold text-black">Archivos:</span>
         <ul className="ml-6">
           {desafio.archivos.map((a, i) => (
-            <li key={i}><a href={a.url} target="_blank" rel="noopener noreferrer" className="text-[#228B22] underline hover:text-green-700 transition-all">{a.nombre}</a></li>
+            <li key={i}><a href={a.url} target="_blank" rel="noopener noreferrer" className="text-black underline hover:text-gray-700 transition-all">{a.nombre}</a></li>
           ))}
         </ul>
       </div>
       <div className="mb-2">
-        <span className="font-bold text-[#228B22]">Tiempo restante:</span> <span className="font-mono text-lg text-green-900">{Math.floor(tiempoRestante/60)}m {(tiempoRestante%60).toString().padStart(2,'0')}s</span>
-        <div className="w-full h-3 bg-green-200 rounded-full mt-1 mb-2 overflow-hidden">
-          <div style={{ width: `${(tiempoRestante/(desafio.tiempo))*100}%`, boxShadow: '0 0 12px 2px #228B22' }} className="h-3 rounded-full transition-all duration-300 bg-[#228B22] animate-glow" />
+        <span className="font-bold text-black">Tiempo restante:</span> <span className="font-mono text-lg text-black">{Math.floor(tiempoRestante/60)}m {(tiempoRestante%60).toString().padStart(2,'0')}s</span>
+        <div className="w-full h-3 bg-gray-300 rounded-full mt-1 mb-2 overflow-hidden">
+          <div style={{ width: `${(tiempoRestante/(desafio.tiempo))*100}%`, boxShadow: '0 0 12px 2px #6366f1' }} className="h-3 rounded-full transition-all duration-300 bg-black animate-glow" />
         </div>
       </div>
       <div className="mb-2">
-        <label className="font-bold text-[#228B22]">Lenguaje:</label>
-        <select className="ml-2 bg-[#bdb76b] border border-[#228B22] text-green-900 rounded px-2 py-1" value={desafio.lenguaje} disabled>
+        <label className="font-bold text-black">Lenguaje:</label>
+        <select className="ml-2 bg-gray-100 border border-black text-black rounded px-2 py-1" value={desafio.lenguaje} disabled>
           <option>{desafio.lenguaje}</option>
         </select>
       </div>
       <div className="mb-2">
-        <label className="font-bold text-[#228B22]">Editor de código:</label>
-        <button type="button" onClick={handleCopy} className="ml-2 px-2 py-1 bg-[#228B22] text-green-900 rounded text-xs font-bold hover:bg-green-700 transition-all animate-glow">Copiar código</button>
+        <label className="font-bold text-black">Editor de código:</label>
+        <button type="button" onClick={handleCopy} className="ml-2 px-2 py-1 bg-black text-white rounded text-xs font-bold hover:bg-gray-800 transition-all animate-glow">Copiar código</button>
         <textarea
           ref={textareaRef}
-          className="w-full min-h-[120px] border-2 border-[#228B22] rounded p-2 mt-2 bg-[#bdb76b] text-green-900 font-mono animate-glow focus:border-green-700"
+          className="w-full min-h-[120px] border-2 border-black rounded p-2 mt-2 bg-gray-100 text-black font-mono animate-glow focus:border-gray-800"
           value={solucion}
           onChange={e => setSolucion(e.target.value)}
           disabled={bloqueado || enviado}
@@ -260,12 +260,12 @@ const GulagDesafio: React.FC = () => {
         />
       </div>
       <div className="mb-2">
-        <span className="font-bold text-[#228B22]">Historial de envíos:</span>
-        <button type="button" onClick={handleLimpiarHistorial} className="ml-2 px-2 py-1 bg-[#228B22] text-green-900 rounded text-xs font-bold hover:bg-green-700 transition-all animate-glow">Limpiar historial</button>
-        <div className="mt-1 text-green-900 text-xs">
+        <span className="font-bold text-black">Historial de envíos:</span>
+        <button type="button" onClick={handleLimpiarHistorial} className="ml-2 px-2 py-1 bg-black text-white rounded text-xs font-bold hover:bg-gray-800 transition-all animate-glow">Limpiar historial</button>
+        <div className="mt-1 text-gray-700 text-xs">
           {historial.length === 0 ? 'Aún no has enviado ninguna solución.' : (
             <ul className="list-decimal ml-6">
-              {historial.map((h, i) => <li key={i}><pre className="whitespace-pre-wrap text-green-900">{h}</pre></li>)}
+              {historial.map((h, i) => <li key={i}><pre className="whitespace-pre-wrap text-black">{h}</pre></li>)}
             </ul>
           )}
         </div>
@@ -274,7 +274,7 @@ const GulagDesafio: React.FC = () => {
       {/* Botón de acción principal */}
       {isPreview ? (
         <button
-          className="w-full bg-[#228B22] text-green-900 px-4 py-3 rounded font-bold text-lg hover:bg-green-700 transition-all animate-glow mt-2 mb-4"
+          className="w-full bg-black text-white px-4 py-3 rounded font-bold text-lg hover:bg-gray-800 transition-all animate-glow mt-2 mb-4"
           onClick={handleComenzar}
         >
           Comenzar
@@ -283,7 +283,7 @@ const GulagDesafio: React.FC = () => {
         <form onSubmit={handleSubmit} className="mb-4">
           <button
             type="submit"
-            className={`w-full px-4 py-3 rounded font-bold text-lg mt-2 mb-4 animate-glow transition-all ${enviado ? 'bg-green-400 text-green-900' : 'bg-[#228B22] text-green-900 hover:bg-green-700'}`}
+            className={`w-full px-4 py-3 rounded font-bold text-lg mt-2 mb-4 animate-glow transition-all ${enviado ? 'bg-gray-400 text-black' : 'bg-black text-white hover:bg-gray-800'}`}
             disabled={bloqueado || enviado}
           >
             {enviado ? '¡Completado!' : 'Enviar solución'}
@@ -291,7 +291,7 @@ const GulagDesafio: React.FC = () => {
         </form>
       )}
       {enviado && (
-        <div className="p-4 bg-green-900 text-green-200 rounded font-bold mb-2 animate-glow">
+        <div className="p-4 bg-black text-white rounded font-bold mb-2 animate-glow">
           ¡Solución enviada! Has ganado {desafio.puntos} puntos.<br />
           Tu puntaje total: {getUserScore()}
         </div>

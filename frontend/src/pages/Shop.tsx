@@ -99,8 +99,8 @@ const Shop: React.FC = () => {
   const products = PRODUCTS[selectedCategory];
   const selectedProduct = products[selectedProductIdx];
 
-  // Forzar 1000 monedas en la tienda para pruebas
-  const displayCoins = 1000;
+  // Mostrar las monedas reales del usuario
+  const displayCoins = coins;
 
   return (
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-br from-blue-50 via-white to-cyan-50 animate-fade-in">
