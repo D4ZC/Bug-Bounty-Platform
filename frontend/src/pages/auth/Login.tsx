@@ -17,6 +17,7 @@ const Login: React.FC = () => {
     setError(null);
     const success = await login(email, password);
     if (success) {
+      localStorage.setItem('tutorialShowNext', 'true');
       navigate('/', { replace: true });
     } else {
       setError('Email o contraseña incorrectos.');

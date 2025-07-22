@@ -17,6 +17,7 @@ import {
   Search as SearchIcon
 } from '@carbon/icons-react';
 import { useAuth } from '@/contexts/AuthContext';
+import Modal from '../ui/Modal';
 // import ToastContainer from '@/components/ui/ToastContainer';
 
 const MainLayout: React.FC = () => {
@@ -35,24 +36,34 @@ const MainLayout: React.FC = () => {
       prev.includes(idx) ? prev.filter(i => i !== idx) : [...prev, idx]
     );
   };
+  const [showTutorial, setShowTutorial] = useState(false);
+
+  React.useEffect(() => {
+    // Solo mostrar el tutorial si se acaba de loguear (tutorialShowNext) y no se ha visto antes
+    if (user && localStorage.getItem('tutorialShowNext')) {
+      setShowTutorial(true);
+      localStorage.removeItem('tutorialShowNext');
+      localStorage.setItem('tutorialSeen', 'true');
+    }
+  }, [user]);
 
   const navigationItems = [
     { path: '/search', icon: SearchIcon, label: t('search.title') },
     { path: '/', icon: Home, label: t('dashboard') },
-    { path: '/vulnerabilities', icon: Dashboard, label: t('Vulnerabilities') },
-    { path: '/challenges', icon: Dashboard, label: t('Challenges') },
+    { path: '/vulnerabilities', icon: Dashboard, label: t('Vulnerabilidades') },
+    { path: '/challenges', icon: Dashboard, label: t('Retos y desafios') },
     { path: '/rankings', icon: List, label: t('rankings.title') },
     { path: '/chat', icon: UserMultiple, label: t('chat.title') },
-    { path: '/shop', icon: ShoppingCart, label: t('Shop') },
-    { path: '/contributions', icon: Report, label: t('Contributions') },
-    { path: '/team', icon: UserMultiple, label: t('Team') },
-    { path: '/gulag', icon: Dashboard, label: 'Gulag' },
-    { path: '/mvp', icon: Dashboard, label: 'MVP' },
-    { path: '/list', icon: List, label: t('List') },
-    { path: '/report', icon: Report, label: t('Report') },
-    { path: '/notifications', icon: Notification, label: t('Notifications') },
-    { path: '/profile', icon: User, label: t('Profile') },
-    { path: '/settings', icon: Settings, label: t('Settings') },
+    { path: '/shop', icon: ShoppingCart, label: t('Tienda') },
+    { path: '/contributions', icon: Report, label: t('Contribuciones') },
+    { path: '/team', icon: UserMultiple, label: t('Equipo') },
+    { path: '/gulag', icon: Dashboard, label: t('Gulag') },
+    { path: '/mvp', icon: Dashboard, label: t('MVP') },
+    { path: '/list', icon: List, label: t('Listado de reportes') },
+    { path: '/report', icon: Report, label: t('Reportes') },
+    { path: '/notifications', icon: Notification, label: t('Notificaciones') },
+    { path: '/profile', icon: User, label: t('Perfil') },
+    { path: '/settings', icon: Settings, label: t('Configuraciones') },
   ];
 
   // Add admin links only for admin users
@@ -294,6 +305,53 @@ const MainLayout: React.FC = () => {
           onClick={() => setSidebarOpen(false)}
         />
       )}
+      <Modal open={showTutorial} onClose={() => setShowTutorial(false)}>
+        <div className="p-2 max-w-2xl w-full mx-auto flex flex-col items-center border-2 border-gray-200 rounded-lg mt-2 mb-2 max-h-[70vh] overflow-y-auto" style={{marginTop: '10px', marginBottom: '10px'}}>
+          <h2 className="text-2xl font-bold mb-2 text-blue-700 flex items-center gap-2">👋 Bienvenido a Bug Bounty Platform</h2>
+          <p className="mb-4 text-gray-700">Esta plataforma te permite reportar vulnerabilidades, participar en retos, colaborar con equipos y mejorar la seguridad de aplicaciones reales.</p>
+
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-4">🚀 ¿Por dónde empezar?</h3>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li><b>🏠 Navegación:</b> Usa el menú lateral para acceder a las secciones principales.</li>
+            <li><b>🐞 Reportes:</b> Envía vulnerabilidades desde la sección <b>Report</b> y haz seguimiento en <b>List</b>.</li>
+            <li><b>🏆 Retos:</b> Participa en desafíos de seguridad y gana puntos.</li>
+            <li><b>🎨 Personalización:</b> Cambia tu idioma, tema y preferencias desde <b>Settings</b>.</li>
+            <li><b>🔔 Notificaciones:</b> Recibe alertas sobre actividad relevante en la plataforma.</li>
+            <li><b>🤝 Equipos:</b> Únete o crea equipos para competir y colaborar.</li>
+          </ul>
+
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-4">🛡️ Tips de Seguridad</h3>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li>Utiliza contraseñas seguras y cámbialas periódicamente.</li>
+            <li>Activa las notificaciones para estar al tanto de cambios importantes.</li>
+            <li>No compartas información sensible fuera de la plataforma.</li>
+            <li>Consulta la sección <b>Seguridad</b> en <b>Settings</b> para más opciones.</li>
+          </ul>
+
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-4">📚 Recursos útiles</h3>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li><a href="https://owasp.org/www-project-top-ten/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">OWASP Top 10</a>: Principales riesgos de seguridad web.</li>
+            <li><a href="https://www.hackerone.com/" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">HackerOne</a>: Comunidad y programas de bug bounty.</li>
+            <li><a href="https://portswigger.net/web-security" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">PortSwigger Web Security Academy</a>: Laboratorios y guías gratuitas.</li>
+          </ul>
+
+          <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-4">❓ Preguntas Frecuentes</h3>
+          <ul className="list-disc pl-6 mb-4 text-gray-700">
+            <li><b>¿Cómo gano puntos?</b> Reportando vulnerabilidades válidas y completando retos.</li>
+            <li><b>¿Puedo colaborar con otros?</b> Sí, puedes unirte o crear equipos.</li>
+            <li><b>¿Dónde veo mi progreso?</b> En el dashboard y en tu perfil.</li>
+            <li><b>¿Qué hago si tengo un problema?</b> Usa la sección de <b>Notificaciones</b> o contacta a soporte.</li>
+          </ul>
+
+          <div className="mb-4 text-gray-600 text-sm">Puedes volver a ver este tutorial desde la sección de configuración en cualquier momento (próximamente).</div>
+          <button
+            className="mt-2 px-6 py-2 rounded-lg bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition-colors"
+            onClick={() => setShowTutorial(false)}
+          >
+            ¡Entendido!
+          </button>
+        </div>
+      </Modal>
       {/* <ToastContainer /> */}
     </div>
   );
