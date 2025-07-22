@@ -17,6 +17,7 @@ import Shop from '@/pages/Shop';
 import Contributions from '@/pages/Contributions';
 import Profile from '@/pages/Profile';
 import Team from '@/pages/Team';
+import Home from '@/pages/Home';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
@@ -51,6 +52,7 @@ function App() {
           <Route path="shop" element={<Shop />} />
           <Route path="contributions" element={<Contributions />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="home" element={<Home />} />
           <Route path="team" element={<Team />} />
           <Route path="gulag" element={<Gulag />} />
           <Route path="mvp" element={<MVP />} />
@@ -58,7 +60,6 @@ function App() {
           <Route path="messages" element={<Messages />} />
           <Route path="files" element={<Files />} />
           <Route path="file-review" element={<FileReview />} />
-          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

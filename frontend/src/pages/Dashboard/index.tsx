@@ -220,16 +220,6 @@ const Dashboard: React.FC = () => {
         <div className="tabs-header flex gap-2 mb-4">
           <button
             className={`tab px-4 py-2 rounded-t-lg font-semibold transition-colors duration-150 ${
-              activeTab === 'team'
-                ? 'bg-blue-200 dark:bg-blue-700 text-blue-900 dark:text-blue-100 shadow'
-                : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-blue-100 dark:hover:bg-blue-800'
-            }`}
-            onClick={() => setActiveTab('team')}
-          >
-            Team
-          </button>
-          <button
-            className={`tab px-4 py-2 rounded-t-lg font-semibold transition-colors duration-150 ${
               activeTab === 'score_team'
                 ? 'bg-gray-200 dark:bg-gray-700 text-blue-700 dark:text-blue-300 shadow'
                 : 'bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800'
@@ -263,57 +253,6 @@ const Dashboard: React.FC = () => {
           </button>
         </div>
         <div className="tabs-content bg-gray-100 dark:bg-gray-800 rounded-b-xl shadow p-4 min-h-[320px] transition-colors duration-300">
-          {/* Team Tab */}
-          {activeTab === 'team' && (
-            <div className="tab-panel grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {PROJECTS.map((project) => {
-                // Mock para deployment
-                const lastDeployment = '26 days ago';
-                const deploymentName = 'nodejs-v20-npm-container-image - v1';
-                // Total de vulnerabilidades
-                const totalVulns = project.vulnerabilities.reduce((acc, v) => {
-                  return acc + DIFFICULTY_LABELS.reduce((sum, diff) => sum + ((v.difficulties[diff] || []).length), 0);
-                }, 0);
-                // Conteo por dificultad
-                const difficultyCounts = DIFFICULTY_LABELS.map(diff =>
-                  project.vulnerabilities.reduce((acc, v) => acc + ((v.difficulties[diff] || []).length), 0)
-                );
-                return (
-                  <div key={project.id} className="project-card bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 min-w-[320px]">
-                    {/* Nombre del proyecto */}
-                    <div className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">{project.name}</div>
-                    {/* Fila de dificultades */}
-                    <div className="flex w-full justify-between mb-2">
-                      {DIFFICULTY_LABELS.map((diff, idx) => (
-                        <div key={diff} className="flex flex-col items-center flex-1">
-                          <span className="text-xs text-gray-500 mb-1">{diff}</span>
-                          <button
-                            className="text-lg font-semibold text-gray-900 dark:text-gray-100 focus:outline-none"
-                            onClick={() => openVulnModal(project, diff)}
-                            disabled={difficultyCounts[idx] === 0}
-                            style={{ cursor: difficultyCounts[idx] === 0 ? 'not-allowed' : 'pointer', opacity: difficultyCounts[idx] === 0 ? 0.5 : 1 }}
-                          >
-                            {difficultyCounts[idx]}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                    {/* Fila de totales y deployment */}
-                    <div className="flex w-full justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                      <div>Total vulnerabilities</div>
-                      <div className="font-semibold">{totalVulns}</div>
-                    </div>
-                    <div className="flex w-full justify-between text-sm text-gray-700 dark:text-gray-300 mb-1">
-                      <div>Last deployment</div>
-                      <div>{lastDeployment}</div>
-                    </div>
-                    {/* Nombre de la imagen/deployment */}
-                    <div className="text-xs text-gray-500 mt-2">{deploymentName}</div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
           {/* Score Team */}
           {activeTab === 'score_team' && (
             <div className="tab-panel">

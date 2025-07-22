@@ -4,15 +4,17 @@ import {
   ChartPie, 
   Calendar, 
   ChartBar, 
-  Settings, 
+  Settings as SettingsIcon, 
   Email, 
   Light,
   Moon,
   Folder,
   UserMilitary,
   Folders,
-  DataViewAlt
+  DataViewAlt,
+  Home
 } from '@carbon/icons-react';
+import Settings from '@/pages/Settings';
 
 // Custom Crossed Swords Icon Component (ya no se usa, pero lo dejo por si lo necesitas)
 // const CrossedSwords: React.FC<{ size?: number; className?: string }> = ({ size = 20, className = '' }) => (
@@ -47,6 +49,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [settings, setSettings] = useState(getInitialSettings());
   const navigate = useNavigate();
   const location = useLocation();
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Escuchar cambios en settings
   useEffect(() => {
@@ -70,6 +73,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Navigation items for MANAGE section
   const manageItems = [
+    { id: 'home', icon: <Home size={20} />, label: 'Home', path: '/home' },
     { id: 'dashboard', icon: <ChartPie size={20} />, label: 'Dashboard', path: '/dashboard' },
     { id: 'calendar', icon: <Calendar size={20} />, label: 'Calendar', path: '/calendar' },
     { id: 'duels', icon: <UserMilitary size={20} />, label: 'Duels', path: '/duels' },
@@ -80,7 +84,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Navigation items for SETTINGS section
   const settingsItems = [
-    { id: 'settings', icon: <Settings size={20} />, label: 'Settings', path: '/settings' },
     { id: 'messages', icon: <Email size={20} />, label: 'Messages', path: '/messages' },
   ];
 
@@ -126,13 +129,25 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 ? 'bg-black' 
                 : 'bg-white border-b border-gray-200'
           }`}
-          style={{ fontSize: 'inherit' }}
+          style={{ fontSize: 'inherit', justifyContent: 'space-between' }}
         >
           <h1 className={`text-2xl font-bold tracking-wide ${settings.appColor === 'white' || (settings.appColor === 'grey' && settings.greyVariant === 'grey-lightbar') ? 'text-gray-900' : 'text-white'}`}>BugBounty</h1>
+          <button onClick={() => setShowSettingsModal(true)} className="ml-auto flex items-center text-gray-500 hover:text-blue-600 focus:outline-none">
+            <SettingsIcon size={28} />
+          </button>
         </nav>
+        {/* Settings Modal */}
+        {showSettingsModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl p-6 relative">
+              <button onClick={() => setShowSettingsModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold">&times;</button>
+              <Settings />
+            </div>
+          </div>
+        )}
 
         {/* Main Content with Sidebar */}
-        <div className="flex flex-1">
+    <div className="flex flex-1">
           {/* Sidebar */}
           <aside 
             className={`transition-all duration-300 ease-in-out ${expanded ? 'w-64' : 'w-16'} transition-colors ${
@@ -197,7 +212,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 })}
               </nav>
             </div>
-            {/* SETTINGS Section */}
+            {/* SETTINGS Section (only Messages now) */}
             <div className={`${sidebarSize.padding}`}>
               {expanded && (
                 <h4 className={`text-xs font-medium uppercase tracking-wider mb-4 ${settings.appColor === 'black' || settings.greyVariant === 'grey-darkbar' ? 'text-gray-400' : 'text-gray-500'}`}>SETTINGS</h4>
@@ -241,10 +256,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <main className={`flex-1 p-6 ${settings.appColor === 'black' ? 'bg-gray-900' : settings.appColor === 'white' ? 'bg-gray-50' : settings.greyVariant === 'grey-darkbar' ? 'bg-gray-50' : 'bg-gray-900'}`}>
             {children}
           </main>
-        </div>
-      </div>
+    </div>
+  </div>
     </ThemeContext.Provider>
-  );
+);
 };
 
-export default MainLayout;
+export default MainLayout; 
