@@ -27,6 +27,8 @@ import ModerateExplanations from '@/pages/ModerateExplanations';
 import ProfileTeam from '@/pages/ProfileTeam';
 import GulagDetail from './pages/GulagDetail';
 import TeamScore from '@/pages/TeamScore';
+import MVPUser from '@/pages/MVPUser';
+import Notifications from '@/pages/Notifications';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -64,9 +66,11 @@ function App() {
             <Route path="gulag" element={<Gulag />} />
             <Route path="gulag/:id" element={<GulagDetail />} />
             <Route path="mvp" element={<MVP />} />
+            <Route path="mvp-user" element={<MVPUser />} />
             <Route path="documentation" element={<Documentation />} />
             <Route path="submit-explanation" element={<SubmitExplanation />} />
             <Route path="moderate-explanations" element={<ModerateExplanations />} />
+            <Route path="notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>

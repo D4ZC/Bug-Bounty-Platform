@@ -1,9 +1,12 @@
 /** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin');
+
 module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -78,7 +81,17 @@ module.exports = {
           700: '#334155',
           800: '#1e293b',
           900: '#0f172a',
-        }
+        },
+        ibm: {
+          50: '#f4f4f4', // background
+          100: '#e0e0e0', // border
+          200: '#c6c6c6', // panel
+          300: '#a8a8a8',
+          400: '#6f6f6f',
+          500: '#393939',
+          600: '#161616', // text
+          blue: '#0f62fe', // IBM blue
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -107,5 +120,9 @@ module.exports = {
       }
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addVariant }) {
+      addVariant('light', '.light &');
+    }),
+  ],
 } 

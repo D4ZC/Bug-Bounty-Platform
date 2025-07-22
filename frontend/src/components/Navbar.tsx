@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaUserCircle, FaSearch, FaBell } from 'react-icons/fa';
+import { FaUserCircle, FaBell, FaMoon, FaSun } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 const mockNotifications = [
   { id: 1, message: 'Nueva vulnerabilidad reportada.' },
@@ -13,6 +15,8 @@ const Navbar: React.FC = () => {
   const notificationRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const pendingCount = mockNotifications.length;
+  const navigate = useNavigate();
+  const { theme, setTheme, isDark } = useTheme();
 
   // Cerrar paneles al hacer clic fuera
   useEffect(() => {
@@ -47,14 +51,14 @@ const Navbar: React.FC = () => {
         <span className="text-xl font-bold text-white">Bug Bounty Platform</span>
       </div>
       <div className="flex items-center gap-6">
-        <div className="flex items-center bg-[#181A20] px-2 py-1 rounded border border-gray-700">
-          <span className="mr-2"><FaSearch size={16} color="#fff" /></span>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            className="bg-transparent outline-none text-white placeholder-gray-400"
-          />
-        </div>
+        {/* Switch de tema */}
+        <button
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 transition text-yellow-300 text-2xl focus:outline-none border border-gray-700"
+          title={isDark ? 'Tema claro' : 'Tema oscuro'}
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+        >
+          {isDark ? <FaSun /> : <FaMoon />}
+        </button>
         {/* Notificaciones */}
         <div className="relative" ref={notificationRef}>
           <button
@@ -70,7 +74,15 @@ const Navbar: React.FC = () => {
           </button>
           {showNotifications && (
             <div className="absolute right-0 mt-2 w-80 bg-[#181A20] border border-gray-700 rounded shadow-lg z-50 animate-fade-in">
-              <div className="p-4 border-b font-bold text-white">Notificaciones</div>
+              <div
+                className="p-4 border-b font-bold text-white cursor-pointer hover:bg-gray-800"
+                onClick={() => {
+                  navigate('/notifications');
+                  setShowNotifications(false);
+                }}
+              >
+                Notificaciones
+              </div>
               <ul className="max-h-60 overflow-y-auto">
                 {mockNotifications.length === 0 ? (
                   <li className="p-4 text-gray-400">No hay notificaciones pendientes.</li>

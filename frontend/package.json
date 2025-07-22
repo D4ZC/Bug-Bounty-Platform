@@ -26,9 +26,11 @@
     "react-markdown": "^8.0.0",
     "react-query": "^3.39.0",
     "react-router-dom": "^6.8.0",
+    "react-slick": "^0.30.3",
     "react-syntax-highlighter": "^15.5.0",
     "react-virtualized": "^9.22.0",
     "recharts": "^2.15.4",
+    "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.6.0",
     "tailwind-merge": "^1.13.0",
     "zustand": "^4.3.0"
