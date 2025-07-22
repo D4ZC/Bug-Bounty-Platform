@@ -27,6 +27,8 @@ import Landing from '@/pages/Landing';
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import TutorialAutoStart from '@/components/TutorialAutoStart';
+import TutorialManager from '@/components/TutorialManager';
 
 // Hooks
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,13 +41,21 @@ function App() {
         <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
       </Helmet>
 
+      <TutorialAutoStart />
+
       <Routes>
         {/* Rutas públicas de auth y landing */}
         <Route path="/" element={<Landing />} />
         <Route path="/auth/login" element={<Login />} />
         <Route path="/auth/register" element={<Register />} />
         {/* Rutas protegidas */}
-        <Route element={<ProtectedRoute><MainLayout><Outlet /></MainLayout></ProtectedRoute>}>
+        <Route element={
+          <ProtectedRoute>
+            <MainLayout>
+              <Outlet />
+            </MainLayout>
+          </ProtectedRoute>
+        }>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vulnerabilities" element={<Vulnerabilities />} />
           <Route path="challenges" element={<Challenges />} />
@@ -61,6 +71,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
+
+      <TutorialManager />
     </>
   );
 }

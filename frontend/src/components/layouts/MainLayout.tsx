@@ -1,9 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaBars, FaHome, FaUser, FaBug, FaTrophy, FaStore, FaUsers, FaShieldAlt, FaSignOutAlt, FaClipboardList, FaCog, FaBook } from 'react-icons/fa';
+import { FaBars, FaHome, FaUser, FaBug, FaTrophy, FaStore, FaUsers, FaShieldAlt, FaSignOutAlt, FaClipboardList, FaCog, FaBook, FaTimes, FaQuestionCircle } from 'react-icons/fa';
 import Profile from '../../pages/Profile';
 import { ProfileProvider } from '../../contexts/ProfileContext';
 import { useAuth } from '@/contexts/AuthContext';
+import TutorialManager from '../TutorialManager';
+import TutorialHeaderButtons from '../TutorialHeaderButtons';
+import { useAutoLogout } from '@/hooks/useAutoLogout';
+import InactivityModal from '../InactivityModal';
 
 const menuOptions = [
   { label: 'Dashboard', icon: <FaHome />, to: '/dashboard' },
@@ -13,27 +17,50 @@ const menuOptions = [
   { label: 'Reglas', icon: <FaBook />, to: '/reglas' },
   { label: 'Gulag', icon: <FaShieldAlt />, to: '/gulag' },
   { label: 'Duelos', icon: <FaBug />, to: '/challenges' },
-  { label: 'Puntos', icon: <FaStore />, to: '/shop' },
+  { label: 'Tienda', icon: <FaStore />, to: '/shop' },
 ];
 
 const SIDEBAR_COLLAPSED_WIDTH = 'w-16';
 const SIDEBAR_EXPANDED_WIDTH = 'w-64';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [sidebarOpenMobile, setSidebarOpenMobile] = useState(false);
-  const [sidebarHovered, setSidebarHovered] = useState(false);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  // --- MODAL PERFIL ---
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarHover, setSidebarHover] = useState(false);
   const [isProfileModalMounted, setIsProfileModalMounted] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  const location = useLocation();
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [mainKey, setMainKey] = useState(location.pathname);
+  const [entryAnim, setEntryAnim] = useState(true);
+  const [sidebarBounce, setSidebarBounce] = useState(false);
+  const [showInactivityModal, setShowInactivityModal] = useState(false);
+
+  useEffect(() => {
+    setMainKey(location.pathname);
+    setEntryAnim(true);
+    const timeout = setTimeout(() => setEntryAnim(false), 600); // duración animación entrada
+    return () => clearTimeout(timeout);
+  }, [location.pathname]);
+
+  // Cerrar sidebar al cambiar de ruta
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Cuando el sidebar se abre, activa la animación de rebote
+  useEffect(() => {
+    if (sidebarOpen) {
+      setSidebarBounce(true);
+      const timeout = setTimeout(() => setSidebarBounce(false), 500);
+      return () => clearTimeout(timeout);
+    }
+  }, [sidebarOpen]);
 
   // Cierra el modal de perfil si la ruta cambia
   React.useEffect(() => {
     setIsProfileModalOpen(false);
-    // Desmontar tras animación si estaba abierto
     if (isProfileModalMounted) {
       setTimeout(() => setIsProfileModalMounted(false), 250);
     }
@@ -42,29 +69,30 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Abrir modal: montar y luego mostrar
   const openProfileModal = () => {
     setIsProfileModalMounted(true);
-    setTimeout(() => setIsProfileModalOpen(true), 10); // siguiente tick
+    setTimeout(() => setIsProfileModalOpen(true), 10);
   };
-  // Cerrar modal: ocultar y desmontar tras animación
   const closeProfileModal = () => {
     setIsProfileModalOpen(false);
-    setTimeout(() => setIsProfileModalMounted(false), 250); // igual a duración animación
+    setTimeout(() => setIsProfileModalMounted(false), 250);
   };
 
-  // Determina si está expandido (hover en desktop, abierto en móvil)
-  const isSidebarExpanded = sidebarHovered || sidebarOpenMobile;
+  useAutoLogout(logout, () => setShowInactivityModal(true));
 
   return (
     <ProfileProvider>
       <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
+        <InactivityModal open={showInactivityModal} />
         {/* Navbar superior */}
         <header className="flex items-center bg-gray-900 text-white h-14 px-4 shadow z-20 relative">
-          <button
-            className="md:hidden mr-4 focus:outline-none"
-            onClick={() => setSidebarOpenMobile(true)}
-            aria-label="Abrir menú"
+          <div
+            className="mr-4 focus:outline-none"
+            onMouseEnter={() => setSidebarOpen(true)}
+            onMouseLeave={() => setSidebarOpen(false)}
+            style={{ display: 'inline-block' }}
           >
-            <FaBars size={24} />
-          </button>
+            {(sidebarOpen || sidebarHover) ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </div>
+          <img src="/logo/logo3.png" alt="Logo" className="h-8 w-8 mr-2 select-none" style={{userSelect: 'none'}} />
           <span className="font-bold text-lg tracking-wide cursor-pointer" onClick={() => navigate('/')}>Bug Bounty Platform</span>
           <button
             className="ml-auto p-2 rounded-full hover:bg-gray-800 transition-colors"
@@ -80,6 +108,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           >
             <FaCog size={22} />
           </button>
+          <TutorialHeaderButtons />
           {/* Modal de perfil animado */}
           {isProfileModalMounted && (
             <div
@@ -115,76 +144,57 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           )}
         </header>
         <div className="flex flex-1">
-          {/* Overlay para móvil */}
-          {sidebarOpenMobile && (
+          {/* Overlay para el drawer */}
+          {sidebarOpen && (
             <div
-              className="fixed inset-0 bg-black bg-opacity-40 z-30 md:hidden"
-              onClick={() => setSidebarOpenMobile(false)}
+              className="fixed inset-0 bg-black bg-opacity-40 z-30"
+              onClick={() => setSidebarOpen(false)}
             />
           )}
-          {/* Sidebar */}
+          {/* Sidebar tipo drawer */}
           <aside
             className={`
-              fixed z-40 top-0 left-0 h-full transition-all duration-300
-              ${isSidebarExpanded ? SIDEBAR_EXPANDED_WIDTH : SIDEBAR_COLLAPSED_WIDTH}
-              bg-black flex flex-col items-center py-6 shadow-lg
-              md:static md:translate-x-0
+              fixed z-40 top-0 left-0 h-full w-64 bg-black flex flex-col items-center py-6 shadow-lg
+              transition-transform duration-300 ease-in-out
+              ${sidebarOpen ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0 pointer-events-none'}
+              ${sidebarBounce && sidebarOpen ? 'animate-bounceInLeft' : ''}
             `}
-            onMouseEnter={() => { if (!sidebarOpenMobile) setSidebarHovered(true); }}
-            onMouseLeave={() => { if (!sidebarOpenMobile) setSidebarHovered(false); }}
-            style={{ minWidth: isSidebarExpanded ? '16rem' : '4rem', width: isSidebarExpanded ? '16rem' : '4rem' }}
+            style={{ minWidth: '16rem', width: '16rem', transition: 'transform 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s cubic-bezier(.4,0,.2,1)' }}
+            onMouseEnter={() => setSidebarOpen(true)}
+            onMouseLeave={() => setSidebarOpen(false)}
           >
-            {/* Hamburguesa solo en móvil */}
-            <button
-              className="md:hidden mb-8 focus:outline-none self-start ml-4"
-              onClick={() => setSidebarOpenMobile(false)}
-              aria-label="Cerrar menú"
-            >
-              <FaBars size={24} className="text-white" />
-            </button>
             <nav className="flex-1 w-full flex flex-col gap-2 mt-2">
               {menuOptions.map(opt => (
                 <Link
                   key={opt.to}
                   to={opt.to}
-                  className={`
-                    flex items-center gap-3 px-4 py-3 rounded-lg transition-colors whitespace-nowrap overflow-hidden
-                    ${location.pathname === opt.to ? 'bg-gray-800 text-blue-400' : 'text-white hover:bg-gray-700'}
-                    ${isSidebarExpanded ? 'justify-start' : 'justify-center'}
-                  `}
-                  onClick={() => setSidebarOpenMobile(false)}
+                  className={
+                    `flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 whitespace-nowrap overflow-hidden ` +
+                    (location.pathname === opt.to ? 'bg-gray-800 text-blue-400' : 'text-white hover:bg-blue-900/60 hover:text-cyan-300 hover:translate-x-2')
+                  }
+                  style={{ transition: 'background 0.2s, color 0.2s, transform 0.2s' }}
+                  onClick={() => setSidebarOpen(false)}
                 >
                   <span className="text-xl flex-shrink-0">{opt.icon}</span>
-                  <span
-                    className={`ml-2 font-medium truncate transition-all duration-300 ease-in-out origin-left
-                      ${isSidebarExpanded ? 'opacity-100 scale-x-100 w-auto' : 'opacity-0 scale-x-0 w-0'}
-                    `}
-                    style={{ maxWidth: isSidebarExpanded ? '10rem' : '0' }}
-                  >
-                    {opt.label}
-                  </span>
+                  <span className="ml-2 font-medium truncate">{opt.label}</span>
                 </Link>
               ))}
             </nav>
             <div className="mt-auto mb-4 w-full flex flex-col items-center">
               <button
-                className={`flex items-center gap-2 text-red-400 hover:text-red-600 px-4 py-2 w-full ${isSidebarExpanded ? 'justify-start' : 'justify-center'}`}
-                onClick={() => { logout(); navigate('/auth/login'); }}
+                className="flex items-center gap-2 text-red-400 hover:text-red-600 px-4 py-2 w-full justify-start"
+                onClick={() => { logout(); navigate('/auth/login'); setSidebarOpen(false); }}
               >
                 <FaSignOutAlt />
-                <span
-                  className={`transition-all duration-300 ease-in-out origin-left
-                    ${isSidebarExpanded ? 'opacity-100 scale-x-100 w-auto' : 'opacity-0 scale-x-0 w-0'}
-                  `}
-                  style={{ maxWidth: isSidebarExpanded ? '10rem' : '0' }}
-                >
-                  Cerrar sesión
-                </span>
+                <span>Cerrar sesión</span>
               </button>
             </div>
           </aside>
           {/* Contenido principal */}
-          <main className="flex-1 p-4 md:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen ml-16 md:ml-16">
+          <main
+            className={`flex-1 p-4 md:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen ${entryAnim ? 'animate-zoomFadeIn' : 'animate-fadeSlideIn'}`}
+            style={{ animation: entryAnim ? 'zoomFadeIn 0.6s cubic-bezier(.4,0,.2,1)' : 'fadeSlideIn 0.5s cubic-bezier(.4,0,.2,1)' }}
+          >
             {children}
           </main>
         </div>
@@ -193,4 +203,58 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-export default MainLayout; 
+export default MainLayout;
+
+// Animación personalizada para el rebote
+<style>{`
+@keyframes bounceInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.95);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(20px) scale(1.05);
+  }
+  80% {
+    transform: translateX(-5px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+.animate-bounceInLeft {
+  animation: bounceInLeft 0.5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes fadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fadeSlideIn {
+  animation: fadeSlideIn 0.5s cubic-bezier(.4,0,.2,1);
+}
+@keyframes zoomFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(32px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.03) translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.animate-zoomFadeIn {
+  animation: zoomFadeIn 0.6s cubic-bezier(.4,0,.2,1);
+}
+`}</style> 

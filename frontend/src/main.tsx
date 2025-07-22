@@ -9,6 +9,8 @@ import App from './App'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { SocketProvider } from './contexts/SocketContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { TutorialProvider } from './contexts/TutorialContext'
+import TutorialNavigator from './components/TutorialNavigator'
 import ErrorFallback from './components/ErrorFallback'
 import './styles/index.css'
 
@@ -20,8 +22,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <ThemeProvider>
             <AuthProvider>
               <SocketProvider>
-                <App />
-                <Toaster position="top-right" />
+                <TutorialProvider>
+                  <TutorialNavigator />
+                  <App />
+                  <Toaster position="top-right" />
+                </TutorialProvider>
               </SocketProvider>
             </AuthProvider>
           </ThemeProvider>

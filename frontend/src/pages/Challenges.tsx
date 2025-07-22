@@ -79,10 +79,15 @@ const Challenges: React.FC = () => {
 
   // Al seleccionar duelo, abre modal
   const openDuelModal = (duel: any) => {
+    console.log("openDuelModal");
     setSelectedDuel(duel);
   };
   // Al cerrar, desmonta inmediatamente
-  const closeDuelModal = () => setSelectedDuel(null);
+  const closeDuelModal = () => {
+    console.log("closeDuelModal");
+    // Espera a que termine la animación antes de limpiar el duelo seleccionado
+    setTimeout(() => setSelectedDuel(null), 350);
+  };
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center py-10 px-2 relative bg-gradient-to-br from-[#181c24] via-[#23273a] to-[#181c24]">
@@ -203,7 +208,7 @@ const Challenges: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={e => {
-                if (e.target === e.currentTarget) setSelectedDuel(null);
+                if (e.target === e.currentTarget) closeDuelModal();
               }}
             >
               <motion.div
@@ -246,8 +251,8 @@ const Challenges: React.FC = () => {
                     {hasStreak && <span className="text-yellow-300 font-bold">Bonificación de racha: +20 pts</span>}
                   </div>
                 )}
-                <button className="mt-2 px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-bold shadow transition" onClick={() => setSelectedDuel(null)}>Cerrar</button>
-                <button className="absolute top-2 right-2 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700" onClick={() => setSelectedDuel(null)}>✕</button>
+                <button className="mt-2 px-6 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg font-bold shadow transition" onClick={closeDuelModal}>Cerrar</button>
+                <button className="absolute top-2 right-2 text-white bg-gray-800 rounded-full p-2 hover:bg-gray-700" onClick={closeDuelModal}>✕</button>
               </motion.div>
             </motion.div>
           )}

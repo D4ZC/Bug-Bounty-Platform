@@ -83,7 +83,7 @@ const Register: React.FC = () => {
           </button>
           <div className="text-center text-blue-300 mt-2">
             ¿Ya tienes cuenta?{' '}
-            <Link to="/login" className="underline hover:text-blue-400">Inicia sesión</Link>
+            <Link to="/auth/login" className="underline hover:text-blue-400">Inicia sesión</Link>
           </div>
         </form>
       </div>

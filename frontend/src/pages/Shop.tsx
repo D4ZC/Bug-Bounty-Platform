@@ -34,6 +34,7 @@ const products = [
   { id: 'avatar_img_example', name: 'Ejemplo', type: 'avatar', price: 200, img: '/avatars/img_example.jpg', desc: 'Avatar de ejemplo', limited: false },
   { id: 'avatar_anime', name: 'Anime', type: 'avatar', price: 240, img: '/avatars/anime_avatar.gif', desc: 'Avatar de anime animado', limited: false },
   { id: 'avatar_naruto', name: 'Naruto', type: 'avatar', price: 260, img: '/avatars/naruto_avatar.gif', desc: 'Avatar de Naruto animado', limited: false },
+  { id: 'avatar_avatarmicas', name: 'Micas', type: 'avatar', price: 240, img: '/avatars/AvatarMicas2.jpg', desc: 'Avatar de Micas', limited: false },
 
   // Banners (todos los encontrados en /banners)
   { id: 'banner_lluvia', name: 'Lluvia', type: 'banner', price: 320, img: '/banners/lluvia_banner.gif', desc: 'Banner de lluvia animado', limited: false },

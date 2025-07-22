@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { FaEdit, FaUserEdit, FaImage, FaMedal, FaPalette, FaFlag } from 'react-icons/fa';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Tooltip, TooltipProps } from 'recharts';
 import { getProfile, updateProfile, uploadProfileImage } from '../services/api';
 import { useProfile } from '../contexts/ProfileContext';
@@ -25,7 +25,8 @@ const getAvailableAvatars = () => {
     '/avatars/ado.webp',
     '/avatars/avatargif.gif',
     '/avatars/panda.gif',
-    '/avatars/img_example.jpg'
+    '/avatars/img_example.jpg',
+    '/avatars/AvatarMicas2.jpg'
   ];
   return avatars;
 };
@@ -238,6 +239,11 @@ const Profile: React.FC = () => {
 
   // Estado para modal de duelos ganados
   const [showDuelsModal, setShowDuelsModal] = useState(false);
+
+  // Diagnóstico: log de cambios de estado
+  useEffect(() => {
+    console.log('showDuelsModal:', showDuelsModal);
+  }, [showDuelsModal]);
   // Datos mock de duelos ganados
   const duelsHistory = [
     { id: 1, title: 'Duelo vs CyberWolves', date: '2024-06-10', points: 100 },
@@ -547,7 +553,10 @@ const Profile: React.FC = () => {
           <span className="text-lg font-bold">{profile.stats.points}</span>
           <span className="text-gray-400 text-xs">Puntos</span>
         </motion.div>
-        <motion.div className="bg-gray-800 rounded-xl p-4 flex flex-col items-center shadow cursor-pointer" whileHover={{ scale: 1.05 }} onClick={() => setShowDuelsModal(true)}>
+        <motion.div className="bg-gray-800 rounded-xl p-4 flex flex-col items-center shadow cursor-pointer" whileHover={{ scale: 1.05 }} onClick={() => {
+          console.log('Abrir modal duelos');
+          setShowDuelsModal(true);
+        }}>
           <span className="text-lg font-bold">{profile.stats.duelsWon}</span>
           <span className="text-gray-400 text-xs">Duelos Ganados</span>
         </motion.div>
@@ -781,25 +790,50 @@ const Profile: React.FC = () => {
     </div>
       )}
       {/* Modal de duelos ganados */}
+      <AnimatePresence>
       {showDuelsModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60" onClick={() => setShowDuelsModal(false)}>
-          <div className="bg-[#181c24] rounded-xl p-6 w-full max-w-lg shadow-2xl border-2 border-[#23273a] relative" onClick={e => e.stopPropagation()}>
-            <h3 className="text-xl font-bold mb-4 text-white">Historial de Duelos Ganados</h3>
-            <ul className="divide-y divide-gray-700">
-              {duelsHistory.map(d => (
-                <li key={d.id} className="py-2 flex justify-between items-center">
-                  <span className="text-white">{d.title}</span>
-                  <span className="text-gray-400 text-xs">{d.date}</span>
-                  <span className="ml-4 text-blue-400 font-bold">+{d.points} pts</span>
-                </li>
-              ))}
-            </ul>
-            <button className="mt-4 px-4 py-2 bg-blue-600 rounded text-white hover:bg-blue-700" onClick={() => setShowDuelsModal(false)}>
-              Cerrar
-            </button>
-          </div>
-        </div>
+        <>
+          <motion.div
+            className="fixed inset-0 z-50 bg-black/60"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => {
+              console.log('Cerrar modal duelos (overlay)');
+              setShowDuelsModal(false);
+            }}
+          />
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.92, y: 40 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.92, y: 40 }}
+          >
+            <div
+              className="bg-[#181c24] rounded-xl p-6 w-full max-w-lg shadow-2xl border-2 border-[#23273a] relative"
+              onClick={e => e.stopPropagation()}
+            >
+              <h3 className="text-xl font-bold mb-4 text-white">Historial de Duelos Ganados</h3>
+              <ul className="divide-y divide-gray-700">
+                {duelsHistory.map(d => (
+                  <li key={d.id} className="py-2 flex justify-between items-center">
+                    <span className="text-white">{d.title}</span>
+                    <span className="text-gray-400 text-xs">{d.date}</span>
+                    <span className="ml-4 text-blue-400 font-bold">+{d.points} pts</span>
+                  </li>
+                ))}
+              </ul>
+              <button className="mt-4 px-4 py-2 bg-blue-600 rounded text-white hover:bg-blue-700" onClick={() => {
+                console.log('Cerrar modal duelos (botón)');
+                setShowDuelsModal(false);
+              }}>
+                Cerrar
+              </button>
+            </div>
+          </motion.div>
+        </>
       )}
+      </AnimatePresence>
     </motion.div>
   );
 };
