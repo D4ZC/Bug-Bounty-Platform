@@ -23,6 +23,8 @@ const Ajustes: React.FC = () => {
     setTheme(isDark ? 'light' : 'dark');
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-gray-50 dark:bg-carbon-gray transition-colors duration-500">
       <div className="w-full max-w-xl bg-white dark:bg-carbon-dark rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-carbon-blue flex flex-col items-center gap-8">
@@ -74,6 +76,37 @@ const Ajustes: React.FC = () => {
             </span>
           </button>
         </div>
+        {/* Botón para cambiar contraseña */}
+        <button
+          className="w-full mt-4 px-4 py-3 rounded-lg bg-blue-600 text-white font-bold shadow hover:bg-blue-700 transition-colors border border-blue-700"
+          onClick={() => setShowPassword(true)}
+        >
+          Cambiar Contraseña
+        </button>
+        {/* Modal de cambio de contraseña */}
+        {showPassword && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6 relative">
+              <button onClick={() => setShowPassword(false)} className="absolute top-2 right-2 text-gray-500 hover:text-red-600 text-xl font-bold">×</button>
+              <h2 className="text-xl font-bold mb-4">Cambiar Contraseña</h2>
+              <form className="flex flex-col gap-4">
+                <label className="font-semibold text-gray-700">Contraseña Actual
+                  <input type="password" className="input mt-1 w-full border rounded px-3 py-2" />
+                </label>
+                <label className="font-semibold text-gray-700">Nueva Contraseña
+                  <input type="password" className="input mt-1 w-full border rounded px-3 py-2" />
+                </label>
+                <label className="font-semibold text-gray-700">Confirmar Nueva Contraseña
+                  <input type="password" className="input mt-1 w-full border rounded px-3 py-2" />
+                </label>
+                <div className="flex justify-end gap-2">
+                  <button type="button" className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold" onClick={() => setShowPassword(false)}>Cancelar</button>
+                  <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white font-bold">Guardar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
       {/* Botón de log-out */}
       <button

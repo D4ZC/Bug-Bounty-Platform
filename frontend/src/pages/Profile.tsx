@@ -4,10 +4,6 @@ import { useShop, ShopItem } from '../contexts/ShopContext';
 import ReplaceItemModal from '../components/ReplaceItemModal';
 import { useWallet } from '../contexts/WalletContext';
 import { useAuth } from '../contexts/AuthContext';
-import carrusel from '../assets/images/otros/Carrussel.png';
-import carrusel1 from '../assets/images/otros/Carrussel1.png';
-import carrusel2 from '../assets/images/otros/Carrussel2.png';
-import carrusel3 from '../assets/images/otros/Carrussel3.png';
 
 const pieData = [
   { name: 'HARD', value: 50, color: '#f43f5e' },
@@ -22,13 +18,6 @@ const barData = [
   { name: 'Abr', coins: 140 },
   { name: 'May', coins: 90 },
   { name: 'Jun', coins: 110 },
-];
-
-const carouselImages = [
-  carrusel,
-  carrusel1,
-  carrusel2,
-  carrusel3,
 ];
 
 const mockUser = {
@@ -55,7 +44,6 @@ const Profile: React.FC = () => {
   const [editDesc, setEditDesc] = useState(false);
   const [name, setName] = useState(mockUser.name);
   const [country, setCountry] = useState(mockUser.country);
-  const [carouselIdx, setCarouselIdx] = useState(0);
   // Estado para la modal de reemplazo
   const [replaceModal, setReplaceModal] = useState<{
     isOpen: boolean;
@@ -116,14 +104,6 @@ const Profile: React.FC = () => {
 
   // Usar fondo seleccionado en el div principal
   const mainBg = selectedBg || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
-
-  // Auto-slide del carrusel
-  React.useEffect(() => {
-    const interval = setInterval(() => {
-      setCarouselIdx((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
 
   // Likes/dislikes totales de los formularios publicados por el usuario
   useEffect(() => {
@@ -191,14 +171,8 @@ const Profile: React.FC = () => {
     setReplaceModal({ isOpen: false, item: null });
   };
 
-  // Obtener ítems por categoría
-  const getItemsByCategory = (category: 'fondos' | 'marcos' | 'sticker') => {
-    return userItems.purchased.filter(item => item.category === category);
-  };
-
   // Carrusel handlers
-  const prevImg = () => setCarouselIdx((prev) => (prev === 0 ? carouselImages.length - 1 : prev - 1));
-  const nextImg = () => setCarouselIdx((prev) => (prev === carouselImages.length - 1 ? 0 : prev + 1));
+  // Eliminar los handlers prevImg y nextImg
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-gray-50 py-8 px-2">
@@ -268,10 +242,12 @@ const Profile: React.FC = () => {
                 </div>
               </div>
               {/* Botones debajo del avatar */}
-              <div className="flex gap-4 mt-4">
-                <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowEditProfile(true)}>EDITAR PERFIL</button>
-                <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowPassword(true)}>CAMBIAR CONTRASEÑA</button>
+              {/* Botón de editar perfil, ancho 2/3 y centrado */}
+              <div className="flex gap-4 mt-4 w-full justify-center">
+                <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100 w-2/3 mx-auto" onClick={() => setShowEditProfile(true)}>EDITAR PERFIL</button>
               </div>
+              {/* Eliminar el botón de cambiar contraseña */}
+              {/* <button className="px-4 py-2 rounded bg-gray-200 text-gray-800 font-bold hover:bg-blue-100" onClick={() => setShowPassword(true)}>CAMBIAR CONTRASEÑA</button> */}
               {/* Caja de descripción */}
               <div className="w-full mt-4">
                 <div className="bg-gray-100 rounded-lg p-4 min-h-[80px] flex flex-col">
@@ -364,17 +340,10 @@ const Profile: React.FC = () => {
                 </select>
               </div>
             </div>
-            {/* Carrusel de imágenes */}
+            {/* Card vacía en lugar del carrusel */}
             <div className="w-full flex flex-col items-center mt-4 flex-1 justify-center">
-              <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center w-full">
-                <div className="flex items-center justify-center w-full">
-                  <img src={carouselImages[carouselIdx]} alt="mock" className="w-full h-32 object-cover rounded-lg border transition-all duration-700" />
-                </div>
-                <div className="flex gap-1 mt-2 justify-center w-full">
-                  {carouselImages.map((_, idx) => (
-                    <span key={idx} className={`inline-block w-2 h-2 rounded-full ${carouselIdx === idx ? 'bg-blue-500' : 'bg-gray-400'}`}></span>
-                  ))}
-                </div>
+              <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center w-full h-[360px]">
+                {/* Card vacía, reservada para uso futuro */}
               </div>
             </div>
           </div>
@@ -575,54 +544,3 @@ const Profile: React.FC = () => {
 };
 
 export default Profile; 
-
-<style jsx>{`
-  .fire-frame .flame1 {
-    animation: flame1 2.2s ease-in-out infinite alternate;
-  }
-  .fire-frame .flame2 {
-    animation: flame2 2.4s ease-in-out infinite alternate;
-  }
-  .fire-frame .flame3 {
-    animation: flame3 2.1s ease-in-out infinite alternate;
-  }
-  .fire-frame .flame4 {
-    animation: flame4 2.3s ease-in-out infinite alternate;
-  }
-  .fire-frame .flame5 {
-    animation: flame5 2.5s ease-in-out infinite alternate;
-  }
-  .fire-frame .flame6 {
-    animation: flame6 2.6s ease-in-out infinite alternate;
-  }
-  @keyframes flame1 {
-    0% { opacity: 0.8; transform: scaleY(1) translateY(0); }
-    50% { opacity: 1; transform: scaleY(1.15) translateY(-4px); }
-    100% { opacity: 0.7; transform: scaleY(0.95) translateY(2px); }
-  }
-  @keyframes flame2 {
-    0% { opacity: 0.7; transform: scaleY(1) translateY(0); }
-    50% { opacity: 1; transform: scaleY(1.12) translateY(-3px); }
-    100% { opacity: 0.8; transform: scaleY(0.97) translateY(2px); }
-  }
-  @keyframes flame3 {
-    0% { opacity: 0.8; transform: scaleX(1) translateX(0); }
-    50% { opacity: 1; transform: scaleX(1.13) translateX(-4px); }
-    100% { opacity: 0.7; transform: scaleX(0.95) translateX(2px); }
-  }
-  @keyframes flame4 {
-    0% { opacity: 0.7; transform: scaleX(1) translateX(0); }
-    50% { opacity: 1; transform: scaleX(1.12) translateX(3px); }
-    100% { opacity: 0.8; transform: scaleX(0.97) translateX(-2px); }
-  }
-  @keyframes flame5 {
-    0% { opacity: 0.8; transform: scale(1) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1.1) rotate(-3deg); }
-    100% { opacity: 0.7; transform: scale(0.95) rotate(2deg); }
-  }
-  @keyframes flame6 {
-    0% { opacity: 0.8; transform: scale(1) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1.1) rotate(3deg); }
-    100% { opacity: 0.7; transform: scale(0.95) rotate(-2deg); }
-  }
-`}</style> 

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import LanguageSelector from '../LanguageSelector';
 import ChatModal from '../ChatModal';
 import { Header, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
-import { Mail, User, Home, FileText, SlidersHorizontal, ShoppingBag, Landmark } from 'lucide-react';
+import { Mail, User, Home, FileText, SlidersHorizontal, ShoppingBag, Landmark, Shield, Users } from 'lucide-react';
 
 const NAVBAR_HEIGHT = 64 + 50; // altura original + 50px extra
 // Elimino SIDEBAR_HEIGHT y lógica de sidebar superior
@@ -36,7 +36,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="flex items-center gap-6 mr-6">
           <LanguageSelector />
           <button aria-label="Mensajes" className="text-white hover:text-cyber-blue transition-colors" onClick={() => setShowMsgModal(true)}>
-            <Mail size={28} />
+            <Mail size={28} color="#fff" />
           </button>
           <button aria-label="Perfil" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/profile')}>
             <User size={28} />
@@ -82,7 +82,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </Header>
       <div className="flex flex-1">
         {/* Sidebar lateral restaurado */}
-        <SideNav aria-label="Menú lateral" className="bg-gradient-to-b from-black to-blue-900 shadow-md min-h-full w-[250px] flex flex-col items-start py-4">
+        <SideNav aria-label="Menú lateral" className="bg-gradient-to-b from-black via-black to-blue-900 shadow-md min-h-full w-[250px] flex flex-col items-start py-4 dark:bg-carbon-gray">
           <SideNavItems>
             <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base">
               <Home size={24} color="#fff" />
@@ -103,6 +103,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </button>
               {formOpen && (
                 <div id="submenu-formulario" className="pl-10 flex flex-col gap-1">
+                  <SideNavLink href="/formulario/crear" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
+                  <SideNavLink href="/formulario" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
                   <SideNavLink href="/formulario/crear" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
                   <SideNavLink href="/formulario" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
                 </div>
