@@ -1,0 +1,15 @@
+{
+  "navbar": {
+    "title": "BugBounty"
+  },
+  "settings": {
+    "title": "Configurações",
+    "save": "Salvar Alterações",
+    "letterSize": "Tamanho da letra",
+    "color": "Cor",
+    "language": "Idioma",
+    "addLanguage": "Adicionar idioma",
+    "cancel": "Cancelar",
+    "add": "Adicionar"
+  }
+} 
