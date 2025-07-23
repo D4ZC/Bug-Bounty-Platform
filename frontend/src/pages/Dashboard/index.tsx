@@ -78,7 +78,7 @@ const mvpUsers = [
 
 const cards = [
   {
-    title: 'TEAM SCORE',
+    title: 'Ranking',
     icon: <FaUsers size={32} />, 
     color: 'from-blue-500 to-blue-700',
     action: '/team-score',
@@ -96,7 +96,7 @@ const cards = [
     action: '/gulag',
   },
   {
-    title: 'D4ZC',
+    title: 'Perfil',
     icon: <FaUser size={32} />, 
     color: 'from-cyan-500 to-cyan-700',
     action: '/profile',
