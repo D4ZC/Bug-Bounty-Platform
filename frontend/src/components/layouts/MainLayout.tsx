@@ -15,6 +15,7 @@ import {
   Home
 } from '@carbon/icons-react';
 import Settings from '@/pages/Settings';
+import { useTranslation } from 'react-i18next';
 
 // Custom Crossed Swords Icon Component (ya no se usa, pero lo dejo por si lo necesitas)
 // const CrossedSwords: React.FC<{ size?: number; className?: string }> = ({ size = 20, className = '' }) => (
@@ -45,6 +46,7 @@ const getInitialSettings = () => {
 };
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t, i18n } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [settings, setSettings] = useState(getInitialSettings());
   const navigate = useNavigate();
@@ -62,12 +64,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   // Aplicar clase de tema global y tamaño de fuente al body
   useEffect(() => {
-    const root = document.body;
+    const root = document.documentElement;
     root.classList.remove('theme-white', 'theme-black', 'theme-grey-darkbar', 'theme-grey-lightbar');
     if (settings.appColor === 'white') root.classList.add('theme-white');
     if (settings.appColor === 'black') root.classList.add('theme-black');
     if (settings.appColor === 'grey') root.classList.add(settings.greyVariant);
-    // Aplicar tamaño de fuente global
+    // Aplicar tamaño de fuente global al html
     root.style.fontSize = `${settings.sidebarFontSize}%`;
   }, [settings.appColor, settings.greyVariant, settings.sidebarFontSize]);
 
@@ -131,7 +133,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           }`}
           style={{ fontSize: 'inherit', justifyContent: 'space-between' }}
         >
-          <h1 className={`text-2xl font-bold tracking-wide ${settings.appColor === 'white' || (settings.appColor === 'grey' && settings.greyVariant === 'grey-lightbar') ? 'text-gray-900' : 'text-white'}`}>BugBounty</h1>
+          <h1
+            key={i18n.language}
+            className={`text-2xl font-bold tracking-wide ${settings.appColor === 'white' || (settings.appColor === 'grey' && settings.greyVariant === 'grey-lightbar') ? 'text-gray-900' : 'text-white'}`}
+          >
+            {t('navbar.title')}
+          </h1>
           <button onClick={() => setShowSettingsModal(true)} className="ml-auto flex items-center text-gray-500 hover:text-blue-600 focus:outline-none">
             <SettingsIcon size={28} />
           </button>
@@ -139,7 +146,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* Settings Modal */}
         {showSettingsModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl p-6 relative">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl p-6 relative max-h-[90vh] overflow-y-auto">
               <button onClick={() => setShowSettingsModal(false)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500 text-2xl font-bold">&times;</button>
               <Settings />
             </div>
