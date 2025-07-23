@@ -29,6 +29,7 @@ import GulagDetail from './pages/GulagDetail';
 import TeamScore from '@/pages/TeamScore';
 import MVPUser from '@/pages/MVPUser';
 import Notifications from '@/pages/Notifications';
+import Duels from '@/pages/Duels';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -65,6 +66,7 @@ function App() {
             <Route path="team" element={<Team />} />
             <Route path="gulag" element={<Gulag />} />
             <Route path="gulag/:id" element={<GulagDetail />} />
+            <Route path="duelos" element={<Duels />} />
             <Route path="mvp" element={<MVP />} />
             <Route path="mvp-user" element={<MVPUser />} />
             <Route path="documentation" element={<Documentation />} />

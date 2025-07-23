@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
-import { FaUsers, FaUser, FaTrophy, FaMedal, FaStore, FaSkull, FaCrown } from 'react-icons/fa';
-import TeamScoreSection from '../../components/TeamScoreSection';
+import { FaUsers, FaUser, FaStore, FaSkull } from 'react-icons/fa';
+import 'slick-carousel/slick/slick.css';
+import 'slick-carousel/slick/slick-theme.css';
 // @ts-ignore
 import img1 from '../../assets/imagen1.png';
 // @ts-ignore
@@ -157,7 +158,7 @@ const Dashboard: React.FC = () => {
       <div className="w-full flex justify-center items-center py-6">
         <div className="relative w-full max-w-4xl h-64 rounded-3xl overflow-hidden shadow-2xl" style={{ background: '#23263a' }}>
           <Slider {...mainSliderSettings} className="w-full h-full">
-            {carouselSlides.map((slide, idx) => (
+            {carouselSlides.map((slide, _) => (
               <div key={slide.title} className="w-full h-64 relative flex items-stretch" style={{ borderRadius: 24 }}>
                 {/* Imagen de fondo */}
                 <img
@@ -209,8 +210,8 @@ const Dashboard: React.FC = () => {
             <div style={{...mvpCardStyle, width: '100%', maxWidth: 260}} className="p-8 flex flex-col items-center justify-center flex-1">
               <h2 className="text-2xl font-bold text-yellow-400 mb-4 text-center">MVP TEAM</h2>
               <Slider {...sliderSettings} className="w-full">
-                {mvpTeams.map((team, idx) => (
-                  <div key={idx} className="flex flex-col items-center justify-center text-center h-full">
+                {mvpTeams.map((team, _) => (
+                  <div key={team.name} className="flex flex-col items-center justify-center text-center h-full">
                     <img
                       src={team.avatar || 'https://via.placeholder.com/100x100/23263a/00BFFF?text=TEAM'}
                       alt={team.name}
@@ -239,8 +240,8 @@ const Dashboard: React.FC = () => {
             <div style={{...mvpCardStyle, width: '100%', maxWidth: 260}} className="p-8 flex flex-col items-center justify-center flex-1">
               <h2 className="text-2xl font-bold text-pink-400 mb-4 text-center">MVP USER</h2>
               <Slider {...sliderSettings} className="w-full">
-                {mvpUsers.map((user, idx) => (
-                  <div key={idx} className="flex flex-col items-center justify-center text-center h-full">
+                {mvpUsers.map((user, _) => (
+                  <div key={user.name} className="flex flex-col items-center justify-center text-center h-full">
                     <img
                       src={user.avatar || 'https://via.placeholder.com/100x100/23263a/00BFFF?text=USER'}
                       alt={user.name}

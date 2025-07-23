@@ -1,268 +1,118 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FaSkull } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import GulagUserCard from '../components/gulag/GulagUserCard';
+import GulagConsequences from '../components/gulag/GulagConsequences';
+import { gulagUsers, gulagTeams, gulagTimer } from '../mocks/gulag';
+import { FaLock, FaExclamationTriangle } from 'react-icons/fa';
+import * as DiceBear from '@dicebear/avatars';
+import * as Identicon from '@dicebear/avatars-identicon-sprites';
 
-const ACCENT_PURPLE = '#a259f7';
-const DARK_BG = '#181A1A';
-const PANEL_BG = '#23263a';
-const TAB_STYLES =
-  'px-6 py-2 rounded-lg font-bold text-base transition-all focus:outline-none';
-
-const TABS = [
-  { key: 'all', label: 'TODOS' },
-  { key: 'active', label: 'ACTIVOS' },
-  { key: 'completed', label: 'COMPLETADOS' },
-  { key: 'waiting', label: 'ESPERANDO' },
-];
-
-// Ejemplo de desafíos
-const challenges = [
-  {
-    id: '1',
-    user: 'deivid',
-    points: 50,
-    status: 'EN_GULAG',
-    time: '2h30',
-  },
-  {
-    id: '2',
-    user: 'runrun',
-    points: 25,
-    status: 'EN_GULAG',
-    time: '1h45',
-  },
-  {
-    id: '3',
-    user: 'excel',
-    points: 20,
-    status: 'EN_GULAG',
-    time: '3h15',
-  },
-  {
-    id: '4',
-    user: 'kick ass',
-    points: 20,
-    status: 'COMPLETADO',
-    time: '0h 0',
-  },
-  {
-    id: '5',
-    user: 'pedrito sola',
-    points: 10,
-    status: 'ESPERANDO',
-    time: '5h20',
-  },
-];
-
-const statusStyles = {
-  EN_GULAG: {
-    color: 'text-red-500',
-    bg: 'bg-red-100',
-    dot: 'bg-red-500',
-    button: 'bg-red-500 hover:bg-red-600',
-    label: 'EN GULAG',
-  },
-  COMPLETADO: {
-    color: 'text-green-500',
-    bg: 'bg-green-100',
-    dot: 'bg-green-500',
-    button: 'bg-green-500 hover:bg-green-600',
-    label: 'COMPLETADO',
-  },
-  ESPERANDO: {
-    color: 'text-yellow-500',
-    bg: 'bg-yellow-100',
-    dot: 'bg-yellow-500',
-    button: 'bg-yellow-400 hover:bg-yellow-500',
-    label: 'ESPERANDO',
-  },
-};
-
-// Simulación de tiempos iniciales en segundos para cada desafío
-const initialTimes: Record<string, number> = {
-  '1': 2 * 60 * 60 + 30 * 60, // 2h 30m
-  '2': 1 * 60 * 60 + 45 * 60, // 1h 45m
-  '3': 3 * 60 * 60 + 15 * 60, // 3h 15m
-  '4': 0, // completado
-  '5': 5 * 60 * 60 + 20 * 60, // 5h 20m
-};
-
-function formatTime(seconds: number) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  return `${h}h ${m.toString().padStart(2, '0')}`;
-}
-
-const Modal: React.FC<{ open: boolean; onClose: () => void; title: string; message: string }> = ({ open, onClose, title, message }) => {
-  if (!open) return null;
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-      <div className="bg-[#23263a] rounded-2xl shadow-lg p-8 max-w-md w-full flex flex-col items-center border-2 border-purple-500">
-        <h2 className="text-2xl font-bold text-red-400 mb-2 text-center">{title}</h2>
-        <p className="text-gray-200 mb-6 text-center">{message}</p>
-        <button
-          className="px-6 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-bold shadow"
-          onClick={onClose}
-        >
-          Cerrar
-        </button>
-      </div>
-    </div>
-  );
-};
+const initialTimer = { ...gulagTimer };
 
 const Gulag: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('all');
-  const navigate = useNavigate();
-  // Estado para los temporizadores
-  const [timers, setTimers] = useState<Record<string, number>>(initialTimes);
-  // Estado para modal de error
-  const [modal, setModal] = useState<{ open: boolean; title: string; message: string }>({ open: false, title: '', message: '' });
+  const [timer, setTimer] = useState(initialTimer);
+  const [users] = useState(gulagUsers);
+  const [teams] = useState(gulagTeams);
 
-  // Efecto para actualizar los temporizadores cada segundo
+  // Simulación de temporizador en "tiempo real"
   useEffect(() => {
     const interval = setInterval(() => {
-      setTimers((prev) => {
-        const updated: Record<string, number> = { ...prev };
-        Object.keys(updated).forEach((id) => {
-          if (updated[id] > 0) updated[id] = updated[id] - 1;
-        });
-        return updated;
+      setTimer((prev) => {
+        let { days, hours, minutes } = prev;
+        if (minutes > 0) minutes--;
+        else if (hours > 0) { hours--; minutes = 59; }
+        else if (days > 0) { days--; hours = 23; minutes = 59; }
+        return { days, hours, minutes };
       });
-    }, 1000);
+    }, 1000 * 60); // cada minuto
     return () => clearInterval(interval);
   }, []);
 
-  // Filtro simple (solo visual, lógica real después)
-  const filtered =
-    activeTab === 'all'
-      ? challenges
-      : challenges.filter((c) => {
-          if (activeTab === 'active') return c.status === 'EN_GULAG';
-          if (activeTab === 'completed') return c.status === 'COMPLETADO';
-          if (activeTab === 'waiting') return c.status === 'ESPERANDO';
-          return true;
-        });
+  // Generar avatares si faltan
+  const usersWithAvatars = users.map((u) => ({
+    ...u,
+    avatar: u.avatar || `data:image/svg+xml;utf8,${encodeURIComponent(new DiceBear.default(Identicon.default).create(u.name))}`,
+  }));
+  const teamsWithAvatars = teams.map((t) => ({
+    ...t,
+    avatar: t.avatar || `data:image/svg+xml;utf8,${encodeURIComponent(new DiceBear.default(Identicon.default).create(t.name))}`,
+  }));
 
-  // Lógica de disponibilidad y tiempo agotado
-  const isAvailable = (challenge: any, time: number) => {
-    if (challenge.status === 'EN_GULAG' && time <= 0) return false;
-    if (challenge.status === 'COMPLETADO') return false;
-    return true;
-  };
-
-  const handleAction = (challenge: any, time: number) => {
-    if (challenge.status === 'EN_GULAG' && time <= 0) {
-      setModal({
-        open: true,
-        title: 'Tiempo agotado',
-        message: 'El tiempo para resolver este desafío ha finalizado. Ya no puedes enviar una solución.',
-      });
-      return;
-    }
-    if (challenge.status === 'COMPLETADO') {
-      setModal({
-        open: true,
-        title: 'Desafío no disponible',
-        message: 'Este desafío ya ha sido completado. Por favor, selecciona otro desafío.',
-      });
-      return;
-    }
-    if (challenge.status === 'ESPERANDO') {
-      setModal({
-        open: true,
-        title: 'Desafío no disponible',
-        message: 'Este desafío aún no está disponible para iniciar. Por favor, espera a que se active.',
-      });
-      return;
-    }
-    // Si todo está bien, navegar
-    navigate(`/gulag/${challenge.id}`);
-  };
+  // Usuario actual
+  const currentUser = usersWithAvatars.find((u) => u.isCurrentUser);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center px-2 py-8" style={{ background: DARK_BG }}>
-      <Modal open={modal.open} onClose={() => setModal({ ...modal, open: false })} title={modal.title} message={modal.message} />
-      {/* Icono de calavera arriba del título */}
-      <div className="flex flex-col items-center mb-2">
-        <FaSkull size={64} color="#a259f7" />
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-red-900/40 p-6 flex flex-col gap-6">
+      {/* Cabecera Superior */}
+      <div className="flex justify-between items-center mb-4 border-b-2 border-red-700 pb-2">
+        <h1 className="text-4xl font-extrabold text-red-600 tracking-widest drop-shadow-lg animate-pulse">GULAG</h1>
+        <div className="flex items-center gap-3">
+          <img src={currentUser?.avatar} alt="avatar" className="w-12 h-12 rounded-full border-4 border-red-600 shadow-lg animate-pulse" />
+          <div className="flex flex-col">
+            <span className="text-white font-bold">{currentUser?.name}</span>
+            <span className="flex items-center gap-1 text-red-400 font-mono animate-pulse">
+              <FaLock /> ESTADO: RECLUIDO
+            </span>
+          </div>
+        </div>
       </div>
-      {/* Título y subtítulo */}
-      <h1 className="text-4xl font-extrabold text-white mb-2 mt-2 text-center">GULAG</h1>
-      <p className="text-lg text-gray-300 mb-8 text-center">Zona de desafíos y pruebas especiales</p>
-
-      {/* Tabs */}
-      <div className="flex gap-2 mb-10 bg-[#23263a] p-2 rounded-xl shadow" style={{ boxShadow: '0 2px 12px #a259f733' }}>
-        {TABS.map((tab) => (
-          <button
-            key={tab.key}
-            className={
-              `${TAB_STYLES} ` +
-              (activeTab === tab.key
-                ? 'bg-white text-purple-700 shadow border-2 border-purple-400'
-                : 'bg-transparent text-gray-200 hover:bg-[#23263a]')
-            }
-            style={activeTab === tab.key ? { color: ACCENT_PURPLE } : {}}
-            onClick={() => setActiveTab(tab.key)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Grid de tarjetas */}
-      <div className="w-full max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-        {filtered.map((challenge) => {
-          const st = statusStyles[challenge.status as keyof typeof statusStyles];
-          const time = timers[challenge.id] !== undefined ? timers[challenge.id] : 0;
-          const available = isAvailable(challenge, time);
-          let buttonText = '';
-          if (challenge.status === 'EN_GULAG' && time <= 0) buttonText = 'TIEMPO AGOTADO';
-          else if (challenge.status === 'COMPLETADO') buttonText = 'NO DISPONIBLE';
-          else if (challenge.status === 'ESPERANDO') buttonText = 'ESPERAR';
-          else if (challenge.status === 'EN_GULAG') buttonText = 'VER DESAFÍO';
-          else buttonText = 'VER';
-          return (
-            <div
-              key={challenge.id}
-              className="bg-[#23263a] rounded-2xl shadow-lg border border-gray-700 flex flex-col p-6 min-h-[220px] relative"
-            >
-              {/* Avatar y nombre */}
-              <div className="flex items-center gap-4 mb-2">
-                <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold text-gray-700 uppercase">
-                  {challenge.user[0]}
-                </div>
-                <div>
-                  <div className="font-bold text-lg text-white">{challenge.user}</div>
-                  <div className="text-gray-300 text-sm">Puntuación: <span className="font-bold text-white">{challenge.points}</span></div>
-                </div>
-                <span className={`ml-auto w-3 h-3 rounded-full ${st.dot}`}></span>
+      {/* Panel Central: Informe de Sentencia */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="md:col-span-2">
+          <h2 className="text-xl font-bold text-red-500 mb-2 border-b border-red-700">INFORME DE SENTENCIA</h2>
+          <div className="flex items-center gap-2 mb-4">
+            <FaExclamationTriangle className="text-red-400 text-2xl" />
+            <span className="text-white font-semibold">MOTIVO: INCUMPLIMIENTO DE [REGLA X] - Bajo rendimiento en resolución de vulnerabilidades.</span>
+          </div>
+          <div className="bg-gray-900/80 border border-red-700 rounded-xl p-4 mb-4">
+            <h3 className="text-lg font-bold text-red-400 mb-2">DESAFÍO OBLIGATORIO: PRUEBA DE REDENCIÓN</h3>
+            <div className="text-2xl text-white font-bold mb-2">RESUELVE LA MAYOR CANTIDAD DE VULNERABILIDADES</div>
+            {/* Ranking de usuarios */}
+            <div className="mt-4">
+              <h4 className="text-lg font-bold text-red-300 mb-2">Ranking de Usuarios</h4>
+              <div className="flex flex-col gap-2">
+                {usersWithAvatars.map((u, idx) => (
+                  <GulagUserCard
+                    key={u.id}
+                    avatar={u.avatar}
+                    name={u.name}
+                    vulnerabilities={u.vulnerabilities}
+                    isCurrentUser={u.isCurrentUser}
+                    position={idx + 1}
+                  />
+                ))}
               </div>
-              {/* Estado */}
-              <div className="flex items-center gap-2 mb-2">
-                <span className={`text-xs font-bold px-2 py-1 rounded ${st.bg} ${st.color}`}>{st.label}</span>
-              </div>
-              {/* Tiempo restante */}
-              <div className="mb-2">
-                <span className="text-gray-300 text-sm">Tiempo restante: </span>
-                <span className="font-bold text-white">{challenge.status === 'EN_GULAG' || challenge.status === 'ESPERANDO' ? formatTime(time) : challenge.time}</span>
-              </div>
-              {/* Barra de progreso */}
-              <div className="w-full h-2 rounded bg-gray-300 mb-4">
-                <div className={`h-2 rounded ${st.color}`} style={{ width: challenge.status === 'EN_GULAG' ? `${Math.max(0, Math.floor((time / initialTimes[challenge.id]) * 100))}%` : challenge.status === 'COMPLETADO' ? '100%' : '20%' }}></div>
-              </div>
-              {/* Botón principal */}
-              <button
-                className={`w-full py-2 rounded-lg font-bold text-white mt-auto transition-all duration-200 ${st.button} ${!available ? 'opacity-60 cursor-not-allowed' : ''}`}
-                style={{ fontSize: 16, letterSpacing: 1 }}
-                onClick={() => handleAction(challenge, time)}
-                disabled={!available}
-              >
-                {buttonText}
-              </button>
             </div>
-          );
-        })}
+            {/* Ranking de equipos */}
+            <div className="mt-8">
+              <h4 className="text-lg font-bold text-red-300 mb-2">Ranking de Equipos</h4>
+              <div className="flex flex-col gap-2">
+                {teamsWithAvatars.map((t, idx) => (
+                  <div key={t.id} className="flex items-center gap-3 p-3 rounded-lg border-2 border-red-400 bg-gray-800/40 mb-2 shadow-lg">
+                    <span className="font-bold text-lg w-6 text-center text-red-400">{idx + 1}</span>
+                    <img src={t.avatar} alt={t.name} className="w-10 h-10 rounded-full border-2 border-red-500" />
+                    <span className="font-semibold text-white">{t.name}</span>
+                    <span className="ml-auto flex items-center gap-1 text-neon-green font-mono text-lg">
+                      {t.vulnerabilities} <span className="text-xs">VULN</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 flex items-center gap-4">
+              <span className="text-white font-bold">TIEMPO RESTANTE:</span>
+              <span className="text-2xl font-mono text-red-400 animate-pulse">
+                {timer.days}D {timer.hours}H {timer.minutes}M
+              </span>
+            </div>
+            <button className="mt-6 bg-red-700 text-white font-bold py-2 rounded-lg w-full transition-all hover:brightness-125 flex items-center justify-center gap-2 text-lg">
+              <FaLock /> ACCEDER A VULNERABILIDADES
+            </button>
+          </div>
+        </div>
+        {/* Panel Lateral/Inferior: Consecuencias */}
+        <div className="md:col-span-1">
+          <GulagConsequences defeats={currentUser?.defeats || 0} />
+        </div>
       </div>
     </div>
   );

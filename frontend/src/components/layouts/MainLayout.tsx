@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../utils/useTranslation';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaBook, FaTrophy, FaStore, FaUser } from 'react-icons/fa';
+import { FaHome, FaBook, FaTrophy, FaStore, FaUser, FaGavel } from 'react-icons/fa';
 
 const sidebarLinks = [
   { label: 'Home', path: '/dashboard', icon: <FaHome /> },
   { label: 'Perfil', path: '/profile', icon: <FaUser /> },
   { label: 'Documentación', path: '/documentation', icon: <FaBook /> },
-  { label: 'Duelos', path: '/gulag', icon: <FaTrophy /> },
+  { label: 'Duelos', path: '/duelos', icon: <FaTrophy /> },
+  { label: 'Gulag', path: '/gulag', icon: <FaGavel /> },
   { label: 'Tienda', path: '/shop', icon: <FaStore /> },
- 
 ];
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
