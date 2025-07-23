@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import Bar3DChart from './Dashboard/Bar3DChart';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const months = [
   { value: '2024-07', label: 'Julio 2024' },
@@ -34,6 +35,7 @@ const fadeIn = 'animate-fade-in';
 const fadeInUp = 'animate-fade-in-up';
 
 const RankingEquipos: React.FC = () => {
+  const { backgroundUrl } = useBackground();
   const [selectedMonth, setSelectedMonth] = useState<string>(months[0].value);
   const ranking: TeamRanking[] = mockRanking[selectedMonth] || [];
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ const RankingEquipos: React.FC = () => {
   const colorList = ['#6f1e9c', '#00fff7', '#39ff14', '#a259ff', '#00bcd4', '#b983ff', '#d1aaff'];
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-12 bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono relative overflow-hidden">
+    <div className="min-h-screen w-full flex flex-col items-center py-12 font-mono relative overflow-hidden" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       {/* Fondo animado de partículas */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', top: 0, left: 0 }}>

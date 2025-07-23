@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const ACCENT = '#00f7fa';
 
@@ -157,6 +158,7 @@ const ChallengeCard = ({ ch, onAction }: { ch: any; onAction: () => void }) => {
 
 const Gulag: React.FC = () => {
   const { isDark } = useTheme();
+  const { backgroundUrl } = useBackground();
   const navigate = useNavigate();
   const [tab, setTab] = useState('todos');
 
@@ -170,7 +172,7 @@ const Gulag: React.FC = () => {
   });
 
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono`} aria-label="Zona de desafíos y pruebas especiales">
+    <div className="min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }} aria-label="Zona de desafíos y pruebas especiales">
       <h1 className="text-4xl font-extrabold font-mono text-center mb-2 drop-shadow-[0_0_16px_#00fff7]" style={{ color: ACCENT }}>GULAG</h1>
       <p className="text-center text-lg font-mono mb-8 text-[#39ff14]">Zona de desafíos y pruebas especiales</p>
       <ChallengeTabs tab={tab} setTab={setTab} />

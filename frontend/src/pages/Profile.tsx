@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { UserAvatar, Idea, Portfolio, Phone, Email, Building, Certificate, Settings, User, LogoLinkedin, Trophy, Star, Group } from '@carbon/icons-react';
 import { motion } from 'framer-motion';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const infoCircles = [
   { label: '5 años', desc: 'Experiencia', icon: <Certificate size={24} className="text-[#00fff7]" /> },
@@ -62,7 +63,7 @@ const cards = [
 
 // Datos de ejemplo para el modal de perfil y equipo
 const userDetails = {
-  name: 'Juan Pérez',
+  name: 'OCAMPO',
   role: 'Desarrollador Frontend',
   team: 'TechCorp - Equipo de Innovación',
   about: 'Desarrollador apasionado por la tecnología, la innovación y la resolución creativa de problemas. Mi misión es crear soluciones digitales que impacten positivamente.',
@@ -103,7 +104,7 @@ const teamDetails = {
     { icon: <Idea size={24} className="text-[#39ff14]" />, title: 'Ganadores del Hackathon Interno 2024', desc: 'Por la solución más innovadora presentada en el hackathon anual.' },
   ],
   members: [
-    { name: 'Juan Pérez', role: 'Desarrollador Frontend' },
+    { name: 'OCAMPO', role: 'Desarrollador Frontend' },
     { name: 'María García', role: 'Backend Lead' },
     { name: 'Carlos Sánchez', role: 'Diseñador UI/UX Senior' },
     { name: 'Ana López', role: 'QA Engineer' },
@@ -114,9 +115,13 @@ const teamDetails = {
 // --- NUEVO DISEÑO TIPO STEAM ---
 
 // Datos de ejemplo para amigos y grupos
-const friends = [
+const mockAllUsers = [
   { name: 'LATIN HIKKICOMORI', status: 'Offline', avatar: 'https://randomuser.me/api/portraits/men/33.jpg', id: 112 },
   { name: '♥ Poppy ♥', status: 'Offline', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', id: 103 },
+  { name: 'CyberCat', status: 'Online', avatar: 'https://randomuser.me/api/portraits/men/34.jpg', id: 120 },
+  { name: 'NeoHacker', status: 'Online', avatar: 'https://randomuser.me/api/portraits/men/35.jpg', id: 121 },
+  { name: 'Alice', status: 'Offline', avatar: 'https://randomuser.me/api/portraits/women/45.jpg', id: 122 },
+  { name: 'Bob', status: 'Online', avatar: 'https://randomuser.me/api/portraits/men/36.jpg', id: 123 },
 ];
 const groups = [
   { name: 'sh4dman', members: 27516 },
@@ -124,14 +129,27 @@ const groups = [
   { name: 'pizza', members: 2450 },
 ];
 
+// Elimina los arrays boughtAnimatedAvatars, boughtBackgrounds, etc.
+// Crea un estado de inventario que se alimenta de localStorage
+const getInventory = () => {
+  try {
+    const inv = localStorage.getItem('user_inventory');
+    return inv ? JSON.parse(inv) : [];
+  } catch {
+    return [];
+  }
+};
+
 const Profile: React.FC = () => {
+  const { backgroundUrl, setBackgroundUrl } = useBackground();
   // Lista de avatares disponibles (simulando inventario)
-  const availableAvatars = [
-    'https://randomuser.me/api/portraits/men/32.jpg',
-    'https://randomuser.me/api/portraits/women/44.jpg',
-    'https://randomuser.me/api/portraits/men/33.jpg',
-    'https://randomuser.me/api/portraits/women/45.jpg',
-  ];
+  const [inventory, setInventory] = useState<any[]>(getInventory());
+
+  useEffect(() => {
+    const handleStorage = () => setInventory(getInventory());
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   // Estado para datos editables del usuario
   const [editProfile, setEditProfile] = useState({
@@ -145,89 +163,49 @@ const Profile: React.FC = () => {
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // Datos de ejemplo para la sección de personalizaciones
-  const boughtBackgrounds = [
-    { id: 1, name: 'Fondo Azul Oscuro', url: 'https://via.placeholder.com/100' },
-    { id: 2, name: 'Fondo Verde Claro', url: 'https://via.placeholder.com/100' },
-    { id: 3, name: 'Fondo Morado Profundo', url: 'https://via.placeholder.com/100' },
-  ];
-  const boughtFrames = [
-    { id: 1, name: 'Marco Azul', color: 'border-blue-500' },
-    { id: 2, name: 'Marco Verde', color: 'border-green-500' },
-    { id: 3, name: 'Marco Rojo', color: 'border-red-500' },
-  ];
-  const boughtAnimatedAvatars = [
-    { id: 1, name: 'Avatar Animado 1', url: 'https://via.placeholder.com/100' },
-    { id: 2, name: 'Avatar Animado 2', url: 'https://via.placeholder.com/100' },
-    { id: 3, name: 'Avatar Animado 3', url: 'https://via.placeholder.com/100' },
-  ];
-  const boughtSpecialBadges = [
-    { id: 1, name: 'Insignia 1', icon: <Star size={24} className="text-yellow-400" /> },
-    { id: 2, name: 'Insignia 2', icon: <Trophy size={24} className="text-[#00fff7]" /> },
-    { id: 3, name: 'Insignia 3', icon: <Idea size={24} className="text-[#39ff14]" /> },
-  ];
-  const boughtSeasonalProfiles = [
-    { id: 1, name: 'Perfil Temporada 1', color: 'bg-gradient-to-r from-purple-500 to-pink-500' },
-    { id: 2, name: 'Perfil Temporada 2', color: 'bg-gradient-to-r from-blue-500 to-cyan-500' },
-    { id: 3, name: 'Perfil Temporada 3', color: 'bg-gradient-to-r from-green-500 to-teal-500' },
-  ];
-  const boughtNamePlates = [
-    { id: 1, name: 'Placa 1', style: 'bg-yellow-500 text-black' },
-    { id: 2, name: 'Placa 2', style: 'bg-purple-500 text-white' },
-    { id: 3, name: 'Placa 3', style: 'bg-green-500 text-white' },
-  ];
+  // Estado para amigos y búsqueda
+  type Friend = { name: string; status: string; avatar: string; id: number };
+  const [friends, setFriends] = useState<Friend[]>([
+    { name: 'LATIN HIKKICOMORI', status: 'Offline', avatar: 'https://randomuser.me/api/portraits/men/33.jpg', id: 112 },
+    { name: '♥ Poppy ♥', status: 'Offline', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', id: 103 },
+  ]);
+  const [searchFriend, setSearchFriend] = useState('');
+  const [searchResults, setSearchResults] = useState<Friend[]>([]);
 
-  // Estados de selección para personalización activa
-  const [selectedBackground, setSelectedBackground] = useState(boughtBackgrounds[0]);
-  const [selectedFrame, setSelectedFrame] = useState(boughtFrames[0]);
-  const [selectedAnimatedAvatar, setSelectedAnimatedAvatar] = useState(boughtAnimatedAvatars[0]);
-  const [selectedBadge, setSelectedBadge] = useState(boughtSpecialBadges[0]);
-  const [selectedSeasonalProfile, setSelectedSeasonalProfile] = useState(boughtSeasonalProfiles[0]);
-  const [selectedNamePlate, setSelectedNamePlate] = useState(boughtNamePlates[0]);
-
-  // Cargar selección desde localStorage al montar
   useEffect(() => {
-    const bgId = localStorage.getItem('profile_selectedBackground');
-    const frameId = localStorage.getItem('profile_selectedFrame');
-    const avatarId = localStorage.getItem('profile_selectedAnimatedAvatar');
-    const badgeId = localStorage.getItem('profile_selectedBadge');
-    const seasonId = localStorage.getItem('profile_selectedSeasonalProfile');
-    const plateId = localStorage.getItem('profile_selectedNamePlate');
-    if (bgId) {
-      const found = boughtBackgrounds.find(bg => String(bg.id) === bgId);
-      if (found) setSelectedBackground(found);
+    if (searchFriend.trim() === '') {
+      setSearchResults([]);
+      return;
     }
-    if (frameId) {
-      const found = boughtFrames.find(f => String(f.id) === frameId);
-      if (found) setSelectedFrame(found);
-    }
-    if (avatarId) {
-      const found = boughtAnimatedAvatars.find(a => String(a.id) === avatarId);
-      if (found) setSelectedAnimatedAvatar(found);
-    }
-    if (badgeId) {
-      const found = boughtSpecialBadges.find(b => String(b.id) === badgeId);
-      if (found) setSelectedBadge(found);
-    }
-    if (seasonId) {
-      const found = boughtSeasonalProfiles.find(s => String(s.id) === seasonId);
-      if (found) setSelectedSeasonalProfile(found);
-    }
-    if (plateId) {
-      const found = boughtNamePlates.find(p => String(p.id) === plateId);
-      if (found) setSelectedNamePlate(found);
-    }
-  }, []);
-  // Guardar solo el id en localStorage
-  useEffect(() => { localStorage.setItem('profile_selectedBackground', String(selectedBackground.id)); }, [selectedBackground]);
-  useEffect(() => { localStorage.setItem('profile_selectedFrame', String(selectedFrame.id)); }, [selectedFrame]);
-  useEffect(() => { localStorage.setItem('profile_selectedAnimatedAvatar', String(selectedAnimatedAvatar.id)); }, [selectedAnimatedAvatar]);
-  useEffect(() => { localStorage.setItem('profile_selectedBadge', String(selectedBadge.id)); }, [selectedBadge]);
-  useEffect(() => { localStorage.setItem('profile_selectedSeasonalProfile', String(selectedSeasonalProfile.id)); }, [selectedSeasonalProfile]);
-  useEffect(() => { localStorage.setItem('profile_selectedNamePlate', String(selectedNamePlate.id)); }, [selectedNamePlate]);
+    // Filtrar usuarios que no están ya en friends y que coincidan con la búsqueda
+    const lower = searchFriend.toLowerCase();
+    setSearchResults(
+      mockAllUsers.filter(
+        u =>
+          !friends.some(f => f.id === u.id) &&
+          (u.name.toLowerCase().includes(lower) || String(u.id).includes(lower))
+      )
+    );
+  }, [searchFriend, friends]);
+
+  const handleAddFriend = (user: Friend) => {
+    setFriends(prev => [...prev, user]);
+    setSearchFriend('');
+  };
+
+  // Lógica para cambiar avatar en tiempo real
+  const handleSelectAvatar = (avatar: { id: number; name: string; url: string }) => {
+    setEditProfile(prev => ({ ...prev, avatar: avatar.url }));
+    userDetails.avatar = avatar.url;
+  };
+
+  // Lógica para cambiar fondo en tiempo real
+  const handleSelectBackground = (bg: { id: number; name: string; url: string }) => {
+    setBackgroundUrl(bg.url); // Actualiza el fondo global
+  };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#1a0033] via-[#2d003e] to-[#0a183d] flex flex-col md:flex-row font-mono relative">
+    <div className="min-h-screen w-full flex flex-col md:flex-row font-mono relative" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #1a0033, #2d003e, #0a183d)' }}>
       {/* Fondo decorativo lateral */}
       <div className="hidden md:block fixed right-0 top-0 h-full w-1/3 z-0" style={{background: 'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80) center/cover', opacity: 0.18}} />
       {/* Main content */}
@@ -237,7 +215,7 @@ const Profile: React.FC = () => {
           {/* Avatar grande con marco y click para modal */}
           <div className="relative group cursor-pointer" onClick={() => setShowProfileModal(true)}>
             <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-[#00fff7] via-[#a259ff] to-[#39ff14] blur-2xl opacity-40 group-hover:opacity-70 transition" />
-            <img src={userDetails.avatar} alt="Avatar" className="w-36 h-36 rounded-full border-4 border-[#00fff7] shadow-[0_0_32px_#00fff7,0_0_64px_#a259ff40] object-cover relative z-10 group-hover:scale-105 transition-transform duration-200" />
+            <img src={userDetails.avatar} alt="Avatar" className={`w-36 h-36 rounded-full border-4 border-[#00fff7] shadow-[0_0_32px_#00fff7,0_0_64px_#a259ff40] object-cover relative z-10 transition-transform duration-300 ${showProfileModal ? 'animate-glow' : ''}`} style={{ boxShadow: userDetails.avatar === editProfile.avatar ? '0 0 32px #00fff7, 0 0 64px #a259ff40' : undefined }} />
           </div>
           {/* Info principal */}
           <div className="flex-1 flex flex-col gap-2">
@@ -251,8 +229,6 @@ const Profile: React.FC = () => {
           </div>
           {/* Botones tipo Steam */}
           <div className="flex flex-col gap-2 items-end">
-            <button className="px-4 py-2 rounded-lg bg-[#00fff7] text-black font-bold shadow-[0_0_8px_#00fff7] hover:bg-[#00e6d2] transition duration-200 font-mono animate-glow">Enviar mensaje</button>
-            <button className="px-4 py-2 rounded-lg bg-[#a259ff] text-white font-bold shadow-[0_0_8px_#a259ff] hover:bg-[#7e1fff] transition duration-200 font-mono animate-glow">Más ▼</button>
             <button onClick={() => setShowEditProfileModal(true)} className="px-4 py-2 rounded-lg bg-[#ff4fa3] text-white font-bold shadow-[0_0_8px_#ff4fa3] hover:bg-[#ff7fcf] transition duration-200 font-mono animate-glow">Editar perfil</button>
           </div>
         </div>
@@ -262,9 +238,9 @@ const Profile: React.FC = () => {
           <div className="col-span-2 bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 backdrop-blur-md animate-fade-in-up">
             <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Item Showcase</div>
             <div className="grid grid-cols-4 gap-3 mb-4">
-              {boughtAnimatedAvatars.concat(boughtBackgrounds).slice(0,8).map((item, idx) => (
+              {inventory.slice(0,8).map((item, idx) => (
                 <div key={idx} className="rounded-lg overflow-hidden border-2 border-[#a259ff] shadow-lg bg-[#101926] flex items-center justify-center h-16 w-16 hover:scale-110 transition-transform duration-200 animate-glow">
-                  {item.url ? <img src={item.url} alt={item.name} className="object-cover w-full h-full" /> : <span className="text-xs text-[#00fff7] font-bold font-mono">{item.name}</span>}
+                  <img src={item.url} alt={item.name} className="object-cover w-full h-full" />
                 </div>
               ))}
             </div>
@@ -310,13 +286,60 @@ const Profile: React.FC = () => {
         <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
           <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Item Showcase</div>
           <div className="grid grid-cols-5 gap-3">
-            {boughtAnimatedAvatars.concat(boughtBackgrounds).slice(0,10).map((item, idx) => (
+            {inventory.slice(0,10).map((item, idx) => (
               <div key={idx} className="rounded-lg overflow-hidden border-2 border-[#a259ff] shadow-lg bg-[#101926] flex items-center justify-center h-16 w-16 hover:scale-110 transition-transform duration-200 animate-glow">
-                {item.url ? <img src={item.url} alt={item.name} className="object-cover w-full h-full" /> : <span className="text-xs text-[#00fff7] font-bold font-mono">{item.name}</span>}
+                <img src={item.url} alt={item.name} className="object-cover w-full h-full" />
               </div>
             ))}
           </div>
         </div>
+        {/* Sección de Avatares en la tienda */}
+        <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
+          <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Avatares Disponibles</div>
+          <div className="grid grid-cols-5 gap-3">
+            {inventory.filter(item => item.category === 'Avatar').map((avatar) => (
+              <div
+                key={avatar.id}
+                className={`rounded-lg overflow-hidden border-2 cursor-pointer transition-transform duration-200 animate-glow border-[#a259ff] flex flex-col items-center justify-center p-1 hover:scale-110`}
+              >
+                <img src={avatar.url} alt={avatar.name} className="object-cover w-full h-16 mb-1" />
+                <span className="text-xs text-[#00fff7] font-bold font-mono text-center">{avatar.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {/* Inventario del usuario dividido */}
+        {(inventory.filter(i => i.category === 'Avatar').length > 0 || inventory.filter(i => i.category === 'Fondo').length > 0) && (
+          <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
+            <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Inventario</div>
+            {inventory.filter(i => i.category === 'Avatar').length > 0 && (
+              <>
+                <div className="text-lg font-bold text-[#00fff7] mb-2 font-mono">Avatares</div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 mb-6">
+                  {inventory.filter(item => item.category === 'Avatar').map((item, idx) => (
+                    <div key={idx} className="rounded-lg overflow-hidden border-2 border-[#a259ff] shadow-lg bg-[#101926] flex flex-col items-center justify-center p-2">
+                      <img src={item.url} alt={item.name} className="object-cover w-full h-20 mb-1" />
+                      <span className="text-xs text-[#00fff7] font-bold font-mono text-center">{item.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+            {inventory.filter(i => i.category === 'Fondo').length > 0 && (
+              <>
+                <div className="text-lg font-bold text-[#00fff7] mb-2 font-mono">Fondos</div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+                  {inventory.filter(item => item.category === 'Fondo').map((item, idx) => (
+                    <div key={idx} className="rounded-lg overflow-hidden border-2 border-[#a259ff] shadow-lg bg-[#101926] flex flex-col items-center justify-center p-2">
+                      <img src={item.url} alt={item.name} className="object-cover w-full h-20 mb-1" />
+                      <span className="text-xs text-[#00fff7] font-bold font-mono text-center">{item.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
       {/* Barra lateral tipo Steam */}
       <aside className="w-full md:w-80 flex-shrink-0 bg-gradient-to-b from-[#1a0033cc] to-[#181c2bcc] p-6 flex flex-col gap-8 z-20 border-l-2 border-[#a259ff] shadow-[0_0_24px_#a259ff] backdrop-blur-md animate-fade-in-up">
@@ -338,6 +361,28 @@ const Profile: React.FC = () => {
         </div>
         <div className="flex flex-col gap-2">
           <div className="text-[#00fff7] font-bold font-mono">Friends</div>
+          <input
+            type="text"
+            className="mb-2 px-2 py-1 rounded bg-[#101926] border border-[#00fff7] text-[#00fff7] font-mono text-xs focus:outline-none focus:ring-2 focus:ring-[#00fff7]"
+            placeholder="Buscar usuario..."
+            value={searchFriend}
+            onChange={e => setSearchFriend(e.target.value)}
+          />
+          {searchResults.length > 0 && (
+            <ul className="mb-2 text-xs bg-[#232b36] border border-[#00fff7] rounded-lg p-2 space-y-1 max-h-32 overflow-y-auto animate-fade-in-up">
+              {searchResults.map(u => (
+                <li key={u.id} className="flex items-center gap-2">
+                  <img src={u.avatar} alt={u.name} className="w-5 h-5 rounded-full border border-[#00fff7]" />
+                  <span className="font-bold text-[#a259ff]">{u.name}</span>
+                  <span className="text-gray-400">{u.status}</span>
+                  <button
+                    className="ml-auto px-2 py-0.5 rounded bg-[#00fff7] text-black font-bold text-xs hover:bg-[#39ff14] transition"
+                    onClick={() => handleAddFriend(u)}
+                  >Agregar</button>
+                </li>
+              ))}
+            </ul>
+          )}
           <ul className="text-xs text-gray-300 space-y-1 font-mono">
             {friends.map((f, idx) => (
               <li key={idx} className="flex items-center gap-2">
@@ -490,11 +535,11 @@ const Profile: React.FC = () => {
       )}
       {/* Modal editar perfil */}
       {showEditProfileModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center p-4 z-50" onClick={e => { if (e.target === e.currentTarget) setShowEditProfileModal(false); }}>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-md border-2 border-[#00fff7] rounded-xl p-8 bg-[#181c2b] shadow-2xl relative animate-fade-in-up"
+            className="w-full max-w-md border-2 border-[#00fff7] rounded-xl p-8 bg-[#181c2b] shadow-2xl relative animate-fade-in-up max-h-[80vh] overflow-y-auto"
           >
             <button onClick={() => setShowEditProfileModal(false)} className="absolute top-4 right-4 text-[#00fff7] hover:text-white text-2xl font-bold">×</button>
             <div className="text-2xl font-bold text-[#00fff7] mb-4 font-mono">Editar perfil</div>
@@ -511,14 +556,40 @@ const Profile: React.FC = () => {
                 Frase
                 <input type="text" value={editProfile.phrase} onChange={e => setEditProfile(p => ({ ...p, phrase: e.target.value }))} className="px-3 py-2 rounded bg-[#101926] border-2 border-[#00fff7] text-white font-mono" />
               </label>
-              <label className="flex flex-col gap-1 text-sm font-mono">
-                Avatar
-                <div className="flex gap-2 mt-1">
-                  {availableAvatars.map((url, idx) => (
-                    <img key={idx} src={url} alt="avatar" onClick={() => setEditProfile(p => ({ ...p, avatar: url }))} className={`w-12 h-12 rounded-full border-2 cursor-pointer ${editProfile.avatar === url ? 'border-[#00fff7] ring-2 ring-[#00fff7]' : 'border-[#101926]'}`} />
-                  ))}
+              {/* Galería de avatares */}
+              {inventory.filter(i => i.category === 'Avatar').length > 0 && (
+                <div className="mb-4">
+                  <div className="text-[#00fff7] font-bold mb-2">Selecciona tu Avatar</div>
+                  <div className="grid grid-cols-4 gap-3">
+                    {inventory.filter(item => item.category === 'Avatar').map((avatar) => (
+                      <div
+                        key={avatar.id}
+                        className={`rounded-lg overflow-hidden border-2 cursor-pointer transition-transform duration-200 animate-glow ${userDetails.avatar === avatar.url ? 'border-[#00fff7] scale-110 shadow-[0_0_16px_#00fff7]' : 'border-[#a259ff]'}`}
+                        onClick={() => handleSelectAvatar(avatar)}
+                      >
+                        <img src={avatar.url} alt={avatar.name} className="object-cover w-full h-16" />
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </label>
+              )}
+              {/* Galería de fondos */}
+              {inventory.filter(i => i.category === 'Fondo').length > 0 && (
+                <div className="mb-4">
+                  <div className="text-[#00fff7] font-bold mb-2">Selecciona tu Fondo</div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {inventory.filter(item => item.category === 'Fondo').map((bg) => (
+                      <div
+                        key={bg.id}
+                        className={`rounded-lg overflow-hidden border-2 cursor-pointer transition-transform duration-200 animate-glow border-[#a259ff]`}
+                        onClick={() => handleSelectBackground(bg)}
+                      >
+                        <img src={bg.url} alt={bg.name} className="object-cover w-full h-20" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <button type="submit" className="mt-4 px-4 py-2 rounded-lg bg-[#00fff7] text-black font-bold shadow-[0_0_8px_#00fff7] hover:bg-[#00e6d2] transition font-mono animate-glow">Guardar cambios</button>
             </form>
           </motion.div>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { FaCrown, FaStar, FaFlagCheckered, FaKey, FaLock, FaShieldAlt, FaUserShield, FaUsers, FaTrophy } from 'react-icons/fa';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const mvpUser = {
-  username: 'D4ZC',
+  username: 'OCAMPO',
   team: 'P-TECH',
   criticas: 15,
   altas: 25,
@@ -29,7 +30,7 @@ const mvpTeam = {
     { icon: <FaUsers size={22} color="#00fff7" />, text: 'Promedio de severidad resuelta más alto' },
   ],
   miembros: [
-    { nombre: 'D4ZC', rol: 'Líder', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', contribuciones: 45, descripcion: 'Especialista en pentesting y mentor del equipo.' },
+    { nombre: 'OCAMPO', rol: 'Líder', avatar: 'https://randomuser.me/api/portraits/men/32.jpg', contribuciones: 45, descripcion: 'Especialista en pentesting y mentor del equipo.' },
     { nombre: 'alice', rol: 'Analista', avatar: 'https://randomuser.me/api/portraits/women/44.jpg', contribuciones: 38, descripcion: 'Experta en análisis de vulnerabilidades críticas.' },
     { nombre: 'bob', rol: 'Pentester', avatar: 'https://randomuser.me/api/portraits/men/33.jpg', contribuciones: 32, descripcion: 'Responsable de hallazgos de alto impacto.' },
     { nombre: 'carol', rol: 'DevSecOps', avatar: 'https://randomuser.me/api/portraits/women/45.jpg', contribuciones: 28, descripcion: 'Automatización y seguridad en pipelines.' },
@@ -42,9 +43,10 @@ const circuitBg = `
 `;
 
 const MVP: React.FC = () => {
+  const { backgroundUrl } = useBackground();
   const [tab, setTab] = useState<'usuario' | 'equipo' | 'historial'>('usuario');
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center py-12 font-mono" style={{ background: circuitBg, backgroundBlendMode: 'overlay', backgroundSize: 'cover' }}>
+    <div className="min-h-screen w-full flex flex-col items-center justify-center py-12 font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="w-full max-w-2xl mx-auto bg-[#101926]/90 border-4 border-[#00fff7] rounded-3xl shadow-[0_0_32px_#00fff7] p-0 flex flex-col items-center relative" style={{ boxShadow: '0 0 32px #00fff7, 0 0 0 4px #232b36' }}>
         {/* Tabs y encabezado */}
         <div className="w-full flex flex-row items-center justify-center gap-2 md:gap-8 px-8 pt-8 pb-2 mb-2">

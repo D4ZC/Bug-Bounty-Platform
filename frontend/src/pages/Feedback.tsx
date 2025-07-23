@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const satisfactionOptions = [
   'Selecciona una opción',
@@ -11,6 +12,7 @@ const satisfactionOptions = [
 
 const Feedback: React.FC = () => {
   const { isDark } = useTheme();
+  const { backgroundUrl } = useBackground();
   const [satisfaction, setSatisfaction] = useState('Selecciona una opción');
   const [suggestion, setSuggestion] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -21,7 +23,7 @@ const Feedback: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-8 bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono">
+    <div className="min-h-screen flex items-center justify-center py-8 font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div
         className="bg-[#101926]/90 border-2 border-[#00fff7] rounded-2xl p-6 w-full max-w-md font-mono text-[#00fff7] flex flex-col items-center shadow-[0_0_32px_#00fff7,0_0_0_4px_rgba(0,255,247,0.3)] backdrop-blur-md animate-fade-in-up"
         style={{ fontFamily: 'Orbitron, monospace' }}

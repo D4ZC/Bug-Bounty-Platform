@@ -5,10 +5,12 @@ import { useAuth } from '../contexts/AuthContext';
 import { Publication, Vulnerability, PublicationForm } from '../types';
 import apiService from '../services/api';
 import { toast } from 'react-hot-toast';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const Publisher: React.FC = () => {
   const { isDark } = useTheme();
   const { user } = useAuth();
+  const { backgroundUrl } = useBackground();
   const [tab, setTab] = useState<'publicar' | 'moderacion'>('publicar');
   const [vulnerabilities, setVulnerabilities] = useState<Vulnerability[]>([]);
   const [loading, setLoading] = useState(true);
@@ -230,7 +232,7 @@ const Publisher: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500"> 
+    <div className="min-h-screen w-full font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="w-full max-w-2xl mx-auto p-8 rounded-2xl shadow-xl border-2 bg-[#101926]/90 border-[#00fff7] backdrop-blur-md animate-fade-in-up"> 
         {/* Tabs */}
         <div className="flex gap-2 mb-8">

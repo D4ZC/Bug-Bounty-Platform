@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Publication } from '../types';
 import apiService from '../services/api';
 import { toast } from 'react-hot-toast';
+import { useBackground } from '../contexts/BackgroundContext';
 
 const examplePublications: Publication[] = [
   {
@@ -72,6 +73,7 @@ const examplePublications: Publication[] = [
 const DocumentacionPublica: React.FC = () => {
   const { isDark } = useTheme();
   const { user } = useAuth();
+  const { backgroundUrl } = useBackground();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
@@ -130,7 +132,7 @@ const DocumentacionPublica: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500">
+    <div className="min-h-screen w-full font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-8">

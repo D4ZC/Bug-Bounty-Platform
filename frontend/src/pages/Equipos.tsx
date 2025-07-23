@@ -3,6 +3,7 @@ import { FaUsers, FaPlus, FaSearch, FaTrash, FaUserPlus, FaCrown, FaBell, FaUser
 import { apiService } from '../services/api';
 import { Team } from '../types';
 import socketService from '../services/socket';
+import { useBackground } from '../contexts/BackgroundContext';
 
 // Mock de datos
 const mockEquipos: Team[] = [
@@ -10,8 +11,8 @@ const mockEquipos: Team[] = [
     _id: '1',
     name: 'P-TECH',
     description: 'Equipo de pentesting y seguridad ofensiva.',
-    leader: 'D4ZC',
-    members: ['D4ZC', 'alice', 'bob'],
+    leader: 'OCAMPO',
+    members: ['OCAMPO', 'alice', 'bob'],
     points: 60,
     rank: 1,
     logo: '',
@@ -32,7 +33,7 @@ const mockEquipos: Team[] = [
   },
 ];
 const mockUsuarios = [
-  { id: 1, nombre: 'D4ZC', correo: 'd4zc@correo.com' },
+  { id: 1, nombre: 'OCAMPO', correo: 'ocampo@correo.com' },
   { id: 2, nombre: 'alice', correo: 'alice@correo.com' },
   { id: 3, nombre: 'bob', correo: 'bob@correo.com' },
   { id: 4, nombre: 'carol', correo: 'carol@correo.com' },
@@ -40,32 +41,32 @@ const mockUsuarios = [
   { id: 6, nombre: 'sofia', correo: 'sofia@correo.com' },
 ];
 const mockNotificaciones = [
-  { id: 1, texto: 'Fuiste añadido al equipo P-TECH', leida: false },
+  { id: 1, texto: 'OCAMPO añadió a María García', leida: false },
   { id: 2, texto: 'Invitación pendiente para CyberGuard', leida: false },
 ];
 const mockActividad = [
-  { id: 1, texto: 'Juan Pérez añadió a María García', fecha: '2024-07-15' },
+  { id: 1, texto: 'OCAMPO añadió a María García', fecha: '2024-07-15' },
   { id: 2, texto: 'La descripción del equipo fue actualizada por Administrador', fecha: '2024-07-14' },
 ];
 
 const Equipos: React.FC = () => {
+  const { backgroundUrl } = useBackground();
   const [tab, setTab] = useState<'miEquipo' | 'buscar' | 'crear'>('miEquipo');
   const [equipos, setEquipos] = useState<Team[]>(mockEquipos);
   const [equipoSeleccionado, setEquipoSeleccionado] = useState<any | null>(null);
   const [busqueda, setBusqueda] = useState('');
-  const [nuevoEquipo, setNuevoEquipo] = useState({ nombre: '' });
+  const [nuevoEquipo, setNuevoEquipo] = useState({ nombre: '', descripcion: '' });
   const [miembroBusqueda, setMiembroBusqueda] = useState('');
   const [feedback, setFeedback] = useState('');
   const [showNotificaciones, setShowNotificaciones] = useState(false);
   const [showEditarPerfil, setShowEditarPerfil] = useState(false);
-  const [perfilEditable, setPerfilEditable] = useState({ nombre: 'D4ZC', correo: 'd4zc@correo.com', rol: 'Líder' });
+  const [perfilEditable, setPerfilEditable] = useState({ nombre: 'OCAMPO', correo: 'ocampo@correo.com', rol: 'Líder' });
   const [showModalConfirm, setShowModalConfirm] = useState<{ accion: string, data?: any } | null>(null);
   const [teams, setTeams] = useState<Team[]>([]);
   const [loadingTeams, setLoadingTeams] = useState(false);
   const [errorTeams, setErrorTeams] = useState<string | null>(null);
   const [createForm, setCreateForm] = useState({ name: '', description: '' });
   const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState<string | null>(null);
   const [createSuccess, setCreateSuccess] = useState<string | null>(null);
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [joinError, setJoinError] = useState<string | null>(null);
@@ -76,13 +77,6 @@ const Equipos: React.FC = () => {
   const [transferringId, setTransferringId] = useState<string | null>(null);
   const [transferError, setTransferError] = useState<string | null>(null);
   const [transferSuccess, setTransferSuccess] = useState<string | null>(null);
-  const [pendingInvites, setPendingInvites] = useState([
-    { id: '1', email: 'sofia@correo.com' },
-    { id: '2', email: 'juan@correo.com' },
-  ]);
-  const [inviteLoading, setInviteLoading] = useState<string | null>(null);
-  const [inviteError, setInviteError] = useState<string | null>(null);
-  const [inviteSuccess, setInviteSuccess] = useState<string | null>(null);
   const [notifications, setNotifications] = useState([
     { id: '1', text: '¡Nuevo miembro se unió al equipo!', type: 'info', read: false },
     { id: '2', text: 'Has sido promovido a líder.', type: 'success', read: false },
@@ -90,19 +84,19 @@ const Equipos: React.FC = () => {
   ]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [chatMessages, setChatMessages] = useState([
-    { id: '1', user: 'D4ZC', text: '¡Bienvenidos al equipo!', time: '10:00' },
+    { id: '1', user: 'OCAMPO', text: '¡Bienvenidos al equipo!', time: '10:00' },
     { id: '2', user: 'sofia', text: '¡Gracias! ¿Cuándo la próxima reunión?', time: '10:01' },
   ]);
   const [chatInput, setChatInput] = useState('');
   const [activityHistory, setActivityHistory] = useState([
     { id: '1', type: 'join', user: 'sofia', text: 'Sofía se unió al equipo', date: '2024-06-01 10:00' },
     { id: '2', type: 'leave', user: 'juan', text: 'Juan salió del equipo', date: '2024-06-01 09:00' },
-    { id: '3', type: 'leader', user: 'D4ZC', text: 'D4ZC transfirió el liderazgo a Sofía', date: '2024-05-31 18:00' },
+    { id: '3', type: 'leader', user: 'OCAMPO', text: 'OCAMPO transfirió el liderazgo a Sofía', date: '2024-05-31 18:00' },
     { id: '4', type: 'trophy', user: 'equipo', text: '¡El equipo ganó un trofeo!', date: '2024-05-30 20:00' },
   ]);
   const [isSomeoneTyping, setIsSomeoneTyping] = useState(false);
   const [isSocketConnected, setIsSocketConnected] = useState(false);
-  const [mentionList, setMentionList] = useState(['D4ZC', 'sofia', 'juan']);
+  const [mentionList, setMentionList] = useState(['OCAMPO', 'sofia', 'juan']);
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [mentionQuery, setMentionQuery] = useState('');
   const [reactions, setReactions] = useState<{ [msgId: string]: { [emoji: string]: string[] } }>({});
@@ -115,7 +109,6 @@ const Equipos: React.FC = () => {
   const [showAchievementAnim, setShowAchievementAnim] = useState<string | null>(null);
   const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<any[]>([]);
   const [visibilidad, setVisibilidad] = useState<'publico' | 'privado' | 'secreto'>('publico');
-  const [tipoEquipo, setTipoEquipo] = useState('Proyecto');
   const [mensajeBienvenida, setMensajeBienvenida] = useState('');
   const [iconoEquipo, setIconoEquipo] = useState<string | null>(null);
 
@@ -261,7 +254,6 @@ const Equipos: React.FC = () => {
   const handleCreateSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setCreating(true);
-    setCreateError(null);
     setCreateSuccess(null);
     try {
       const res = await apiService.post<Team>('/teams', {
@@ -289,7 +281,7 @@ const Equipos: React.FC = () => {
       setEquipoSeleccionado(nuevoEquipo);
       setTab('miEquipo');
     } catch (err) {
-      setCreateError('Error al crear el equipo');
+      setFeedback('Error al crear el equipo');
     } finally {
       setCreating(false);
     }
@@ -346,21 +338,6 @@ const Equipos: React.FC = () => {
       setTransferError('Error al transferir liderazgo');
     } finally {
       setTransferringId(null);
-    }
-  };
-
-  const handleInviteAction = async (inviteId: string, action: 'accept' | 'reject') => {
-    setInviteLoading(inviteId + action);
-    setInviteError(null);
-    setInviteSuccess(null);
-    try {
-      // await apiService.post(`/teams/${equipoSeleccionado._id}/invitations/${inviteId}/${action}`);
-      setInviteSuccess(action === 'accept' ? 'Invitación aceptada' : 'Invitación rechazada');
-      setPendingInvites(prev => prev.filter(i => i.id !== inviteId));
-    } catch (err) {
-      setInviteError('Error al procesar invitación');
-    } finally {
-      setInviteLoading(null);
     }
   };
 
@@ -447,8 +424,8 @@ const Equipos: React.FC = () => {
   }, [createSuccess]);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] flex flex-col items-center py-12 font-mono">
-      <div className="w-full max-w-6xl mx-auto bg-[#181c2b]/90 border-2 border-[#00fff7] rounded-3xl shadow-[0_0_48px_#00fff7] p-10 flex flex-col items-center relative animate-fade-in-up">
+    <div className="min-h-screen w-full flex flex-col items-center py-12 font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+      <div className="w-full max-w-6xl mx-auto bg-[#181c2b]/90 border-2 border-[#00fff7] rounded-3xl p-10 flex flex-col items-center relative animate-fade-in-up">
         {/* Barra superior: Dashboard, notificaciones, perfil */}
         <div className="w-full flex flex-row items-center justify-between mb-10">
           <div className="flex flex-col gap-1">
@@ -474,7 +451,7 @@ const Equipos: React.FC = () => {
         )}
         {/* Modal editar perfil */}
         {showEditarPerfil && (
-          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={e => { if (e.target === e.currentTarget) setShowEditarPerfil(false); }}>
             <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-10 shadow-2xl w-full max-w-md animate-fade-in-up">
               <div className="text-2xl font-bold text-[#00fff7] mb-6">Editar Perfil</div>
               <form className="flex flex-col gap-4">
@@ -726,6 +703,7 @@ const Equipos: React.FC = () => {
                   setEquipos([...equipos, {
                     _id: Date.now().toString(),
                     name: nuevoEquipo.nombre,
+                    description: '',
                     leader: 'Tú',
                     members: usuariosSeleccionados.map(u => u.nombre),
                     points: 0,
@@ -737,6 +715,7 @@ const Equipos: React.FC = () => {
                   setTeams(prev => Array.isArray(prev) ? [...prev, {
                     _id: Date.now().toString(),
                     name: nuevoEquipo.nombre,
+                    description: '',
                     leader: 'Tú',
                     members: usuariosSeleccionados.map(u => u.nombre),
                     points: 0,
@@ -747,6 +726,7 @@ const Equipos: React.FC = () => {
                   }] : [{
                     _id: Date.now().toString(),
                     name: nuevoEquipo.nombre,
+                    description: '',
                     leader: 'Tú',
                     members: usuariosSeleccionados.map(u => u.nombre),
                     points: 0,
@@ -755,7 +735,7 @@ const Equipos: React.FC = () => {
                     createdAt: new Date(),
                     updatedAt: new Date(),
                   }]);
-                  setNuevoEquipo({ nombre: '' });
+                  setNuevoEquipo({ nombre: '', descripcion: '' });
                   setUsuariosSeleccionados([]);
                   setVisibilidad('publico');
                   setMensajeBienvenida('');
@@ -771,7 +751,7 @@ const Equipos: React.FC = () => {
                       placeholder="Nombre del equipo"
                       className="px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] placeholder-gray-400 focus:outline-none font-mono"
                       value={nuevoEquipo.nombre}
-                      onChange={e => setNuevoEquipo({ nombre: e.target.value })}
+                      onChange={e => setNuevoEquipo({ nombre: e.target.value, descripcion: nuevoEquipo.descripcion })}
                       required
                     />
                   </div>
@@ -862,7 +842,7 @@ const Equipos: React.FC = () => {
                   <div className="flex gap-4 mt-4">
                     <button type="submit" className="px-4 py-2 rounded bg-[#00fff7] text-black font-bold hover:bg-[#39ff14] animate-glow">Crear equipo (mock)</button>
                     <button type="button" className="px-4 py-2 rounded bg-gray-500 text-white font-bold" onClick={() => {
-                      setNuevoEquipo({ nombre: '' });
+                      setNuevoEquipo({ nombre: '', descripcion: '' });
                       setUsuariosSeleccionados([]);
                       setVisibilidad('publico');
                       setMensajeBienvenida('');

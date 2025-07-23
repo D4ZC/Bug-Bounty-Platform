@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { FaUsers } from 'react-icons/fa';
+import { useBackground } from '../../contexts/BackgroundContext';
 
 const neon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
 const neonIcon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
@@ -28,9 +29,17 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isDark } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+  const { backgroundUrl } = useBackground();
+
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500">
+    <div
+      className="min-h-screen flex flex-col font-mono transition-colors duration-500"
+      style={{
+        background: backgroundUrl
+          ? `url(${backgroundUrl}) center/cover no-repeat`
+          : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)',
+      }}
+    >
       {/* Navbar superior */}
       <header className="w-full py-4 flex justify-center items-center bg-[#181c2bcc] border-b-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] backdrop-blur-md">
         <h1

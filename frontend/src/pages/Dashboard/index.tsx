@@ -5,10 +5,11 @@ import apiService from '@/services/api';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import Bar3DChart from './Bar3DChart';
+import { useBackground } from '../../contexts/BackgroundContext';
 
-// Datos de ejemplo para D4ZC
+// Datos de ejemplo para OCAMPO
 const d4zcProfile = {
-  name: 'D4ZC',
+  name: 'OCAMPO',
   stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 },
 };
 const radarData = [
@@ -34,6 +35,7 @@ const CustomBarTooltip = ({ active, payload, label }: any) => {
 const Dashboard: React.FC = () => {
   const { isDark } = useTheme();
   const navigate = useNavigate();
+  const { backgroundUrl } = useBackground();
 
   // Datos de ejemplo (puedes conectar a la API real si lo deseas)
   const [teams, setTeams] = useState<Team[]>([]);
@@ -71,7 +73,7 @@ const Dashboard: React.FC = () => {
   const mvpUser = topUsers[0];
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono text-white">
+    <div className="min-h-screen w-full font-mono text-white" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col gap-10">
         {/* Header */}
         <header className="flex flex-col items-center gap-2 mb-8">
@@ -93,8 +95,14 @@ const Dashboard: React.FC = () => {
             <span className="text-sm text-gray-300">Vulnerabilidades</span>
           </div>
         </div>
-        {/* Tarjeta D4ZC con radar chart funcional */}
-        <div className="max-w-2xl w-full bg-[#181c2b]/80 border-2 border-[#00fff7] rounded-2xl p-8 text-[#00fff7] shadow-[0_0_32px_#00fff7] flex flex-col md:flex-row items-center gap-8 mx-auto cursor-pointer hover:scale-105 transition backdrop-blur-md">
+        {/* Tarjeta OCAMPO con radar chart funcional */}
+        <div
+          className="max-w-2xl w-full bg-[#181c2b]/80 border-2 border-[#00fff7] rounded-2xl p-8 text-[#00fff7] shadow-[0_0_32px_#00fff7] flex flex-col md:flex-row items-center gap-8 mx-auto cursor-pointer hover:scale-105 transition backdrop-blur-md"
+          onClick={() => navigate('/profile')}
+          role="button"
+          tabIndex={0}
+          onKeyPress={e => { if (e.key === 'Enter' || e.key === ' ') navigate('/profile'); }}
+        >
           <div className="flex-1">
             <h2 className="text-3xl font-bold mb-2">{d4zcProfile.name}</h2>
             <div className="text-lg mb-2">Vulnerabilidades solucionadas: <span className="text-[#39ff14] font-bold">{d4zcProfile.stats.total}</span></div>
@@ -112,7 +120,7 @@ const Dashboard: React.FC = () => {
                   <PolarGrid stroke="#00fff7" strokeOpacity={0.3} />
                   <PolarAngleAxis dataKey="subject" tick={{ fill: '#00fff7', fontSize: 14 }} />
                   <PolarRadiusAxis angle={30} domain={[0, 30]} tick={false} axisLine={false} />
-                  <Radar name="D4ZC" dataKey="value" stroke="#39ff14" fill="#00fff7" fillOpacity={0.5} />
+                  <Radar name="OCAMPO" dataKey="value" stroke="#39ff14" fill="#00fff7" fillOpacity={0.5} />
                 </RadarChart>
               </ResponsiveContainer>
             </div>
