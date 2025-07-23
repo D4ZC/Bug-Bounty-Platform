@@ -20,7 +20,6 @@ const TeamsScoreCard: React.FC<{ teams: Team[] }> = ({ teams }) => (
       <Trophy className="text-yellow-400" size={24} />
       <span className="font-bold text-lg text-gray-800">Teams Score</span>
     </div>
-    <span className="text-xs text-gray-500 mb-2">Top 3 equipos</span>
     <ol className="flex flex-col gap-2 mt-0.5">
       {teams.map((team, idx) => (
         <li key={team.name} className="flex items-center justify-between">

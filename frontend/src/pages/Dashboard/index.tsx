@@ -6,6 +6,7 @@ import UserScoreCard from './components/UserScoreCard';
 import MVPUserCard from './components/MVPUserCard';
 import UserProfileCard from './components/UserProfileCard';
 import { Image, BorderFull, PaintBrush } from '@carbon/icons-react';
+import { useNavigate } from 'react-router-dom';
 
 const rewardsPreview = [
   {
@@ -66,6 +67,7 @@ const gulag = [
 const Dashboard: React.FC = () => {
   const [showRewards, setShowRewards] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const navigate = useNavigate();
 
   const handleEnter = () => {
     timerRef.current = window.setTimeout(() => setShowRewards(true), 500);
@@ -89,31 +91,28 @@ const Dashboard: React.FC = () => {
       </div>
       {/* Botón de tienda con popover de recompensas, igual a la imagen */}
       <div className="flex justify-center items-center mt-10">
-        <div className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12 relative">
-          <div
-            className="relative"
-            onMouseEnter={handleEnter}
-            onMouseLeave={handleLeave}
-            onFocus={handleEnter}
-            onBlur={handleLeave}
-            tabIndex={0}
-          >
-            <button
-              className="text-lg font-semibold text-gray-800"
-            >
-              Visit Store
-            </button>
-            {showRewards && (
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-full z-20 flex gap-4 p-4 bg-white border border-gray-200 rounded-xl shadow-xl animate-fade-in min-w-[340px]">
-                {rewardsPreview.map((reward, idx) => (
-                  <div key={idx} className={`flex flex-col items-center justify-center rounded-xl shadow-sm p-4 w-[110px] h-[110px] ${reward.bg}`}>
-                    {reward.icon}
-                    <span className="mt-2 text-xs font-semibold text-gray-700 text-center">{reward.title}</span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+        <div
+          className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12 relative cursor-pointer hover:bg-gray-100 transition"
+          onClick={() => navigate('/store')}
+          onMouseEnter={handleEnter}
+          onMouseLeave={handleLeave}
+          onFocus={handleEnter}
+          onBlur={handleLeave}
+          tabIndex={0}
+          role="button"
+          aria-label="Ir a la tienda"
+        >
+          <span className="text-lg font-semibold text-gray-800 select-none">Visit Store</span>
+          {showRewards && (
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-full z-20 flex gap-4 p-4 bg-white border border-gray-200 rounded-xl shadow-xl animate-fade-in min-w-[340px]">
+              {rewardsPreview.map((reward, idx) => (
+                <div key={idx} className={`flex flex-col items-center justify-center rounded-xl shadow-sm p-4 w-[110px] h-[110px] ${reward.bg}`}>
+                  {reward.icon}
+                  <span className="mt-2 text-xs font-semibold text-gray-700 text-center">{reward.title}</span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

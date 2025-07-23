@@ -22,7 +22,6 @@ const UserScoreCard: React.FC<{ users: User[] }> = ({ users }) => {
         <UserAvatar className="text-blue-400" size={24} />
         <span className="font-bold text-lg text-gray-800">User Score</span>
       </div>
-      <span className="text-xs text-gray-500 mb-2">Top 3 usuarios</span>
       <ol className="flex flex-col gap-2 mt-0.5">
         {users.map((user, idx) => (
           <li key={user.name} className="flex items-center justify-between relative">
