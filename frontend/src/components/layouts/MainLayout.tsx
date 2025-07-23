@@ -2,6 +2,7 @@ import React from 'react';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, List, SettingsAdjust, ShoppingCart, Add, Notification, UserAvatar, Document } from '@carbon/icons-react';
 import { useNavigate } from 'react-router-dom';
+// const bpLogo = '/bp-logo.png';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
@@ -14,6 +15,10 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </HeaderName>
         <div className="flex-1" />
         <div className="flex items-center gap-6 pr-2">
+          <span className="group flex items-center" onClick={() => navigate('/eventos')}>
+            <img src={'/bp-logo.png'} alt="BP Logo" style={{ width: 36, height: 36, display: 'block', objectFit: 'contain', transformStyle: 'preserve-3d' }} className="cursor-pointer mr-2 bugcoins-spin-3d" />
+            <span className="text-white text-lg font-bold ml-1 select-none">1325</span>
+          </span>
           <span className="group" onClick={() => navigate('/notifications')}>
             <Notification size={28} className="text-white cursor-pointer group-hover:bg-white group-hover:text-gray-900 rounded-full transition-colors duration-200 p-1" />
           </span>
@@ -116,6 +121,20 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         }
         @keyframes gear-spin-rotate {
           100% { transform: rotate(360deg); }
+        }
+        .bugcoins-spin {
+          animation: bugcoins-spin-rotate 6s linear infinite;
+        }
+        @keyframes bugcoins-spin-rotate {
+          100% { transform: rotate(360deg); }
+        }
+        .bugcoins-spin-3d {
+          animation: bugcoins-spin-3d-rotate 2.5s linear infinite;
+          transform-style: preserve-3d;
+        }
+        @keyframes bugcoins-spin-3d-rotate {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
         }
       `}</style>
     </div>

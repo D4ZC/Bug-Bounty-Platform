@@ -8,8 +8,7 @@ import AuthLayout from '@/components/layouts/AuthLayout';
 
 // Pages
 import Dashboard from '@/pages/Dashboard';
-import Login from '@/pages/auth/Login';
-import Register from '@/pages/auth/Register';
+import Login from './pages/auth/Login';
 import Vulnerabilities from '@/pages/Vulnerabilities';
 import Challenges from '@/pages/Challenges';
 import Shop from '@/pages/Shop';
@@ -22,7 +21,8 @@ import NotFound from '@/pages/NotFound';
 import ResolvedVulnerabilities from '@/pages/ResolvedVulnerabilities';
 import Notifications from '@/pages/Notifications';
 import Users from '@/pages/Users';
-import Eventos from '@/pages/Stats';
+import Eventos from '@/pages/Eventos';
+import Settings from '@/pages/Settings';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -40,6 +40,7 @@ function App() {
       </Helmet>
 
       <Routes>
+        <Route path="/auth/login" element={<Login />} />
         <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -55,6 +56,7 @@ function App() {
           <Route path="mvp" element={<MVP />} />
           <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />
           <Route path="eventos" element={<Eventos />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

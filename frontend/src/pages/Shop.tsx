@@ -12,59 +12,114 @@ import {
   SelectItem
 } from '@carbon/react';
 
-const carouselImages = [
-  'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1519985176271-adb1088fa94c?auto=format&fit=crop&w=600&q=80',
-  'https://images.unsplash.com/photo-1454023492550-5696f8ff10e1?auto=format&fit=crop&w=600&q=80',
+const MARCOS = [
+  { name: 'Neón Azul', url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80' },
+  { name: 'Dorado', url: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80' },
+  { name: 'Retro', url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80' },
 ];
 
-const carouselImages2 = Array.from({ length: 5 }, (_, i) => `https://source.unsplash.com/random/800x320?sig=${i + Math.floor(Math.random()*10000)}`);
+const FONDOS = [
+  { name: 'Galaxia', url: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=800&q=80' },
+  { name: 'Ciberpunk', url: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80' },
+  { name: 'Minimalista', url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80' },
+];
 
 const sampleProducts = [
   {
-    name: 'Camiseta Bug Bounty',
-    category: 'Swag',
-    description: 'Camiseta oficial del evento Bug Bounty, 100% algodón.',
-    fileName: 'camiseta.jpg',
+    name: 'Marco Neon Azul',
+    category: 'Marco',
+    description: 'Marco digital con efecto neón azul para tu avatar.',
+    fileName: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80',
+    price: 150,
+    discount: 20,
   },
   {
-    name: 'Mouse Gamer',
-    category: 'Hardware',
-    description: 'Mouse óptico de alta precisión para gamers y pentesters.',
-    fileName: 'mouse.png',
+    name: 'Fondo Galaxia',
+    category: 'Fondo',
+    description: 'Fondo espacial con estrellas y nebulosas para tu perfil.',
+    fileName: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80',
+    price: 180,
+    discount: 10,
   },
   {
-    name: 'Sticker Pack',
-    category: 'Swag',
-    description: 'Paquete de stickers exclusivos para tu laptop.',
-    fileName: 'stickers.png',
+    name: 'Marco Dorado',
+    category: 'Marco',
+    description: 'Marco elegante dorado para destacar tu avatar.',
+    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    price: 220,
+    discount: 15,
   },
   {
-    name: 'Licencia Software Pro',
-    category: 'Software',
-    description: 'Licencia anual para herramienta profesional de seguridad.',
-    fileName: 'licencia.pdf',
-  },
-  // Nuevos productos
-  {
-    name: 'Taza Bug Hunter',
-    category: 'Swag',
-    description: 'Taza de cerámica con diseño exclusivo para cazadores de bugs.',
-    fileName: 'taza.jpg',
+    name: 'Fondo Ciberpunk',
+    category: 'Fondo',
+    description: 'Fondo con luces y ambiente ciberpunk para tu perfil.',
+    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    price: 200,
+    discount: 25,
   },
   {
-    name: 'Teclado Mecánico',
-    category: 'Hardware',
-    description: 'Teclado mecánico retroiluminado ideal para programadores.',
-    fileName: 'teclado.png',
+    name: 'Avatar Pixel Art',
+    category: 'Avatar',
+    description: 'Avatar estilo pixel art para personalizar tu perfil.',
+    fileName: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+    price: 120,
+    discount: 0,
   },
   {
-    name: 'Curso Online Seguridad',
-    category: 'Software',
-    description: 'Acceso a curso online de seguridad informática y hacking ético.',
-    fileName: 'curso.pdf',
+    name: 'Marco Retro',
+    category: 'Marco',
+    description: 'Marco con diseño retro y colores vibrantes.',
+    fileName: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+    price: 160,
+    discount: 5,
+  },
+  {
+    name: 'Fondo Minimalista',
+    category: 'Fondo',
+    description: 'Fondo claro y minimalista para un perfil elegante.',
+    fileName: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80',
+    price: 110,
+    discount: 0,
+  },
+  {
+    name: 'Marco Animado',
+    category: 'Marco',
+    description: 'Marco animado con efectos de luz para tu avatar.',
+    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    price: 250,
+    discount: 30,
+  },
+  {
+    name: 'Fondo Holográfico',
+    category: 'Fondo',
+    description: 'Fondo con efecto holográfico y colores iridiscentes.',
+    fileName: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80',
+    price: 210,
+    discount: 10,
+  },
+  {
+    name: 'Avatar Cómic',
+    category: 'Avatar',
+    description: 'Avatar con estilo de cómic para destacar tu perfil.',
+    fileName: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80',
+    price: 130,
+    discount: 0,
+  },
+  {
+    name: 'Marco Prisma',
+    category: 'Marco',
+    description: 'Marco con efecto prisma y reflejos multicolor para tu avatar.',
+    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    price: 175,
+    discount: 12,
+  },
+  {
+    name: 'Fondo Digital Abstracto',
+    category: 'Fondo',
+    description: 'Fondo abstracto digital con formas geométricas y colores vivos.',
+    fileName: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80',
+    price: 140,
+    discount: 8,
   },
 ];
 
@@ -72,10 +127,7 @@ const Shop: React.FC = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [isPulse, setIsPulse] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [carouselIdx, setCarouselIdx] = useState(0);
-  const [carouselIdx2, setCarouselIdx2] = useState(0);
-  const [fade, setFade] = useState(false);
-  const [fade2, setFade2] = useState(false);
+  // Eliminar el estado y lógica del carrusel
   const [products, setProducts] = useState(sampleProducts);
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -83,12 +135,16 @@ const Shop: React.FC = () => {
     name: '',
     category: '',
     description: '',
-    fileName: ''
+    fileName: '',
+    price: 100,
+    discount: 0,
   });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
   const [deleteTimer, setDeleteTimer] = useState(0);
   const [deleteModalExit, setDeleteModalExit] = useState(false);
+  const [buyModal, setBuyModal] = useState<{ open: boolean, idx: number | null }>({ open: false, idx: null });
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
   // Para cerrar modal con ESC
   useEffect(() => {
     if (!showCreateModal) return;
@@ -97,64 +153,28 @@ const Shop: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [showCreateModal]);
 
+  // Eliminar el JSX del carrusel
+  // Eliminar el estado y lógica del carrusel
+
+  // Leer productos de localStorage al cargar
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(true);
-      setTimeout(() => {
-        setCarouselIdx((prev) => (prev + 1) % carouselImages.length);
-        setFade(false);
-      }, 350);
-    }, 3000);
-    return () => clearInterval(interval);
+    const stored = localStorage.getItem('shopProducts');
+    if (stored) {
+      setProducts(JSON.parse(stored));
+    }
   }, []);
 
+  // Guardar productos en localStorage cada vez que cambian
   useEffect(() => {
-    const interval2 = setInterval(() => {
-      setFade2(true);
-      setTimeout(() => {
-        setCarouselIdx2((prev) => (prev + 1) % carouselImages2.length);
-        setFade2(false);
-      }, 350);
-    }, 3200);
-    return () => clearInterval(interval2);
-  }, []);
+    localStorage.setItem('shopProducts', JSON.stringify(products));
+  }, [products]);
 
   const handlePressStart = () => setIsPressed(true);
   const handlePressEnd = () => setIsPressed(false);
 
-  const nextImage = () => {
-    setFade(true);
-    setTimeout(() => {
-      setCarouselIdx((prev) => (prev + 1) % carouselImages.length);
-      setFade(false);
-    }, 350);
-  };
-  const prevImage = () => {
-    setFade(true);
-    setTimeout(() => {
-      setCarouselIdx((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
-      setFade(false);
-    }, 350);
-  };
-
-  const nextImage2 = () => {
-    setFade2(true);
-    setTimeout(() => {
-      setCarouselIdx2((prev) => (prev + 1) % carouselImages2.length);
-      setFade2(false);
-    }, 350);
-  };
-  const prevImage2 = () => {
-    setFade2(true);
-    setTimeout(() => {
-      setCarouselIdx2((prev) => (prev - 1 + carouselImages2.length) % carouselImages2.length);
-      setFade2(false);
-    }, 350);
-  };
-
   const closeCreateModal = () => setShowCreateModal(false);
   const openCreateModal = () => {
-    setNewProduct({ name: '', category: '', description: '', fileName: '' });
+    setNewProduct({ name: '', category: '', description: '', fileName: '', price: 100, discount: 0 });
     setShowCreateModal(true);
   };
 
@@ -192,37 +212,74 @@ const Shop: React.FC = () => {
     }
   };
 
+  // Agregar estado para el índice del carrusel
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  const [carouselTransition, setCarouselTransition] = useState('');
+  // Carrusel: obtener imágenes de los productos
+  const productImages = products.map(p => p.fileName || '/bp-logo.png');
+  const nextCarousel = () => {
+    setCarouselTransition('slide-fade-out-left');
+    setTimeout(() => {
+      setCarouselIdx((prev) => (prev + 1) % productImages.length);
+      setCarouselTransition('slide-fade-in-left');
+    }, 300);
+    setTimeout(() => setCarouselTransition(''), 700);
+  };
+  const prevCarousel = () => {
+    setCarouselTransition('slide-fade-out-right');
+    setTimeout(() => {
+      setCarouselIdx((prev) => (prev - 1 + productImages.length) % productImages.length);
+      setCarouselTransition('slide-fade-in-right');
+    }, 300);
+    setTimeout(() => setCarouselTransition(''), 700);
+  };
+
+  // Cambio automático de imagen cada 3 segundos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCarouselTransition('slide-fade-out-left');
+      setTimeout(() => {
+        setCarouselIdx((prev) => (prev + 1) % productImages.length);
+        setCarouselTransition('slide-fade-in-left');
+      }, 300);
+      setTimeout(() => setCarouselTransition(''), 700);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [productImages.length]);
+
   return (
     <div className="flex flex-col w-full text-black min-h-screen px-0">
       <div className="flex items-center mb-6">
         <h2 className="text-2xl font-bold mr-4">Tienda</h2>
       </div>
-      {/* Carrusel de imágenes */}
-      <div className="w-full flex flex-col justify-start mb-10">
-        <div className="relative w-full h-96 rounded-xl overflow-hidden shadow-md">
+      {/* Carrusel simple de imágenes de productos */}
+      <div className="w-full flex flex-col items-center justify-center mb-10">
+        <div className="relative w-full h-[420px] rounded-xl overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
           <img
-            src={carouselImages[carouselIdx]}
-            alt={`Imagen ${carouselIdx + 1}`}
-            className={`w-full h-full object-cover transition-all duration-700 ease-in-out ${fade ? 'slide-fade-out-left' : 'slide-fade-in-right'}`}
+            src={productImages[carouselIdx]}
+            alt={`Producto ${carouselIdx + 1}`}
+            className={`w-full h-full object-cover transition-all duration-500 ${carouselTransition}`}
+            style={{ background: '#fff', margin: 0, padding: 0 }}
+            onError={e => (e.currentTarget.src = '/bp-logo.png')}
           />
           <button
-            className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 text-black rounded-full p-2 shadow-md"
-            onClick={prevImage}
+            className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-black rounded-full p-2 shadow-md"
+            onClick={prevCarousel}
             aria-label="Anterior"
             type="button"
           >
             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
           <button
-            className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-70 hover:bg-opacity-100 text-black rounded-full p-2 shadow-md"
-            onClick={nextImage}
+            className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-black rounded-full p-2 shadow-md"
+            onClick={nextCarousel}
             aria-label="Siguiente"
             type="button"
           >
             <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </button>
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-            {carouselImages.map((_, idx) => (
+            {productImages.map((_, idx) => (
               <span
                 key={idx}
                 className={`w-2 h-2 rounded-full ${idx === carouselIdx ? 'bg-blue-600' : 'bg-white border border-blue-600'}`}
@@ -234,32 +291,11 @@ const Shop: React.FC = () => {
       {/* Catálogo de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 px-0">
         {products.map((product, idx) => (
-          <Tile
+          editMode && editingIdx === idx ? (
+            <div
             key={idx}
             className="w-full max-w-xs bg-white rounded-lg shadow-md p-5 flex flex-col border border-gray-200 hover:shadow-lg transition-all duration-200 relative"
           >
-            {editMode && (
-              <div className="absolute bottom-3 right-3 flex gap-2 z-10">
-                <Button
-                  kind="ghost"
-                  size="sm"
-                  hasIconOnly
-                  renderIcon={Edit}
-                  onClick={() => setEditingIdx(idx)}
-                  className="!p-0"
-                />
-                <Button
-                  kind="ghost"
-                  size="sm"
-                  hasIconOnly
-                  renderIcon={TrashCan}
-                  onClick={() => startDeleteProcess(idx)}
-                  className="!p-0"
-                />
-              </div>
-            )}
-            {editMode && editingIdx === idx ? (
-              <>
                 <Tag type="blue" className="mb-2">
                   <TextInput
                     id={`category-${idx}`}
@@ -296,6 +332,33 @@ const Shop: React.FC = () => {
                   }}
                   className="text-sm mb-2"
                 />
+              <TextInput
+                id={`price-${idx}`}
+                labelText="Precio (BugCoins)"
+                type="number"
+                min={0}
+                value={product.price}
+                onChange={e => {
+                  const newProducts = [...products];
+                  newProducts[idx].price = Number(e.target.value);
+                  setProducts(newProducts);
+                }}
+                className="mb-2"
+              />
+              <TextInput
+                id={`discount-${idx}`}
+                labelText="Descuento (%)"
+                type="number"
+                min={0}
+                max={100}
+                value={product.discount}
+                onChange={e => {
+                  const newProducts = [...products];
+                  newProducts[idx].discount = Number(e.target.value);
+                  setProducts(newProducts);
+                }}
+                className="mb-2"
+              />
                 <FileUploader
                   labelTitle="Imagen"
                   labelDescription="Sube una imagen para el producto"
@@ -321,16 +384,58 @@ const Shop: React.FC = () => {
                 >
                   Guardar
                 </Button>
-              </>
+            </div>
             ) : (
-              <>
-                <Tag type="blue" className="mb-2">{product.category}</Tag>
-                <div className="font-bold text-lg mb-1">{product.name}</div>
-                <div className="text-sm mb-2 text-gray-700">{product.description}</div>
-                <div className="text-xs text-gray-500 mt-2">{product.fileName}</div>
-              </>
-            )}
-          </Tile>
+            <div
+              key={idx}
+              className="w-full max-w-xs bg-white rounded-xl shadow-md flex flex-col border border-gray-200 hover:shadow-lg transition-all duration-200 relative overflow-hidden cursor-pointer"
+              onClick={() => !editMode && setBuyModal({ open: true, idx })}
+              style={{ minHeight: 340 }}
+            >
+              {editMode && (
+                <div className="absolute bottom-3 right-3 flex gap-2 z-10">
+                  <Button
+                    kind="ghost"
+                    size="sm"
+                    hasIconOnly
+                    renderIcon={Edit}
+                    onClick={() => setEditingIdx(idx)}
+                    className="!p-0"
+                  />
+                  <Button
+                    kind="ghost"
+                    size="sm"
+                    hasIconOnly
+                    renderIcon={TrashCan}
+                    onClick={() => startDeleteProcess(idx)}
+                    className="!p-0"
+                  />
+                </div>
+              )}
+              {/* Imagen principal */}
+              <div className="flex-1 flex items-center justify-center bg-gray-100" style={{ minHeight: 180 }}>
+                <img
+                  src={product.fileName || '/bp-logo.png'}
+                  alt={product.name}
+                  className="object-contain max-h-44 max-w-full rounded-t-xl"
+                  style={{ background: '#fff', width: '100%' }}
+                  onError={e => (e.currentTarget.src = '/bp-logo.png')}
+                />
+              </div>
+              {/* Texto y costo */}
+              <div className="flex flex-col justify-between p-4">
+                <div className="font-bold text-base text-black mb-1 truncate" title={product.name}>{product.name}</div>
+                <div className="text-xs text-gray-600 mb-2 truncate" title={product.description}>{product.description}</div>
+                <div className="flex items-center gap-2 mt-2">
+                  <img src="/bp-logo.png" alt="BugCoins" style={{ width: 22, height: 22, display: 'inline-block', objectFit: 'contain', transformStyle: 'preserve-3d' }} className="bugcoins-spin-3d" />
+                  <span className="text-black text-lg font-bold">{product.price}</span>
+                  {product.discount > 0 && (
+                    <span className="text-green-500 text-sm font-semibold">-{product.discount}%</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )
         ))}
       </div>
       {/* Botones flotantes: editar y agregar */}
@@ -403,6 +508,28 @@ const Shop: React.FC = () => {
                 />
               </div>
               <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Precio (BugCoins)</label>
+                <input
+                  type="number"
+                  min={0}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  value={newProduct.price}
+                  onChange={e => setNewProduct(np => ({ ...np, price: Number(e.target.value) }))}
+                  required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-1">Descuento (%)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  value={newProduct.discount}
+                  onChange={e => setNewProduct(np => ({ ...np, discount: Number(e.target.value) }))}
+                />
+              </div>
+              <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Imagen</label>
                 <input
                   type="file"
@@ -469,6 +596,30 @@ const Shop: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Modal de confirmación de compra */}
+      {buyModal.open && buyModal.idx !== null && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
+            <h3 className="text-xl font-bold mb-4 text-gray-900">¿Estás seguro que quieres comprar este producto por <span className='text-blue-700'>{products[buyModal.idx].price} BugCoins</span>?</h3>
+            <div className="flex gap-4 mt-4">
+              <button className="px-5 py-2 bg-gray-200 rounded text-gray-700 font-semibold hover:bg-gray-300" onClick={() => setBuyModal({ open: false, idx: null })}>Cancelar</button>
+              <button className="px-5 py-2 bg-blue-600 rounded text-white font-semibold hover:bg-blue-700" onClick={() => {
+                setBuyModal({ open: false, idx: null });
+                setSuccessMsg(`Has comprado "${products[buyModal.idx].name}" satisfactoriamente`);
+                setTimeout(() => setSuccessMsg(null), 2500);
+              }}>Comprar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de compra exitosa */}
+      {successMsg && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-green-100 border border-green-400 rounded-lg shadow-lg px-8 py-6 text-center">
+            <span className="text-green-700 text-lg font-bold">{successMsg}</span>
+          </div>
+        </div>
+      )}
       <style>{`
         .pressed-3d {
           transform: scale(0.93);
@@ -486,15 +637,41 @@ const Shop: React.FC = () => {
           75% { transform: rotate(-4deg); }
           90% { transform: rotate(2deg); }
         }
-        .slide-fade-in-right {
+        .slide-fade-in-left {
           opacity: 1;
           transform: translateX(0);
-          transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+          animation: slideFadeInLeft 0.5s cubic-bezier(0.4,0,0.2,1);
         }
         .slide-fade-out-left {
           opacity: 0;
           transform: translateX(-120px) scale(0.98);
-          transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+          animation: slideFadeOutLeft 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        .slide-fade-in-right {
+          opacity: 1;
+          transform: translateX(0);
+          animation: slideFadeInRight 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        .slide-fade-out-right {
+          opacity: 0;
+          transform: translateX(120px) scale(0.98);
+          animation: slideFadeOutRight 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideFadeInLeft {
+          from { opacity: 0; transform: translateX(-120px) scale(0.98); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideFadeOutLeft {
+          from { opacity: 1; transform: translateX(0); }
+          to { opacity: 0; transform: translateX(-120px) scale(0.98); }
+        }
+        @keyframes slideFadeInRight {
+          from { opacity: 0; transform: translateX(120px) scale(0.98); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes slideFadeOutRight {
+          from { opacity: 1; transform: translateX(0); }
+          to { opacity: 0; transform: translateX(120px) scale(0.98); }
         }
         .animate-pulse-plus {
           animation: pulse-plus 0.25s cubic-bezier(0.4,0,0.2,1);
@@ -517,6 +694,14 @@ const Shop: React.FC = () => {
         @keyframes modalExit {
           from { opacity: 1; transform: translateY(0); }
           to { opacity: 0; transform: translateY(40px); }
+        }
+        .bugcoins-spin-3d {
+          animation: bugcoins-spin-3d-rotate 2.5s linear infinite;
+          transform-style: preserve-3d;
+        }
+        @keyframes bugcoins-spin-3d-rotate {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
         }
       `}</style>
     </div>

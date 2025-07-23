@@ -28,7 +28,7 @@ interface ContributionForm {
 }
 
 const initialForm: ContributionForm = {
-  type: '',
+  type: 'low', // Valor por defecto ahora es 'low'
   title: '',
   description: '',
   file: null,
@@ -127,10 +127,11 @@ const Contributions: React.FC = () => {
     if (!validateForm()) {
       return;
     }
-    
+    // Si no se selecciona criticidad, usar 'Low' por defecto
+    const criticidadLabel = types.find(t => t.value === (form.type || 'low'))?.label || 'Low';
     const resolvedVuln = {
       fecha: new Date().toLocaleDateString(),
-      criticidad: types.find(t => t.value === form.type)?.label || '',
+      criticidad: criticidadLabel,
       vulnerabilidad: form.title,
       descripcion: form.description,
       documento: form.file ? form.file.name : '',
@@ -148,6 +149,15 @@ const Contributions: React.FC = () => {
     setForm(initialForm);
     setModalOpen(false);
     setEditIdx(null);
+    // Guardar notificación en localStorage
+    const notifications = JSON.parse(localStorage.getItem('notifications') || '[]');
+    notifications.push({
+      id: Date.now(),
+      message: 'Tu contribución ha sido enviada. Ahora estará en revisión',
+      date: new Date().toLocaleDateString(),
+      category: 'Contribución',
+    });
+    localStorage.setItem('notifications', JSON.stringify(notifications));
     // Redirigir siempre tras guardar
     navigate('/resolved-vulnerabilities');
   };
@@ -349,7 +359,7 @@ const Contributions: React.FC = () => {
           )}
         </div>
         {/* Botón 'Publicar' personalizado tipo Carbon */}
-        <div className="flex justify-center mt-8">
+        <div className="flex justify-center mt-8 gap-4">
           <button
             type="button"
             className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-normal rounded-lg px-6 py-3 shadow transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
@@ -359,6 +369,17 @@ const Contributions: React.FC = () => {
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 32 32" className="mr-1"><rect x="8" y="6" width="16" height="20" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><rect x="12" y="2" width="8" height="4" rx="1" stroke="currentColor" stroke-width="2" fill="none"/><path d="M13 18l3 3 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             {editIdx !== null ? "Editar" : "Publicar"}
           </button>
+          {editIdx !== null && (
+            <button
+              type="button"
+              className="flex items-center gap-1 bg-gray-300 hover:bg-gray-400 text-black font-normal rounded-lg px-6 py-3 shadow transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 text-base min-w-[120px] justify-center"
+              onClick={() => { setModalOpen(false); navigate('/resolved-vulnerabilities'); }}
+            >
+              {/* Ícono de cancelar (X) */}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" className="mr-1"><path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              Cancelar
+            </button>
+          )}
         </div>
         <style>{`
           /* Ocultar la flecha del select de Carbon */

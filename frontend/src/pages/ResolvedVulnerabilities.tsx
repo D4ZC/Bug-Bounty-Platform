@@ -27,16 +27,137 @@ const initialForm = {
   doc: null,
 };
 
+const initialVulns = [
+  {
+    criticidad: 'High',
+    fecha: '2024-06-01',
+    vulnerabilidad: 'SQL Injection en login',
+    descripcion: 'Se detectó una inyección SQL en el formulario de login que permitía el acceso no autorizado.',
+    documento: 'evidencia-sql.pdf',
+  },
+  {
+    criticidad: 'Medium',
+    fecha: '2024-06-02',
+    vulnerabilidad: 'Cross-Site Scripting (XSS)',
+    descripcion: 'Se encontró una vulnerabilidad XSS en el campo de comentarios.',
+    documento: 'xss-demo.png',
+  },
+  {
+    criticidad: 'Low',
+    fecha: '2024-06-03',
+    vulnerabilidad: 'Información de versión expuesta',
+    descripcion: 'El servidor expone la versión de Apache en los headers.',
+    documento: '',
+  },
+  {
+    criticidad: 'Critical',
+    fecha: '2024-06-04',
+    vulnerabilidad: 'Remote Code Execution',
+    descripcion: 'Se logró ejecutar código remoto a través de un endpoint vulnerable.',
+    documento: 'rce-evidence.pdf',
+  },
+  {
+    criticidad: 'Medium',
+    fecha: '2024-06-05',
+    vulnerabilidad: 'CSRF en cambio de contraseña',
+    descripcion: 'El endpoint de cambio de contraseña no valida el token CSRF.',
+    documento: '',
+  },
+  {
+    criticidad: 'High',
+    fecha: '2024-06-06',
+    vulnerabilidad: 'Directory Traversal',
+    descripcion: 'Se pudo acceder a archivos sensibles mediante ../ en la URL.',
+    documento: 'traversal.txt',
+  },
+  {
+    criticidad: 'Low',
+    fecha: '2024-06-07',
+    vulnerabilidad: 'Clickjacking',
+    descripcion: 'La aplicación es vulnerable a clickjacking por falta de X-Frame-Options.',
+    documento: '',
+  },
+  {
+    criticidad: 'Critical',
+    fecha: '2024-06-08',
+    vulnerabilidad: 'Deserialización insegura',
+    descripcion: 'Se explotó una deserialización insegura para ejecutar código.',
+    documento: 'deserialization.pdf',
+  },
+  {
+    criticidad: 'Medium',
+    fecha: '2024-06-09',
+    vulnerabilidad: 'Open Redirect',
+    descripcion: 'Redirección abierta permitía phishing.',
+    documento: '',
+  },
+  {
+    criticidad: 'High',
+    fecha: '2024-06-10',
+    vulnerabilidad: 'Exposición de datos sensibles',
+    descripcion: 'Datos personales expuestos en endpoint público.',
+    documento: 'datos-expuestos.txt',
+  },
+  {
+    criticidad: 'Low',
+    fecha: '2024-06-11',
+    vulnerabilidad: 'Falta de HTTPS',
+    descripcion: 'El sitio permitía conexiones HTTP inseguras.',
+    documento: '',
+  },
+  {
+    criticidad: 'Medium',
+    fecha: '2024-06-12',
+    vulnerabilidad: 'Inyección de comandos',
+    descripcion: 'Se logró ejecutar comandos del sistema a través de un parámetro.',
+    documento: 'cmd-injection.txt',
+  },
+  {
+    criticidad: 'Critical',
+    fecha: '2024-06-13',
+    vulnerabilidad: 'Bypass de autenticación',
+    descripcion: 'Se pudo acceder a cuentas de otros usuarios sin autenticación.',
+    documento: 'bypass-auth.pdf',
+  },
+  {
+    criticidad: 'High',
+    fecha: '2024-06-14',
+    vulnerabilidad: 'Fuga de tokens JWT',
+    descripcion: 'Tokens JWT expuestos en logs del servidor.',
+    documento: '',
+  },
+  {
+    criticidad: 'Medium',
+    fecha: '2024-06-15',
+    vulnerabilidad: 'Enumeración de usuarios',
+    descripcion: 'El sistema permitía enumerar usuarios por mensajes de error.',
+    documento: '',
+  },
+  {
+    criticidad: 'Low',
+    fecha: '2024-06-16',
+    vulnerabilidad: 'Falta de CSP',
+    descripcion: 'No se implementó Content Security Policy.',
+    documento: '',
+  },
+];
+
+const criticidades = ['Todas', 'Critical', 'High', 'Medium', 'Low'];
+
 const ResolvedVulnerabilities: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
-  const [vulns, setVulns] = useState<any[]>([]);
+  const [vulns, setVulns] = useState<any[]>(() => {
+    const stored = JSON.parse(localStorage.getItem('resolvedVulns') || 'null');
+    return stored && stored.length > 0 ? stored : initialVulns;
+  });
   const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailVuln, setDetailVuln] = useState<any>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
   const [deleteTimer, setDeleteTimer] = useState(5);
+  const [selectedCriticidad, setSelectedCriticidad] = useState('Todas');
 
   // Leer de localStorage al cargar
   useEffect(() => {
@@ -121,11 +242,21 @@ const ResolvedVulnerabilities: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
+      <div className="flex items-center gap-4 mb-6">
+        <label className="font-semibold text-gray-700">Filtrar por criticidad:</label>
+        <select
+          className="border border-gray-300 rounded px-3 py-2 text-black bg-white focus:outline-blue-500"
+          value={selectedCriticidad}
+          onChange={e => setSelectedCriticidad(e.target.value)}
+        >
+          {criticidades.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+      </div>
       <div className="flex flex-wrap gap-4 pb-4 max-w-full">
-        {vulns.length === 0 ? (
+        {vulns.filter(v => selectedCriticidad === 'Todas' || v.criticidad === selectedCriticidad).length === 0 ? (
           <div className="text-gray-500">No hay vulnerabilidades resueltas aún.</div>
         ) : (
-          vulns.map((v, idx) => (
+          vulns.filter(v => selectedCriticidad === 'Todas' || v.criticidad === selectedCriticidad).map((v, idx) => (
             <div
               key={idx}
               className="w-full max-w-md bg-white rounded-lg shadow-md p-6 flex flex-col justify-between border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer"
