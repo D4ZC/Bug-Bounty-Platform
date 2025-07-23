@@ -1,16 +1,13 @@
+import { t } from 'i18next';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const SIDEBAR_FONT_SIZES = [
-  { label: 'Small', value: 'text-xs' },
-  { label: 'Medium', value: 'text-base' },
-  { label: 'Large', value: 'text-lg' },
-];
+
 
 const APP_COLORS = [
-  { label: 'White', value: 'white' },
-  { label: 'Black', value: 'black' },
-  { label: 'Grey', value: 'grey' },
+  { label: t('settings.white'), value: 'white'},
+  { label: t('settings.black'), value: 'black' },
+  { label: t('settings.grey'), value: 'grey' },
 ];
 
 const GREY_VARIANTS = [
@@ -101,38 +98,39 @@ const ALL_LANGUAGES = [
   // ... puedes agregar más si es necesario
 ];
 
-const getUserId = () => localStorage.getItem('userId') || 'default';
-const getSettingsKey = () => `settings_${getUserId()}`;
-
-const getInitialSettings = () => {
-  const stored = localStorage.getItem(getSettingsKey());
-  if (stored) {
-    const parsed = JSON.parse(stored);
-    // Forzar sidebarFontSize a número
-    parsed.sidebarFontSize = Number(parsed.sidebarFontSize) || 100;
-    return parsed;
-  }
-  return {
-    sidebarFontSize: 100,
-    appColor: 'white',
-    greyVariant: 'grey-darkbar',
-  };
-};
-
-// Utilidad para obtener los idiomas seleccionados iniciales (máx 7)
-const getInitialLanguages = () => {
-  const stored = localStorage.getItem(getSettingsKey() + '_languages');
-  if (stored) return JSON.parse(stored);
-  // Por defecto: English, Spanish, Portuguese
-  return [
-    { label: 'English', value: 'en' },
-    { label: 'Spanish', value: 'es' },
-    { label: 'Portuguese', value: 'pt' },
-  ];
-};
-
 const Settings: React.FC = () => {
   const { t } = useTranslation();
+
+  const getUserId = () => localStorage.getItem('userId') || 'default';
+  const getSettingsKey = () => `settings_${getUserId()}`;
+
+  const getInitialSettings = () => {
+    const stored = localStorage.getItem(getSettingsKey());
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      // Forzar sidebarFontSize a número
+      parsed.sidebarFontSize = Number(parsed.sidebarFontSize) || 100;
+      return parsed;
+    }
+    return {
+      sidebarFontSize: 100,
+      appColor: 'white',
+      greyVariant: 'grey-darkbar',
+    };
+  };
+
+  // Utilidad para obtener los idiomas seleccionados iniciales (máx 7)
+  const getInitialLanguages = () => {
+    const stored = localStorage.getItem(getSettingsKey() + '_languages');
+    if (stored) return JSON.parse(stored);
+    // Por defecto: English, Spanish, Portuguese
+    return [
+      { label: 'English', value: 'en' },
+      { label: 'Spanish', value: 'es' },
+      { label: 'Portuguese', value: 'pt' },
+    ];
+  };
+
   const [showSidebarSize, setShowSidebarSize] = useState(false);
   const [showColor, setShowColor] = useState(false);
   const [showGreyVariant, setShowGreyVariant] = useState(false);

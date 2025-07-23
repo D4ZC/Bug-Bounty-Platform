@@ -1,3 +1,4 @@
+import { t } from 'i18next';
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -44,7 +45,7 @@ const getStoredMessages = (): Message[] => {
 const Messages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(getStoredMessages());
   const { user } = useAuth() || {};
-  const [selectedTab, setSelectedTab] = useState<'inbox' | 'trash'>('inbox');
+  const [activeTab, setActiveTab] = useState<'score_team' | 'score_user' | 'gulag'>('score_team');
   const [search, setSearch] = useState('');
   const [selectedMsg, setSelectedMsg] = useState<typeof MOCK_MESSAGES[0] | null>(null);
 
@@ -55,7 +56,7 @@ const Messages: React.FC = () => {
 
   // Filtrar mensajes según pestaña y búsqueda
   const filtered = messages.filter((m: Message) =>
-    (selectedTab === 'inbox' ? !m.trashed : m.trashed) &&
+    (activeTab === 'score_team' ? !m.trashed : m.trashed) &&
     (m.subject.toLowerCase().includes(search.toLowerCase()) || m.content.toLowerCase().includes(search.toLowerCase()))
   );
 
@@ -90,16 +91,16 @@ const Messages: React.FC = () => {
         />
         <div className="flex gap-2">
           <button
-            className={`px-4 py-2 rounded font-semibold ${selectedTab === 'inbox' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
-            onClick={() => setSelectedTab('inbox')}
+            className={`px-4 py-2 rounded font-semibold ${activeTab === 'score_team' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
+            onClick={() => setActiveTab('score_team')}
           >
-            Inbox
+            {t('messages.inbox')}
           </button>
           <button
-            className={`px-4 py-2 rounded font-semibold ${selectedTab === 'trash' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
-            onClick={() => setSelectedTab('trash')}
+            className={`px-4 py-2 rounded font-semibold ${activeTab === 'trash' ? 'bg-red-600 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}
+            onClick={() => setActiveTab('trash')}
           >
-            Trash
+            {t('messages.trash')}
           </button>
         </div>
       </div>
@@ -114,6 +115,7 @@ const Messages: React.FC = () => {
                 className={`p-3 rounded-lg cursor-pointer transition border border-transparent hover:border-blue-400 ${msg.read ? 'bg-gray-100 dark:bg-gray-800' : 'bg-blue-50 dark:bg-blue-900'} ${selectedMsg?.id === msg.id ? 'ring-2 ring-blue-400' : ''}`}
                 onClick={() => { setSelectedMsg(msg); handleMarkRead(msg.id); }}
               >
+
                 <div className="font-semibold text-sm text-gray-800 dark:text-gray-100 truncate">{msg.subject}</div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{msg.content}</div>
                 <div className="text-xs text-right text-gray-400 mt-1">{msg.date}</div>
@@ -130,17 +132,17 @@ const Messages: React.FC = () => {
                 <div className="text-xs text-gray-400">{selectedMsg.date}</div>
               </div>
               <div className="mb-4 text-gray-700 dark:text-gray-200 whitespace-pre-line">{selectedMsg.content}</div>
-              {selectedMsg.type === 'duel' && selectedTab === 'inbox' && (
+              {selectedMsg.type === 'duel' && activeTab === 'score_team' && (
                 <div className="flex gap-2 mb-4">
                   <button className="px-4 py-2 rounded bg-green-600 text-white font-bold hover:bg-green-700">Aceptar</button>
                   <button className="px-4 py-2 rounded bg-red-600 text-white font-bold hover:bg-red-700">Rechazar</button>
                 </div>
               )}
               <div className="flex gap-2">
-                {selectedTab === 'inbox' && (
+                {activeTab === 'score_team' && (
                   <button className="px-3 py-1 rounded bg-red-500 text-white font-bold hover:bg-red-600" onClick={() => handleTrash(selectedMsg.id)}>Mover a papelera</button>
                 )}
-                {selectedTab === 'trash' && (
+                {activeTab === 'trash' && (
                   <>
                     <button className="px-3 py-1 rounded bg-blue-500 text-white font-bold hover:bg-blue-600" onClick={() => handleRestore(selectedMsg.id)}>Restaurar</button>
                     <button className="px-3 py-1 rounded bg-gray-400 text-white font-bold hover:bg-gray-500" onClick={() => handleDelete(selectedMsg.id)}>Eliminar definitivamente</button>
