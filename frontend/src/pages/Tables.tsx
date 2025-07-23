@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, RefObject } from 'react';
 import { UserAvatar, Warning, Fire, Information, Checkmark } from '@carbon/icons-react';
 
 const allTeams = [
@@ -56,6 +56,25 @@ function sortArray<T extends { name: string; score: number }>(arr: T[], order: s
   // ranking: por score descendente
   return [...arr].sort((a, b) => b.score - a.score);
 }
+
+const getCardPosition = (ref: RefObject<HTMLElement>, cardHeight = 340) => {
+  if (!ref?.current) return { left: '50%', top: 0 };
+  const rect = ref.current.getBoundingClientRect();
+  const cardWidth = 280;
+  const padding = 16;
+  let left = rect.left + rect.width / 2 - cardWidth / 2;
+  if (left < padding) left = padding;
+  if (left + cardWidth > window.innerWidth - padding) left = window.innerWidth - cardWidth - padding;
+
+  // Calcular top/bottom para evitar que se salga por abajo
+  let top = rect.bottom + 8 + window.scrollY;
+  if (rect.bottom + cardHeight + 24 > window.innerHeight) {
+    // Mostrar arriba si no hay espacio abajo
+    top = rect.top - cardHeight - 8 + window.scrollY;
+    if (top < padding) top = padding; // No salir por arriba
+  }
+  return { left: left + window.scrollX, top };
+};
 
 const Tables: React.FC = () => {
   const [order, setOrder] = useState('ranking');
@@ -164,6 +183,7 @@ const Tables: React.FC = () => {
                     posClass = 'text-red-400';
                     scoreClass = 'text-red-600';
                   }
+                  const userCellRef = useRef<HTMLSpanElement>(null);
                   return (
                     <tr
                       key={user.name}
@@ -175,6 +195,7 @@ const Tables: React.FC = () => {
                       <td className={`py-2 ${nameClass} font-semibold`}>
                         <span
                           className="cursor-pointer relative"
+                          ref={userCellRef}
                           onMouseEnter={() => setHovered(user.name)}
                           onMouseLeave={() => setHovered(null)}
                           onFocus={() => setHovered(user.name)}
@@ -183,26 +204,42 @@ const Tables: React.FC = () => {
                         >
                           {user.name}
                           {hovered === user.name && (
-                            <div className="absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 min-w-[220px] animate-fade-in text-sm text-gray-800 flex flex-col items-center gap-2">
-                              <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-1">
-                                {userStats[user.name]?.img ? (
-                                  <img src={userStats[user.name].img} alt={user.name} className="w-16 h-16 rounded-full object-cover" />
-                                ) : (
-                                  <UserAvatar size={48} className="text-gray-300" />
-                                )}
+                            <div
+                              className="fixed z-50 bg-white border border-gray-200 rounded-2xl shadow-2xl p-6 flex flex-col items-center min-w-[260px] max-w-[320px] animate-fade-in"
+                              style={{
+                                ...getCardPosition(userCellRef, 340),
+                                width: 280,
+                                minHeight: 260,
+                                maxHeight: 340,
+                              }}
+                            >
+                              <UserAvatar size={64} className="text-gray-300 bg-gray-100 rounded-full p-2 mb-2" />
+                              <div className="font-bold text-xl mb-4 text-center">{user.name}</div>
+                              <div className="grid grid-cols-2 gap-3 w-full mb-4">
+                                <div className="flex items-center gap-2 bg-red-100 rounded-lg px-3 py-2">
+                                  <Warning size={20} className="text-red-500" />
+                                  <span className="text-red-600 font-bold text-lg">{userStats[user.name]?.stats?.criticas ?? '-'}</span>
+                                  <span className="text-xs text-red-700 font-semibold">Críticas</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-orange-100 rounded-lg px-3 py-2">
+                                  <Fire size={20} className="text-orange-500" />
+                                  <span className="text-orange-600 font-bold text-lg">{userStats[user.name]?.stats?.altas ?? '-'}</span>
+                                  <span className="text-xs text-orange-700 font-semibold">Altas</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-yellow-100 rounded-lg px-3 py-2">
+                                  <Information size={20} className="text-yellow-600" />
+                                  <span className="text-yellow-700 font-bold text-lg">{userStats[user.name]?.stats?.medianas ?? '-'}</span>
+                                  <span className="text-xs text-yellow-800 font-semibold">Medianas</span>
+                                </div>
+                                <div className="flex items-center gap-2 bg-blue-100 rounded-lg px-3 py-2">
+                                  <Checkmark size={20} className="text-blue-600" />
+                                  <span className="text-blue-600 font-bold text-lg">{userStats[user.name]?.stats?.bajas ?? '-'}</span>
+                                  <span className="text-xs text-blue-700 font-semibold">Bajas</span>
+                                </div>
                               </div>
-                              <div className="font-bold text-base mb-1">{user.name}</div>
-                              <div className="grid grid-cols-2 gap-1 w-full mb-1">
-                                {statConfig.map(stat => (
-                                  <div key={stat.key} className={`flex items-center gap-1 rounded px-2 py-1 ${stat.color} text-xs`}>
-                                    {stat.icon}
-                                    <span className="font-semibold">{userStats[user.name]?.stats ? userStats[user.name].stats[stat.key] : '-'}</span>
-                                  </div>
-                                ))}
-                              </div>
-                              <div className="flex items-center gap-1 bg-gray-100 rounded px-2 py-1 text-xs text-gray-700 font-semibold">
-                                <Checkmark size={16} className="text-green-500" />
-                                Total: {userStats[user.name]?.stats ? userStats[user.name].stats.total : user.score}
+                              <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2 text-gray-700 font-semibold text-base">
+                                <Checkmark size={20} className="text-green-500" />
+                                Total: {userStats[user.name]?.stats?.total ?? user.score}
                               </div>
                             </div>
                           )}
@@ -215,6 +252,7 @@ const Tables: React.FC = () => {
               </tbody>
             </table>
           </div>
+
           {/* Tabla de Equipos */}
           <div>
             <h2 className="text-2xl font-bold mb-4 text-blue-700">Equipos</h2>
@@ -228,31 +266,22 @@ const Tables: React.FC = () => {
               </thead>
               <tbody>
                 {teams.map((team, idx) => (
-                  <tr key={team.name} className="border-t border-gray-100 hover:bg-blue-50 transition">
+                  <tr
+                    key={team.name}
+                    className="border-t border-gray-100 hover:bg-blue-50 transition"
+                  >
                     <td className="py-2 font-bold text-gray-400">{idx + 1}.</td>
-                    <td className={`py-2 ${idx < 3 ? podiumColors[idx] : 'text-black'} font-semibold`}>{team.name}</td>
-                    <td className="py-2 text-right font-mono">{team.score}</td>
+                    <td className="py-2 text-black font-semibold">{team.name}</td>
+                    <td className="py-2 text-right font-mono text-blue-600">{team.score}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
         </div>
-        {needsScroll && showFade && (
-          <div className="pointer-events-none absolute left-0 bottom-0 w-full h-12 bg-gradient-to-t from-white to-transparent" />
-        )}
       </div>
-      <style>{`
-        .scrollbar-thin::-webkit-scrollbar {
-          width: 6px;
-          background: transparent;
-        }
-        .scrollbar-thin::-webkit-scrollbar-thumb {
-          background: transparent;
-        }
-      `}</style>
     </div>
   );
 };
 
-export default Tables; 
+export default Tables;

@@ -16,6 +16,36 @@ const initialNotifications = [
   { id: 10, text: 'Tu vulnerabilidad fue comentada', read: false, link: '/vulnerabilities' },
 ];
 
+const TablePreviewCard = () => (
+  <div className="absolute left-16 top-0 z-50 w-72 bg-white shadow-lg rounded-xl p-6 flex flex-col items-center border border-gray-200 pointer-events-auto" style={{ minHeight: '260px' }}>
+    <div className="flex flex-col items-center">
+      <UserAvatar size={64} className="text-gray-300 bg-gray-100 rounded-full p-2" />
+      <div className="font-bold text-xl mt-3 mb-4">Solaire of Astora</div>
+    </div>
+    <div className="grid grid-cols-2 gap-3 w-full mb-4">
+      <div className="flex flex-col items-center bg-red-100 rounded-lg py-2">
+        <span className="text-red-600 font-bold text-2xl leading-none">12</span>
+        <span className="text-xs text-red-700 font-semibold mt-1">Críticas</span>
+      </div>
+      <div className="flex flex-col items-center bg-orange-100 rounded-lg py-2">
+        <span className="text-orange-600 font-bold text-2xl leading-none">22</span>
+        <span className="text-xs text-orange-700 font-semibold mt-1">Altas</span>
+      </div>
+      <div className="flex flex-col items-center bg-yellow-100 rounded-lg py-2">
+        <span className="text-yellow-700 font-bold text-2xl leading-none">35</span>
+        <span className="text-xs text-yellow-800 font-semibold mt-1">Medianas</span>
+      </div>
+      <div className="flex flex-col items-center bg-blue-100 rounded-lg py-2">
+        <span className="text-blue-600 font-bold text-2xl leading-none">10</span>
+        <span className="text-xs text-blue-700 font-semibold mt-1">Bajas</span>
+      </div>
+    </div>
+    <div className="flex flex-col items-center bg-gray-50 rounded-lg px-4 py-2 w-fit">
+      <span className="text-green-600 font-semibold text-base">Total: 79</span>
+    </div>
+  </div>
+);
+
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(false);

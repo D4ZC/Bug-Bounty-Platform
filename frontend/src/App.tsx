@@ -22,6 +22,7 @@ import NotFound from '@/pages/NotFound';
 import Documentation from '@/pages/Documentation';
 import DocumentationDetail from '@/pages/DocumentationDetail';
 import Tables from '@/pages/Tables';
+import Rules from '@/pages/Rules';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -53,6 +54,7 @@ function App() {
           <Route path="documentation" element={<Documentation />} />
           <Route path="documentation/:vulnName" element={<DocumentationDetail />} />
           <Route path="tables" element={<Tables />} />
+          <Route path="rules" element={<Rules />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
