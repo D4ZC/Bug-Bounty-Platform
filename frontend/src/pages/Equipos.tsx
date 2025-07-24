@@ -25,6 +25,22 @@ const perfilUsuario = {
   admin: true,
 };
 
+// Mock de logros
+const logros = [
+  { tipo: 'trofeo', nombre: 'Campeón Nacional', color: '#FFD700', icon: '🏆' },
+  { tipo: 'medalla', nombre: 'Participación', color: '#C0C0C0', icon: '🥈' },
+  { tipo: 'medalla', nombre: 'Espíritu de Equipo', color: '#CD7F32', icon: '🥉' },
+  { tipo: 'trofeo', nombre: 'Invictos', color: '#FFD700', icon: '🏆' },
+];
+
+// Mock de eventos recientes
+const eventos = [
+  { tipo: 'victoria', texto: 'Victoria contra RedHawks', fecha: '2024-05-01', icon: '✅' },
+  { tipo: 'derrota', texto: 'Derrota contra BlueTeam', fecha: '2024-04-28', icon: '❌' },
+  { tipo: 'nuevo', texto: 'Nuevo integrante: Samus Aran', fecha: '2024-04-25', icon: '➕' },
+  { tipo: 'logro', texto: 'Logro obtenido: Invictos', fecha: '2024-04-20', icon: '🏆' },
+];
+
 const integrantes = [
   perfilUsuario,
   {
@@ -214,19 +230,19 @@ const Equipos: React.FC = () => {
         </div>
       </div>
       {/* Div central (ocupa el resto) */}
-      <div style={{ flex: 1, height: '100vh', background: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }} className="flex-shrink-0">
+      <div style={{ flex: 1, height: '100vh', background: '#f3f4f6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative', overflowY: 'auto', paddingTop: 40 }} className="flex-shrink-0">
         {/* Cards de top 3 usuarios en V */}
         {(() => {
           // Ordenar por racha (victorias) descendente y tomar top 3
           const top3 = [...integrantes].sort((a, b) => b.racha - a.racha).slice(0, 3);
-          // Posiciones en V: [izq, centro, der]
+          // Posiciones en V: [izq, centro, der] (ajustadas para no quedar tan arriba)
           const positions = [
-            { left: '0%', top: -110, z: 1 },
-            { left: '50%', top: -150, z: 2 },
-            { left: '100%', top: -110, z: 1 },
+            { left: '0%', top: -40, z: 1 },
+            { left: '50%', top: -70, z: 2 },
+            { left: '100%', top: -40, z: 1 },
           ];
           return (
-            <div style={{ width: 400, maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', gap: 0 }}>
+            <div style={{ width: 400, maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', gap: 0, marginBottom: 32 }}>
               {top3.map((user, idx) => (
                 <div
                   key={user.nombre}
@@ -302,6 +318,53 @@ const Equipos: React.FC = () => {
             </div>
           );
         })()}
+        {/* NUEVAS SECCIONES VISUALES */}
+        <div style={{ width: 420, maxWidth: '95vw', margin: '40px auto 0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
+          {/* Área para invitar/agregar miembros */}
+          <div className="w-full flex flex-col items-center mb-2 px-4">
+            <div className="w-full bg-[#181a20] rounded-lg border border-[#23272b] p-3 flex flex-col items-center gap-2" style={{ opacity: 0.95 }}>
+              <span className="text-xs text-[#b6e3ff] font-bold mb-1">Invitar miembro</span>
+              <input
+                type="text"
+                placeholder="Correo o usuario..."
+                className="w-full px-2 py-1 rounded bg-[#23272b] text-white text-xs border border-[#35373b] focus:outline-none focus:ring-2 focus:ring-blue-700"
+                disabled
+                value=""
+                style={{ opacity: 0.7 }}
+              />
+              <button className="mt-1 bg-blue-500 text-white text-xs px-3 py-1 rounded shadow hover:bg-blue-600 transition" disabled style={{ opacity: 0.7 }}>Invitar</button>
+            </div>
+          </div>
+          {/* Sección de logros */}
+          <div className="w-full flex flex-col items-center mb-2 px-4">
+            <div className="w-full bg-[#181a20] rounded-lg border border-[#23272b] p-3 flex flex-col items-center gap-2" style={{ opacity: 0.95 }}>
+              <span className="text-xs text-[#facc15] font-bold mb-1">Logros del equipo</span>
+              <div className="flex flex-wrap gap-2 justify-center">
+                {logros.map((logro, idx) => (
+                  <div key={idx} className="flex flex-col items-center">
+                    <span style={{ fontSize: 28, color: logro.color, filter: 'drop-shadow(0 1px 2px #0008)' }}>{logro.icon}</span>
+                    <span className="text-[10px] text-gray-300 mt-1 text-center max-w-[60px]">{logro.nombre}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Sección de eventos recientes/historial */}
+          <div className="w-full flex flex-col items-center mb-2 px-4">
+            <div className="w-full bg-[#181a20] rounded-lg border border-[#23272b] p-3 flex flex-col items-center gap-2" style={{ opacity: 0.95, minHeight: 80 }}>
+              <span className="text-xs text-[#b6e3ff] font-bold mb-1">Eventos recientes</span>
+              <ul className="w-full flex flex-col gap-1">
+                {eventos.map((evento, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-xs text-gray-200">
+                    <span style={{ fontSize: 16 }}>{evento.icon}</span>
+                    <span className="flex-1 truncate">{evento.texto}</span>
+                    <span className="text-[10px] text-gray-400">{evento.fecha}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
       {/* Panel derecho (integrantes) */}
       <div style={{ width: 250, minWidth: 250, height: '100vh', background: '#181a20', display: 'flex', flexDirection: 'column' }} className="flex-shrink-0 flex-grow-0">
