@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 // Tipos para los mocks
 interface VulnerabilityItem {
@@ -25,7 +26,7 @@ interface Project {
 }
 
 // Mock de datos de proyectos con vulnerabilidades
-const PROJECTS: Project[] = [
+const INITIAL_PROJECTS: Project[] = [
   {
     id: 'project-1',
     name: 'Acme Web Platform',
@@ -167,8 +168,9 @@ const gulagUsers = [...allUsers]
   .sort((a, b) => b.points - a.points);
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   // Estado para la pestaña activa
-  const [activeTab, setActiveTab] = useState<'team' | 'score_team' | 'score_user' | 'gulag'>('team');
+  const [activeTab, setActiveTab] = useState<'score_team' | 'score_user' | 'gulag'>('score_team');
   // Estado para activar/desactivar Gulag
   const [isGulagActive, setIsGulagActive] = useState(false);
 
@@ -226,7 +228,7 @@ const Dashboard: React.FC = () => {
             }`}
             onClick={() => setActiveTab('score_team')}
           >
-            Score Team
+            {t ('dashboard.scoreTeam')}
           </button>
           <button
             className={`tab px-4 py-2 rounded-t-lg font-semibold transition-colors duration-150 ${
@@ -236,7 +238,7 @@ const Dashboard: React.FC = () => {
             }`}
             onClick={() => setActiveTab('score_user')}
           >
-            Score User
+            {t ('dashboard.scoreUser')}
           </button>
           <button
             className={`tab px-4 py-2 rounded-t-lg font-semibold transition-colors duration-150 ${
@@ -249,7 +251,7 @@ const Dashboard: React.FC = () => {
             onClick={() => isGulagActive && setActiveTab('gulag')}
             disabled={!isGulagActive}
           >
-            Gulag
+            {t  ('dashboard.gulag')}
           </button>
         </div>
         <div className="tabs-content bg-gray-100 dark:bg-gray-800 rounded-b-xl shadow p-4 min-h-[320px] transition-colors duration-300">
