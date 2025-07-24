@@ -1,6 +1,7 @@
 import { t } from 'i18next';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Edit, TrashCan } from '@carbon/icons-react';
 
 // Tipos para los mocks
 interface VulnerabilityItem {
@@ -444,8 +445,16 @@ const Home: React.FC = () => {
           );
           return (
             <div key={project.id} className="project-card bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 min-w-[320px] border-4 border-blue-600">
-              <button className="self-end px-2 py-1 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 mb-2" onClick={() => handleEdit(idx)}>{t('home.editProject')}</button>
-              <button className="self-end px-2 py-1 bg-red-600 text-white rounded font-bold hover:bg-red-700 mb-2" onClick={() => { setDeleteIndex(idx); setDeleteStep(1); }}>{t('home.delete')}</button>
+              <div className="flex items-center mb-2">
+                <button
+                  className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded font-bold hover:bg-blue-700"
+                  onClick={ev => { ev.stopPropagation(); handleEdit(idx); }}
+                  aria-label={t('home.editProject')}
+                  title={t('home.editProject')}
+                >
+                  <Edit size={20} />
+                </button>
+              </div>
               {/* Project name (traducido si existe clave) */}
               <div className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">{t('home.acmeWebPlatform', project.name)}</div>
               {/* Vulnerabilities list (show type, description, discoveredBy translated) */}
@@ -492,6 +501,16 @@ const Home: React.FC = () => {
               </div>
               {/* Deployment image/name */}
               <div className="text-xs text-gray-500 mt-2">{t('home.deploymentName')}: {deploymentName}</div>
+              <div className="flex justify-end mt-2">
+                <button
+                  className="flex items-center justify-center px-2 py-1 bg-red-600 text-white rounded font-bold hover:bg-red-700"
+                  onClick={ev => { ev.stopPropagation(); setDeleteIndex(idx); setDeleteStep(1); }}
+                  aria-label={t('home.delete')}
+                  title={t('home.delete')}
+                >
+                  <TrashCan size={20} />
+                </button>
+              </div>
             </div>
           );
         })}
