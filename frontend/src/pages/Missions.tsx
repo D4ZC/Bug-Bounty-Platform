@@ -10,69 +10,68 @@ type Mission = {
   completed: boolean;
 };
 
-// Misiones de ejemplo
-const missions: Mission[] = [
-  {
-    id: 'm1',
-    title: 'Encuentra una vulnerabilidad XSS',
-    description: 'Identifica y reporta una vulnerabilidad de Cross-Site Scripting (XSS) en cualquier reto o entorno de la plataforma.',
-    details: 'El XSS permite a un atacante inyectar scripts maliciosos en páginas vistas por otros usuarios. Debes demostrar el impacto y enviar un reporte válido.',
-    reward: { type: 'bugcoin', amount: 200 },
-    completed: false,
-  },
-  {
-    id: 'm2',
-    title: 'Exploita una inyección SQL (SQLi)',
-    description: 'Encuentra y explota una vulnerabilidad de inyección SQL en algún reto o entorno de pruebas.',
-    details: 'La inyección SQL permite manipular consultas a la base de datos. Debes demostrar acceso o manipulación de datos no autorizados.',
-    reward: { type: 'bugcoin', amount: 300 },
-    completed: false,
-  },
-  {
-    id: 'm3',
-    title: 'Realiza un escaneo de puertos exitoso',
-    description: 'Utiliza herramientas de escaneo para identificar servicios expuestos en un entorno de laboratorio.',
-    details: 'Debes entregar un reporte con los puertos abiertos, servicios detectados y posibles vectores de ataque.',
-    reward: { type: 'frame', name: 'Marco Pentester', id: 'frame_pentest', image: '/frames/exclusive.png' },
-    completed: false,
-  },
-  {
-    id: 'm4',
-    title: 'Reporta un CSRF',
-    description: 'Identifica y reporta una vulnerabilidad de Cross-Site Request Forgery (CSRF) en algún reto.',
-    details: 'El CSRF permite a un atacante realizar acciones en nombre de otro usuario. Debes demostrar el ataque y su impacto.',
-    reward: { type: 'avatar', name: 'Avatar CSRF', id: 'avatar_csrf', image: '/avatars/Cyber_Ninja.png' },
-    completed: false,
-  },
-  {
-    id: 'm5',
-    title: 'Explotación de RCE',
-    description: 'Encuentra y explota una vulnerabilidad de Remote Code Execution (RCE) en un entorno controlado.',
-    details: 'El RCE permite ejecutar comandos en el servidor. Debes demostrar la explotación y enviar un reporte detallado.',
-    reward: { type: 'bugcoin', amount: 500 },
-    completed: false,
-  },
-  {
-    id: 'm6',
-    title: 'Reporte de bug crítico',
-    description: 'Envía un reporte de una vulnerabilidad crítica validada por el staff.',
-    details: 'El reporte debe incluir descripción, pasos para reproducir, impacto y posible mitigación.',
-    reward: { type: 'title', name: 'Cazador de Bugs', id: 'title_bug_hunter' },
-    completed: false,
-  },
-];
-
-const getInitialInventory = () => {
-  try {
-    const inv = localStorage.getItem('user_inventory');
-    return inv ? JSON.parse(inv) : { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
-  } catch {
-    return { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
-  }
-};
-
 const Missions: React.FC = () => {
   const { t } = useTranslation();
+  const missions: Mission[] = [
+    {
+      id: 'm1',
+      title: t('Encuentra una vulnerabilidad XSS'),
+      description: t('Identifica y reporta una vulnerabilidad de Cross-Site Scripting (XSS) en cualquier reto o entorno de la plataforma.'),
+      details: t('El XSS permite a un atacante inyectar scripts maliciosos en páginas vistas por otros usuarios. Debes demostrar el impacto y enviar un reporte válido.'),
+      reward: { type: 'bugcoin', amount: 200 },
+      completed: false,
+    },
+    {
+      id: 'm2',
+      title: t('Exploita una inyección SQL (SQLi)'),
+      description: t('Encuentra y explota una vulnerabilidad de inyección SQL en algún reto o entorno de pruebas.'),
+      details: t('La inyección SQL permite manipular consultas a la base de datos. Debes demostrar acceso o manipulación de datos no autorizados.'),
+      reward: { type: 'bugcoin', amount: 300 },
+      completed: false,
+    },
+    {
+      id: 'm3',
+      title: t('Realiza un escaneo de puertos exitoso'),
+      description: t('Utiliza herramientas de escaneo para identificar servicios expuestos en un entorno de laboratorio.'),
+      details: t('Debes entregar un reporte con los puertos abiertos, servicios detectados y posibles vectores de ataque.'),
+      reward: { type: 'frame', name: t('Marco Pentester'), id: 'frame_pentest', image: '/frames/exclusive.png' },
+      completed: false,
+    },
+    {
+      id: 'm4',
+      title: t('Reporta un CSRF'),
+      description: t('Identifica y reporta una vulnerabilidad de Cross-Site Request Forgery (CSRF) en algún reto.'),
+      details: t('El CSRF permite a un atacante realizar acciones en nombre de otro usuario. Debes demostrar el ataque y su impacto.'),
+      reward: { type: 'avatar', name: t('Avatar CSRF'), id: 'avatar_csrf', image: '/avatars/Cyber_Ninja.png' },
+      completed: false,
+    },
+    {
+      id: 'm5',
+      title: t('Explotación de RCE'),
+      description: t('Encuentra y explota una vulnerabilidad de Remote Code Execution (RCE) en un entorno controlado.'),
+      details: t('El RCE permite ejecutar comandos en el servidor. Debes demostrar la explotación y enviar un reporte detallado.'),
+      reward: { type: 'bugcoin', amount: 500 },
+      completed: false,
+    },
+    {
+      id: 'm6',
+      title: t('Reporte de bug crítico'),
+      description: t('Envía un reporte de una vulnerabilidad crítica validada por el staff.'),
+      details: t('El reporte debe incluir descripción, pasos para reproducir, impacto y posible mitigación.'),
+      reward: { type: 'title', name: t('Cazador de Bugs'), id: 'title_bug_hunter' },
+      completed: false,
+    },
+  ];
+
+  const getInitialInventory = () => {
+    try {
+      const inv = localStorage.getItem('user_inventory');
+      return inv ? JSON.parse(inv) : { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
+    } catch {
+      return { frames: [], avatars: [], titles: [], backgrounds: [], bluepoints: 0 };
+    }
+  };
+
   const [userMissions, setUserMissions] = useState(missions);
   const [inventory, setInventory] = useState(getInitialInventory);
   const [bugcoins, setBugcoins] = useState(() => Number(localStorage.getItem('bugcoins')) || 1000);

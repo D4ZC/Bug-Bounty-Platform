@@ -29,9 +29,9 @@ const Gulag: React.FC = () => {
             <polygon points="80,120 120,140 100,160" fill="#ffe600" opacity="0.10" />
           </g>
         </svg>
-        <h1 className="text-4xl font-extrabold text-center mb-8 tracking-widest text-red-300 animate-glitch-text">Gulag</h1>
+        <h1 className="text-4xl font-extrabold text-center mb-8 tracking-widest text-red-300 animate-glitch-text">{t('Gulag')}</h1>
         <div className="flex flex-col gap-6">
-          {mockGulag.sort((a,b)=>a.score-b.score).map((user, idx) => (
+          {mockGulag.sort((a,b)=>a.score-b.score).map((user) => (
             <div key={user.name} className="flex items-center gap-6 bg-black/40 border-2 border-red-700 rounded-xl p-4 shadow-lg glassmorphism hover:scale-[1.03] transition-all duration-200">
               {user.avatar ? (
                 <img src={user.avatar} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-red-400 shadow-md" />
@@ -43,7 +43,7 @@ const Gulag: React.FC = () => {
               <div className="flex-1">
                 <div className="text-2xl font-bold text-red-200 mb-1">{user.name}</div>
               </div>
-              <div className="text-xl font-bold text-yellow-300">{user.score} pts</div>
+              <div className="text-xl font-bold text-yellow-300">{user.score} {t('puntos_abbr')}</div>
             </div>
           ))}
         </div>

@@ -30,18 +30,6 @@ function getRandomAvatar() {
   return avatarList[Math.floor(Math.random() * avatarList.length)];
 }
 
-// Generar avatares únicos para los perfiles simulados
-function getUniqueRandomAvatars(count: number) {
-  const shuffled = [...avatarList].sort(() => 0.5 - Math.random());
-  if (count <= shuffled.length) return shuffled.slice(0, count);
-  // Si hay más perfiles que avatares, permite repeticiones después de agotar la lista
-  const result = [...shuffled];
-  while (result.length < count) {
-    result.push(avatarList[Math.floor(Math.random() * avatarList.length)]);
-  }
-  return result;
-}
-
 // Mapeo fijo de avatares para cada usuario simulado
 const avatarMap: Record<string, string> = {
   'alice_smith': '/avatars/Analista.png',
@@ -100,28 +88,26 @@ const TEAM_STORAGE_KEY = 'bugbounty_team_members';
 const TEAM_NAME_STORAGE_KEY = 'bugbounty_team_name';
 
 // Add random names and titles for mock members
-const randomNames = [
-  'cyberfox', 'shadowbyte', 'netstorm', 'fireblade', 'cryptoninja', 'bugzilla', 'packetghost', 'rootwave', 'malwaremind', 'phishstar', 'forensicwolf', 'exploitron', 'zeronight', 'dataduke', 'hacktitan', 'bitviper', 'codeowl', 'shellshock', 'sniffqueen', 'darklynx'
-];
-const randomTitles = [
-  'Security Analyst', 'Network Specialist', 'Exploit Developer', 'Forensic Analyst', 'Cryptographer', 'Bug Bounty Hunter', 'Penetration Tester', 'Engineer', 'Vulnerability Researcher', 'SOC Analyst', 'Engineer', 'Security Analyst', 'Security Analyst', 'Social Engineer', 'Engineer'
-];
-
-function getCurrentUserProfile() {
-  return {
-    username: localStorage.getItem('profile_custom_username') || 'D4ZC',
-    title: localStorage.getItem('profile_custom_title') || 'Sin título',
-    avatar: localStorage.getItem('profile_custom_avatar') || '/avatars/Analista.png',
-  };
-}
-function isCurrentUserLeader(members: TeamMember[]) {
-  const user = getCurrentUserProfile();
-  return members.length > 0 && members[0].username === user.username;
-}
-
 const Team: React.FC = () => {
   const { t } = useTranslation();
-  
+  function getCurrentUserProfile() {
+    return {
+      username: localStorage.getItem('profile_custom_username') || 'D4ZC',
+      title: localStorage.getItem('profile_custom_title') || 'Sin título',
+      avatar: localStorage.getItem('profile_custom_avatar') || '/avatars/Analista.png',
+    };
+  }
+  function isCurrentUserLeader(members: TeamMember[]) {
+    const user = getCurrentUserProfile();
+    return members.length > 0 && members[0].username === user.username;
+  }
+  const randomNames = [
+    t('cyberfox'), t('shadowbyte'), t('netstorm'), t('fireblade'), t('cryptoninja'), t('bugzilla'), t('packetghost'), t('rootwave'), t('malwaremind'), t('phishstar'), t('forensicwolf'), t('exploitron'), t('zeronight'), t('dataduke'), t('hacktitan'), t('bitviper'), t('codeowl'), t('shellshock'), t('sniffqueen'), t('darklynx')
+  ];
+  const randomTitles = [
+    t('Security Analyst'), t('Network Specialist'), t('Exploit Developer'), t('Forensic Analyst'), t('Cryptographer'), t('Bug Bounty Hunter'), t('Penetration Tester'), t('Engineer'), t('Vulnerability Researcher'), t('SOC Analyst'), t('Engineer'), t('Security Analyst'), t('Security Analyst'), t('Social Engineer'), t('Engineer')
+  ];
+
   // Limpia localStorage para forzar recarga de datos simulados (solo para desarrollo)
   useEffect(() => {
     localStorage.removeItem('bugbounty_team_members');
@@ -437,7 +423,7 @@ const Team: React.FC = () => {
                       const baseStats = [85, 78, 60, 72, 90, 88, 65, 82];
                       const uname = selectedProfile.username;
                       const seed = uname.split('').reduce((a,c,i)=>a+c.charCodeAt(0)*((i%7)+1),0);
-                      const stats = baseStats.map((b,i) => 60 + ((seed + i*13) % 40));
+                      const stats = baseStats.map((_,i) => 60 + ((seed + i*13) % 40));
                       const angles = stats.map((_,i)=>((Math.PI*2)/8)*i-Math.PI/2);
                       const rMin = 40, rMax = 100;
                       const points = stats.map((val, i) => {
@@ -453,7 +439,7 @@ const Team: React.FC = () => {
                       const baseStats = [85, 78, 60, 72, 90, 88, 65, 82];
                       const uname = selectedProfile.username;
                       const seed = uname.split('').reduce((a,c,i)=>a+c.charCodeAt(0)*((i%7)+1),0);
-                      const stats = baseStats.map((b,i) => 60 + ((seed + i*13) % 40));
+                      const stats = baseStats.map((_,i) => 60 + ((seed + i*13) % 40));
                       const angles = stats.map((_,i)=>((Math.PI*2)/8)*i-Math.PI/2);
                       const rMin = 40, rMax = 100;
                       return stats.map((val, i) => {
@@ -469,7 +455,7 @@ const Team: React.FC = () => {
                       const baseStats = [85, 78, 60, 72, 90, 88, 65, 82];
                       const uname = selectedProfile.username;
                       const seed = uname.split('').reduce((a,c,i)=>a+c.charCodeAt(0)*((i%7)+1),0);
-                      const stats = baseStats.map((b,i) => 60 + ((seed + i*13) % 40));
+                      const stats = baseStats.map((_,i) => 60 + ((seed + i*13) % 40));
                       const labels = ['Pentesting','OSINT','Defensa','Criptografía','Reportes','Exploiting','Forense','Ing. Social'];
                       return stats.map((val,i)=>(
                         <span key={labels[i]}>{labels[i]}: <span className="text-cyan-100 font-bold">{val}</span></span>

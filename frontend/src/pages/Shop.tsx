@@ -84,14 +84,7 @@ const shopCategories = [
     ],
   },
   bannersCategory,
-  {
-    key: 'backgrounds',
-    label: 'Fondos',
-    products: [
-      { id: 'bg1', name: 'Fondo Estático', price: 120, currency: 'bugcoin', image: '/backgrounds/static1.jpg', animated: false },
-      { id: 'bg2', name: 'Fondo Animado', price: 300, currency: 'bugcoin', image: '/backgrounds/animated1.gif', animated: true },
-    ],
-  },
+  // Eliminada la categoría de fondos (backgrounds)
 ];
 
 // Productos exclusivos MVP
@@ -151,7 +144,7 @@ const Shop: React.FC = () => {
             }
             return prev;
           });
-          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + product.name + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
+          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + t(product.name) + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
           setFeedbackType('success');
           setTimeout(() => {
             setFeedbackMsg(null);
@@ -170,7 +163,7 @@ const Shop: React.FC = () => {
             }
             return prev;
           });
-          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + product.name + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
+          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + t(product.name) + '\n' + t('Ahora puedes seleccionarlo en la personalización de perfil.'));
           setFeedbackType('success');
           setTimeout(() => {
             setFeedbackMsg(null);
@@ -182,7 +175,7 @@ const Shop: React.FC = () => {
             localStorage.setItem('user_inventory', JSON.stringify(newInventory));
             return newInventory;
           });
-          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + product.name);
+          setFeedbackMsg(t('¡Compra exitosa!') + ' ' + t(product.name));
           setFeedbackType('success');
           setTimeout(() => {
             setFeedbackMsg(null);

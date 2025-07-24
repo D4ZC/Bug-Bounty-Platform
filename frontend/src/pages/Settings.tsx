@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import i18n from '@/utils/i18n';
 
 const Settings: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [language, setLanguage] = useState(() => localStorage.getItem('app_language') || 'es');
-  const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleTheme = (tVal: 'light' | 'dark') => {
@@ -17,11 +16,12 @@ const Settings: React.FC = () => {
   const handleLanguage = (lang: 'es' | 'en') => {
     setLanguage(lang);
     localStorage.setItem('app_language', lang);
-    window.location.reload();
+    i18n.changeLanguage(lang);
   };
 
   const handleLogout = () => {
     localStorage.clear();
+    window.dispatchEvent(new Event('show-header'));
     window.location.href = '/login';
   };
 

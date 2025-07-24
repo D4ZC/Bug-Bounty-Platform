@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 import { User, LoginForm, RegisterForm } from '@/types';
-import apiService from '@/services/api';
 import socketService from '@/services/socket';
 
 interface AuthState {
@@ -96,86 +95,76 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Verificar token al cargar la aplicación
   useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        dispatch({ type: 'AUTH_FAILURE', payload: '' });
-        return;
-      }
-
-      try {
-        const response = await apiService.get<User>('/auth/me');
-        if (response.success && response.data) {
-          dispatch({
-            type: 'AUTH_SUCCESS',
-            payload: { user: response.data, token },
-          });
-          socketService.connect(token);
-        } else {
-          throw new Error('Token inválido');
-        }
-      } catch (error) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        dispatch({ type: 'AUTH_FAILURE', payload: 'Token inválido' });
-      }
-    };
-
-    verifyToken();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      dispatch({ type: 'AUTH_FAILURE', payload: '' });
+      return;
+    }
+    // Simula usuario autenticado si hay token
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+    if (user && token) {
+      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
+    } else {
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Token inválido' });
+    }
   }, []);
 
   const login = async (credentials: LoginForm) => {
     dispatch({ type: 'AUTH_START' });
-
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/login', credentials);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
-
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el login');
-      }
+      // Simulación de login
+      const user = {
+        _id: 'simulado',
+        email: credentials.email,
+        username: credentials.email.split('@')[0],
+        firstName: 'Demo',
+        lastName: 'User',
+        role: 'member' as User['role'],
+        points: 0,
+        rank: 1,
+        isMVP: false,
+        isGulagParticipant: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        achievements: [],
+        badges: [],
+      };
+      const token = 'simulated-token';
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el login';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Error en el login' });
       throw error;
     }
   };
 
   const register = async (userData: RegisterForm) => {
     dispatch({ type: 'AUTH_START' });
-
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/register', userData);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
-
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el registro');
-      }
+      // Simulación de registro
+      const user = {
+        _id: 'simulado',
+        email: userData.email,
+        username: userData.username,
+        firstName: userData.firstName || '',
+        lastName: userData.lastName || '',
+        role: 'member' as User['role'],
+        points: 0,
+        rank: 1,
+        isMVP: false,
+        isGulagParticipant: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        achievements: [],
+        badges: [],
+      };
+      const token = 'simulated-token';
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'AUTH_SUCCESS', payload: { user, token } });
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Error en el registro' });
       throw error;
     }
   };

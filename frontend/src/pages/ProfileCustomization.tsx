@@ -11,6 +11,8 @@ const ProfileCustomization: React.FC = () => {
   const [username, setUsername] = useState(initialUsername);
   const [editingName, setEditingName] = useState(false);
   const [savingName, setSavingName] = useState(false);
+  const [bannerVersion] = useState(0); // Para forzar re-render
+  const [bannerMsg] = useState<string | null>(null); // Mensaje de confirmación
   const avatar = localStorage.getItem('profile_custom_avatar') || '/avatars/Analista.png';
   const title = localStorage.getItem('profile_custom_title') || t('Sin título');
   const bugcoins = localStorage.getItem('bugcoins') || '1000';
@@ -20,9 +22,9 @@ const ProfileCustomization: React.FC = () => {
   const stats = { nivel: 150, puntos: 2350, victorias: 120, pase: 60 };
   const userId = 'UID: 1234567890123456';
   const featuredBadges = [
-    { icon: 'fas fa-crown', color: 'text-yellow-400', title: 'MVP' },
-    { icon: 'fas fa-skull', color: 'text-red-400', title: 'Top Killer' },
-    { icon: 'fas fa-star', color: 'text-cyan-300', title: 'Elite' },
+    { icon: 'fas fa-crown', color: 'text-yellow-400', title: t('MVP') },
+    { icon: 'fas fa-skull', color: 'text-red-400', title: t('Top Killer') },
+    { icon: 'fas fa-star', color: 'text-cyan-300', title: t('Elite') },
   ];
 
   const handleSaveName = async () => {
@@ -36,6 +38,11 @@ const ProfileCustomization: React.FC = () => {
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center py-12 overflow-hidden" style={{fontFamily}}>
+      {bannerMsg && (
+        <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg text-lg font-bold shadow-lg bg-green-700 text-white border-2 border-green-300 animate-glow transition-all duration-300" style={{ minWidth: 220, textAlign: 'center' }}>
+          {bannerMsg}
+        </div>
+      )}
       {/* Fondo Watch Dogs 2: gradiente neón, glitch, partículas, ruido digital */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Gradiente animado */}
@@ -68,7 +75,7 @@ const ProfileCustomization: React.FC = () => {
           position: 'relative'
         }}>
           {/* Banner animado de fondo */}
-          <div className="absolute inset-0 animate-banner-zoom" style={{
+          <div className="absolute inset-0 animate-banner-zoom" key={bannerVersion} style={{
             backgroundImage: `url(${localStorage.getItem('profile_custom_banner') || '/Banners/Firewall_Rookie.png'})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center',
@@ -190,14 +197,14 @@ const ProfileCustomization: React.FC = () => {
             <svg width="260" height="260" viewBox="0 0 260 260" className="mb-2">
               {/* Ejes y labels */}
               <g fontFamily="'Share Tech Mono', monospace" fontSize="13" fill="#00fff7" textAnchor="middle">
-                <text x="130" y="22">Pentesting</text>
-                <text x="225" y="60">OSINT</text>
-                <text x="245" y="150">Defensa</text>
-                <text x="200" y="230">Criptografía</text>
-                <text x="130" y="255">Reportes</text>
-                <text x="60" y="230">Exploiting</text>
-                <text x="15" y="150">Forense</text>
-                <text x="35" y="60">Ing. Social</text>
+                <text x="130" y="22">{t('Pentesting')}</text>
+                <text x="225" y="60">{t('OSINT')}</text>
+                <text x="245" y="150">{t('Defensa')}</text>
+                <text x="200" y="230">{t('Criptografía')}</text>
+                <text x="130" y="255">{t('Reportes')}</text>
+                <text x="60" y="230">{t('Exploiting')}</text>
+                <text x="15" y="150">{t('Forense')}</text>
+                <text x="35" y="60">{t('Ing. Social')}</text>
               </g>
               {/* Polígonos de fondo */}
               <polygon points="130,40 220,75 235,150 200,225 130,240 60,225 25,150 40,75" fill="#00fff7" opacity="0.08" />
@@ -208,7 +215,7 @@ const ProfileCustomization: React.FC = () => {
                 const baseStats = [85, 78, 60, 72, 90, 88, 65, 82];
                 const uname = username;
                 const seed = uname.split('').reduce((a,c,i)=>a+c.charCodeAt(0)*((i%7)+1),0);
-                const stats = baseStats.map((b,i) => 60 + ((seed + i*13) % 40));
+                const stats = baseStats.map((_,i) => 60 + ((seed + i*13) % 40));
                 const angles = stats.map((_,i)=>((Math.PI*2)/8)*i-Math.PI/2);
                 const rMin = 40, rMax = 100;
                 const points = stats.map((val, i) => {
@@ -224,7 +231,7 @@ const ProfileCustomization: React.FC = () => {
                 const baseStats = [85, 78, 60, 72, 90, 88, 65, 82];
                 const uname = username;
                 const seed = uname.split('').reduce((a,c,i)=>a+c.charCodeAt(0)*((i%7)+1),0);
-                const stats = baseStats.map((b,i) => 60 + ((seed + i*13) % 40));
+                const stats = baseStats.map((_,i) => 60 + ((seed + i*13) % 40));
                 const angles = stats.map((_,i)=>((Math.PI*2)/8)*i-Math.PI/2);
                 const rMin = 40, rMax = 100;
                 return stats.map((val, i) => {
@@ -240,8 +247,8 @@ const ProfileCustomization: React.FC = () => {
                 const baseStats = [85, 78, 60, 72, 90, 88, 65, 82];
                 const uname = username;
                 const seed = uname.split('').reduce((a,c,i)=>a+c.charCodeAt(0)*((i%7)+1),0);
-                const stats = baseStats.map((b,i) => 60 + ((seed + i*13) % 40));
-                const labels = ['Pentesting','OSINT','Defensa','Criptografía','Reportes','Exploiting','Forense','Ing. Social'];
+                const stats = baseStats.map((_,i) => 60 + ((seed + i*13) % 40));
+                const labels = [t('Pentesting'), t('OSINT'), t('Defensa'), t('Criptografía'), t('Reportes'), t('Exploiting'), t('Forense'), t('Ing. Social')];
                 return stats.map((val,i)=>(
                   <span key={labels[i]}>{labels[i]}: <span className="text-cyan-100 font-bold">{val}</span></span>
                 ));
@@ -255,7 +262,7 @@ const ProfileCustomization: React.FC = () => {
         <div className="w-full flex flex-col items-center animate-fade-in">
           <span className="text-cyan-300 text-lg font-bold mb-2 tracking-widest flex items-center gap-2 font-mono">
             <svg className="w-7 h-7 text-yellow-300 animate-bounce" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l2.09 6.26L20 9.27l-5 3.64L16.18 20 12 16.9 7.82 20 9 12.91l-5-3.64 5.91-.01z"/></svg>
-            EXPERIENCIA
+            {t('EXPERIENCIA')}
           </span>
           <div className="w-full h-8 bg-gray-800 rounded-full relative overflow-hidden border-4 border-cyan-400 shadow-2xl">
             <div className="h-8 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 rounded-full animate-xp-bar shadow-xl"

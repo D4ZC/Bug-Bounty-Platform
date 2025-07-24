@@ -1,44 +1,57 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, ShoppingCart, UserMultiple, User, Group, Settings, Trophy } from '@carbon/icons-react';
-import { useState } from 'react';
+import { Home, ShoppingCart, User, Group, Settings, Trophy } from '@carbon/icons-react';
 import { useTranslation } from 'react-i18next';
 
 const fontFamily = `'Share Tech Mono', 'Fira Mono', 'Consolas', monospace`;
 
-const navigationItems = [
-  { icon: Home, label: 'Menú', path: '/dashboard', color: 'from-green-500 to-green-600' },
-  { icon: ShoppingCart, label: 'Tienda', path: '/shop', color: 'from-yellow-500 to-yellow-600' },
-  { icon: Trophy, label: 'Misiones', path: '/missions', color: 'from-cyan-500 to-cyan-600' },
-  { icon: (props: any) => {
-    const { size = 28, className = 'text-white', ...rest } = props || {};
-    return (
-      <svg width={size} height={size} className={className} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" {...rest}>
-        {/* Espada 1 */}
-        <path d="M6 26 L26 6" />
-        <rect x="24.2" y="4.2" width="3.6" height="2.2" rx="1" transform="rotate(45 26 6)" fill="currentColor" stroke="none" />
-        <rect x="4.2" y="24.2" width="3.6" height="2.2" rx="1" transform="rotate(45 6 26)" fill="currentColor" stroke="none" />
-        <circle cx="26" cy="6" r="1.2" fill="currentColor" stroke="none" />
-        <circle cx="6" cy="26" r="1.2" fill="currentColor" stroke="none" />
-        {/* Espada 2 */}
-        <path d="M6 6 L26 26" />
-        <rect x="24.2" y="25.6" width="3.6" height="2.2" rx="1" transform="rotate(-45 26 26)" fill="currentColor" stroke="none" />
-        <rect x="4.2" y="5.6" width="3.6" height="2.2" rx="1" transform="rotate(-45 6 6)" fill="currentColor" stroke="none" />
-        <circle cx="26" cy="26" r="1.2" fill="currentColor" stroke="none" />
-        <circle cx="6" cy="6" r="1.2" fill="currentColor" stroke="none" />
-      </svg>
-    );
-  }, label: 'Duelos', path: '/duelos', color: 'from-pink-500 to-yellow-400' },
-  { icon: User, label: 'Perfil', path: '/profile-customization', color: 'from-cyan-500 to-cyan-600' },
-  { icon: Group, label: 'Equipo', path: '/team', color: 'from-orange-500 to-orange-600' },
-  { icon: Settings, label: 'Ajustes', path: '/settings', color: 'from-cyan-500 to-cyan-700' }
-];
-
+const GulagIcon = (props: any) => (
+  <svg width={28} height={28} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="6" y="6" width="20" height="20" rx="5" fill="#ff003c" opacity="0.18" />
+    <path d="M10 22 L22 10" stroke="#ff003c" strokeWidth="2.5" />
+    <circle cx="16" cy="16" r="4" fill="#ff003c" opacity="0.5" />
+  </svg>
+);
+const VulnIcon = (props: any) => (
+  <svg width={28} height={28} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <rect x="7" y="7" width="18" height="18" rx="4" fill="#00fff7" opacity="0.18" />
+    <path d="M16 11v6" stroke="#00fff7" strokeWidth="2.5" />
+    <circle cx="16" cy="21" r="1.5" fill="#00fff7" />
+  </svg>
+);
 const HackerLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [showSettings, setShowSettings] = useState(false);
-  const [language, setLanguage] = useState(() => localStorage.getItem('app_language') || 'es');
+
+  const navigationItems = [
+    { icon: Home, label: t('Inicio'), path: '/dashboard', color: 'from-green-500 to-green-600' },
+    { icon: ShoppingCart, label: t('Tienda'), path: '/shop', color: 'from-yellow-500 to-yellow-600' },
+    { icon: Trophy, label: t('Misiones'), path: '/missions', color: 'from-cyan-500 to-cyan-600' },
+    { icon: (props: any) => {
+      const { size = 28, className = 'text-white', ...rest } = props || {};
+      return (
+        <svg width={size} height={size} className={className} viewBox="0 0 32 32" fill="none" stroke="currentColor" strokeWidth="2.1" strokeLinecap="round" strokeLinejoin="round" {...rest}>
+          {/* Espada 1 */}
+          <path d="M6 26 L26 6" />
+          <rect x="24.2" y="4.2" width="3.6" height="2.2" rx="1" transform="rotate(45 26 6)" fill="currentColor" stroke="none" />
+          <rect x="4.2" y="24.2" width="3.6" height="2.2" rx="1" transform="rotate(45 6 26)" fill="currentColor" stroke="none" />
+          <circle cx="26" cy="6" r="1.2" fill="currentColor" stroke="none" />
+          <circle cx="6" cy="26" r="1.2" fill="currentColor" stroke="none" />
+          {/* Espada 2 */}
+          <path d="M6 6 L26 26" />
+          <rect x="24.2" y="25.6" width="3.6" height="2.2" rx="1" transform="rotate(-45 26 26)" fill="currentColor" stroke="none" />
+          <rect x="4.2" y="5.6" width="3.6" height="2.2" rx="1" transform="rotate(-45 6 6)" fill="currentColor" stroke="none" />
+          <circle cx="26" cy="26" r="1.2" fill="currentColor" stroke="none" />
+          <circle cx="6" cy="6" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    }, label: t('Duelos'), path: '/duelos', color: 'from-pink-500 to-yellow-400' },
+    { icon: GulagIcon, label: t('Gulag'), path: '/gulag', color: 'from-red-500 to-pink-600' },
+    { icon: VulnIcon, label: t('Vulnerabilidades'), path: '/vulnerabilities', color: 'from-cyan-400 to-blue-600' },
+    { icon: User, label: t('Perfil'), path: '/profile-customization', color: 'from-cyan-500 to-cyan-600' },
+    { icon: Group, label: t('Equipo'), path: '/team', color: 'from-orange-500 to-orange-600' },
+    { icon: Settings, label: t('Ajustes'), path: '/settings', color: 'from-cyan-500 to-cyan-700' }
+  ];
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden" style={{fontFamily}}>

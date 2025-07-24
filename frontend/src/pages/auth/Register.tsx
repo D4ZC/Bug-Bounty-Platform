@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ const Register: React.FC = () => {
     setLoading(true);
     setTimeout(() => setLoading(false), 1200);
   };
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex items-center justify-center bg-app text-app p-8 font-mono relative overflow-hidden" style={{fontFamily: `'Share Tech Mono', 'Fira Mono', 'Consolas', monospace`}}>
       {/* Fondo glitch y partículas */}
@@ -27,11 +29,11 @@ const Register: React.FC = () => {
             <polygon points="80,120 120,140 100,160" fill="#ffe600" opacity="0.10" />
           </g>
         </svg>
-        <h1 className="text-4xl font-extrabold text-center mb-8 tracking-widest text-cyan-300 animate-glitch-text">Crear Cuenta</h1>
+        <h1 className="text-4xl font-extrabold text-center mb-8 tracking-widest text-cyan-300 animate-glitch-text">{t('Registrarse')}</h1>
         <form className="flex flex-col gap-6 z-10 relative" onSubmit={handleRegister}>
           <input
             type="text"
-            placeholder="Nombre de usuario"
+            placeholder={t('Nombre de usuario')}
             className="input bg-black/40 border-cyan-400 text-cyan-200 placeholder-cyan-400 font-mono rounded-xl px-4 py-3 border-2 focus:ring-2 focus:ring-cyan-400"
             value={username}
             onChange={e => setUsername(e.target.value)}
@@ -39,7 +41,7 @@ const Register: React.FC = () => {
           />
           <input
             type="email"
-            placeholder="Correo electrónico"
+            placeholder={t('Correo electrónico')}
             className="input bg-black/40 border-cyan-400 text-cyan-200 placeholder-cyan-400 font-mono rounded-xl px-4 py-3 border-2 focus:ring-2 focus:ring-cyan-400"
             value={email}
             onChange={e => setEmail(e.target.value)}
@@ -47,7 +49,7 @@ const Register: React.FC = () => {
           />
           <input
             type="password"
-            placeholder="Contraseña"
+            placeholder={t('Contraseña')}
             className="input bg-black/40 border-cyan-400 text-cyan-200 placeholder-cyan-400 font-mono rounded-xl px-4 py-3 border-2 focus:ring-2 focus:ring-cyan-400"
             value={password}
             onChange={e => setPassword(e.target.value)}
@@ -58,7 +60,7 @@ const Register: React.FC = () => {
             className="w-full py-3 text-xl font-extrabold border-4 border-cyan-400 rounded-xl bg-cyan-700 hover:bg-cyan-800 text-white transition-all duration-200 shadow-lg animate-glitch-btn"
             disabled={loading}
           >
-            {loading ? 'Cargando...' : 'Registrarse'}
+            {loading ? t('Cargando...') : t('Registrarse')}
           </button>
         </form>
       </div>

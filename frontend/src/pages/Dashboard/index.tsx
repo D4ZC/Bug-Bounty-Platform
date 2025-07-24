@@ -1,46 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TeamsScoreCard from './components/TeamsScoreCard';
 import MVPTeamCard from './components/MVPTeamCard';
 import GulagCard from './components/GulagCard';
 import UserScoreCard from './components/UserScoreCard';
-import MVPUserCard from './components/MVPUserCard';
 import UserProfileCard from './components/UserProfileCard';
-import { Button } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Security, Code, ShoppingCart, UserMultiple, User, Group, Trophy, UserAvatar } from '@carbon/icons-react';
 import apiService from '@/services/api';
 import { useTranslation } from 'react-i18next';
 
 const fontFamily = `'Share Tech Mono', 'Fira Mono', 'Consolas', monospace`;
 
-const carouselImages = [
-  { src: '/Eventos/Unete.png', alt: 'Únete al evento', caption: '¡Únete al evento de hacking más grande!' },
-  { src: '/Eventos/Premios.png', alt: 'Premios', caption: 'Descubre los premios y recompensas exclusivas.' },
-  { src: '/Eventos/Evento.png', alt: 'Evento especial', caption: 'Participa en el evento especial de este mes.' },
-];
-
 const Dashboard: React.FC = () => {
   const { t } = useTranslation();
+  const carouselImages = [
+    { src: '/Eventos/Unete.png', alt: t('Únete al evento'), caption: t('¡Únete al evento de hacking más grande!') },
+    { src: '/Eventos/Premios.png', alt: t('Premios'), caption: t('Descubre los premios y recompensas exclusivas.') },
+    { src: '/Eventos/Evento.png', alt: t('Evento especial'), caption: t('Participa en el evento especial de este mes.') },
+  ];
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
+
+  useEffect(() => {
+    // Solo mostrar el mensaje si se acaba de iniciar sesión (marcado en sessionStorage)
+    if (sessionStorage.getItem('just_logged_in') === '1' && !localStorage.getItem('hide_welcome_message')) {
+      setShowWelcome(true);
+      sessionStorage.removeItem('just_logged_in');
+    }
+  }, []);
+
+  const handleCloseWelcome = () => {
+    setShowWelcome(false);
+    if (dontShowAgain) {
+      localStorage.setItem('hide_welcome_message', '1');
+    }
+  };
+
   // Datos mockeados para la lógica dinámica
   const [teams] = useState([
-    { name: 'Piteritos I', score: 2000 },
-    { name: 'Piteritos II', score: 1900 },
-    { name: 'Piteritos III', score: 1500 },
+    { name: t('Piteritos I'), score: 2000 },
+    { name: t('Piteritos II'), score: 1900 },
+    { name: t('Piteritos III'), score: 1500 },
   ]);
   const [users] = useState([
-    { name: 'Piteritos I', score: 2000 },
-    { name: 'Piteritos II', score: 1900 },
-    { name: 'Piteritos III', score: 1500 },
+    { name: t('Piteritos I'), score: 2000 },
+    { name: t('Piteritos II'), score: 1900 },
+    { name: t('Piteritos III'), score: 1500 },
   ]);
   const [gulag] = useState([
-    { name: 'deivid', score: 50 },
-    { name: 'runrun', score: 25 },
-    { name: 'excel', score: 20 },
-    { name: 'kick ass', score: 20 },
-    { name: 'pedrito sola', score: 10 },
+    { name: t('deivid'), score: 50 },
+    { name: t('runrun'), score: 25 },
+    { name: t('excel'), score: 20 },
+    { name: t('kick ass'), score: 20 },
+    { name: t('pedrito sola'), score: 10 },
   ]);
-  const [mvpTeam] = useState('P-TECH');
-  const [mvpUser] = useState({ name: 'D4ZC', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
+  const [mvpTeam] = useState(t('P-TECH'));
+  const [mvpUser] = useState({ name: t('D4ZC'), img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
   const navigate = useNavigate();
   const [diamondPlayers, setDiamondPlayers] = useState<{ username: string; points: number; rank: number }[]>([]);
   const [teamRanking, setTeamRanking] = useState<{ name: string; points: number; rank: number; members: string[] }[]>([]);
@@ -48,17 +62,6 @@ const Dashboard: React.FC = () => {
   const nextSlide = () => setCarouselIndex((prev) => (prev + 1) % carouselImages.length);
   const prevSlide = () => setCarouselIndex((prev) => (prev - 1 + carouselImages.length) % carouselImages.length);
   const [modalImage, setModalImage] = useState<string | null>(null);
-
-  const navigationItems = [
-    { icon: Home, label: 'Menú', path: '/dashboard', color: 'from-green-500 to-green-600' },
-    { icon: Security, label: 'Vulnerabilidades', path: '/vulnerabilities', color: 'from-blue-500 to-blue-600' },
-    { icon: Code, label: 'Desafíos', path: '/challenges', color: 'from-purple-500 to-purple-600' },
-    { icon: ShoppingCart, label: 'Tienda', path: '/shop', color: 'from-yellow-500 to-yellow-600' },
-    { icon: UserMultiple, label: 'Contribuciones', path: '/contributions', color: 'from-red-500 to-red-600' },
-    { icon: User, label: 'Perfil', path: '/profile-customization', color: 'from-cyan-500 to-cyan-600' },
-    { icon: Group, label: 'Equipo', path: '/team', color: 'from-orange-500 to-orange-600' },
-    { icon: Trophy, label: 'MVP', path: '/mvp', color: 'from-pink-500 to-pink-600' }
-  ];
 
   React.useEffect(() => {
     apiService.getUserRanking().then((res: any) => {
@@ -80,7 +83,43 @@ const Dashboard: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen p-8" style={{fontFamily}}>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-black/90 text-neon-green p-8 font-mono relative overflow-hidden" style={{fontFamily: `'Share Tech Mono', 'Fira Mono', 'Consolas', monospace`}}>
+      {/* Imagen de fondo restaurada */}
+      <img src="/Header/Header.png" alt="Fondo dashboard" className="absolute inset-0 w-full h-full object-cover object-center opacity-60 z-0 animate-bg-zoom" style={{pointerEvents:'none'}} />
+      {showWelcome && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <div className="w-full max-w-lg mx-auto p-10 rounded-3xl border-4 border-neon-green shadow-2xl bg-black/90 relative animate-glow">
+            <button
+              className="absolute top-4 right-4 text-neon-green text-2xl font-bold hover:text-green-400 transition"
+              onClick={handleCloseWelcome}
+              title="Cerrar"
+              aria-label="Cerrar mensaje de bienvenida"
+            >
+              &#10005;
+            </button>
+            <h1 className="text-4xl font-extrabold mb-8 animate-glitch-text text-center" style={{color:'#00ff6a', textShadow:'0 0 16px #00ff6a, 0 0 32px #00ff6a'}}>{t('¡Bienvenido al Dashboard!')}</h1>
+            <p className="text-xl mb-6 text-green-300 text-center">{t('Ya puedes explorar la plataforma Bug Bounty.')}</p>
+            <div className="w-full bg-black/70 border-2 border-neon-green rounded-2xl p-8 shadow-xl flex flex-col gap-4 animate-glow">
+              <h2 className="text-2xl font-bold text-neon-green mb-2 text-center">{t('¿Qué puedes hacer aquí?')}</h2>
+              <ul className="list-disc pl-6 text-green-200 text-lg">
+                <li>{t('Explora vulnerabilidades y desafíos.')}</li>
+                <li>{t('Personaliza tu perfil y equipo.')}</li>
+                <li>{t('Compra en la tienda y gana bugcoins.')}</li>
+                <li>{t('¡Compite por el ranking y conviértete en MVP!')}</li>
+              </ul>
+              <label className="flex items-center gap-2 mt-6 cursor-pointer select-none text-green-300">
+                <input
+                  type="checkbox"
+                  checked={dontShowAgain}
+                  onChange={e => setDontShowAgain(e.target.checked)}
+                  className="form-checkbox h-5 w-5 text-neon-green border-neon-green rounded focus:ring-0"
+                />
+                {t('No volver a mostrar este mensaje')}
+              </label>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="w-full max-w-7xl mx-auto">
         {/* Carrusel hacker de anuncios */}
         <div className="mb-10 flex flex-col items-center relative z-10">

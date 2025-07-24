@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Checkmark } from '@carbon/icons-react';
-import apiService from '@/services/api';
 import { useTranslation } from 'react-i18next';
 
 interface Avatar {
@@ -26,22 +25,22 @@ const AvatarSelection: React.FC = () => {
   useEffect(() => {
     // Simular carga de avatares
     const mockAvatars: Avatar[] = [
-      { id: 'Hacker_Básico', name: 'Hacker Clásico', imageUrl: '/avatars/Hacker_Básico.png', unlocked: true, category: 'default' },
-      { id: 'Ciberseguridad', name: 'Ciberseguridad', imageUrl: '/avatars/Ciberseguridad.png', unlocked: true, category: 'default' },
-      { id: 'Programador', name: 'Programador', imageUrl: '/avatars/Programador.png', unlocked: true, category: 'default' },
-      { id: 'Analista', name: 'Analista', imageUrl: '/avatars/Analista.png', unlocked: true, category: 'default' },
-      { id: 'Pantester', name: 'Pentester', imageUrl: '/avatars/Pantester.png', unlocked: true, category: 'default' },
-      { id: 'Ghost_Hacker', name: 'Ghost Hacker', imageUrl: '/avatars/Ghost_Hacker.png', unlocked: false, category: 'premium' },
-      { id: 'Cyber_Ninja', name: 'Cyber Ninja', imageUrl: '/avatars/Cyber_Ninja.png', unlocked: false, category: 'premium' },
-      { id: 'Digital_Phantom', name: 'Digital Phantom', imageUrl: '/avatars/Digital_Phantom.png', unlocked: false, category: 'premium' },
-      { id: 'Stealth_Master', name: 'Stealth Master', imageUrl: '/avatars/Stealth_Master.png', unlocked: false, category: 'premium' },
-      { id: 'Legendary_Hacker', name: 'Legendary Hacker', imageUrl: '/avatars/Legendary_Hacker.png', unlocked: false, category: 'special' },
-      { id: 'Cyber_God', name: 'Cyber God', imageUrl: '/avatars/Cyber_God.png', unlocked: false, category: 'special' },
-      { id: 'Digital_Overlord', name: 'Digital Overlord', imageUrl: '/avatars/Digital_Overlord.png', unlocked: false, category: 'special' },
+      { id: 'Hacker_Básico', name: t('Hacker Clásico'), imageUrl: '/avatars/Hacker_Básico.png', unlocked: true, category: 'default' },
+      { id: 'Ciberseguridad', name: t('Ciberseguridad'), imageUrl: '/avatars/Ciberseguridad.png', unlocked: true, category: 'default' },
+      { id: 'Programador', name: t('Programador'), imageUrl: '/avatars/Programador.png', unlocked: true, category: 'default' },
+      { id: 'Analista', name: t('Analista'), imageUrl: '/avatars/Analista.png', unlocked: true, category: 'default' },
+      { id: 'Pantester', name: t('Pentester'), imageUrl: '/avatars/Pantester.png', unlocked: true, category: 'default' },
+      { id: 'Ghost_Hacker', name: t('Ghost Hacker'), imageUrl: '/avatars/Ghost_Hacker.png', unlocked: false, category: 'premium' },
+      { id: 'Cyber_Ninja', name: t('Cyber Ninja'), imageUrl: '/avatars/Cyber_Ninja.png', unlocked: false, category: 'premium' },
+      { id: 'Digital_Phantom', name: t('Digital Phantom'), imageUrl: '/avatars/Digital_Phantom.png', unlocked: false, category: 'premium' },
+      { id: 'Stealth_Master', name: t('Stealth Master'), imageUrl: '/avatars/Stealth_Master.png', unlocked: false, category: 'premium' },
+      { id: 'Legendary_Hacker', name: t('Legendary Hacker'), imageUrl: '/avatars/Legendary_Hacker.png', unlocked: false, category: 'special' },
+      { id: 'Cyber_God', name: t('Cyber God'), imageUrl: '/avatars/Cyber_God.png', unlocked: false, category: 'special' },
+      { id: 'Digital_Overlord', name: t('Digital Overlord'), imageUrl: '/avatars/Digital_Overlord.png', unlocked: false, category: 'special' },
     ];
     setAvatars(mockAvatars);
     setLoading(false);
-  }, []);
+  }, [t]);
 
   // Guardar la ruta de imagen del avatar seleccionado
   const handleAvatarSelect = (avatarId: string) => {
@@ -58,7 +57,7 @@ const AvatarSelection: React.FC = () => {
     if (avatar && unlocked) {
       setSelectedAvatar(avatar.imageUrl);
     } else {
-      setFeedbackMsg('Debes comprar este avatar en la tienda para desbloquearlo.');
+      setFeedbackMsg(t('Debes comprar este avatar en la tienda para desbloquearlo.'));
       setFeedbackType('error');
       setTimeout(() => {
         setFeedbackMsg(null);
@@ -79,7 +78,7 @@ const AvatarSelection: React.FC = () => {
     if (unlockedAvatars.length > 0) {
       const random = unlockedAvatars[Math.floor(Math.random() * unlockedAvatars.length)];
       setSelectedAvatar(random.imageUrl);
-      setFeedbackMsg('¡Avatar aleatorio seleccionado!');
+      setFeedbackMsg(t('¡Avatar aleatorio seleccionado!'));
       setFeedbackType('success');
       setTimeout(() => {
         setFeedbackMsg(null);
@@ -124,7 +123,15 @@ const AvatarSelection: React.FC = () => {
   const handleResetTienda = () => {
     localStorage.removeItem('user_inventory');
     localStorage.setItem('bugcoins', '1000');
-    window.location.reload();
+    setAvatars([]); // Limpia el estado local
+    setSelectedAvatar(null);
+    setFeedbackMsg(t('Tienda reseteada'));
+    setFeedbackType('success');
+    setTimeout(() => {
+      setFeedbackMsg(null);
+      setFeedbackType(null);
+    }, 2000);
+    // No recargar la página
   };
 
   const renderFeedback = () =>

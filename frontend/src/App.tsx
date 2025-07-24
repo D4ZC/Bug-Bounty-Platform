@@ -1,10 +1,8 @@
-import React from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
 // Layouts
 import HackerLayout from '@/components/layouts/MainLayout'; // <- Cambia MainLayout por HackerLayout
-import AuthLayout from '@/components/layouts/AuthLayout';
 import Settings from '@/pages/Settings';
 
 // Pages
@@ -31,11 +29,7 @@ import BackgroundSelection from '@/pages/BackgroundSelection';
 import Duelos from '@/pages/Duelos';
 
 // Components
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-
-// Hooks
-import { useAuth } from '@/contexts/AuthContext';
+import Header from '@/components/Header';
 
 function App() {
   return (
@@ -44,8 +38,11 @@ function App() {
         <title>Bug Bounty Platform</title>
         <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
       </Helmet>
-
+      <Header />
       <Routes>
+        {/* Rutas de autenticación fuera del layout principal */}
+        <Route path="/auth/login" element={<Login />} />
+        <Route path="/auth/register" element={<Register />} />
         <Route path="/" element={<HackerLayout><Outlet /></HackerLayout>}>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
