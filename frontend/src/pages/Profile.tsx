@@ -21,11 +21,11 @@ const Profile: React.FC = () => {
   return (
     <MainLayout>
       <div className="w-full min-h-screen bg-white flex flex-col items-center justify-center">
-        <div className="relative w-[1000px] h-[800px] rounded-2xl shadow-2xl bg-gray-200 border border-gray-300 overflow-hidden flex flex-col">
+        <div className="relative w-[1000px] h-[1100px] rounded-2xl shadow-2xl bg-gray-200 border border-gray-300 overflow-hidden flex flex-col">
           {/* Banner superior */}
           <div className="h-56 w-full bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80)' }} />
           {/* Avatar y botón */}
-          <div className="absolute left-16 top-40 flex items-end gap-4 z-10">
+          <div className="absolute left-16 top-60 flex items-end gap-4 z-10">
             <div className="relative">
               <img
                 src={avatar}
