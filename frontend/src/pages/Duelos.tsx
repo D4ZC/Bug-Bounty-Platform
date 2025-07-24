@@ -1,135 +1,151 @@
 import React, { useState } from 'react';
+import { Eye, Flag, ChevronDown } from 'lucide-react';
+
+const tiposEquipo = [
+  { label: 'Todos los tipos de equipos', value: 'all' },
+  { label: '1 vs 1', value: '1v1' },
+  { label: 'Dúo', value: 'duo' },
+  { label: 'Equipo', value: 'equipo' },
+];
+
+// Imágenes aleatorias de assets
+const salaImages = [
+  '/src/assets/images/fondos/FONDO_GAMER1.webp',
+  '/src/assets/images/fondos/FONDO_GAMER2.jpg',
+];
 
 const mockSalas = [
   {
-    id: 101,
-    nombre: 'Sala Élite',
-    jugadores: [
-      { nombre: 'Player1', avatar: '/src/assets/images/Avatar/Avatar1.png' },
-      { nombre: 'Player2', avatar: '/src/assets/images/Avatar/Avatar3.png' },
-    ],
+    id: 3256799763,
+    usuario: 'maguatdd',
+    tipo: 'equipo',
+    modo: 'Escuadra',
+    jugadores: 2,
     maxJugadores: 4,
-    estado: 'Esperando',
+    imagen: salaImages[0],
   },
   {
-    id: 202,
-    nombre: 'Sala Pro',
-    jugadores: [
-      { nombre: 'Player3', avatar: '/src/assets/images/Avatar/Avatar4.png' },
-      { nombre: 'Player4', avatar: '/src/assets/images/Avatar/Avatar5.png' },
-      { nombre: 'Player5', avatar: '/src/assets/images/Avatar/Avatar.png' },
-      { nombre: 'Player6', avatar: '/src/assets/images/Avatar/Avatar1.png' },
-    ],
-    maxJugadores: 4,
-    estado: 'En juego',
-  },
-  {
-    id: 303,
-    nombre: 'Sala Novatos',
-    jugadores: [
-      { nombre: 'Player7', avatar: '/src/assets/images/Avatar/Avatar3.png' },
-    ],
-    maxJugadores: 4,
-    estado: 'Esperando',
+    id: 1234567890,
+    usuario: 'alexdev',
+    tipo: '1v1',
+    modo: '1 vs 1',
+    jugadores: 1,
+    maxJugadores: 2,
+    imagen: salaImages[1],
   },
 ];
 
-const estadoColor = (estado: string) => {
-  switch (estado) {
-    case 'Esperando':
-      return 'bg-yellow-300 text-gray-900';
-    case 'En juego':
-      return 'bg-green-400 text-gray-900';
-    default:
-      return 'bg-gray-400 text-gray-900';
-  }
+const tipoToLabel = {
+  '1v1': '1 vs 1',
+  'duo': 'Dúo',
+  'equipo': 'Escuadra',
 };
 
 const Duelos: React.FC = () => {
+  const [tipoFiltro, setTipoFiltro] = useState('all');
+  const [filtroOpen, setFiltroOpen] = useState(false);
   const [busqueda, setBusqueda] = useState('');
 
-  const salasFiltradas = mockSalas.filter(
-    (sala) =>
-      sala.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-      sala.id.toString().includes(busqueda)
-  );
+  // Filtrado por tipo y búsqueda
+  const salasFiltradas = mockSalas.filter(sala => {
+    const matchTipo = tipoFiltro === 'all' || sala.tipo === tipoFiltro;
+    const matchBusqueda =
+      sala.usuario.toLowerCase().includes(busqueda.toLowerCase()) ||
+      sala.id.toString().includes(busqueda);
+    return matchTipo && matchBusqueda;
+  });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-8 px-2 flex flex-col items-center">
-      <header className="w-full max-w-4xl flex flex-col items-center mb-8">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-yellow-400 drop-shadow mb-2 text-center tracking-wide">
-          <span className="inline-block align-middle mr-2">⚔️</span> Duelos
-        </h1>
-        <p className="text-gray-300 text-lg md:text-xl text-center max-w-2xl">
-          ¡Enfréntate a otros jugadores en duelos épicos! Únete a una sala existente o crea la tuya propia.
-        </p>
-      </header>
-      <div className="w-full max-w-4xl bg-white/10 rounded-2xl shadow-2xl p-4 md:p-8 flex flex-col gap-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-          <button className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold px-6 py-2 rounded-lg shadow-lg flex items-center gap-2 transition">
-            <span className="text-xl">➕</span> Crear sala
+    <div className="min-h-screen h-screen flex flex-col bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Encabezado */}
+      <header className="w-full flex justify-end items-center px-4 py-4 bg-white/10 flex-shrink-0 sticky top-0 z-10">
+        <div className="relative">
+          <button
+            className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold px-4 py-2 rounded shadow min-w-[200px]"
+            onClick={() => setFiltroOpen(f => !f)}
+          >
+            {tiposEquipo.find(t => t.value === tipoFiltro)?.label}
+            <ChevronDown size={18} />
           </button>
-          <div className="flex-1 flex justify-end">
-            <input
-              type="text"
-              placeholder="Buscar sala por nombre o ID..."
-              className="w-full md:w-72 px-4 py-2 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-900 text-gray-100 placeholder-gray-400 shadow"
-              value={busqueda}
-              onChange={e => setBusqueda(e.target.value)}
-            />
-          </div>
+          {filtroOpen && (
+            <div className="absolute right-0 mt-2 bg-white rounded shadow-lg border w-full min-w-[200px] z-20">
+              {tiposEquipo.slice(1).map(t => (
+                <button
+                  key={t.value}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${tipoFiltro === t.value ? 'bg-gray-100 font-bold' : ''}`}
+                  onClick={() => { setTipoFiltro(t.value); setFiltroOpen(false); }}
+                >
+                  {t.label}
+                </button>
+              ))}
+              <button
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${tipoFiltro === 'all' ? 'bg-gray-100 font-bold' : ''}`}
+                onClick={() => { setTipoFiltro('all'); setFiltroOpen(false); }}
+              >
+                Todos los tipos de equipos
+              </button>
+            </div>
+          )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      </header>
+      {/* Sección de salas (scrollable, alto fijo) */}
+      <main className="w-full flex justify-center flex-shrink-0" style={{ background: 'inherit' }}>
+        <div
+          className="flex flex-col gap-4 max-w-full w-full overflow-y-auto px-0 md:px-8 py-4"
+          style={{
+            maxHeight: '400px', // desktop
+            minHeight: '120px',
+            height: '100%',
+          }}
+        >
           {salasFiltradas.length === 0 ? (
-            <div className="col-span-full text-center text-gray-300 py-8 text-lg">No se encontraron salas.</div>
+            <div className="text-center text-gray-300 py-8 text-lg">No se encontraron salas.</div>
           ) : (
             salasFiltradas.map((sala) => (
               <div
                 key={sala.id}
-                className="bg-gray-800/80 rounded-xl shadow-lg p-5 flex flex-col gap-4 border-2 border-transparent hover:border-yellow-400 transition"
+                className="flex flex-row items-center w-full bg-gray-200 rounded-xl shadow-lg overflow-hidden h-[150px] min-h-[150px]"
+                style={{ minWidth: 0 }}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <span className="bg-gray-700 text-yellow-300 font-mono text-xs px-2 py-1 rounded">ID: {sala.id}</span>
-                    <h2 className="text-2xl font-bold text-yellow-300 flex-1 truncate">{sala.nombre}</h2>
-                  </div>
-                  <span className={`ml-4 px-3 py-1 rounded-full text-xs font-bold ${estadoColor(sala.estado)}`}>{sala.estado}</span>
+                {/* Imagen rectangular más grande y centrada */}
+                <div className="flex-shrink-0 w-[220px] h-[130px] bg-gray-300 flex items-center justify-center m-4 rounded-lg overflow-hidden">
+                  <img src={sala.imagen} alt="Sala" className="object-cover w-full h-full rounded-md" />
                 </div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  {sala.jugadores.map((jugador, idx) => (
-                    <div key={jugador.nombre} className="flex flex-col items-center">
-                      <img
-                        src={jugador.avatar}
-                        alt={jugador.nombre}
-                        className="w-12 h-12 rounded-full border-2 border-yellow-400 shadow-md object-cover bg-gray-700"
-                      />
-                      <span className="text-xs text-gray-200 mt-1 truncate max-w-[60px]">{jugador.nombre}</span>
-                    </div>
-                  ))}
-                  {/* Espacios vacíos para jugadores que faltan */}
-                  {Array.from({ length: sala.maxJugadores - sala.jugadores.length }).map((_, idx) => (
-                    <div key={idx} className="flex flex-col items-center opacity-40">
-                      <div className="w-12 h-12 rounded-full border-2 border-gray-500 bg-gray-700 flex items-center justify-center text-gray-400 text-2xl">
-                        ?
-                      </div>
-                      <span className="text-xs text-gray-400 mt-1">Vacante</span>
-                    </div>
-                  ))}
+                {/* Info usuario y sala */}
+                <div className="flex flex-col justify-center px-6 flex-1 min-w-[160px] h-full">
+                  <div className="text-xl font-semibold text-gray-800">Sala de {sala.usuario}</div>
+                  <div className="text-sm text-gray-600 mt-1">ID: {sala.id}</div>
                 </div>
-                <div className="flex justify-end mt-4">
-                  <button
-                    className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg font-bold shadow transition flex items-center gap-2"
-                    disabled={sala.estado !== 'Esperando'}
-                  >
-                    <span>Unirse</span>
-                    <span className="text-lg">🎮</span>
-                  </button>
+                {/* Tipo de equipo */}
+                <div className="flex flex-col items-center justify-center px-4 min-w-[100px]">
+                  <div className="text-base font-semibold text-gray-800">{tipoToLabel[sala.tipo as keyof typeof tipoToLabel] || sala.modo}</div>
+                  <div className="text-sm text-gray-600 mt-1">{sala.jugadores}/{sala.maxJugadores}</div>
+                </div>
+                {/* Ojo */}
+                <div className="flex items-center justify-center px-4">
+                  <Eye size={36} className="text-gray-700" />
+                </div>
+                {/* Bandera con + */}
+                <div className="flex items-center justify-center px-4">
+                  <Flag size={36} className="text-yellow-500" />
+                  <span className="ml-[-18px] mt-[-18px] bg-white text-yellow-500 rounded-full border border-yellow-400 w-6 h-6 flex items-center justify-center font-bold text-lg shadow" style={{ position: 'relative', left: '-12px', top: '12px' }}>+</span>
                 </div>
               </div>
             ))
           )}
         </div>
-      </div>
+      </main>
+      {/* Pie de página */}
+      <footer className="w-full flex flex-col md:flex-row items-center justify-between gap-4 px-4 py-4 bg-white/10 flex-shrink-0 sticky bottom-0 z-10">
+        <input
+          type="text"
+          placeholder="Buscar por nombre o ID"
+          className="flex-1 rounded px-4 py-2 bg-gray-200 text-gray-800 border border-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-400 max-w-md"
+          value={busqueda}
+          onChange={e => setBusqueda(e.target.value)}
+        />
+        <button className="bg-gray-200 hover:bg-yellow-400 text-gray-800 hover:text-gray-900 font-bold px-8 py-2 rounded shadow transition w-full md:w-auto">CREAR SALA</button>
+      </footer>
     </div>
   );
 };
