@@ -82,7 +82,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </Header>
       <div className="flex flex-1">
         {/* Sidebar lateral restaurado */}
-        <SideNav aria-label="Menú lateral" className="bg-gradient-to-b from-black via-black to-blue-900 shadow-md min-h-full w-[250px] flex flex-col items-start py-4 dark:bg-carbon-gray">
+        <SideNav aria-label="Menú lateral" className="bg-black shadow-md min-h-full w-[250px] flex flex-col items-start py-4 dark:bg-carbon-gray">
           <SideNavItems>
             <SideNavLink href="/" className="flex flex-row items-center gap-3 px-4 py-2 w-full text-white hover:text-cyber-blue transition-colors font-carbon-base">
               <Home size={24} color="#fff" />
@@ -103,8 +103,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </button>
               {formOpen && (
                 <div id="submenu-formulario" className="pl-10 flex flex-col gap-1">
-                  <SideNavLink href="/formulario/crear" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
-                  <SideNavLink href="/formulario" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
                   <SideNavLink href="/formulario/crear" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">CREAR</SideNavLink>
                   <SideNavLink href="/formulario" className="px-2 py-1 text-white hover:text-cyber-blue font-gamer-body">VER</SideNavLink>
                 </div>
