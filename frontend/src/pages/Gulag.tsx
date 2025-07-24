@@ -167,8 +167,8 @@ const Gulag: React.FC = () => {
 
   return (
     <div className="w-full min-h-screen bg-white flex flex-col items-center py-10">
-      <h1 className="text-3xl md:text-4xl font-bold mb-2 text-center">GULAG</h1>
-      <h2 className="text-lg md:text-xl font-normal mb-8 text-center">Zona de desafíos y pruebas especiales</h2>
+      <h1 className="text-6xl font-bold mb-2 text-center font-sprite-graffiti-shadow">GULAG</h1>
+      <h2 className="text-lg md:text-xl font-normal mb-8 text-center italic">Zona de desafíos y pruebas especiales</h2>
       <div className="w-full max-w-4xl">
         {/* Encabezado de la tabla */}
         <div className="flex w-full" style={{ background: '#b3b3b3', height: 40 }}>

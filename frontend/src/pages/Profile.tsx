@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { useShop, ShopItem } from '../contexts/ShopContext';
 import ReplaceItemModal from '../components/ReplaceItemModal';
 import { useWallet } from '../contexts/WalletContext';
@@ -20,6 +20,15 @@ const barData = [
   { name: 'Jun', coins: 110 },
 ];
 
+const radarData = [
+  { subject: 'Red Team', A: 120, fullMark: 150 },
+  { subject: 'Blue Team', A: 98, fullMark: 150 },
+  { subject: 'Forensics', A: 86, fullMark: 150 },
+  { subject: 'Crypto', A: 99, fullMark: 150 },
+  { subject: 'Web', A: 85, fullMark: 150 },
+  { subject: 'PWN', A: 65, fullMark: 150 },
+];
+
 const mockUser = {
   id: 'USR-001',
   name: 'Alex Turner',
@@ -32,6 +41,47 @@ const mockUser = {
   description: 'Bug hunter, gamer y entusiasta de la ciberseguridad.',
   email: 'alex.turner@email.com',
 };
+
+// SVG de escudo con bug (logo)
+const BugShieldLogo = () => (
+  <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <radialGradient id="gold-shield" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stopColor="#fffbe6" />
+        <stop offset="100%" stopColor="#bfa14a" />
+      </radialGradient>
+      <linearGradient id="bug-body" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stopColor="#fff" />
+        <stop offset="100%" stopColor="#e6c200" />
+      </linearGradient>
+    </defs>
+    {/* Escudo */}
+    <path d="M27 4C27 4 10 8 10 18C10 38 27 50 27 50C27 50 44 38 44 18C44 8 27 4 27 4Z" fill="url(#gold-shield)" stroke="#fffbe6" strokeWidth="2.5" />
+    {/* Bug cuerpo */}
+    <ellipse cx="27" cy="25" rx="7" ry="8" fill="url(#bug-body)" stroke="#bfa14a" strokeWidth="1.5" />
+    {/* Cabeza */}
+    <ellipse cx="27" cy="18.5" rx="3.2" ry="2.5" fill="#fffbe6" stroke="#bfa14a" strokeWidth="1" />
+    {/* Patas */}
+    <path d="M20 22L13 19" stroke="#fffbe6" strokeWidth="1.2" strokeLinecap="round"/>
+    <path d="M20 27L13 29" stroke="#fffbe6" strokeWidth="1.2" strokeLinecap="round"/>
+    <path d="M34 22L41 19" stroke="#fffbe6" strokeWidth="1.2" strokeLinecap="round"/>
+    <path d="M34 27L41 29" stroke="#fffbe6" strokeWidth="1.2" strokeLinecap="round"/>
+    {/* Antenas */}
+    <path d="M25 16L23 12" stroke="#fffbe6" strokeWidth="1" strokeLinecap="round"/>
+    <path d="M29 16L31 12" stroke="#fffbe6" strokeWidth="1" strokeLinecap="round"/>
+    {/* Línea central */}
+    <path d="M27 18.5V33" stroke="#bfa14a" strokeWidth="1.2" />
+  </svg>
+);
+
+// SVG de insignia moderna (estrella dorada)
+const ModernBadge = () => (
+  <svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="40" r="36" fill="#fffbe6" stroke="#bfa14a" strokeWidth="4" />
+    <polygon points="40,14 47,34 68,34 51,47 58,67 40,56 22,67 29,47 12,34 33,34" fill="#ffe066" stroke="#bfa14a" strokeWidth="2" />
+    <circle cx="40" cy="40" r="10" fill="#fffbe6" stroke="#bfa14a" strokeWidth="2" />
+  </svg>
+);
 
 const Profile: React.FC = () => {
   const { userItems, selectItem, getSelectedItem } = useShop();
@@ -191,21 +241,20 @@ const Profile: React.FC = () => {
         <div className="relative z-10 w-full h-full flex flex-col md:flex-row gap-6">
           {/* Columna Izquierda */}
           <div className="w-full md:w-1/4 flex flex-col items-center gap-6 justify-between min-h-full">
-            {/* Gráfica de barras de monedas */}
+            {/* Gráfica radar roja */}
             <div className="w-full flex flex-col items-center flex-1 justify-center">
               <div className="w-full h-60">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="coins" fill="#38bdf8" radius={[8,8,0,0]} />
-                  </BarChart>
+                  <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
+                    <PolarGrid stroke="#444" />
+                    <PolarAngleAxis dataKey="subject" stroke="#222" fontSize={10} />
+                    <PolarRadiusAxis angle={30} domain={[0, 150]} stroke="#888" fontSize={8} />
+                    <Radar name="Perfil" dataKey="A" stroke="#38bdf8" fill="#38bdf8" fillOpacity={0.4} />
+                  </RadarChart>
                 </ResponsiveContainer>
               </div>
               <div className="w-full flex justify-center mt-2">
-                <span className="text-lg font-bold text-purple-700 tracking-wide" style={{ marginLeft: '40px' }}>EFICIENCIA</span>
+                <span className="text-lg font-bold text-black tracking-wide" style={{ marginLeft: '40px' }}>EFICIENCIA</span>
               </div>
             </div>
             {/* Botones verticales */}
@@ -328,22 +377,43 @@ const Profile: React.FC = () => {
                     <span className="text-red-600 font-bold text-base">{totals.dislikes}</span>
                   </div>
                 </div>
-                <div className="text-xs text-gray-500 mt-2">NIVEL 1</div>
               </div>
               <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center">
                 <span className="font-bold text-gray-700 mb-1">PAÍS</span>
-                <select className="w-full text-center font-semibold text-lg bg-transparent outline-none" value={country} onChange={e => setCountry(e.target.value)}>
-                  <option value="Germany">🇩🇪 Germany</option>
-                  <option value="Mexico">🇲🇽 Mexico</option>
-                  <option value="USA">🇺🇸 USA</option>
-                  <option value="Spain">🇪🇸 Spain</option>
+                <select
+                  className="w-full text-center font-semibold text-4xl bg-transparent outline-none appearance-none cursor-pointer"
+                  value={country}
+                  onChange={e => setCountry(e.target.value)}
+                  style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, NotoColorEmoji, Noto Color Emoji, EmojiOne Color, Android Emoji, sans-serif' }}
+                >
+                  <option value="Germany">🇩🇪</option>
+                  <option value="Mexico">🇲🇽</option>
+                  <option value="USA">🇺🇸</option>
+                  <option value="Spain">🇪🇸</option>
                 </select>
               </div>
             </div>
-            {/* Card vacía en lugar del carrusel */}
+            {/* Card de nivel con logo, insignia moderna y barra gaming */}
             <div className="w-full flex flex-col items-center mt-4 flex-1 justify-center">
-              <div className="bg-gray-100 rounded-lg p-4 flex flex-col items-center w-full h-[360px]">
-                {/* Card vacía, reservada para uso futuro */}
+              <div className="rounded-lg flex flex-col items-center w-full h-[340px] shadow-md bg-white">
+                {/* Logo escudo bug */}
+                <div className="mt-4 mb-2"><BugShieldLogo /></div>
+                {/* Insignia moderna */}
+                <div className="mb-2"><ModernBadge /></div>
+                <span className="text-2xl font-bold text-black mb-1 tracking-wide">BRONZE</span>
+                <span className="text-xl font-semibold text-black mb-4">NIVEL 1</span>
+                {/* Barra de progreso tipo gaming */}
+                <div className="w-full max-w-[200px] h-7 flex items-center justify-center mb-2 relative">
+                  {/* Fondo y borde dorado */}
+                  <div className="absolute left-0 top-0 w-full h-full rounded-full" style={{ background: '#232323', border: '3px solid #bfa14a', boxShadow: '0 2px 8px #0006' }} />
+                  {/* Relleno animado */}
+                  <div className="absolute left-0 top-0 h-full rounded-full transition-all duration-1000" style={{ width: '5%', background: 'linear-gradient(90deg, #ffe066 0%, #2ed8e6 100%)', boxShadow: '0 0 8px #ffe066' }} />
+                  {/* Ticks de nivel */}
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div key={i} className="absolute top-1 left-0 h-5 w-0.5" style={{ left: `${10 * i}%`, background: i === 0 ? '#ffe066' : '#bfa14a', opacity: i === 0 ? 1 : 0.7, borderRadius: 2 }} />
+                  ))}
+                </div>
+                <span className="text-xs text-black mt-1">0/10 bugs resueltos</span>
               </div>
             </div>
           </div>
@@ -354,19 +424,19 @@ const Profile: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-yellow-400 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
             <h2 className="font-gamer-title text-2xl text-yellow-500 mb-4">Tus avatares comprados</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+            <div className="flex flex-row gap-6 w-full overflow-x-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200 py-2 px-1">
               {avatarsComprados.length === 0 ? (
-                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes avatares comprados.</span>
+                <span className="text-gray-500">No tienes avatares comprados.</span>
               ) : (
                 avatarsComprados.map(avatar => (
-                  <div key={avatar.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                  <div key={avatar.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={avatar.img} alt={avatar.name} className="w-28 h-28 object-cover rounded-full mb-2" />
                     <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{avatar.name}</span>
                     <button
                       className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedAvatar === avatar.img ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white hover:bg-yellow-500'}`}
                       onClick={() => handleSelectAvatar(avatar.img)}
                     >
-                      {selectedAvatar === avatar.img ? 'Seleccionado' : 'Seleccionar como avatar'}
+                      {selectedAvatar === avatar.img ? 'Seleccionado' : 'Seleccionar'}
                     </button>
                   </div>
                 ))
@@ -387,12 +457,12 @@ const Profile: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
             <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Tus fondos comprados</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+            <div className="flex flex-row gap-6 w-full overflow-x-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200 py-2 px-1">
               {fondosComprados.length === 0 ? (
-                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes fondos comprados.</span>
+                <span className="text-gray-500">No tienes fondos comprados.</span>
               ) : (
                 fondosComprados.map(fondo => (
-                  <div key={fondo.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                  <div key={fondo.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={fondo.img} alt={fondo.name} className="w-28 h-20 object-cover rounded mb-2" />
                     <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{fondo.name}</span>
                     <button
@@ -402,7 +472,7 @@ const Profile: React.FC = () => {
                       {selectedBg === fondo.img ? (
                         <span className="inline-block w-4 h-4 bg-white rounded-full flex items-center justify-center"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
                       ) : null}
-                      {selectedBg === fondo.img ? 'Seleccionado' : 'Seleccionar como fondo'}
+                      {selectedBg === fondo.img ? 'Seleccionado' : 'Seleccionar'}
                     </button>
                   </div>
                 ))
@@ -423,12 +493,12 @@ const Profile: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
             <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Tus marcos comprados</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
+            <div className="flex flex-row gap-6 w-full overflow-x-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200 py-2 px-1">
               {marcosComprados.length === 0 ? (
-                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes marcos comprados.</span>
+                <span className="text-gray-500">No tienes marcos comprados.</span>
               ) : (
                 marcosComprados.map(marco => (
-                  <div key={marco.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+                  <div key={marco.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={marco.img} alt={marco.name} className="w-28 h-20 object-cover rounded mb-2" />
                     <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{marco.name}</span>
                     <button
@@ -438,7 +508,7 @@ const Profile: React.FC = () => {
                       {selectedFrame === marco.img ? (
                         <span className="inline-block w-4 h-4 bg-white rounded-full flex items-center justify-center"><svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#22c55e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
                       ) : null}
-                      {selectedFrame === marco.img ? 'Seleccionado' : 'Seleccionar como marco'}
+                      {selectedFrame === marco.img ? 'Seleccionado' : 'Seleccionar'}
                     </button>
                   </div>
                 ))

@@ -334,4 +334,5 @@ export interface CardData {
   userVote?: 'like' | 'dislike' | null;
   createdAt: number;
   email: string;
+  severidad: 'low' | 'medium' | 'high' | 'critical';
 } 

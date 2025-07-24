@@ -7,6 +7,11 @@ import avatar1 from '../assets/images/Avatar/Avatar1.png';
 import avatar3 from '../assets/images/Avatar/Avatar3.png';
 import avatar4 from '../assets/images/Avatar/Avatar4.png';
 import avatar5 from '../assets/images/Avatar/Avatar5.png';
+import avatar2 from '../assets/images/Avatar/Avatar2.png';
+import avatar6 from '../assets/images/Avatar/Avatar6.png';
+import avatar7 from '../assets/images/Avatar/Avatar7.png';
+import avatar8 from '../assets/images/Avatar/Avatar8.png';
+import avatar9 from '../assets/images/Avatar/Avatar9.png';
 import fondoGamer from '../assets/images/fondos/FONDO_GAMER.webp';
 import fondoGamer1 from '../assets/images/fondos/FONDO_GAMER1.webp';
 import fondoGamer2 from '../assets/images/fondos/FONDO_GAMER2.jpg';
@@ -28,6 +33,11 @@ const PRODUCTS = {
     { id: 3, name: 'Avatar Retro', price: 100, img: avatar3, desc: 'Avatar retro.', category: 'avatar' as const },
     { id: 4, name: 'Avatar 4', price: 110, img: avatar4, desc: 'Avatar especial 4.', category: 'avatar' as const },
     { id: 5, name: 'Avatar 5', price: 120, img: avatar5, desc: 'Avatar especial 5.', category: 'avatar' as const },
+    { id: 101, name: 'Avatar 2', price: 95, img: avatar2, desc: 'Avatar alternativo 2.', category: 'avatar' as const },
+    { id: 102, name: 'Avatar 6', price: 105, img: avatar6, desc: 'Avatar alternativo 6.', category: 'avatar' as const },
+    { id: 103, name: 'Avatar 7', price: 115, img: avatar7, desc: 'Avatar alternativo 7.', category: 'avatar' as const },
+    { id: 104, name: 'Avatar 8', price: 125, img: avatar8, desc: 'Avatar alternativo 8.', category: 'avatar' as const },
+    { id: 105, name: 'Avatar 9', price: 130, img: avatar9, desc: 'Avatar alternativo 9.', category: 'avatar' as const },
   ],
   fondo: [
     { id: 4, name: 'Fondo Gamer', price: 100, img: fondoGamer, desc: 'Fondo gamer neón.', category: 'fondo' as const },
@@ -131,7 +141,7 @@ const Shop: React.FC = () => {
           {selectedCategory === 'etc' ? (
             <Ruleta />
           ) : (
-            <div className="grid grid-cols-2 gap-8 w-full max-w-lg">
+            <div className="grid grid-cols-2 gap-8 w-full max-w-lg overflow-y-auto" style={{ maxHeight: 520, minHeight: 200 }}>
               {products.map((prod, idx) => (
                 <div
                   key={prod.id}

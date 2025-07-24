@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Permanent+Marker&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -359,4 +359,12 @@
     2px 2px 0 #ff1744,   /* sombra roja abajo-derecha */
     -2px -2px 0 #7c3aed, /* sombra morada arriba-izquierda */
     0 0 2px #000;
+} 
+
+/* Si tienes la fuente 'Sprite Graffiti Shadow', puedes importarla aquí. Si no, usamos 'Permanent Marker' como alternativa graffiti. */
+.font-sprite-graffiti-shadow {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  text-shadow: 2px 2px 0 #222, 4px 4px 8px #000, 0 0 8px #2196f3;
+  letter-spacing: 2px;
+  color: #222;
 } 

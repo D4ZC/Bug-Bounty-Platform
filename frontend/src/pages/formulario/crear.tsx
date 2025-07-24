@@ -9,6 +9,7 @@ const CrearVulnerabilidad: React.FC = () => {
   const [imagen, setImagen] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [severidad, setSeveridad] = useState<'low' | 'medium' | 'high' | 'critical'>('low');
 
   // Variables de usuario (mock, luego se puede obtener de contexto)
   const usuarioNombre = 'Alex Turner';
@@ -57,6 +58,7 @@ const CrearVulnerabilidad: React.FC = () => {
       dislikes: 0,
       userVote: null,
       createdAt: Date.now(),
+      severidad,
     };
     // Guardar en localStorage
     let prev = [];
@@ -97,6 +99,21 @@ const CrearVulnerabilidad: React.FC = () => {
           </div>
           <label className="font-semibold text-gray-700">Fecha
             <input type="text" className="input mt-1 bg-gray-100" value={fecha} readOnly />
+          </label>
+          {/* Select de severidad */}
+          <label className="font-semibold text-gray-700">Severidad
+            <select
+              className="input mt-1 font-bold"
+              value={severidad}
+              onChange={e => setSeveridad(e.target.value as any)}
+              style={{ color: severidad === 'low' ? '#22c55e' : severidad === 'medium' ? '#eab308' : severidad === 'high' ? '#f97316' : '#ef4444' }}
+              required
+            >
+              <option value="low" style={{ color: '#22c55e' }}>🟢 Low</option>
+              <option value="medium" style={{ color: '#eab308' }}>🟡 Medium</option>
+              <option value="high" style={{ color: '#f97316' }}>🟠 High</option>
+              <option value="critical" style={{ color: '#ef4444' }}>🔴 Critical</option>
+            </select>
           </label>
           <label className="font-semibold text-gray-700">Descripción
             <textarea className="input mt-1" value={descripcion} onChange={e => setDescripcion(e.target.value)} required rows={4} />

@@ -48,6 +48,32 @@ const Formulario: React.FC = () => {
     updateCards(newCards);
   };
 
+  // Badge de severidad
+  function SeveridadBadge({ severidad }: { severidad: 'low' | 'medium' | 'high' | 'critical' }) {
+    const config = {
+      low: { color: 'bg-green-100 text-green-700', icon: '🟢', label: 'Low' },
+      medium: { color: 'bg-yellow-100 text-yellow-700', icon: '🟡', label: 'Medium' },
+      high: { color: 'bg-orange-100 text-orange-700', icon: '🟠', label: 'High' },
+      critical: { color: 'bg-red-100 text-red-700', icon: '🔴', label: 'Critical' },
+    };
+    const badge = config[severidad];
+    if (!badge) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-gray-200 text-gray-600 border border-opacity-40 border-black shadow-sm">
+          <span>⚪</span>
+          <span>Sin severidad</span>
+        </span>
+      );
+    }
+    const { color, icon, label } = badge;
+    return (
+      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${color} border border-opacity-40 border-black shadow-sm`}>
+        <span>{icon}</span>
+        <span>{label}</span>
+      </span>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-start py-12 bg-gray-100">
       <h2 className="text-2xl font-bold mb-8 text-carbon-dark">Vulnerabilidades registradas</h2>
@@ -56,7 +82,10 @@ const Formulario: React.FC = () => {
           <div key={card.id} className="w-[260px] h-[180px] bg-white border border-gray-300 shadow-lg rounded-lg p-5 flex flex-col justify-between mb-8">
             {/* Info */}
             <div>
-              <h3 className="text-base font-semibold text-carbon-dark mb-1 truncate">{card.nombre}</h3>
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-base font-semibold text-carbon-dark truncate">{card.nombre}</h3>
+                <SeveridadBadge severidad={card.severidad} />
+              </div>
               <p className="text-xs text-gray-700 mb-0.5 truncate">{card.jugador}</p>
               <p className="text-xs text-gray-500 mb-0.5 truncate">{card.email}</p>
               <p className="text-xs font-mono text-blue-500 mb-0.5 hover:underline transition-all">ID: {usuarioId}</p>
@@ -96,7 +125,10 @@ const Formulario: React.FC = () => {
       {modalCard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="w-[350px] h-[500px] bg-white border border-gray-400 shadow-2xl rounded-xl flex flex-col p-6 relative animate-fade-in">
-            <h3 className="text-lg font-bold text-carbon-dark mb-2">{modalCard.nombre}</h3>
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-lg font-bold text-carbon-dark ">{modalCard.nombre}</h3>
+              <SeveridadBadge severidad={modalCard.severidad} />
+            </div>
             <p className="text-sm text-gray-700 mb-1">Creado por: <span className="font-semibold">{modalCard.jugador}</span></p>
             <p className="text-sm text-gray-500 mb-1">Correo: {modalCard.email}</p>
             <p className="text-sm text-gray-400 mb-3">Fecha: {modalCard.fecha}</p>

@@ -6,7 +6,7 @@ export interface ShopItem {
   price: number;
   img: string;
   desc: string;
-  category: 'fondo' | 'marco' | 'ticker';
+  category: 'fondo' | 'marco' | 'sticker';
 }
 
 export interface UserItems {
