@@ -114,6 +114,12 @@
       "problem": "Explica el problema o riesgo.",
       "howDetected": "¿Cómo se detectó esta vulnerabilidad?"
     },
-    "vulnTypeLabel": "Tipo de Vulnerabilidad"
+    "vulnTypeLabel": "Tipo de Vulnerabilidad",
+    "deleteConfirmTitle": "¿Estas seguro de que quieres borrar este proyecto?",
+    "deleteConfirmYes": "Sí",
+    "deleteConfirmNo": "No",
+    "deleteFinalTitle": "Confirma la eliminación del proyecto {{name}}",
+    "deleteFinalConfirm": "Confirmar",
+    "deleteFinalCancel": "Cancelar"
   }
 } 

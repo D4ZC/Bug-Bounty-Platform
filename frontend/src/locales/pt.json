@@ -107,6 +107,12 @@
     },
     "all": "Todos",
     "other": "Outro",
-    "vulnTypeLabel": "Tipo de Vulnerabilidade"
+    "vulnTypeLabel": "Tipo de Vulnerabilidade",
+    "deleteConfirmTitle": "Tem certeza de que deseja excluir este projeto?",
+    "deleteConfirmYes": "Sim",
+    "deleteConfirmNo": "Não",
+    "deleteFinalTitle": "Confirme a exclusão do projeto {{name}}",
+    "deleteFinalConfirm": "Confirmar",
+    "deleteFinalCancel": "Cancelar"
   }
 } 

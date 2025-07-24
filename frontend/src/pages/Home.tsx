@@ -117,6 +117,10 @@ const Home: React.FC = () => {
   const [search, setSearch] = useState('');
   const [typeFilters, setTypeFilters] = useState<string[]>([]);
 
+  // Estado para eliminar proyecto
+  const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+  const [deleteStep, setDeleteStep] = useState<1 | 2 | null>(null);
+
   // Helpers for form
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -181,6 +185,13 @@ const Home: React.FC = () => {
     setForm(JSON.parse(JSON.stringify(projects[idx])));
     setEditIndex(idx);
     setShowForm(true);
+  };
+
+  // Eliminar proyecto
+  const handleDeleteProject = (idx: number) => {
+    setProjects(projects => projects.filter((_, i) => i !== idx));
+    setDeleteIndex(null);
+    setDeleteStep(null);
   };
 
   // English translations for UI
@@ -432,8 +443,9 @@ const Home: React.FC = () => {
             project.vulnerabilities.reduce((acc, v) => acc + ((v.difficulties[diff] || []).length), 0)
           );
           return (
-            <div key={project.id} className="project-card bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 min-w-[320px] border-4 border-yellow-400">
-              <button className="self-end px-2 py-1 bg-yellow-400 text-gray-900 rounded font-bold hover:bg-yellow-500 mb-2" onClick={() => handleEdit(idx)}>{t('home.editProject')}</button>
+            <div key={project.id} className="project-card bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 min-w-[320px] border-4 border-blue-600">
+              <button className="self-end px-2 py-1 bg-blue-600 text-white rounded font-bold hover:bg-blue-700 mb-2" onClick={() => handleEdit(idx)}>{t('home.editProject')}</button>
+              <button className="self-end px-2 py-1 bg-red-600 text-white rounded font-bold hover:bg-red-700 mb-2" onClick={() => { setDeleteIndex(idx); setDeleteStep(1); }}>{t('home.delete')}</button>
               {/* Project name (traducido si existe clave) */}
               <div className="font-bold text-lg mb-2 text-gray-900 dark:text-gray-100">{t('home.acmeWebPlatform', project.name)}</div>
               {/* Vulnerabilities list (show type, description, discoveredBy translated) */}
@@ -573,6 +585,30 @@ const Home: React.FC = () => {
                   );
                 })()}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Banner de confirmación de borrado */}
+      {deleteIndex !== null && deleteStep === 1 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-md w-full">
+            <div className="text-lg font-bold mb-2">{t('home.deleteConfirmTitle', { defaultValue: '¿Estas seguro de que quieres borrar este proyecto?' })}</div>
+            <div className="flex gap-4">
+              <button className="px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700" onClick={() => setDeleteStep(2)}>{t('home.deleteConfirmYes', { defaultValue: 'Sí' })}</button>
+              <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded font-bold hover:bg-gray-400" onClick={() => { setDeleteIndex(null); setDeleteStep(null); }}>{t('home.deleteConfirmNo', { defaultValue: 'No' })}</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Banner de confirmación final */}
+      {deleteIndex !== null && deleteStep === 2 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-md w-full">
+            <div className="text-lg font-bold mb-2">{t('home.deleteFinalTitle', { name: projects[deleteIndex]?.name, defaultValue: 'Confirma la eliminación del proyecto {{name}}' })}</div>
+            <div className="flex gap-4">
+              <button className="px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700" onClick={() => handleDeleteProject(deleteIndex)}>{t('home.deleteFinalConfirm', { defaultValue: 'Confirmar' })}</button>
+              <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded font-bold hover:bg-gray-400" onClick={() => { setDeleteIndex(null); setDeleteStep(null); }}>{t('home.deleteFinalCancel', { defaultValue: 'Cancelar' })}</button>
             </div>
           </div>
         </div>
