@@ -287,6 +287,9 @@ const DuelosPage: React.FC = () => {
   const [menuTooltip, setMenuTooltip] = useState<{ type: 'regla'|'premio', idx: number }|null>(null);
   // Estado para modal de info del menú lateral
   const [menuModal, setMenuModal] = useState<{ type: 'regla'|'premio', idx: number }|null>(null);
+  const [modalReto, setModalReto] = useState<RetoCTFDetalle | null>(null);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [retoParaIniciar, setRetoParaIniciar] = useState<RetoCTFDetalle | null>(null);
 
   // Cambiar retos al cambiar modo
   const handleModeChange = (mode: string) => {
@@ -330,6 +333,15 @@ const DuelosPage: React.FC = () => {
     } else {
       setFeedback(f => ({ ...f, [retoId]: 'Flag incorrecto, intenta de nuevo.' }));
     }
+  };
+
+  // Función personalizada para iniciar el reto
+  const handleIniciarReto = (reto: RetoCTF) => {
+    // Aquí puedes sumar puntos, redirigir, etc.
+    alert(`¡Reto iniciado: ${reto.nombre}!`);
+    setModalReto(null);
+    setShowConfirm(false);
+    setRetoParaIniciar(null);
   };
 
   // Progreso
@@ -418,21 +430,31 @@ const DuelosPage: React.FC = () => {
                   return (
                     <div
                       key={reto.id}
-                      className={`p-4 rounded-xl border-2 ${reto.resuelto ? 'border-[#39ff14] bg-[#101926]/80' : 'border-[#a259ff] bg-[#232b36]/80'} shadow-md flex flex-col gap-2 hover:scale-[1.01] transition relative`}
+                      className={`p-6 rounded-xl border-2 ${reto.resuelto ? 'border-[#39ff14] bg-[#101926]/80' : 'border-[#a259ff] bg-[#232b36]/80'} shadow-md flex flex-col gap-2 hover:scale-[1.02] transition relative`}
                       onClick={() => setRetoDetalle(detalle)}
                       title={`Dificultad: ${reto.dificultad}\nPuntos: ${reto.puntos}\nIntentos: ${intentosReto}\nEstado: ${reto.resuelto ? 'Resuelto' : 'Pendiente'}`}
                     >
                       <div className="flex items-center gap-2 mb-2">
                         <FaFlag color="#00fff7" />
-                        <span className="font-bold text-base text-[#00fff7]">{reto.nombre}</span>
+                        <span className="font-bold text-lg text-[#00fff7]">{reto.nombre}</span>
                         <span className="ml-2 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold" style={{ background: dif.color, color: '#181c2b' }}>{dif.icon} {reto.dificultad}</span>
                         <span className="ml-2 text-xs text-[#a259ff]">Intentos: {intentosReto}</span>
                         {reto.resuelto && <span className="ml-2 px-2 py-1 rounded bg-[#39ff14] text-black text-xs font-bold flex items-center gap-1">Resuelto
-                          <FaCheckCircle color="#39ff14" size={16} />
+                          <FaCheckCircle color="#39ff14" size={18} />
                         </span>}
                       </div>
-                      <div className="text-white text-sm mb-2 font-mono">{reto.descripcion}</div>
+                      <div className="text-white text-base mb-2 font-mono">{reto.descripcion}</div>
                       <div className="text-[#a259ff] text-sm font-mono mb-2">Puntos: {reto.puntos}</div>
+                      <button
+                        className="mt-2 px-6 py-2 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_8px_#00fff7] transition hover:bg-[#39ff14] hover:shadow-[0_0_16px_#39ff14] focus:outline-none"
+                        onClick={e => {
+                          e.stopPropagation();
+                          setRetoParaIniciar(detalle);
+                          setShowConfirm(true);
+                        }}
+                      >
+                        Acept
+                      </button>
                     </div>
                   );
                 })}
@@ -521,6 +543,36 @@ const DuelosPage: React.FC = () => {
                 {menuModal.type === 'regla' ? reglas[menuModal.idx].text : premios[menuModal.idx].text}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de confirmación */}
+      {showConfirm && retoParaIniciar && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-8 shadow-2xl w-full max-w-md animate-fade-in-up relative">
+            <button className="absolute top-2 right-2 text-[#00fff7] text-3xl font-extrabold bg-[#232b36] border-2 border-[#00fff7] rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#00fff7] hover:text-black transition" onClick={() => { setShowConfirm(false); setRetoParaIniciar(null); }} title="Cerrar">×</button>
+            <h3 className="text-2xl font-bold text-[#00fff7] mb-4 text-center">¿Seguro que quieres aceptar este reto?</h3>
+            <div className="mb-4 text-white text-center">{retoParaIniciar.nombre}</div>
+            <div className="flex gap-4 justify-center">
+              <button className="px-6 py-2 rounded-xl bg-gray-500 text-white font-bold" onClick={() => { setShowConfirm(false); setRetoParaIniciar(null); }}>Cancelar</button>
+              <button className="px-6 py-2 rounded-xl bg-[#00fff7] text-black font-bold shadow-[0_0_8px_#00fff7] hover:bg-[#39ff14] hover:shadow-[0_0_16px_#39ff14]" onClick={() => { setModalReto(retoParaIniciar); setShowConfirm(false); }}>Aceptar</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal de información adicional e iniciar reto */}
+      {modalReto && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 animate-fade-in">
+          <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-8 shadow-2xl w-full max-w-lg animate-fade-in-up relative">
+            <button className="absolute top-2 right-2 text-[#00fff7] text-3xl font-extrabold bg-[#232b36] border-2 border-[#00fff7] rounded-full w-10 h-10 flex items-center justify-center hover:bg-[#00fff7] hover:text-black transition" onClick={() => setModalReto(null)} title="Cerrar">×</button>
+            <h3 className="text-2xl font-bold text-[#00fff7] mb-2">{modalReto.nombre}</h3>
+            <div className="mb-2 text-white">{modalReto.descripcion}</div>
+            <div className="mb-2 text-[#a259ff] text-xs">Puntos: {modalReto.puntos}</div>
+            <div className="mb-2 text-[#00fff7] text-xs">Dificultad: {modalReto.dificultad}</div>
+            {modalReto.hint && <div className="mb-2 text-[#39ff14] font-mono"><b>Pista:</b> {modalReto.hint}</div>}
+            <button className="mt-4 px-6 py-2 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_8px_#00fff7] transition hover:bg-[#39ff14] hover:shadow-[0_0_16px_#39ff14] focus:outline-none w-full" onClick={() => handleIniciarReto(modalReto)}>
+              Iniciar Reto
+            </button>
           </div>
         </div>
       )}

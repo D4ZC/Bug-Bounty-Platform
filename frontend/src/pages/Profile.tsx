@@ -282,33 +282,6 @@ const Profile: React.FC = () => {
             </div>
           </div>
         </div>
-        {/* Showcase de imágenes (tipo Steam) */}
-        <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
-          <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Item Showcase</div>
-          <div className="grid grid-cols-5 gap-3">
-            {inventory.slice(0,10).map((item, idx) => (
-              <div key={idx} className="rounded-lg overflow-hidden border-2 border-[#a259ff] shadow-lg bg-[#101926] flex items-center justify-center h-16 w-16 hover:scale-110 transition-transform duration-200 animate-glow">
-                <img src={item.url} alt={item.name} className="object-cover w-full h-full" />
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Sección de Avatares en la tienda */}
-        <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
-          <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Avatares Disponibles</div>
-          <div className="grid grid-cols-5 gap-3">
-            {inventory.filter(item => item.category === 'Avatar').map((avatar) => (
-              <div
-                key={avatar.id}
-                className={`rounded-lg overflow-hidden border-2 cursor-pointer transition-transform duration-200 animate-glow border-[#a259ff] flex flex-col items-center justify-center p-1 hover:scale-110`}
-              >
-                <img src={avatar.url} alt={avatar.name} className="object-cover w-full h-16 mb-1" />
-                <span className="text-xs text-[#00fff7] font-bold font-mono text-center">{avatar.name}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Inventario del usuario dividido */}
         {(inventory.filter(i => i.category === 'Avatar').length > 0 || inventory.filter(i => i.category === 'Fondo').length > 0) && (
           <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
             <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Inventario</div>
