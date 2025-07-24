@@ -11,6 +11,7 @@ import {
 } from '@carbon/react';
 import { Add } from '@carbon/icons-react';
 import { useNavigate } from 'react-router-dom';
+import MainLayout from '../components/layouts/MainLayout';
 
 const difficulties = [
   { value: 'easy', label: 'Easy' },
@@ -241,7 +242,7 @@ const ResolvedVulnerabilities: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col w-full">
+    <MainLayout>
       <div className="flex items-center gap-4 mb-6">
         <label className="font-semibold text-gray-700">Filtrar por criticidad:</label>
         <select
@@ -283,6 +284,7 @@ const ResolvedVulnerabilities: React.FC = () => {
                     {v.criticidad}
                   </span>
                   <span className="font-bold text-base text-black ml-8">{v.fecha}</span>
+                  <span className="text-xs text-gray-500 ml-20">Enviado a Revisión...</span>
                 </>
               </div>
               {/* Visualización normal */}
@@ -479,7 +481,7 @@ const ResolvedVulnerabilities: React.FC = () => {
           }
         }
       `}</style>
-    </div>
+    </MainLayout>
   );
 };
 

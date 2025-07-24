@@ -41,24 +41,22 @@ function App() {
 
       <Routes>
         <Route path="/auth/login" element={<Login />} />
-        <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-          <Route index element={<Dashboard />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="vulnerabilities" element={<Vulnerabilities />} />
-          <Route path="challenges" element={<Challenges />} />
-          <Route path="shop" element={<Shop />} />
-          <Route path="contributions" element={<Contributions />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="notifications" element={<Notifications />} />
-          <Route path="team" element={<Team />} />
-          <Route path="users" element={<Users />} />
-          <Route path="gulag" element={<Gulag />} />
-          <Route path="mvp" element={<MVP />} />
-          <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />
-          <Route path="eventos" element={<Eventos />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
+        <Route path="vulnerabilities" element={<Vulnerabilities />} />
+        <Route path="challenges" element={<Challenges />} />
+        <Route path="shop" element={<Shop />} />
+        <Route path="contributions" element={<Contributions />} />
+        <Route path="profile" element={<Profile />} />
+        <Route path="notifications" element={<Notifications />} />
+        <Route path="team" element={<Team />} />
+        <Route path="users" element={<Users />} />
+        <Route path="gulag" element={<Gulag />} />
+        <Route path="mvp" element={<MVP />} />
+        <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />
+        <Route path="eventos" element={<Eventos />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

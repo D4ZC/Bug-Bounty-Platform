@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, TextInput } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
+import MainLayout from '../components/layouts/MainLayout';
 
 const initialUser = {
   username: 'juanperez',
@@ -25,7 +26,7 @@ const Settings: React.FC = () => {
   };
 
   return (
-    <div>
+    <MainLayout>
       <div className="flex flex-col w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 mt-8">
         <h2 className="text-2xl font-bold mb-6 text-gray-900">Ajustes de Usuario</h2>
         <table className="w-full text-left mb-8">
@@ -135,7 +136,7 @@ const Settings: React.FC = () => {
       <div className="flex justify-center mt-2 mb-10">
         <button className="px-6 py-3 bg-red-600 text-white font-bold rounded-lg shadow hover:bg-red-700 transition text-lg">Solicitar Eliminación de cuenta</button>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 

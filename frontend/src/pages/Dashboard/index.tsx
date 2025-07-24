@@ -32,14 +32,14 @@ const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="w-full max-w-5xl mx-auto px-2 md:px-4 py-8">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <TeamsScoreCard teams={teams} />
-        <MVPTeamCard team={mvpTeam} />
-        <GulagCard gulag={gulag} />
-        <UserScoreCard users={users} />
-        <MVPUserCard user={mvpUser} />
-        <UserProfileCard user={mvpUser} />
+    <div className="w-full max-w-6xl mx-auto px-2 md:px-4 py-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 justify-center place-items-center">
+        <TeamsScoreCard teams={teams} className="shadow-lg" />
+        <MVPTeamCard team={mvpTeam} className="shadow-lg" />
+        <GulagCard gulag={gulag} className="shadow-lg" />
+        <UserScoreCard users={users} className="shadow-lg" />
+        <MVPUserCard user={mvpUser} className="shadow-lg" />
+        <UserProfileCard user={mvpUser} className="shadow-lg" />
       </div>
       <div className="flex justify-center items-center mt-12">
         <div className="w-full md:w-2/3 lg:w-1/2 flex justify-center gap-4">

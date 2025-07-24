@@ -6,15 +6,15 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between">
       {/* Navbar superior */}
-      <nav className="w-full bg-white border-b border-gray-200 shadow-sm h-16 flex items-center px-12">
-        <span className="text-xl font-bold text-black">Bug Bounty Platform</span>
+      <nav className="w-full bg-white h-16 flex items-center px-12 rounded-tl-2xl shadow-[0_4px_12px_0_rgba(0,0,0,0.06)] border-b-0">
+        <span className="text-xl font-bold text-black">w3id on IBM Verify</span>
       </nav>
       <div className="flex items-center justify-center flex-1">
         <div className="bg-white rounded-xl shadow-lg p-10 w-full max-w-xl flex flex-col items-center mt-8">
           <h1 className="text-4xl font-bold mb-8 text-center text-black">Iniciar sesión en IBM</h1>
           <button
             className="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded mb-6 text-lg transition-colors"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/dashboard')}
           >
             Iniciar sesión con w3id
           </button>

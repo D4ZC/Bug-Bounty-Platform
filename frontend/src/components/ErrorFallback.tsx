@@ -37,7 +37,7 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
           </button>
           
           <button
-            onClick={() => window.location.href = '/'}
+            onClick={() => window.location.href = '/dashboard'}
             className="w-full btn btn-outline flex items-center justify-center"
           >
             <Home className="w-4 h-4 mr-2" />

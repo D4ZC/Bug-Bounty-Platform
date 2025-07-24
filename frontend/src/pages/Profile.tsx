@@ -1,134 +1,84 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import MainLayout from '../components/layouts/MainLayout';
 
-const userDefault = {
-  avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-  banner: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=800&q=80',
-  displayName: 'MarcoAM',
-  username: 'marco antonio moris',
-  pronouns: 'He/Him',
-  badges: [
-    { icon: '🦑', label: 'HSR' },
-    { icon: '🛡️', label: 'Moderator' },
-    { icon: '💎', label: 'Assistant Moderator' },
-  ],
-  status: 'Cybersecurity Tester',
-  roles: [
-    { label: 'Moderator', color: 'bg-green-300', text: 'text-green-900' },
-    { label: 'Assistant Moderator', color: 'bg-cyan-200', text: 'text-cyan-900' },
-  ],
-  serverCount: 1,
-  // serverLabel: '1 servidor en común',
-  registration: '2022-11-20',
-};
+const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/men/32.jpg"; // Nueva foto de perfil por defecto
 
 const Profile: React.FC = () => {
-  const [user, setUser] = useState(userDefault);
-  const [showAvatarInput, setShowAvatarInput] = useState(false);
-  const [showBannerInput, setShowBannerInput] = useState(false);
-  const bannerInputRef = useRef<HTMLInputElement>(null);
+  const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const url = URL.createObjectURL(e.target.files[0]);
-      setUser((prev) => ({ ...prev, avatar: url }));
-      setShowAvatarInput(false);
-    }
-  };
-  const handleBannerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const url = URL.createObjectURL(e.target.files[0]);
-      setUser((prev) => ({ ...prev, banner: url }));
-      setShowBannerInput(false);
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        if (ev.target?.result) setAvatar(ev.target.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   return (
-    <div className="flex flex-col w-full max-w-4xl mx-auto rounded-2xl shadow-2xl overflow-hidden bg-gradient-to-b from-gray-300 to-gray-400 min-h-[700px] relative">
-      {showBannerInput && (
-        <div className="absolute top-12 right-2 bg-white p-2 rounded shadow">
-          <input type="file" accept="image/*" onChange={handleBannerChange} />
-          <button className="ml-2 px-2 py-1 bg-gray-200 rounded text-black" onClick={() => setShowBannerInput(false)}>Cancelar</button>
-        </div>
-      )}
-      {/* Banner superior */}
-      <div className="relative w-full h-40 bg-gray-300 p-0 m-0 overflow-visible">
-        <img src={user.banner} alt="Banner" className="w-full h-full object-cover" />
-        <input
-          type="file"
-          accept="image/*,.gif"
-          id="banner-upload"
-          className="hidden"
-          onChange={handleBannerChange}
-          ref={bannerInputRef}
-        />
-        <button
-          className="absolute group bg-black/60 rounded-full transition-all duration-300 overflow-visible h-10 w-10 hover:w-44 hover:bg-black/80 flex items-center m-0 p-0"
-          style={{ minWidth: '40px', minHeight: '40px', position: 'absolute', top: '2px', left: '2px', zIndex: 10 }}
-          onClick={() => bannerInputRef.current && bannerInputRef.current.click()}
-        >
-          <span className="absolute left-0 top-0 flex items-center justify-center w-10 h-10 pointer-events-none">
-            <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M16.862 5.487a2.06 2.06 0 0 1 2.915 2.914l-9.2 9.2a2 2 0 0 1-.707.464l-3.2 1.2a.5.5 0 0 1-.64-.64l1.2-3.2a2 2 0 0 1 .464-.707l9.2-9.2Zm2.121-2.121a4.06 4.06 0 0 0-5.747 0l-9.2 9.2a4 4 0 0 0-.929 1.464l-1.2 3.2A2.5 2.5 0 0 0 4.77 20.07l3.2-1.2a4 4 0 0 0 1.464-.929l9.2-9.2a4.06 4.06 0 0 0 0-5.747Z" fill="#fff"/></svg>
-          </span>
-          <span className="text-xs font-semibold text-white opacity-0 group-hover:opacity-100 transition-all duration-300 whitespace-nowrap ml-12">
-            Cambiar cartel
-          </span>
-        </button>
-        {/* Avatar superpuesto */}
-        <div className="absolute left-6 -bottom-16 flex flex-col items-center">
-          <div className="relative">
-            <img src={user.avatar} alt="Avatar" className="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover" />
-            <button className="absolute bottom-0 right-0 bg-white border border-gray-300 rounded-full p-1 shadow hover:bg-gray-100" onClick={() => setShowAvatarInput(true)} title="Cambiar foto de perfil">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path d="M12 16v-4m0 0V8m0 4h4m-4 0H8" stroke="#333" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-            </button>
-            {showAvatarInput && (
-              <div className="absolute left-32 top-0 bg-white p-2 rounded shadow">
-                <input type="file" accept="image/*" onChange={handleAvatarChange} />
-                <button className="ml-2 px-2 py-1 bg-gray-200 rounded" onClick={() => setShowAvatarInput(false)}>Cancelar</button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      {/* Contenido principal */}
-      <div className="flex flex-col items-center pt-20 pb-8 px-6">
-        <div className="flex flex-col items-start w-full">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-2xl font-bold text-gray-900">{user.displayName}</span>
-          </div>
-          <div className="text-gray-700 text-base font-semibold mb-1">@{user.username}</div>
-          <div className="text-sm text-gray-600 mb-2">{user.pronouns}</div>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {user.badges.map((b, i) => (
-              <span key={i} className="inline-flex items-center px-2 py-1 bg-white/80 rounded text-xs font-semibold shadow border border-gray-200 text-black">
-                {b.icon} {b.label}
+    <MainLayout>
+      <div className="w-full min-h-screen bg-white flex flex-col items-center justify-center">
+        <div className="relative w-[1000px] h-[800px] rounded-2xl shadow-2xl bg-gray-200 border border-gray-300 overflow-hidden flex flex-col">
+          {/* Banner superior */}
+          <div className="h-56 w-full bg-cover bg-center" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80)' }} />
+          {/* Avatar y botón */}
+          <div className="absolute left-16 top-40 flex items-end gap-4 z-10">
+            <div className="relative">
+              <img
+                src={avatar}
+                alt="Avatar"
+                className="w-40 h-40 rounded-full border-4 border-white object-cover shadow-lg bg-gray-200"
+              />
+              {/* Botón para cambiar avatar, movido 5px a la derecha */}
+              <button
+                className="absolute bottom-2 right-[10px] bg-blue-700 hover:bg-blue-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center justify-center"
+                style={{ right: '10px' }}
+                onClick={() => fileInputRef.current?.click()}
+                title="Cambiar foto de perfil"
+              >
+                {/* Icono de persona tipo Carbon */}
+                <svg width="26" height="26" fill="none" viewBox="0 0 32 32"><circle cx="16" cy="12" r="6" fill="white"/><circle cx="16" cy="12" r="5" fill="#2563eb"/><rect x="6" y="22" width="20" height="6" rx="3" fill="white"/><rect x="8" y="23" width="16" height="4" rx="2" fill="#2563eb"/></svg>
+              </button>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
+              {/* Decoración floral */}
+              <span className="absolute -top-4 -left-4">
+                <svg width="60" height="32" viewBox="0 0 40 24" fill="none"><ellipse cx="20" cy="12" rx="20" ry="8" fill="#F9A8D4" opacity="0.5"/></svg>
               </span>
-            ))}
+            </div>
           </div>
-          {/* Elimina el texto de servidor en común */}
-          {/* <div className="text-xs text-gray-500 mb-2">{user.serverLabel}</div> */}
-          <div className="flex gap-2 mb-2">
-            <span className="text-2xl">💎</span>
-            <span className="text-2xl">🦑</span>
-            <span className="text-2xl">🛡️</span>
+          {/* Contenido principal */}
+          <div className="pt-44 pb-10 px-16 flex flex-col gap-4 flex-1">
+            <div className="flex items-center gap-4">
+              <span className="text-4xl font-bold text-gray-900">JuanAM</span>
+            </div>
+            <div className="text-gray-700 font-medium -mt-1 text-lg">@JuanDev</div>
+            {/* Descripción */}
+            <div className="mt-4 text-gray-800 text-xl">Development Software</div>
+            {/* Roles */}
+            <div className="flex gap-4 mt-4">
+              <span className="flex items-center gap-2 bg-green-200 text-green-800 px-5 py-2 rounded-full text-base font-semibold shadow">
+                <svg width="20" height="20" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22C55E"/><path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+                Moderator
+              </span>
+              <span className="flex items-center gap-2 bg-cyan-200 text-cyan-800 px-5 py-2 rounded-full text-base font-semibold shadow">
+                <svg width="20" height="20" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#06B6D4"/><path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
+                Assistant Moderator
+              </span>
+            </div>
           </div>
-          <div className="text-base text-gray-800 mb-2 text-center">{user.status}</div>
-          <div className="flex flex-wrap gap-2 mb-4">
-            {user.roles.map((r, i) => (
-              <span key={i} className={`inline-block px-3 py-1 rounded-full font-semibold text-xs ${r.color} ${r.text}`}>{r.label}</span>
-            ))}
-          </div>
-          {/* Elimina el cuadro de enviar mensaje */}
-          {/* <div className="w-full mt-2">
-            <input
-              className="w-full rounded-lg bg-white/80 border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-fuchsia-300"
-              placeholder={`Enviar un mensaje a @${user.username} ...`}
-              disabled
-            />
-          </div> */}
         </div>
       </div>
-    </div>
+    </MainLayout>
   );
 };
 
-export default Profile; 
+export default Profile;

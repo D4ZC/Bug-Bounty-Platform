@@ -1,13 +1,16 @@
 import React from 'react';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, List, SettingsAdjust, ShoppingCart, Add, Notification, UserAvatar, Document } from '@carbon/icons-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 // const bpLogo = '/bp-logo.png';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isContributions = location.pathname.startsWith('/contributions');
+  const isResolvedVulns = location.pathname.startsWith('/resolved-vulnerabilities');
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-white">
       {/* Navbar superior */}
       <Header aria-label="Bug Bounty Platform" className="bg-gray-900 h-20 min-h-0 flex items-center px-8">
         <HeaderName href="/" prefix="" className="text-lg">
@@ -32,7 +35,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <SideNav aria-label="Menú lateral" className="bg-white shadow-md min-h-full w-16 flex flex-col items-center py-4 fixed top-20 left-0 h-[calc(100vh-5rem)] z-40">
           <SideNavItems>
             <div className="flex flex-col gap-[45px] items-center w-full">
-              <SideNavLink href="/">
+              <SideNavLink href="/dashboard">
                 <span className="group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 cursor-pointer bg-white hover:shadow-md">
                   <Home size={24} className="text-black group-hover:text-blue-600 transition-all duration-200 home-anim" />
                 </span>
@@ -83,62 +86,19 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </SideNavItems>
         </SideNav>
         {/* Contenido principal */}
-        <main className="flex-1 p-6 bg-gray-100 min-h-screen ml-16">{children}</main>
+        <main
+          className={
+            isContributions || isResolvedVulns
+              ? "p-6 bg-white min-h-screen ml-16 w-full"
+              : "flex flex-col items-center p-6 bg-white min-h-screen ml-16 w-full"
+          }
+          style={{ overflow: 'visible' }}
+        >
+          {children}
+        </main>
       </div>
-      <style>{`
-        .home-anim:hover { animation: bounceY 0.5s; }
-        @keyframes bounceY {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-8px); }
-        }
-        .add-anim:hover { animation: spinAdd 0.5s; }
-        @keyframes spinAdd {
-          0% { transform: rotate(0deg); }
-          60% { transform: rotate(90deg); }
-          100% { transform: rotate(0deg); }
-        }
-        .bug-anim:hover { animation: shakeBug 0.5s; }
-        @keyframes shakeBug {
-          0%, 100% { transform: translateX(0); }
-          20% { transform: translateX(-5px); }
-          40% { transform: translateX(5px); }
-          60% { transform: translateX(-5px); }
-          80% { transform: translateX(5px); }
-        }
-        .shop-anim:hover { animation: shakeShop 0.5s; }
-        @keyframes shakeShop {
-          0%, 100% { transform: translateX(0); }
-          30% { transform: translateX(-6px); }
-          60% { transform: translateX(6px); }
-        }
-        .eventos-anim:hover { animation: pulseEventos 0.5s; }
-        @keyframes pulseEventos {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.15); }
-        }
-        .gear-spin:hover {
-          animation: gear-spin-rotate 1s linear infinite;
-        }
-        @keyframes gear-spin-rotate {
-          100% { transform: rotate(360deg); }
-        }
-        .bugcoins-spin {
-          animation: bugcoins-spin-rotate 6s linear infinite;
-        }
-        @keyframes bugcoins-spin-rotate {
-          100% { transform: rotate(360deg); }
-        }
-        .bugcoins-spin-3d {
-          animation: bugcoins-spin-3d-rotate 2.5s linear infinite;
-          transform-style: preserve-3d;
-        }
-        @keyframes bugcoins-spin-3d-rotate {
-          0% { transform: rotateY(0deg); }
-          100% { transform: rotateY(360deg); }
-        }
-      `}</style>
     </div>
   );
 };
 
-export default MainLayout; 
+export default MainLayout;

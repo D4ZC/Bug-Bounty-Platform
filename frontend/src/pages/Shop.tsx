@@ -11,6 +11,7 @@ import {
   Select,
   SelectItem
 } from '@carbon/react';
+import MainLayout from '../components/layouts/MainLayout';
 
 const MARCOS = [
   { name: 'Neón Azul', url: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80' },
@@ -248,10 +249,7 @@ const Shop: React.FC = () => {
   }, [productImages.length]);
 
   return (
-    <div className="flex flex-col w-full text-black min-h-screen px-0">
-      <div className="flex items-center mb-6">
-        <h2 className="text-2xl font-bold mr-4">Tienda</h2>
-      </div>
+    <MainLayout>
       {/* Carrusel simple de imágenes de productos */}
       <div className="w-full flex flex-col items-center justify-center mb-10">
         <div className="relative w-full h-[420px] rounded-xl overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
@@ -376,16 +374,16 @@ const Shop: React.FC = () => {
                   className="mt-2"
                 />
                 <div className="text-xs text-gray-500 mt-2">{product.fileName}</div>
-                <Button
-                  kind="primary"
+        <Button
+          kind="primary"
                   size="sm"
                   className="mt-2"
                   onClick={() => setEditingIdx(null)}
-                >
+        >
                   Guardar
-                </Button>
-            </div>
-            ) : (
+        </Button>
+      </div>
+        ) : (
             <div
               key={idx}
               className="w-full max-w-xs bg-white rounded-xl shadow-md flex flex-col border border-gray-200 hover:shadow-lg transition-all duration-200 relative overflow-hidden cursor-pointer"
@@ -481,8 +479,8 @@ const Shop: React.FC = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
                   value={newProduct.category}
                   onChange={e => setNewProduct(np => ({ ...np, category: e.target.value }))}
-                  required
-                >
+          required
+        >
                   <option value="">Selecciona una categoría</option>
                   <option value="Hardware">Hardware</option>
                   <option value="Software">Software</option>
@@ -495,8 +493,8 @@ const Shop: React.FC = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
                   value={newProduct.name}
                   onChange={e => setNewProduct(np => ({ ...np, name: e.target.value }))}
-                  required
-                />
+          required
+        />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Descripción</label>
@@ -504,8 +502,8 @@ const Shop: React.FC = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
                   value={newProduct.description}
                   onChange={e => setNewProduct(np => ({ ...np, description: e.target.value }))}
-                  required
-                />
+          required
+        />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Precio (BugCoins)</label>
@@ -515,8 +513,8 @@ const Shop: React.FC = () => {
                   className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
                   value={newProduct.price}
                   onChange={e => setNewProduct(np => ({ ...np, price: Number(e.target.value) }))}
-                  required
-                />
+          required
+        />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1">Descuento (%)</label>
@@ -598,15 +596,17 @@ const Shop: React.FC = () => {
       )}
       {/* Modal de confirmación de compra */}
       {buyModal.open && buyModal.idx !== null && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-40">
-          <div className="bg-white rounded-lg shadow-lg p-8 flex flex-col items-center">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-white border border-gray-300 rounded-lg shadow-lg px-8 py-6 text-center">
             <h3 className="text-xl font-bold mb-4 text-gray-900">¿Estás seguro que quieres comprar este producto por <span className='text-blue-700'>{products[buyModal.idx].price} BugCoins</span>?</h3>
             <div className="flex gap-4 mt-4">
               <button className="px-5 py-2 bg-gray-200 rounded text-gray-700 font-semibold hover:bg-gray-300" onClick={() => setBuyModal({ open: false, idx: null })}>Cancelar</button>
               <button className="px-5 py-2 bg-blue-600 rounded text-white font-semibold hover:bg-blue-700" onClick={() => {
                 setBuyModal({ open: false, idx: null });
-                setSuccessMsg(`Has comprado "${products[buyModal.idx].name}" satisfactoriamente`);
-                setTimeout(() => setSuccessMsg(null), 2500);
+                if (buyModal.idx !== null) {
+                  setSuccessMsg(`Has comprado "${products[buyModal.idx].name}" satisfactoriamente`);
+                  setTimeout(() => setSuccessMsg(null), 2500);
+                }
               }}>Comprar</button>
             </div>
           </div>
@@ -704,7 +704,7 @@ const Shop: React.FC = () => {
           100% { transform: rotateY(360deg); }
         }
       `}</style>
-    </div>
+    </MainLayout>
   );
 };
 
