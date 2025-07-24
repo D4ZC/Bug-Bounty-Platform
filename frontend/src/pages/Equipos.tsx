@@ -71,12 +71,6 @@ const Equipos: React.FC = () => {
   const [joiningId, setJoiningId] = useState<string | null>(null);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [joinSuccess, setJoinSuccess] = useState<string | null>(null);
-  const [removingMemberId, setRemovingMemberId] = useState<string | null>(null);
-  const [removalError, setRemovalError] = useState<string | null>(null);
-  const [removalSuccess, setRemovalSuccess] = useState<string | null>(null);
-  const [transferringId, setTransferringId] = useState<string | null>(null);
-  const [transferError, setTransferError] = useState<string | null>(null);
-  const [transferSuccess, setTransferSuccess] = useState<string | null>(null);
   const [notifications, setNotifications] = useState([
     { id: '1', text: '¡Nuevo miembro se unió al equipo!', type: 'info', read: false },
     { id: '2', text: 'Has sido promovido a líder.', type: 'success', read: false },
@@ -100,17 +94,10 @@ const Equipos: React.FC = () => {
   const [showMentionDropdown, setShowMentionDropdown] = useState(false);
   const [mentionQuery, setMentionQuery] = useState('');
   const [reactions, setReactions] = useState<{ [msgId: string]: { [emoji: string]: string[] } }>({});
-  const [achievements, setAchievements] = useState([
-    { id: '1', name: 'Primer bug', icon: '🐞', unlocked: true, date: '2024-05-01' },
-    { id: '2', name: 'Equipo MVP', icon: '🏆', unlocked: true, date: '2024-05-10' },
-    { id: '3', name: 'Top 3', icon: '🥉', unlocked: false },
-    { id: '4', name: 'Cazador veloz', icon: '⚡', unlocked: false },
-  ]);
-  const [showAchievementAnim, setShowAchievementAnim] = useState<string | null>(null);
-  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<any[]>([]);
   const [visibilidad, setVisibilidad] = useState<'publico' | 'privado' | 'secreto'>('publico');
   const [mensajeBienvenida, setMensajeBienvenida] = useState('');
   const [iconoEquipo, setIconoEquipo] = useState<string | null>(null);
+  const [usuariosSeleccionados, setUsuariosSeleccionados] = useState<any[]>([]);
 
   // Integración de socket real (sin simulación)
   useEffect(() => {
@@ -302,45 +289,6 @@ const Equipos: React.FC = () => {
     }
   };
 
-  const handleRemoveMember = async (userId: string) => {
-    setRemovingMemberId(userId);
-    setRemovalError(null);
-    setRemovalSuccess(null);
-    try {
-      // await apiService.delete(`/teams/${equipoSeleccionado._id}/members/${userId}`);
-      setRemovalSuccess('Miembro eliminado');
-      // Actualiza localmente
-      equipoSeleccionado.members = equipoSeleccionado.members.filter((m: string) => m !== userId);
-    } catch (err) {
-      setRemovalError('Error al eliminar miembro');
-    } finally {
-      setRemovingMemberId(null);
-    }
-  };
-
-  const handleTransferLeader = async (userId: string) => {
-    setTransferringId(userId);
-    setTransferError(null);
-    setTransferSuccess(null);
-    try {
-      // await apiService.post(`/teams/${equipoSeleccionado._id}/transfer-leader`, { userId });
-      setTransferSuccess('Liderazgo transferido');
-      // Actualiza localmente (mock)
-      equipoSeleccionado.members = equipoSeleccionado.members.map((m: any) => {
-        if (typeof m === 'object') {
-          return { ...m, rol: m.id === userId ? 'Líder' : 'Miembro' };
-        } else if (typeof m === 'string') {
-          return m === userId ? { nombre: m, rol: 'Líder' } : { nombre: m, rol: 'Miembro' };
-        }
-        return m;
-      });
-    } catch (err) {
-      setTransferError('Error al transferir liderazgo');
-    } finally {
-      setTransferringId(null);
-    }
-  };
-
   const handleMarkNotification = (id: string) => {
     setNotifications(n => n.map(notif => notif.id === id ? { ...notif, read: true } : notif));
   };
@@ -409,11 +357,7 @@ const Equipos: React.FC = () => {
     });
   };
   // Panel de logros/trofeos
-  const unlockAchievement = (id: string) => {
-    setAchievements(achs => achs.map(a => a.id === id ? { ...a, unlocked: true, date: new Date().toISOString().slice(0,10) } : a));
-    setShowAchievementAnim(id);
-    setTimeout(() => setShowAchievementAnim(null), 2500);
-  };
+  // Elimina la función unlockAchievement y cualquier referencia a setAchievements y setShowAchievementAnim.
 
   // Mostrar mensaje de éxito y ocultarlo después de 3 segundos
   useEffect(() => {
@@ -521,358 +465,162 @@ const Equipos: React.FC = () => {
                   {notifications.length === 0 && <div className="text-gray-400 text-center">Sin notificaciones.</div>}
                   {notifications.map(n => (
                     <div key={n.id} className={`flex items-center gap-2 p-2 rounded-lg ${n.read ? 'bg-[#101926]/60' : 'bg-[#101926]/90 border-l-4 border-[#00fff7]'}`}>
-                      <span className="flex-shrink-0">
-                        {n.type === 'info' && <FaCommentDots color="#00fff7" size={18} />}
-                        {n.type === 'success' && <FaCheck color="#39ff14" size={18} />}
-                        {n.type === 'warning' && <FaTimes color="#ff3b3b" size={18} />}
-                      </span>
-                      <span className="flex-1 text-xs text-gray-200">{n.text}</span>
-                      {!n.read && <button className="text-xs text-[#39ff14] hover:underline" onClick={() => handleMarkNotification(n.id)}>Marcar leído</button>}
-                      <button className="text-xs text-[#ff3b3b] hover:underline" onClick={() => handleDeleteNotification(n.id)}>Eliminar</button>
+                      <span className="text-sm font-bold text-[#00fff7]">{n.text}</span>
+                      <span className="text-xs text-gray-400">{n.type}</span>
+                      <button onClick={() => handleMarkNotification(n.id)} className="text-xs text-[#00fff7] hover:text-[#39ff14] ml-auto">
+                        <FaCheck />
+                      </button>
+                      <button onClick={() => handleDeleteNotification(n.id)} className="text-xs text-[#ff3b3b] hover:text-[#ff1414] ml-2">
+                        <FaTimes />
+                      </button>
                     </div>
                   ))}
                 </div>
               </div>
             )}
-            {/* Chat de equipo */}
-            <div className="mb-6">
-              <div className="font-bold text-[#00fff7] mb-2 text-xl flex items-center gap-2"><FaCommentDots /> Chat del equipo</div>
-              <div className="bg-[#101926]/70 border border-[#00fff7] rounded-lg p-3 max-h-56 overflow-y-auto flex flex-col gap-2 mb-2" style={{ minHeight: 120 }}>
+            {/* Panel de actividad */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold text-[#00fff7] mb-4 flex items-center gap-2"><FaCommentDots /> Actividad</h3>
+              <div className="flex flex-col gap-3 max-h-60 overflow-y-auto">
+                {activityHistory.length === 0 && <div className="text-gray-400 text-center">No hay actividad reciente.</div>}
+                {activityHistory.map(act => (
+                  <div key={act.id} className="text-sm text-gray-300">
+                    <span className="font-bold text-[#00fff7]">{act.user}:</span> {act.text} ({act.date})
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Panel de chat */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold text-[#00fff7] mb-4 flex items-center gap-2"><FaCommentDots /> Chat</h3>
+              <div className="flex flex-col gap-3 max-h-60 overflow-y-auto">
+                {chatMessages.length === 0 && <div className="text-gray-400 text-center">No hay mensajes.</div>}
                 {chatMessages.map(msg => (
-                  <div key={msg.id} className={`flex ${msg.user === 'Tú' ? 'justify-end' : 'justify-start'}`}> 
-                    <div className={`px-3 py-1 rounded-xl max-w-[70%] ${msg.user === 'Tú' ? 'bg-[#00fff7] text-black' : 'bg-[#232b36] text-[#00fff7] border border-[#00fff7]'}`}> 
-                      <span className="block text-xs font-bold">{msg.user}</span>
-                      <span className="block text-sm">{renderMessageText(msg.text)}</span>
-                      <span className="block text-[10px] text-right text-gray-400">{msg.time}</span>
-                      {/* Reacciones */}
-                      <div className="flex gap-1 mt-1">
-                        {emojis.map(emoji => (
-                          <button key={emoji} className={`text-lg px-1 rounded hover:bg-[#232b36] ${reactions[msg.id]?.[emoji]?.includes('Tú') ? 'bg-[#00fff7] text-black' : 'text-[#00fff7]'}`} onClick={() => handleReact(msg.id, emoji)}>
-                            {emoji} {reactions[msg.id]?.[emoji]?.length > 0 && <span className="text-xs">{reactions[msg.id][emoji].length}</span>}
-                          </button>
+                  <div key={msg.id} className="flex items-start gap-2 text-sm text-gray-300">
+                    <span className="font-bold text-[#00fff7]">{msg.user}</span>
+                    <span>{renderMessageText(msg.text)}</span>
+                    <span className="text-xs text-gray-500">{msg.time}</span>
+                    {reactions[msg.id] && (
+                      <div className="flex items-center gap-1 text-xs text-gray-400">
+                        {Object.entries(reactions[msg.id]).map(([emoji, users]) => (
+                          <span key={emoji} title={`${users.length} ${emoji}`}>{emoji}</span>
                         ))}
                       </div>
-                    </div>
+                    )}
                   </div>
                 ))}
-                {isSomeoneTyping && <div className="text-xs text-[#00fff7] italic">Sofía está escribiendo...</div>}
               </div>
-              <form className="flex gap-2 relative" onSubmit={handleSendChat}>
+              <form onSubmit={handleSendChat} className="flex items-center gap-2 mt-4">
                 <input
                   type="text"
-                  className="flex-1 px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] placeholder-gray-400 focus:outline-none font-mono"
-                  placeholder="Escribe un mensaje..."
                   value={chatInput}
                   onChange={handleChatInput}
-                  onKeyDown={handleTyping}
-                  autoComplete="off"
+                  onKeyPress={e => { if (e.key === 'Enter') handleSendChat(e); }}
+                  placeholder="Escribe un mensaje..."
+                  className="flex-1 px-3 py-2 rounded bg-[#101926] border border-[#00fff7] text-white font-mono"
                 />
-                <button type="submit" className="px-4 py-2 rounded bg-[#00fff7] text-black font-bold hover:bg-[#39ff14] animate-glow">Enviar</button>
-                {/* Dropdown de menciones */}
-                {showMentionDropdown && mentionQuery && (
-                  <div className="absolute left-0 top-12 bg-[#232b36] border border-[#00fff7] rounded-lg shadow-lg z-30 w-48">
-                    {mentionList.filter(u => u.toLowerCase().startsWith(mentionQuery.toLowerCase())).map(u => (
-                      <div key={u} className="px-3 py-2 hover:bg-[#00fff7] hover:text-black cursor-pointer" onClick={() => handleSelectMention(u)}>{u}</div>
-                    ))}
-                    {mentionList.filter(u => u.toLowerCase().startsWith(mentionQuery.toLowerCase())).length === 0 && <div className="px-3 py-2 text-gray-400">Sin resultados</div>}
-                  </div>
-                )}
+                <button type="submit" className="p-2 rounded-full bg-[#00fff7] text-black hover:bg-[#39ff14] transition-colors">
+                  <FaCommentDots />
+                </button>
               </form>
+              {isSomeoneTyping && <span className="text-xs text-gray-400">Alguien está escribiendo...</span>}
             </div>
-            {/* Historial de actividades detallado */}
-            <div className="mb-6">
-              <div className="font-bold text-[#00fff7] mb-2 text-xl flex items-center gap-2"><FaExchangeAlt /> Historial de actividades</div>
+            {/* Panel de miembros */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold text-[#00fff7] mb-4 flex items-center gap-2"><FaUsers /> Miembros</h3>
               <div className="flex flex-col gap-2">
-                {activityHistory.map(ev => (
-                  <div key={ev.id} className="flex items-center gap-2 bg-[#101926]/70 border-l-4 rounded-lg px-3 py-2"
-                    style={{ borderColor: ev.type === 'join' ? '#39ff14' : ev.type === 'leave' ? '#ff3b3b' : ev.type === 'leader' ? '#FFD700' : ev.type === 'trophy' ? '#00fff7' : '#00fff7' }}>
-                    <span>
-                      {ev.type === 'join' && <FaUserPlus color="#39ff14" size={18} />}
-                      {ev.type === 'leave' && <FaUserMinus color="#ff3b3b" size={18} />}
-                      {ev.type === 'leader' && <FaExchangeAlt color="#FFD700" size={18} />}
-                      {ev.type === 'trophy' && <FaTrophy color="#00fff7" size={18} />}
-                    </span>
-                    <span className="flex-1 text-xs text-gray-200">{ev.text}</span>
-                    <span className="text-[10px] text-gray-400">{ev.date}</span>
-                  </div>
-                ))}
-                {activityHistory.length === 0 && <div className="text-gray-400 text-center">Sin actividad reciente.</div>}
-              </div>
-            </div>
-            {/* Miembros */}
-            <div className="mb-6">
-              <div className="font-bold text-[#00fff7] mb-2 text-xl flex items-center gap-2"><FaUsers size={20} color="#00fff7" />Miembros del equipo</div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {equipoSeleccionado.members.map((m: any, idx: number) => {
-                  const nombre = typeof m === 'string' ? m : m.nombre || m.name || '';
-                  return (
-                    <div key={nombre + idx} className="flex items-center gap-3 bg-[#101926]/70 border border-[#00fff7] rounded-lg px-3 py-2 relative">
-                      <img src={`https://ui-avatars.com/api/?name=${nombre}`} alt={nombre} className="w-10 h-10 rounded-full border-2 border-[#00fff7]" />
-                      <div className="flex-1">
-                        <div className="font-bold text-[#00fff7]">{nombre}</div>
-                        <div className="text-xs text-[#39ff14]">Miembro</div>
-                      </div>
-                      <button className="text-xl text-[#00fff7] hover:text-[#39ff14] p-1 relative group"><FaEllipsisV />
-                        {/* Menú contextual mock visual */}
-                        <div className="hidden group-hover:block absolute right-0 top-8 bg-[#232b36] border border-[#00fff7] rounded-lg shadow-lg z-10 min-w-[140px]">
-                          {/* <button className="block w-full text-left px-4 py-2 text-[#ff3b3b] hover:bg-[#101926]">Eliminar miembro</button> */}
-                          {/* <button className="block w-full text-left px-4 py-2 text-[#00fff7] hover:bg-[#101926]">Transferir liderazgo</button> */}
-                          {/* <span className="block w-full text-left px-4 py-2 text-[#FFD700]">Líder actual</span> */}
-                        </div>
-                      </button>
-                    </div>
-                  );
-                })}
-                {(!equipoSeleccionado.members || equipoSeleccionado.members.length === 0) && <div className="text-gray-400 text-center col-span-2">No hay miembros en este equipo.</div>}
-              </div>
-            </div>
-            {/* Timeline de actividad visual */}
-            <div className="mb-6">
-              <div className="font-bold text-[#00fff7] mb-2 text-xl">Actividad del equipo</div>
-              <div className="timeline flex flex-col gap-2">
-                {mockActividad.map(a => (
-                  <div key={a.id} className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-[#00fff7]" />
-                    <span className="text-xs text-gray-300">{a.texto} <span className="text-[#a259ff]">({a.fecha})</span></span>
-                  </div>
-                ))}
-                {mockActividad.length === 0 && <div className="text-gray-400 text-center">Sin actividad reciente.</div>}
-              </div>
-            </div>
-            {/* Invitaciones visuales */}
-            <div className="mb-6">
-              <div className="font-bold text-[#00fff7] mb-2 text-xl">Invitaciones pendientes</div>
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2 bg-[#232b36]/70 border border-[#00fff7] rounded-lg px-3 py-2">
-                  <span className="font-bold text-[#00fff7]">sofia@correo.com</span>
-                  <button className="ml-auto px-2 py-1 rounded bg-[#39ff14] text-black font-bold">Aceptar</button>
-                  <button className="px-2 py-1 rounded bg-[#ff3b3b] text-white font-bold">Rechazar</button>
-                </div>
-                {/* Estado vacío */}
-                {/* <div className="text-gray-400 text-center">No hay invitaciones pendientes.</div> */}
-              </div>
-            </div>
-            {/* Toast notification ejemplo */}
-            {feedback && <div className="fixed bottom-8 right-8 bg-[#232b36] border-2 border-[#00fff7] rounded-xl px-4 py-2 text-[#00fff7] shadow-xl animate-fade-in-up">{feedback}</div>}
-          </div>
-        )}
-        {/* Explorar Equipos */}
-        <div className="max-w-4xl mx-auto mt-8">
-          {/* Eliminar la barra de tabs de navegación superior */}
-          {/* simplemente no renderizar nada en ese lugar ... */}
-          {tab === 'miEquipo' && equipoSeleccionado && (
-            null
-          )}
-          {tab === 'buscar' && (
-            <div className="glass-card p-6 rounded-2xl shadow-xl border-2 border-[#00fff7] max-w-2xl w-full mx-auto mb-8 bg-[#232b36]/60 backdrop-blur-md animate-fade-in-up">
-              <div className="mb-4 flex gap-2">
-                <input type="text" placeholder="Buscar equipos..." className="flex-1 px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] placeholder-gray-400 focus:outline-none font-mono" />
-              </div>
-              {loadingTeams && <div className="text-[#00fff7] text-center">Cargando equipos...</div>}
-              {errorTeams && <div className="text-[#ff3b3b] text-center">{errorTeams}</div>}
-              {joinError && <div className="text-[#ff3b3b] text-center mb-2">{joinError}</div>}
-              {joinSuccess && <div className="text-[#39ff14] text-center mb-2">{joinSuccess}</div>}
-              <div className="flex flex-col gap-3">
-                {!loadingTeams && !errorTeams && teams.length === 0 && (
-                  <div className="text-gray-400 text-center">No se encontraron equipos.</div>
-                )}
-                {!loadingTeams && !errorTeams && teams.map(equipo => (
-                  <div key={equipo._id} className="flex items-center gap-3 bg-[#101926]/70 border border-[#00fff7] rounded-lg px-3 py-2 transition-transform hover:scale-105 animate-fade-in-up">
-                    <div className="font-bold text-[#00fff7] text-lg">{equipo.name}</div>
-                    <div className="text-xs text-[#39ff14]">{equipo.members.length} miembros</div>
-                    <div className="flex-1 text-gray-300 text-xs">{equipo.description}</div>
-                    <button
-                      className="px-3 py-1 rounded bg-[#00fff7] text-black font-bold hover:bg-[#39ff14] disabled:opacity-60"
-                      disabled={joiningId === equipo._id}
-                      onClick={() => handleJoinTeam(equipo._id)}
-                    >
-                      {joiningId === equipo._id ? 'Enviando...' : 'Unirse'}
+                {equipoSeleccionado.members.map((miembro: string) => (
+                  <div key={miembro} className="flex items-center justify-between p-2 rounded-lg bg-[#101926]/60">
+                    <span className="font-bold text-[#00fff7]">{miembro}</span>
+                    <button onClick={() => handleEliminarMiembro(miembro)} className="text-red-500 hover:text-red-300 text-lg">
+                      <FaUserMinus />
                     </button>
                   </div>
                 ))}
+                {equipoSeleccionado.members.length === 0 && <div className="text-gray-400 text-center">No hay miembros en este equipo.</div>}
+              </div>
+              <div className="mt-4 flex gap-2">
+                <input type="text" placeholder="Buscar miembro..." value={miembroBusqueda} onChange={e => setMiembroBusqueda(e.target.value)} className="flex-1 px-3 py-2 rounded bg-[#101926] border border-[#00fff7] text-white font-mono" />
+                <button onClick={() => {
+                  const usuarioSeleccionado = mockUsuarios.find(u => u.nombre === miembroBusqueda);
+                  if (usuarioSeleccionado) {
+                    handleAgregarMiembro(usuarioSeleccionado);
+                    setMiembroBusqueda('');
+                  } else {
+                    setFeedback('Miembro no encontrado.');
+                  }
+                }} className="px-4 py-2 rounded-lg bg-[#00fff7] text-black font-bold font-mono animate-glow">Agregar Miembro</button>
               </div>
             </div>
-          )}
-          {tab === 'crear' && (
-            <div className="flex flex-col w-full max-w-2xl mx-auto animate-fade-in-up">
-              <div className="glass-card p-6 shadow-xl bg-[#232b36]/60 backdrop-blur-md rounded-2xl border-2 border-[#00fff7]">
-                <h3 className="text-xl font-bold text-[#00fff7] mb-4">Crear equipo rápido (mock)</h3>
-                <form className="flex flex-col gap-4" onSubmit={e => {
-                  e.preventDefault();
-                  if (!nuevoEquipo.nombre) return setFeedback('El nombre es obligatorio');
-                  setEquipos([...equipos, {
-                    _id: Date.now().toString(),
-                    name: nuevoEquipo.nombre,
-                    description: '',
-                    leader: 'Tú',
-                    members: usuariosSeleccionados.map(u => u.nombre),
-                    points: 0,
-                    rank: 0,
-                    logo: iconoEquipo || '',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                  }]);
-                  setTeams(prev => Array.isArray(prev) ? [...prev, {
-                    _id: Date.now().toString(),
-                    name: nuevoEquipo.nombre,
-                    description: '',
-                    leader: 'Tú',
-                    members: usuariosSeleccionados.map(u => u.nombre),
-                    points: 0,
-                    rank: 0,
-                    logo: iconoEquipo || '',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                  }] : [{
-                    _id: Date.now().toString(),
-                    name: nuevoEquipo.nombre,
-                    description: '',
-                    leader: 'Tú',
-                    members: usuariosSeleccionados.map(u => u.nombre),
-                    points: 0,
-                    rank: 0,
-                    logo: iconoEquipo || '',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                  }]);
-                  setNuevoEquipo({ nombre: '', descripcion: '' });
-                  setUsuariosSeleccionados([]);
-                  setVisibilidad('publico');
-                  setMensajeBienvenida('');
-                  setIconoEquipo(null);
-                  setFeedback('¡Equipo creado!');
-                }}>
-                  {/* Información básica */}
+            {/* Panel de acciones */}
+            <div className="mt-6 flex gap-4">
+              <button onClick={() => handleMarkNotification('1')} className="px-4 py-2 rounded-lg bg-[#00fff7] text-black font-bold font-mono animate-glow">
+                <FaCheck /> Marcar como leído
+              </button>
+              <button onClick={() => handleDeleteNotification('1')} className="px-4 py-2 rounded-lg bg-red-500 text-white font-bold font-mono">
+                <FaTrash /> Eliminar notificación
+              </button>
+            </div>
+          </div>
+        )}
+        {/* Modal de creación de equipo */}
+        {tab === 'crear' && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={e => { if (e.target === e.currentTarget) setTab('miEquipo'); }}>
+            <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-10 shadow-2xl w-full max-w-md animate-fade-in-up">
+              <div className="text-2xl font-bold text-[#00fff7] mb-6">Crear Nuevo Equipo</div>
+              <form onSubmit={handleCreateSubmit} className="flex flex-col gap-4">
+                <input type="text" name="name" value={nuevoEquipo.nombre} onChange={e => setNuevoEquipo(n => ({ ...n, nombre: e.target.value }))} className="px-3 py-2 rounded bg-[#101926] border border-[#00fff7] text-white font-mono" placeholder="Nombre del equipo" />
+                <textarea name="description" value={nuevoEquipo.descripcion} onChange={e => setNuevoEquipo(n => ({ ...n, descripcion: e.target.value }))} className="px-3 py-2 rounded bg-[#101926] border border-[#00fff7] text-white font-mono" placeholder="Descripción del equipo" rows={3} />
+                <select value={visibilidad} onChange={e => setVisibilidad(e.target.value as 'publico' | 'privado' | 'secreto')} className="px-3 py-2 rounded bg-[#101926] border border-[#00fff7] text-white font-mono">
+                  <option value="publico">Público</option>
+                  <option value="privado">Privado</option>
+                  <option value="secreto">Secreto</option>
+                </select>
+                <div className="flex gap-2 justify-end">
+                  <button type="button" onClick={() => setTab('miEquipo')} className="px-4 py-2 rounded-lg bg-gray-500 text-white font-bold font-mono">Cancelar</button>
+                  <button type="submit" className="px-4 py-2 rounded-lg bg-[#00fff7] text-black font-bold font-mono animate-glow" disabled={creating}>
+                    {creating ? 'Creando...' : 'Crear Equipo'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+        {/* Modal de búsqueda de equipos */}
+        {tab === 'buscar' && (
+          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={e => { if (e.target === e.currentTarget) setTab('miEquipo'); }}>
+            <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-10 shadow-2xl w-full max-w-md animate-fade-in-up">
+              <div className="text-2xl font-bold text-[#00fff7] mb-6">Buscar Equipos</div>
+              <div className="flex flex-col gap-4">
+                <input type="text" placeholder="Buscar equipo por nombre o descripción..." value={busqueda} onChange={e => setBusqueda(e.target.value)} className="px-3 py-2 rounded bg-[#101926] border border-[#00fff7] text-white font-mono" />
+                {loadingTeams ? (
+                  <div className="text-center py-8">Cargando equipos...</div>
+                ) : errorTeams ? (
+                  <div className="text-center py-8 text-[#ff3b3b]">{errorTeams}</div>
+                ) : teams.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">No se encontraron equipos.</div>
+                ) : (
                   <div className="flex flex-col gap-2">
-                    <label className="text-[#00fff7] font-bold">Nombre del equipo</label>
-                    <input
-                      type="text"
-                      name="nombre"
-                      placeholder="Nombre del equipo"
-                      className="px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] placeholder-gray-400 focus:outline-none font-mono"
-                      value={nuevoEquipo.nombre}
-                      onChange={e => setNuevoEquipo({ nombre: e.target.value, descripcion: nuevoEquipo.descripcion })}
-                      required
-                    />
-                  </div>
-                  {/* Agregar miembros */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[#00fff7] font-bold">Buscar y agregar usuarios</label>
-                    <input
-                      type="text"
-                      placeholder="Buscar usuario por nombre o correo..."
-                      className="px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] placeholder-gray-400 focus:outline-none font-mono"
-                      value={miembroBusqueda}
-                      onChange={e => setMiembroBusqueda(e.target.value)}
-                    />
-                    {/* Lista de usuarios sugeridos */}
-                    {miembroBusqueda && (
-                      <div className="bg-[#181c2b] border border-[#00fff7] rounded-lg mt-1 max-h-32 overflow-y-auto">
-                        {mockUsuarios.filter(u =>
-                          (u.nombre.toLowerCase().includes(miembroBusqueda.toLowerCase()) ||
-                           u.correo.toLowerCase().includes(miembroBusqueda.toLowerCase())) &&
-                          !usuariosSeleccionados.some(sel => sel.id === u.id)
-                        ).map(u => (
-                          <div key={u.id} className="px-3 py-2 hover:bg-[#00fff7] hover:text-black cursor-pointer flex items-center gap-2" onClick={() => {
-                            setUsuariosSeleccionados([...usuariosSeleccionados, u]);
-                            setMiembroBusqueda('');
-                          }}>
-                            <img src={`https://ui-avatars.com/api/?name=${u.nombre}`} alt={u.nombre} className="w-6 h-6 rounded-full border border-[#00fff7]" />
-                            <span>{u.nombre} <span className="text-xs text-gray-400">({u.correo})</span></span>
-                          </div>
-                        ))}
-                        {mockUsuarios.filter(u =>
-                          (u.nombre.toLowerCase().includes(miembroBusqueda.toLowerCase()) ||
-                           u.correo.toLowerCase().includes(miembroBusqueda.toLowerCase())) &&
-                          !usuariosSeleccionados.some(sel => sel.id === u.id)
-                        ).length === 0 && <div className="px-3 py-2 text-gray-400">Sin resultados</div>}
+                    {teams.map(team => (
+                      <div key={team._id} className="bg-[#232b36]/80 border-2 border-[#00fff7] rounded-2xl p-4 flex flex-col gap-2 shadow-[0_0_24px_#00fff7] hover:scale-105 transition animate-fade-in-up cursor-pointer" onClick={() => handleSeleccionarEquipo(team)}>
+                        <div className="flex items-center gap-2 text-lg font-bold text-[#00fff7]"><FaUsers size={18} color="#00fff7" />{team.name}</div>
+                        <div className="text-xs text-gray-300">{team.description}</div>
+                        <div className="text-xs text-[#39ff14]">Miembros: {team.members.length}</div>
+                        <div className="text-xs text-[#a259ff]">Creado: {team.createdAt instanceof Date ? team.createdAt.toISOString().slice(0,10) : new Date(team.createdAt).toISOString().slice(0,10)}</div>
                       </div>
-                    )}
-                    {/* Chips de usuarios seleccionados */}
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {usuariosSeleccionados.map(u => (
-                        <span key={u.id} className="flex items-center gap-1 bg-[#101926] border border-[#00fff7] rounded-full px-3 py-1 text-[#00fff7] text-sm">
-                          <img src={`https://ui-avatars.com/api/?name=${u.nombre}`} alt={u.nombre} className="w-5 h-5 rounded-full border border-[#00fff7]" />
-                          {u.nombre}
-                          <button type="button" className="ml-1 text-[#ff3b3b] hover:text-white" onClick={() => setUsuariosSeleccionados(usuariosSeleccionados.filter(sel => sel.id !== u.id))}>×</button>
-                        </span>
-                      ))}
-                    </div>
+                    ))}
                   </div>
-                  {/* Configuración */}
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[#00fff7] font-bold">Visibilidad del equipo</label>
-                    <select
-                      className="px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] focus:outline-none font-mono"
-                      value={visibilidad}
-                      onChange={e => setVisibilidad(e.target.value as any)}
-                    >
-                      <option value="publico">Público</option>
-                      <option value="privado">Privado</option>
-                      <option value="secreto">Secreto</option>
-                    </select>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[#00fff7] font-bold">Mensaje de bienvenida</label>
-                    <textarea
-                      className="px-3 py-2 rounded bg-[#101926]/80 border border-[#00fff7] text-[#00fff7] placeholder-gray-400 focus:outline-none font-mono"
-                      rows={2}
-                      placeholder="Mensaje para los nuevos miembros..."
-                      value={mensajeBienvenida}
-                      onChange={e => setMensajeBienvenida(e.target.value)}
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <label className="text-[#00fff7] font-bold">Ícono del equipo</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="text-[#00fff7]"
-                      onChange={e => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = ev => setIconoEquipo(ev.target?.result as string);
-                          reader.readAsDataURL(file);
-                        }
-                      }}
-                    />
-                    {iconoEquipo && <img src={iconoEquipo} alt="Ícono del equipo" className="w-16 h-16 rounded-full border-2 border-[#00fff7] mt-2" />}
-                  </div>
-                  <div className="flex gap-4 mt-4">
-                    <button type="submit" className="px-4 py-2 rounded bg-[#00fff7] text-black font-bold hover:bg-[#39ff14] animate-glow">Crear equipo (mock)</button>
-                    <button type="button" className="px-4 py-2 rounded bg-gray-500 text-white font-bold" onClick={() => {
-                      setNuevoEquipo({ nombre: '', descripcion: '' });
-                      setUsuariosSeleccionados([]);
-                      setVisibilidad('publico');
-                      setMensajeBienvenida('');
-                      setIconoEquipo(null);
-                      setFeedback('');
-                    }}>Cancelar</button>
-                  </div>
-                </form>
-                {feedback && <div className="mt-4 text-[#39ff14] text-center font-bold animate-fade-in-up">{feedback}</div>}
-              </div>
-            </div>
-          )}
-        </div>
-        {/* Modal de confirmación para acciones críticas */}
-        {showModalConfirm && (
-          <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
-            <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-xl p-8 shadow-xl w-full max-w-md animate-fade-in-up">
-              <div className="text-xl font-bold text-[#00fff7] mb-4">Confirmar acción</div>
-              <div className="mb-4 text-white">¿Estás seguro de que quieres {showModalConfirm.accion}?</div>
-              <div className="flex gap-2 justify-end">
-                <button type="button" onClick={() => setShowModalConfirm(null)} className="px-4 py-2 rounded-lg bg-gray-500 text-white font-bold">Cancelar</button>
-                <button type="button" onClick={() => { setShowModalConfirm(null); setFeedback('Acción realizada (mock).'); }} className="px-4 py-2 rounded-lg bg-[#00fff7] text-black font-bold">Confirmar</button>
+                )}
+                <div className="flex gap-2 justify-end">
+                  <button type="button" onClick={() => setTab('miEquipo')} className="px-4 py-2 rounded-lg bg-gray-500 text-white font-bold font-mono">Volver</button>
+                </div>
               </div>
             </div>
           </div>
         )}
-        {/* Eliminar el indicador de conexión */}
       </div>
     </div>
   );
 };
 
-export default Equipos; 
+export default Equipos;

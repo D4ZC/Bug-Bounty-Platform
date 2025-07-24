@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+        import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -6,6 +6,7 @@ import { Publication } from '../types';
 import apiService from '../services/api';
 import { toast } from 'react-hot-toast';
 import { useBackground } from '../contexts/BackgroundContext';
+import Accordion from '../components/ui/Accordion';
 
 const examplePublications: Publication[] = [
   {
@@ -69,6 +70,27 @@ const examplePublications: Publication[] = [
     updatedAt: new Date('2024-05-22T10:00:00.000Z'),
   },
 ];
+
+const reglasContent = (
+  <ul className="space-y-2">
+    <li>🧑‍💻 Entornos controlados y seguros.</li>
+    <li>🔒 Solo hacking ético. Nada fuera del entorno.</li>
+    <li>⏰ Tiempo límite para cada duelo.</li>
+    <li>🏴 Las vulnerabilidades deben ser reportadas y documentadas.</li>
+    <li>🛠️ Jueces o sistema automatizado validan y puntúan.</li>
+    <li>🗡️ Se permite cualquier herramienta estándar de ciberseguridad.</li>
+    <li>👑 No compartir soluciones entre equipos, salvo en Dúo/Equipo.</li>
+  </ul>
+);
+
+const premiosContent = (
+  <ul className="space-y-2">
+    <li>🏅 Insignias de "Maestro de Vulnerabilidades" (se mostrarán en tu perfil)</li>
+    <li>🎁 Acceso a recursos premium de ciberseguridad</li>
+    <li>🎓 Oportunidades de capacitación o conferencias</li>
+    <li>🏆 Reconocimiento en el cuadro de honor público</li>
+  </ul>
+);
 
 const DocumentacionPublica: React.FC = () => {
   const { isDark } = useTheme();
@@ -293,6 +315,14 @@ const DocumentacionPublica: React.FC = () => {
           </motion.div>
         </div>
       )}
+      <div className="max-w-md mx-auto mt-8">
+        <Accordion
+          sections={[
+            { title: 'Reglas Generales', content: reglasContent },
+            { title: 'Premios al Honor', content: premiosContent },
+          ]}
+        />
+      </div>
     </div>
   );
 };

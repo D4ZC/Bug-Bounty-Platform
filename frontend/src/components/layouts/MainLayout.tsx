@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { FaUsers } from 'react-icons/fa';
+import { GiCrossedSwords, GiPodiumWinner } from 'react-icons/gi';
 import { useBackground } from '../../contexts/BackgroundContext';
 
 const neon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
@@ -72,6 +73,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             )}
             <SidebarIcon to="/feedback">
               <Chat size={36} className={neonIcon} />
+            </SidebarIcon>
+            <SidebarIcon to="/duelos">
+              <GiCrossedSwords size={36} color="#00fff7" />
+            </SidebarIcon>
+            <SidebarIcon to="/arena-duelos">
+              <GiPodiumWinner size={36} color="#ffb300" />
             </SidebarIcon>
             <button onClick={() => navigate('/equipos')} className="text-[#00fff7] hover:text-[#39ff14] transition text-2xl" title="Equipos">
               <FaUsers />

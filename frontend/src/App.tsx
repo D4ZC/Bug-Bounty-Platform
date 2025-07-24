@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom';
 import MainLayout from './components/layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Vulnerabilities from './pages/Vulnerabilities';
@@ -17,6 +17,9 @@ import Feedback from './pages/Feedback';
 import RankingEquipos from './pages/RankingEquipos';
 import RankingUsuarios from './pages/RankingUsuarios';
 import Store from './pages/Store';
+import { FaHome, FaStore, FaUser } from 'react-icons/fa';
+import { GiCrossedSwords } from 'react-icons/gi';
+import DuelosPage from './pages/DuelosPage';
 
 const App: React.FC = () => {
   return (
@@ -39,6 +42,7 @@ const App: React.FC = () => {
         <Route path="ranking-equipos" element={<RankingEquipos />} />
         <Route path="ranking-usuarios" element={<RankingUsuarios />} />
         <Route path="store" element={<Store />} />
+        <Route path="duelos" element={<DuelosPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
