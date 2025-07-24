@@ -7,7 +7,6 @@ import { Button } from '@carbon/react';
 import { useNavigate } from 'react-router-dom';
 import Podium from '../../components/Podium';
 import ShopCard from '../../components/ShopCard';
-import Carousel from '../../components/Carousel';
 import { useTranslation } from 'react-i18next';
 
 // Datos reales para equipos y usuarios
@@ -44,7 +43,6 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6 bg-[#f9f9f6]">
-      <Carousel />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
         {/* Columna 1: USUARIOS y GULAG */}
         <div className="flex flex-col gap-6 h-full">

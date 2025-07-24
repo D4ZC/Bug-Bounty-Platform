@@ -250,28 +250,6 @@ const UsersScorePage: React.FC = () => {
   const location = useLocation();
   return (
     <>
-      {/* Botones agrupados tipo GULAG */}
-      <div className="flex justify-center my-8">
-        <div className="flex gap-2 bg-[#fcf3cf] rounded-lg p-2 shadow-sm">
-          {[
-            { key: '/users-score', label: 'USUARIOS' },
-            { key: '/teams-score', label: 'EQUIPOS' }
-          ].map(btn => (
-            <button
-              key={btn.key}
-              onClick={() => navigate(btn.key)}
-              className={`px-6 py-2 rounded-md font-semibold transition-all duration-200 shadow-sm
-                ${location.pathname === btn.key
-                  ? 'bg-yellow-400 text-white scale-105'
-                  : 'bg-white text-gray-700 hover:bg-yellow-200'}
-              `}
-              style={{ minWidth: 120 }}
-            >
-              {btn.label}
-            </button>
-          ))}
-        </div>
-      </div>
       {/* Contenido principal */}
       <div className="max-w-4xl mx-auto py-8">
         <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">

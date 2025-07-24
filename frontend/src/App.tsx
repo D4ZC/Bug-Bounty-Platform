@@ -27,6 +27,7 @@ import Ajustes from '@/pages/Ajustes';
 import GulagDesafio from '@/pages/GulagDesafio';
 import Duelos from '@/pages/Duelos';
 import Equipos from '@/pages/Equipos';
+import Reglas from '@/pages/Reglas';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -65,6 +66,7 @@ function App() {
           <Route path="ajustes" element={<Ajustes />} />
           <Route path="duelos" element={<Duelos />} />
           <Route path="equipos" element={<Equipos />} />
+          <Route path="reglas" element={<Reglas />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
