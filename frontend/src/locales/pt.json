@@ -104,6 +104,9 @@
       "description": "Descreva sobre o que é este item.",
       "problem": "Explique o problema ou risco.",
       "howDetected": "Como esta vulnerabilidade foi detectada?"
-    }
+    },
+    "all": "Todos",
+    "other": "Outro",
+    "vulnTypeLabel": "Tipo de Vulnerabilidade"
   }
 } 

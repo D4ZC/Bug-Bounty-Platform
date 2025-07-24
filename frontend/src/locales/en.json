@@ -104,6 +104,7 @@
       "description": "Describe what this item is about.",
       "problem": "Explain the problem or risk.",
       "howDetected": "How was this vulnerability detected?"
-    }
+    },
+    "vulnTypeLabel": "Vulnerability Type"
   }
 } 

@@ -113,6 +113,7 @@
       "description": "Describe de qué trata este ítem.",
       "problem": "Explica el problema o riesgo.",
       "howDetected": "¿Cómo se detectó esta vulnerabilidad?"
-    }
+    },
+    "vulnTypeLabel": "Tipo de Vulnerabilidad"
   }
 } 

@@ -12,7 +12,8 @@ interface VulnerabilityItem {
 }
 
 interface Vulnerability {
-  type: string;
+  types: string[]; // array de tipos de vulnerabilidad
+  otherType?: string;
   generalDescription: string;
   discoveredBy: string;
   difficulties: {
@@ -29,60 +30,63 @@ interface Project {
 const INITIAL_PROJECTS: Project[] = [
   {
     id: 'project-1',
-    name: 'Acme Web Platform',
+    name: 'acmeWebPlatform', // clave para traducción
     vulnerabilities: [
       {
-        type: 'sqlInjection',
-        generalDescription: 'Allows SQL code injection in login forms.',
-        discoveredBy: 'Automated pentest OWASP Zap',
+        types: ['sqlInjection'],
+        otherType: '',
+        generalDescription: 'sqlInjectionDesc',
+        discoveredBy: 'automatedPentestOwaspZap',
         difficulties: {
-          Low: [
+          low: [
             {
-              name: 'Basic SQLi',
-              description: 'The function should sanitize inputs, but it does not.',
-              problem: 'No escaping method is used on parameters.',
-              howDetected: 'Detected by entering single quotes in the username field.',
+              name: 'basicSQLi',
+              description: 'basicSQLiDesc',
+              problem: 'basicSQLiProblem',
+              howDetected: 'basicSQLiHowDetected',
               images: [],
             },
           ],
-          High: [
+          high: [
             {
-              name: 'Advanced SQLi',
-              description: 'The function should validate roles, but allows access to sensitive data.',
-              problem: 'No privilege separation in queries.',
-              howDetected: 'Detected using advanced payloads.',
-              images: [],
-            },
-          ],
-        },
-      },
-      {
-        type: 'XSS',
-        generalDescription: 'Allows script injection in comments.',
-        discoveredBy: 'Manual code review',
-        difficulties: {
-          Medium: [
-            {
-              name: 'Reflected XSS',
-              description: 'The function should escape HTML, but renders it directly.',
-              problem: 'No escaping is used in comments.',
-              howDetected: 'Detected by entering <script>alert(1)</script>.',
+              name: 'advancedSQLi',
+              description: 'advancedSQLiDesc',
+              problem: 'advancedSQLiProblem',
+              howDetected: 'advancedSQLiHowDetected',
               images: [],
             },
           ],
         },
       },
       {
-        type: 'CSRF',
-        generalDescription: 'Allows actions to be performed without user consent.',
-        discoveredBy: 'Burp Suite tool',
+        types: ['xss'],
+        otherType: '',
+        generalDescription: 'xssDesc',
+        discoveredBy: 'manualCodeReview',
         difficulties: {
-          Critical: [
+          medium: [
             {
-              name: 'CSRF in transfers',
-              description: 'The function should require a CSRF token, but does not validate it.',
-              problem: 'No CSRF protection on critical endpoints.',
-              howDetected: 'Detected by sending requests from another domain.',
+              name: 'reflectedXss',
+              description: 'reflectedXssDesc',
+              problem: 'reflectedXssProblem',
+              howDetected: 'reflectedXssHowDetected',
+              images: [],
+            },
+          ],
+        },
+      },
+      {
+        types: ['csrf'],
+        otherType: '',
+        generalDescription: 'csrfDesc',
+        discoveredBy: 'burpSuiteTool',
+        difficulties: {
+          critical: [
+            {
+              name: 'csrfTransfers',
+              description: 'csrfTransfersDesc',
+              problem: 'csrfTransfersProblem',
+              howDetected: 'csrfTransfersHowDetected',
               images: [],
             },
           ],
@@ -92,7 +96,7 @@ const INITIAL_PROJECTS: Project[] = [
   },
 ];
 
-const DIFFICULTY_LABELS = ['Low', 'Medium', 'High', 'Critical'];
+const DIFFICULTY_LABELS = ['low', 'medium', 'high', 'critical'];
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -106,6 +110,12 @@ const Home: React.FC = () => {
   const emptyVulnItem = { name: '', description: '', problem: '', howDetected: '', images: [] };
   const emptyVuln = { type: '', generalDescription: '', discoveredBy: '', difficulties: { Low: [], Medium: [], High: [], Critical: [] } };
   const [form, setForm] = useState<Project>({ id: '', name: '', vulnerabilities: [] });
+  const [formError, setFormError] = useState<string | null>(null);
+
+  // 1. Estado para filtros y búsqueda
+  const VULN_TYPE_KEYS = ['sqlInjection', 'xss', 'csrf', 'other'];
+  const [search, setSearch] = useState('');
+  const [typeFilters, setTypeFilters] = useState<string[]>([]);
 
   // Helpers for form
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -149,7 +159,14 @@ const Home: React.FC = () => {
   };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError(null);
     if (!form.name.trim()) return;
+    // Validar que cada vulnerabilidad tenga al menos un tipo seleccionado
+    const invalidVuln = form.vulnerabilities.find(vuln => !Array.isArray(vuln.types) || vuln.types.length === 0);
+    if (invalidVuln) {
+      setFormError(t('home.errorNoVulnType', { defaultValue: 'Debes seleccionar al menos un tipo de vulnerabilidad en cada vulnerabilidad.' }));
+      return;
+    }
     if (editIndex !== null) {
       const updated = [...projects];
       updated[editIndex] = { ...form, id: form.id || `project-${Date.now()}` };
@@ -206,6 +223,7 @@ const Home: React.FC = () => {
         </button>
         {showForm && (
           <form className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 border-4 border-blue-400" onSubmit={handleSubmit}>
+            {formError && <div className="text-red-600 text-sm font-bold mb-2">{formError}</div>}
             <div>
               <label className="font-bold">{t('home.projectName')}</label>
               <input
@@ -219,18 +237,88 @@ const Home: React.FC = () => {
             </div>
             <div>
               <label className="font-bold">{t('home.vulnerabilities')}</label>
-              <button type="button" className="ml-2 px-2 py-1 bg-green-600 text-white rounded" onClick={addVuln}>{t('home.addVulnerability')}</button>
+              <button type="button" className="ml-2 px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700" onClick={addVuln}>{t('home.addVulnerability')}</button>
               {form.vulnerabilities.map((vuln, vIdx) => (
                 <div key={vIdx} className="border rounded p-3 mt-2 bg-gray-50 dark:bg-gray-800">
-                  <div className="flex gap-2 items-center">
-                    <input
-                      placeholder={t('home.help.type')}
-                      value={vuln.type}
-                      onChange={e => handleVulnChange(vIdx, 'type', e.target.value)}
-                      className={`border rounded p-1 flex-1 placeholder-gray-400 ${vuln.type ? 'text-black font-bold' : 'text-gray-400'}`}
-                      required
-                    />
-                    <button type="button" className="text-red-600 font-bold" onClick={() => removeVuln(vIdx)}>{t('home.removeVulnerability')}</button>
+                  {/* Agrupa todo en un solo div padre */}
+                  <div>
+                    {/* Filtros de tipo de vulnerabilidad dentro de cada vulnerabilidad */}
+                    <div className="flex flex-col gap-2">
+                      {/* Tipos y Other */}
+                      <div className="flex flex-wrap gap-2">
+                        {VULN_TYPE_KEYS.filter(type => type !== 'other').map(type => (
+                          <button
+                            key={type}
+                            type="button"
+                            className={`flex items-center gap-1 px-3 py-1 rounded-full bg-gray-200 text-gray-800 font-semibold border border-gray-300 ${Array.isArray(vuln.types) && vuln.types.includes(type) ? 'ring-2 ring-gray-500' : ''}`}
+                            onClick={() => {
+                              const types = Array.isArray(vuln.types) ? [...vuln.types] : [];
+                              if (types.includes(type)) {
+                                handleVulnChange(vIdx, 'types', types.filter(t => t !== type));
+                              } else {
+                                handleVulnChange(vIdx, 'types', [...types, type]);
+                              }
+                            }}
+                          >
+                            <span className="capitalize">{type.charAt(0).toUpperCase() + type.slice(1).toLowerCase()}</span>
+                            {Array.isArray(vuln.types) && vuln.types.includes(type) && (
+                              <span className="ml-1 text-xs text-gray-600 font-bold">×</span>
+                            )}
+                          </button>
+                        ))}
+                        {/* Opción Other como botón moderno, seleccionable/deseleccionable */}
+                        <button
+                          key="other"
+                          type="button"
+                          className={`flex items-center gap-1 px-3 py-1 rounded-full bg-gray-200 text-gray-800 font-semibold border border-gray-300 ${Array.isArray(vuln.types) && vuln.types.includes('other') ? 'ring-2 ring-gray-500' : ''}`}
+                          onClick={() => {
+                            const types = Array.isArray(vuln.types) ? [...vuln.types] : [];
+                            const newVulns = [...form.vulnerabilities];
+                            if (types.includes('other')) {
+                              newVulns[vIdx] = { ...newVulns[vIdx], types: types.filter(t => t !== 'other'), otherType: '' };
+                            } else {
+                              newVulns[vIdx] = { ...newVulns[vIdx], types: [...types, 'other'] };
+                            }
+                            setForm({ ...form, vulnerabilities: newVulns });
+                          }}
+                        >
+                          <span className="capitalize">{t('home.other', { defaultValue: 'Other' }).charAt(0).toUpperCase() + t('home.other', { defaultValue: 'Other' }).slice(1).toLowerCase()}</span>
+                          {Array.isArray(vuln.types) && vuln.types.includes('other') && (
+                            <span className="ml-1 text-xs text-gray-600 font-bold">×</span>
+                          )}
+                        </button>
+                      </div>
+                      {/* Opción All al final, como checkbox moderno */}
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        <label key="all" className="flex items-center gap-2 cursor-pointer select-none px-2 py-1">
+                          <span className="capitalize">{t('home.all', { defaultValue: 'All' }).charAt(0).toUpperCase() + t('home.all', { defaultValue: 'All' }).slice(1).toLowerCase()}</span>
+                          <input
+                            type="checkbox"
+                            checked={VULN_TYPE_KEYS.filter(type => type !== 'other').every(type => Array.isArray(vuln.types) && vuln.types.includes(type))}
+                            onChange={e => {
+                              if (e.target.checked) {
+                                // Selecciona todos excepto 'other'
+                                handleVulnChange(vIdx, 'types', VULN_TYPE_KEYS.filter(type => type !== 'other').concat(Array.isArray(vuln.types) && vuln.types.includes('other') ? ['other'] : []));
+                              } else {
+                                // Deselecciona todos excepto 'other'
+                                handleVulnChange(vIdx, 'types', Array.isArray(vuln.types) && vuln.types.includes('other') ? ['other'] : []);
+                              }
+                            }}
+                            className="w-5 h-5 accent-blue-600 rounded transition-all duration-150 border-2 border-gray-400 focus:ring-2 focus:ring-blue-500"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    {/* Si 'other' está seleccionado, muestra input para tipo personalizado */}
+                    {Array.isArray(vuln.types) && vuln.types.includes('other') && (
+                      <input
+                        type="text"
+                        value={vuln.otherType || ''}
+                        onChange={e => handleVulnChange(vIdx, 'otherType', e.target.value)}
+                        placeholder={t('home.vulnTypeLabel', { defaultValue: 'Tipo de Vulnerabilidad' })}
+                        className="border rounded p-1 mt-1 placeholder-gray-400"
+                      />
+                    )}
                   </div>
                   <input
                     placeholder={t('home.help.generalDescription')}
@@ -250,8 +338,8 @@ const Home: React.FC = () => {
                     {DIFFICULTY_LABELS.map(diff => (
                       <div key={diff} className="mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold">{diff}</span>
-                          <button type="button" className="px-2 py-1 bg-green-500 text-white rounded" onClick={() => addVulnItem(vIdx, diff)}>{t('home.addItem')}</button>
+                          <span className="font-semibold">{t(`dashboard.difficulty.${diff}`, { defaultValue: diff })}</span>
+                          <button type="button" className="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700" onClick={() => addVulnItem(vIdx, diff)}>{t('home.addItem')}</button>
                         </div>
                         {(vuln.difficulties[diff] || []).map((item, iIdx) => (
                           <div key={iIdx} className="flex flex-col md:flex-row gap-2 mt-1 border rounded p-2 bg-white dark:bg-gray-700">
@@ -289,6 +377,15 @@ const Home: React.FC = () => {
                       </div>
                     ))}
                   </div>
+                  <div className="flex justify-end mt-2">
+                    <button
+                      type="button"
+                      className="px-3 py-1 bg-red-600 text-white font-bold rounded hover:bg-red-700 transition-colors"
+                      onClick={() => removeVuln(vIdx)}
+                    >
+                      {t('home.removeVulnerability')}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -296,8 +393,33 @@ const Home: React.FC = () => {
           </form>
         )}
       </div>
+      {/* Buscador arriba de las cards (sin filtros globales) */}
+      <div className="mb-6">
+        <input
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder={t('home.searchVuln')}
+          className="w-full border rounded p-2 placeholder-gray-400"
+        />
+      </div>
+      {/* Cards filtradas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project, idx) => {
+        {projects.filter(project => {
+          // Filtro por texto
+          const searchText = search.toLowerCase();
+          const matchesText =
+            project.name.toLowerCase().includes(searchText) ||
+            project.vulnerabilities.some(vuln =>
+              Array.isArray(vuln.types) &&
+              vuln.types.some(type => t(`home.${type}`, { defaultValue: type }).toLowerCase().includes(searchText))
+            );
+          // Filtro por tipo
+          const matchesType =
+            typeFilters.length === 0 ||
+            project.vulnerabilities.some(vuln => vuln.types && vuln.types.some(type => typeFilters.includes(type)));
+          return matchesText && matchesType;
+        }).map((project, idx) => {
           // Mock para deployment
           const lastDeployment = '26 days ago';
           const deploymentName = 'nodejs-v20-npm-container-image - v1';
@@ -318,7 +440,15 @@ const Home: React.FC = () => {
               <ul className="mb-2">
                 {project.vulnerabilities.map((vuln, vIdx) => (
                   <li key={vIdx} className="mb-1">
-                    <span className="font-semibold">{t(`home.${vuln.type}`)}</span>: {t(`home.${vuln.generalDescription}`, vuln.generalDescription)}<br />
+                    <span className="font-semibold">
+                      {Array.isArray(vuln.types) && vuln.types.length > 0
+                        ? vuln.types.map(type =>
+                            type === 'other' && vuln.otherType
+                              ? vuln.otherType.toUpperCase()
+                              : t(`home.${type}`, { defaultValue: type }).toUpperCase()
+                          ).join(', ')
+                        : ''}
+                    </span>: {t(`home.${vuln.generalDescription}`, vuln.generalDescription)}<br />
                     <span className="text-xs text-gray-500">{t(`home.${vuln.discoveredBy}`, vuln.discoveredBy)}</span>
                   </li>
                 ))}
@@ -327,7 +457,7 @@ const Home: React.FC = () => {
               <div className="flex w-full justify-between mb-2">
                 {DIFFICULTY_LABELS.map((diff, idx) => (
                   <div key={diff} className="flex flex-col items-center flex-1">
-                    <span className="text-xs text-gray-500 mb-1">{diff}</span>
+                    <span className="text-xs text-gray-500 mb-1">{t(`dashboard.difficulty.${diff}`, { defaultValue: diff })}</span>
                     <button
                       className="text-lg font-semibold text-gray-900 dark:text-gray-100 focus:outline-none"
                       onClick={() => openVulnModal(project, diff)}
@@ -362,13 +492,15 @@ const Home: React.FC = () => {
             <div className="w-64 bg-gray-100 dark:bg-gray-800 rounded-l-2xl p-4 overflow-y-auto">
               <div className="font-bold mb-4">{t('dashboard.vulnerabilityTypes')}</div>
               <ul className="space-y-2">
-                {modalProject.vulnerabilities.filter((v: Vulnerability) => (v.difficulties[modalDifficulty] || []).length > 0).map((v: Vulnerability) => (
-                  <li key={v.type}>
+                {modalProject.vulnerabilities.filter((v: Vulnerability) => (v.difficulties[modalDifficulty] || []).length > 0).map((v: Vulnerability, idx) => (
+                  <li key={v.types && v.types.length > 0 ? v.types.join('-') : idx}>
                     <button
-                      className={`w-full text-left px-3 py-2 rounded-lg font-semibold transition ${modalVulnType === v.type ? 'bg-blue-200 dark:bg-blue-700' : 'hover:bg-blue-100 dark:hover:bg-blue-700'}`}
-                      onClick={() => setModalVulnType(v.type)}
+                      className={`w-full text-left px-3 py-2 rounded-lg font-semibold transition ${modalVulnType === (v.types && v.types[0]) ? 'bg-blue-200 dark:bg-blue-700' : 'hover:bg-blue-100 dark:hover:bg-blue-700'}`}
+                      onClick={() => setModalVulnType(v.types && v.types[0])}
                     >
-                      {t(`home.${v.type}`)}
+                      {Array.isArray(v.types) && v.types.length > 0
+                        ? v.types.map(type => t(`home.${type}`, { defaultValue: type }).toUpperCase()).join(', ')
+                        : ''}
                     </button>
                   </li>
                 ))}
@@ -391,12 +523,20 @@ const Home: React.FC = () => {
                   <div className="text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">{t('dashboard.selectVulnType')}</div>
                 )}
                 {modalVulnType && (() => {
-                  const vuln = modalProject.vulnerabilities.find((v) => v.type === modalVulnType);
+                  const vuln = modalProject.vulnerabilities.find((v) => Array.isArray(v.types) && v.types[0] === modalVulnType);
                   const vulnList = vuln ? (vuln.difficulties[modalDifficulty] || []) : [];
                   return (
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-xl font-bold">{t(`home.${vuln?.type}`)}</div>
+                        <div className="text-xl font-bold">
+                          {Array.isArray(vuln?.types) && vuln.types.length > 0
+                            ? vuln.types.map(type =>
+                                type === 'other' && vuln.otherType
+                                  ? vuln.otherType.toUpperCase()
+                                  : t(`home.${type}`, { defaultValue: type }).toUpperCase()
+                              ).join(', ')
+                            : ''}
+                        </div>
                         {/* Contador de vulnerabilidades por dificultad */}
                         <div className="flex gap-2">
                           {DIFFICULTY_LABELS.map((diff) => (
