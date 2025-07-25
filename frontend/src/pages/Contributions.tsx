@@ -46,6 +46,10 @@ const Contributions: React.FC = () => {
   const [likes, setLikes] = useState(contributions.map(c => c.likes));
   const [modalIdx, setModalIdx] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
+  const [modalVote, setModalVote] = useState<'like' | 'dislike' | null>(null);
+  const [modalComment, setModalComment] = useState('');
+  const [modalComments, setModalComments] = useState<string[]>([]);
+  const [showCommentSuccess, setShowCommentSuccess] = useState(false);
   const handleCopy = (id: number) => {
     navigator.clipboard.writeText(window.location.href + '#contrib-' + id);
     setCopied(true);
@@ -127,7 +131,7 @@ const Contributions: React.FC = () => {
         ))}
       </ul>
       {/* Modal de detalles */}
-      <Modal open={modalIdx !== null} onClose={() => setModalIdx(null)}>
+      <Modal open={modalIdx !== null} onClose={() => { setModalIdx(null); setModalVote(null); setModalComment(''); setModalComments([]); }}>
         {modalIdx !== null && (
           <div className="flex flex-col gap-3 min-w-[320px] max-w-[90vw]">
             <div className="flex items-center gap-3 mb-2">
@@ -147,13 +151,65 @@ const Contributions: React.FC = () => {
               <span>💬 {contributions[modalIdx].comments.length} comentario{contributions[modalIdx].comments.length > 1 ? 's' : ''}</span>
               <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{contributions[modalIdx].type}</span>
             </div>
+            <div className="flex gap-3 my-2">
+              <button
+                className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold transition-colors duration-150 ${modalVote === 'like' ? 'bg-green-100 text-green-700 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-green-50'}`}
+                onClick={() => {
+                  if (modalVote === 'like') {
+                    setModalVote(null);
+                    setLikes(l => l.map((v, i) => i === modalIdx ? v - 1 : v));
+                  } else {
+                    setModalVote('like');
+                    setLikes(l => l.map((v, i) => i === modalIdx ? v + (modalVote === 'dislike' ? 2 : 1) : v));
+                  }
+                }}
+                disabled={modalVote === 'like'}
+              >
+                👍 Like
+              </button>
+              <button
+                className={`flex items-center gap-1 px-3 py-1 rounded-full text-sm font-semibold transition-colors duration-150 ${modalVote === 'dislike' ? 'bg-red-100 text-red-700 scale-105' : 'bg-gray-100 text-gray-700 hover:bg-red-50'}`}
+                onClick={() => {
+                  if (modalVote === 'dislike') {
+                    setModalVote(null);
+                    setLikes(l => l.map((v, i) => i === modalIdx ? v + 1 : v));
+                  } else {
+                    setModalVote('dislike');
+                    setLikes(l => l.map((v, i) => i === modalIdx ? v - (modalVote === 'like' ? 2 : 1) : v));
+                  }
+                }}
+                disabled={modalVote === 'dislike'}
+              >
+                👎 Dislike
+              </button>
+            </div>
             <div className="mb-2">
               <h4 className="font-semibold text-sm text-gray-700 mb-1">Comentarios:</h4>
-              <ul className="ml-4 text-xs text-gray-600 list-disc">
-                {contributions[modalIdx].comments.map((c, i) => (
+              <ul className="ml-4 text-xs text-gray-600 list-disc animate-in fade-in duration-200">
+                {[...(contributions[modalIdx].comments), ...modalComments].map((c, i) => (
                   <li key={i}>{c}</li>
                 ))}
               </ul>
+              <form className="flex gap-2 mt-2" onSubmit={e => {
+                e.preventDefault();
+                if (modalComment.trim()) {
+                  setModalComments(comments => [...comments, modalComment.trim()]);
+                  setModalComment('');
+                  setShowCommentSuccess(true);
+                }
+              }}>
+                <input
+                  className="border rounded px-2 py-1 text-xs flex-1"
+                  placeholder="Escribe un comentario..."
+                  value={modalComment}
+                  onChange={e => setModalComment(e.target.value)}
+                />
+                <button
+                  type="submit"
+                  className="bg-green-500 text-white px-3 py-1 rounded text-xs hover:bg-green-600 disabled:opacity-50"
+                  disabled={!modalComment.trim()}
+                >Comentar</button>
+              </form>
             </div>
             <div className="flex items-center gap-2 mt-2">
               <input
@@ -168,6 +224,14 @@ const Contributions: React.FC = () => {
             </div>
           </div>
         )}
+      </Modal>
+      {/* Modal de éxito de comentario */}
+      <Modal open={showCommentSuccess} onClose={() => setShowCommentSuccess(false)}>
+        <div className="flex flex-col items-center gap-2 p-6">
+          <span className="text-3xl">✅</span>
+          <p className="text-lg font-semibold text-center">¡Comentario publicado con éxito!</p>
+          <button className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" onClick={() => setShowCommentSuccess(false)}>Cerrar</button>
+        </div>
       </Modal>
     </div>
   );

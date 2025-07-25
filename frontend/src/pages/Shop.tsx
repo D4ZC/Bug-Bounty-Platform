@@ -4,6 +4,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { CartIcon, CartDrawer } from '@/components/ui/CartWidget';
 import { useAuth } from '@/contexts/AuthContext';
 import Modal from '@/components/ui/Modal';
+import { useToast } from '@/hooks/useToast';
 
 const SHOP_CATEGORIES = {
   REWARDS: 'rewards',
@@ -55,6 +56,8 @@ const Shop: React.FC = () => {
   const [userPoints, setUserPoints] = useState(user?.points ?? 0);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMsg, setModalMsg] = useState('');
+  const [cartBump, setCartBump] = useState(false);
+  const toast = useToast();
   useEffect(() => {
     if ((user?.points ?? 0) < 70000) {
       setUserPoints(70000);
@@ -81,6 +84,21 @@ const Shop: React.FC = () => {
     setCartOpen(false);
   };
 
+  const handleAddToCart = (prod: any) => {
+    setCart(prev => {
+      const found = prev.find((p) => p.id === prod.id);
+      if (found) {
+        return prev.map(p => p.id === prod.id ? { ...p, qty: p.qty + 1 } : p);
+      }
+      return [...prev, { ...prod, qty: 1 }];
+    });
+    setCartBump(true);
+    toast.showSuccess('¡Producto agregado al carrito!');
+    setTimeout(() => setCartBump(false), 400);
+    // // Sonido (opcional):
+    // new Audio('/sounds/add-to-cart.mp3').play();
+  };
+
   const renderProducts = (products: any[], title: string) => (
     <div className="bg-white rounded-lg shadow-md p-8 mt-8">
       <h2 className="text-xl font-bold mb-4">{title}</h2>
@@ -91,13 +109,7 @@ const Shop: React.FC = () => {
             <div className="font-semibold text-gray-900 mb-1">{prod.name}</div>
             <div className="text-xs text-gray-500 mb-2 text-center">{prod.desc}</div>
             <div className="font-bold text-blue-700 mb-2">{prod.price} puntos</div>
-            <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm mb-1" onClick={() => setCart(prev => {
-              const found = prev.find((p) => p.id === prod.id);
-              if (found) {
-                return prev.map(p => p.id === prod.id ? { ...p, qty: p.qty + 1 } : p);
-              }
-              return [...prev, { ...prod, qty: 1 }];
-            })}>Agregar al carrito</button>
+            <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm mb-1 animate-fly-to-cart" onClick={() => handleAddToCart(prod)}>Agregar al carrito</button>
           </div>
         ))}
       </div>
@@ -118,7 +130,7 @@ const Shop: React.FC = () => {
             </div>
           </div>
         </div>
-        <CartIcon count={cart.reduce((acc, item) => acc + item.qty, 0)} onClick={() => setCartOpen(true)} />
+        <CartIcon count={cart.reduce((acc, item) => acc + item.qty, 0)} onClick={() => setCartOpen(true)} bump={cartBump} />
       </div>
       <CartDrawer
         open={cartOpen}
@@ -126,6 +138,7 @@ const Shop: React.FC = () => {
         onClose={() => setCartOpen(false)}
         onRemove={handleRemoveFromCart}
         onCheckout={handleCheckout}
+        onQtyChange={(id, qty) => setCart(prev => prev.map(item => item.id === id ? { ...item, qty } : item))}
       />
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="flex flex-col items-center gap-2">
@@ -175,13 +188,7 @@ const Shop: React.FC = () => {
                 <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
                 <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
                 <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
-                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => setCart(prev => {
-                  const found = prev.find((p) => p.id === item.id);
-                  if (found) {
-                    return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
-                  }
-                  return [...prev, { ...item, qty: 1 }];
-                })}>Agregar al carrito</button>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => handleAddToCart(item)}>Agregar al carrito</button>
               </div>
             ))}
           </div>
@@ -193,13 +200,7 @@ const Shop: React.FC = () => {
                 <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
                 <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
                 <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
-                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => setCart(prev => {
-                  const found = prev.find((p) => p.id === item.id);
-                  if (found) {
-                    return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
-                  }
-                  return [...prev, { ...item, qty: 1 }];
-                })}>Agregar al carrito</button>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => handleAddToCart(item)}>Agregar al carrito</button>
               </div>
             ))}
           </div>
@@ -211,13 +212,7 @@ const Shop: React.FC = () => {
                 <div className="font-semibold text-gray-900 mb-1">{item.name}</div>
                 <div className="text-xs text-gray-500 mb-1 text-center">{item.desc}</div>
                 <div className="font-bold text-blue-700 mb-1">{item.price} puntos</div>
-                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => setCart(prev => {
-                  const found = prev.find((p) => p.id === item.id);
-                  if (found) {
-                    return prev.map(p => p.id === item.id ? { ...p, qty: p.qty + 1 } : p);
-                  }
-                  return [...prev, { ...item, qty: 1 }];
-                })}>Agregar al carrito</button>
+                <button className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 text-xs mt-1" onClick={() => handleAddToCart(item)}>Agregar al carrito</button>
               </div>
             ))}
           </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 
-export const CartIcon: React.FC<{ count: number; onClick: () => void }> = ({ count, onClick }) => (
-  <div className="cursor-pointer animate-fade-in" onClick={onClick}>
+export const CartIcon: React.FC<{ count: number; onClick: () => void; bump?: boolean }> = ({ count, onClick, bump }) => (
+  <div className={`cursor-pointer animate-fade-in ${bump ? 'animate-bounce' : ''}`} onClick={onClick}>
     <div className="relative">
       <svg className="w-10 h-10 text-blue-700 drop-shadow-lg" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
         <path d="M3 3h2l.4 2M7 13h10l4-8H5.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -21,7 +21,8 @@ export const CartDrawer: React.FC<{
   onClose: () => void;
   onRemove: (id: number) => void;
   onCheckout: () => void;
-}> = ({ open, items, onClose, onRemove, onCheckout }) => {
+  onQtyChange?: (id: number, qty: number) => void;
+}> = ({ open, items, onClose, onRemove, onCheckout, onQtyChange }) => {
   const total = items.reduce((acc, item) => acc + item.price * item.qty, 0);
   return (
     <div className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
@@ -41,25 +42,28 @@ export const CartDrawer: React.FC<{
                   <div className="font-semibold text-gray-900 text-sm">{item.name}</div>
                   <div className="text-xs text-gray-500">{item.price} pts x {item.qty}</div>
                 </div>
+                <div className="flex flex-col items-center gap-1">
+                  <button onClick={() => onQtyChange && onQtyChange(item.id, item.qty + 1)} className="text-green-600 hover:text-green-800 text-lg font-bold">+</button>
+                  <span className="text-sm font-semibold">{item.qty}</span>
+                  <button onClick={() => onQtyChange && onQtyChange(item.id, Math.max(1, item.qty - 1))} className="text-blue-600 hover:text-blue-800 text-lg font-bold">-</button>
+                </div>
                 <button onClick={() => onRemove(item.id)} className="text-red-500 hover:text-red-700 text-lg">🗑️</button>
               </li>
             ))}
           </ul>
         )}
       </div>
-      <div className="p-4 border-t flex flex-col gap-2">
-        <div className="flex justify-between font-bold text-blue-800 text-lg">
-          <span>Total:</span>
-          <span>{total} pts</span>
-        </div>
-        <button
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-semibold disabled:opacity-50"
-          disabled={items.length === 0}
-          onClick={onCheckout}
-        >
-          Canjear todo
-        </button>
+      <div className="flex justify-between font-bold text-blue-800 text-lg">
+        <span>Total:</span>
+        <span>{total} pts</span>
       </div>
+      <button
+        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 text-sm font-semibold disabled:opacity-50"
+        disabled={items.length === 0}
+        onClick={onCheckout}
+      >
+        Canjear todo
+      </button>
     </div>
   );
 }; 

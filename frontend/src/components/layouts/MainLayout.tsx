@@ -21,7 +21,7 @@ import Modal from '../ui/Modal';
 // import ToastContainer from '@/components/ui/ToastContainer';
 
 const MainLayout: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { language } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -47,28 +47,32 @@ const MainLayout: React.FC = () => {
     }
   }, [user]);
 
+  React.useEffect(() => {
+    i18n.changeLanguage(language);
+  }, [language, i18n]);
+
   const navigationItems = [
     { path: '/search', icon: SearchIcon, label: t('search.title') },
     { path: '/', icon: Home, label: t('dashboard') },
-    { path: '/vulnerabilities', icon: Dashboard, label: t('Vulnerabilidades') },
-    { path: '/challenges', icon: Dashboard, label: t('Retos y desafios') },
+    { path: '/vulnerabilities', icon: Dashboard, label: t('vulnerabilities') },
+    { path: '/challenges', icon: Dashboard, label: t('challenges') },
     { path: '/rankings', icon: List, label: t('rankings.title') },
     { path: '/chat', icon: UserMultiple, label: t('chat.title') },
-    { path: '/shop', icon: ShoppingCart, label: t('Tienda') },
-    { path: '/contributions', icon: Report, label: t('Contribuciones') },
-    { path: '/team', icon: UserMultiple, label: t('Equipo') },
-    { path: '/gulag', icon: Dashboard, label: t('Gulag') },
-    { path: '/mvp', icon: Dashboard, label: t('MVP') },
-    { path: '/list', icon: List, label: t('Listado de reportes') },
-    { path: '/report', icon: Report, label: t('Reportes') },
-    { path: '/notifications', icon: Notification, label: t('Notificaciones') },
-    { path: '/profile', icon: User, label: t('Perfil') },
-    { path: '/settings', icon: Settings, label: t('Configuraciones') },
+    { path: '/shop', icon: ShoppingCart, label: t('shop') },
+    { path: '/contributions', icon: Report, label: t('contributions') },
+    { path: '/team', icon: UserMultiple, label: t('team') },
+    { path: '/gulag', icon: Dashboard, label: t('gulag') },
+    { path: '/mvp', icon: Dashboard, label: t('mvp') },
+    { path: '/list', icon: List, label: t('list') },
+    { path: '/report', icon: Report, label: t('report') },
+    { path: '/notifications', icon: Notification, label: t('notifications') },
+    { path: '/profile', icon: User, label: t('profile') },
+    { path: '/settings', icon: Settings, label: t('settingsMenu') },
   ];
 
   // Add admin links only for admin users
   const adminNavigationItems = user?.role === 'admin' 
-    ? [...navigationItems, { path: '/admin', icon: Settings, label: 'Admin' }, { path: '/logs', icon: List, label: 'Logs' }]
+    ? [...navigationItems, { path: '/admin', icon: Settings, label: t('admin.title') }, { path: '/logs', icon: List, label: t('logs') }]
     : navigationItems;
 
   const isActive = useCallback((path: string) => {
@@ -202,13 +206,13 @@ const MainLayout: React.FC = () => {
                         className="w-full text-left px-4 py-2 rounded-md hover:bg-blue-50 text-blue-700 font-medium transition-colors duration-200"
                         onClick={handleProfileClick}
                       >
-                        Administrar cuenta
+                        {t('manageAccount', 'Administrar cuenta')}
                       </button>
                       <button
                         className="w-full text-left px-4 py-2 rounded-md hover:bg-red-50 text-red-600 font-medium transition-colors duration-200"
                         onClick={handleLogout}
                       >
-                        Cerrar sesión
+                        {t('logout', 'Cerrar sesión')}
                       </button>
                     </div>
                   </div>

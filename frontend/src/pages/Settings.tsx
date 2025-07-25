@@ -4,6 +4,9 @@ import { ChevronDown, ChevronRight, Security, View, Map, User as UserIcon, Locke
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
+import Modal from '../components/ui/Modal';
+import { useAuth } from '../contexts/AuthContext';
+import apiService from '../services/api';
 
 const user = {
   avatar: 'https://i.pinimg.com/736x/23/8d/ad/238dad5a2186e67d9c11d47a50f5100d.jpg',
@@ -27,17 +30,19 @@ const SettingsLayout: React.FC = () => {
   const { theme, setTheme } = useTheme();
   const [pendingTheme, setPendingTheme] = useState(theme);
   const [showThemeSaved, setShowThemeSaved] = useState(false);
-
-  // Mover sections aquí para poder usar t
-  const sections = [
-    { label: t('settings.menu.home', 'Inicio'), icon: UserIcon, iconColor: 'text-blue-600', bg: 'bg-blue-50' },
-    { label: t('settings.menu.personalInfo', 'Informacion Personal'), icon: Locked, iconColor: 'text-green-600', bg: 'bg-green-50' },
-    { label: t('settings.menu.privacy', 'Datos Y Privacidad'), icon: Security, iconColor: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { label: t('settings.menu.security', 'Seguridad'), icon: View, iconColor: 'text-purple-600', bg: 'bg-purple-50' },
-    { label: t('settings.menu.activity', 'Actividad'), icon: Map, iconColor: 'text-pink-600', bg: 'bg-pink-50' },
-    { label: t('settings.menu.languageTheme', 'Idioma y tema'), icon: Globe, iconColor: 'text-cyan-600', bg: 'bg-cyan-50' },
-    { label: t('settings.menu.general', 'Informacion General'), icon: Notification, iconColor: 'text-orange-600', bg: 'bg-orange-50' },
-  ];
+  const { user, updateProfile } = useAuth();
+  const [editOpen, setEditOpen] = useState(false);
+  const [editData, setEditData] = useState({
+    nombre: user?.nombre || '',
+    apellidos: user?.apellidos || '',
+    nickname: user?.nickname || '',
+    email: user?.email || '',
+    avatar: user?.avatar || '',
+  });
+  const [avatarFile, setAvatarFile] = useState<File|null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>(user?.avatar || '');
+  const [saving, setSaving] = useState(false);
+  const [editMsg, setEditMsg] = useState<string|null>(null);
 
   useEffect(() => {
     setPendingLanguage(language);
@@ -58,6 +63,71 @@ const SettingsLayout: React.FC = () => {
     setShowThemeSaved(true);
     setTimeout(() => setShowThemeSaved(false), 2000);
   };
+
+  useEffect(() => {
+    if (user) {
+      setEditData({
+        nombre: user.nombre || '',
+        apellidos: user.apellidos || '',
+        nickname: user.nickname || '',
+        email: user.email || '',
+        avatar: user.avatar || '',
+      });
+      setAvatarPreview(user.avatar || '');
+      setAvatarFile(null);
+    }
+  }, [user, editOpen]);
+
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setAvatarFile(file);
+      setAvatarPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setEditMsg(null);
+    let avatarUrl = editData.avatar;
+    if (avatarFile) {
+      try {
+        const uploadRes = await apiService.uploadFile('/upload/avatar', avatarFile);
+        if (uploadRes && uploadRes.url) {
+          avatarUrl = uploadRes.url;
+        } else {
+          setEditMsg(t('settings.profile.avatarUploadError', 'Error al subir el avatar.'));
+          setSaving(false);
+          return;
+        }
+      } catch (err) {
+        setEditMsg(t('settings.profile.avatarUploadError', 'Error al subir el avatar.'));
+        setSaving(false);
+        return;
+      }
+    }
+    const ok = await updateProfile({ ...editData, avatar: avatarUrl });
+    setSaving(false);
+    setEditMsg(ok ? t('settings.profile.updateSuccess', 'Perfil actualizado correctamente.') : t('settings.profile.updateError', 'Error al actualizar el perfil.'));
+    if (ok) setTimeout(() => setEditOpen(false), 1200);
+  };
+
+  // Mover sections aquí para poder usar t
+  const sections = [
+    { label: t('settings.menu.home', 'Inicio'), icon: UserIcon, iconColor: 'text-blue-600', bg: 'bg-blue-50' },
+    { label: t('settings.menu.personalInfo', 'Informacion Personal'), icon: Locked, iconColor: 'text-green-600', bg: 'bg-green-50' },
+    { label: t('settings.menu.privacy', 'Datos Y Privacidad'), icon: Security, iconColor: 'text-yellow-600', bg: 'bg-yellow-50' },
+    { label: t('settings.menu.security', 'Seguridad'), icon: View, iconColor: 'text-purple-600', bg: 'bg-purple-50' },
+    { label: t('settings.menu.activity', 'Actividad'), icon: Map, iconColor: 'text-pink-600', bg: 'bg-pink-50' },
+    { label: t('settings.menu.languageTheme', 'Idioma y tema'), icon: Globe, iconColor: 'text-cyan-600', bg: 'bg-cyan-50' },
+    { label: t('settings.menu.general', 'Informacion General'), icon: Notification, iconColor: 'text-orange-600', bg: 'bg-orange-50' },
+  ];
 
   // Renderiza la tarjeta de información personal
   const renderPersonalInfo = () => (
@@ -87,12 +157,12 @@ const SettingsLayout: React.FC = () => {
           </div>
           <div className="flex items-center px-8 py-5">
             <div className="flex-1">{t('settings.profile.birthDate', 'Fecha de nacimiento')}</div>
-            <div className="text-gray-900 font-medium">{user.nacimiento}</div>
+            <div className="text-gray-900 font-medium">{user?.nacimiento || ''}</div>
             <button className="ml-4 text-gray-400 hover:text-blue-700"><ChevronRight size={20} /></button>
           </div>
           <div className="flex items-center px-8 py-5">
             <div className="flex-1">{t('settings.profile.gender', 'Género')}</div>
-            <div className="text-gray-900 font-medium">{user.genero}</div>
+            <div className="text-gray-900 font-medium">{user?.genero || ''}</div>
             <button className="ml-4 text-gray-400 hover:text-blue-700"><ChevronRight size={20} /></button>
           </div>
         </div>
@@ -110,7 +180,7 @@ const SettingsLayout: React.FC = () => {
           </div>
           <div className="flex items-center px-8 py-5">
             <div className="flex-1">{t('settings.profile.phone', 'Teléfono')}</div>
-            <div className="text-gray-900 font-medium">{user.telefono}</div>
+            <div className="text-gray-900 font-medium">{user?.telefono || ''}</div>
             <button className="ml-4 text-gray-400 hover:text-blue-700"><ChevronRight size={20} /></button>
           </div>
         </div>
@@ -646,13 +716,13 @@ const SettingsLayout: React.FC = () => {
         {/* Header de usuario grande */}
         <div className="w-full flex flex-col items-center justify-center bg-white shadow-md border-b px-0 pt-0 pb-0 mb-0 relative">
           <div className="w-full max-w-5xl flex flex-col md:flex-row items-center md:items-end gap-8 px-12 pt-12 pb-8">
-            <img src={user.avatar} alt="avatar" className="w-32 h-32 rounded-full border-4 border-blue-200 shadow" />
+            <img src={user?.avatar || ''} alt="avatar" className="w-32 h-32 rounded-full border-4 border-blue-200 shadow" />
             <div className="flex-1">
-              <div className="font-bold text-3xl mb-1">{user.nombre}</div>
-              <div className="text-blue-600 font-semibold text-xl mb-1">@{user.nickname}</div>
-              <div className="text-gray-500 text-lg">{user.email}</div>
+              <div className="font-bold text-3xl mb-1">{user?.nombre || ''}</div>
+              <div className="text-blue-600 font-semibold text-xl mb-1">@{user?.nickname || ''}</div>
+              <div className="text-gray-500 text-lg">{user?.email || ''}</div>
             </div>
-            <button className="bg-blue-600 text-white px-7 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition-colors text-lg">{t('settings.general.manageAccount', 'Gestionar cuenta')}</button>
+            <button className="bg-blue-600 text-white px-7 py-3 rounded-lg font-semibold shadow hover:bg-blue-700 transition-colors text-lg" onClick={() => setEditOpen(true)}>{t('settings.general.manageAccount', 'Gestionar cuenta')}</button>
           </div>
         </div>
         {/* Renderiza la pestaña de inicio, información personal, datos y privacidad, seguridad, actividad, información general o idioma y tema según selección */}
@@ -664,6 +734,31 @@ const SettingsLayout: React.FC = () => {
         {selected === 'Informacion General' && renderInformacionGeneral()}
         {selected === 'Idioma y tema' && renderIdiomaTema()}
       </main>
+      <Modal open={editOpen} onClose={() => setEditOpen(false)}>
+        <form className="flex flex-col gap-4 w-80" onSubmit={handleEditSubmit}>
+          <h2 className="text-xl font-bold mb-2">{t('settings.profile.editProfile', 'Editar perfil')}</h2>
+          <label className="flex flex-col text-sm font-medium">Nombre
+            <input name="nombre" value={editData.nombre} onChange={handleEditChange} className="border rounded px-2 py-1 mt-1" required />
+          </label>
+          <label className="flex flex-col text-sm font-medium">Apellidos
+            <input name="apellidos" value={editData.apellidos} onChange={handleEditChange} className="border rounded px-2 py-1 mt-1" required />
+          </label>
+          <label className="flex flex-col text-sm font-medium">Nickname
+            <input name="nickname" value={editData.nickname} onChange={handleEditChange} className="border rounded px-2 py-1 mt-1" required />
+          </label>
+          <label className="flex flex-col text-sm font-medium">Email
+            <input name="email" type="email" value={editData.email} onChange={handleEditChange} className="border rounded px-2 py-1 mt-1" required />
+          </label>
+          <label className="flex flex-col text-sm font-medium">Avatar
+            <input name="avatar" type="file" accept="image/*" onChange={handleAvatarChange} className="border rounded px-2 py-1 mt-1" />
+            {avatarPreview && (
+              <img src={avatarPreview} alt="preview" className="w-20 h-20 rounded-full mt-2 object-cover border" />
+            )}
+          </label>
+          <button type="submit" className="bg-blue-600 text-white py-2 rounded font-semibold mt-2 disabled:opacity-50" disabled={saving}>{saving ? t('settings.profile.saving', 'Guardando...') : t('settings.profile.save', 'Guardar cambios')}</button>
+          {editMsg && <div className={`text-center text-sm mt-2 ${editMsg.includes('correctamente') ? 'text-green-600' : 'text-red-600'}`}>{editMsg}</div>}
+        </form>
+      </Modal>
     </div>
   );
 };

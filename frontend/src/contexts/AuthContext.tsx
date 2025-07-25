@@ -21,6 +21,9 @@ export interface AuthUser {
   rangoIcon: string;
   role?: string;
   points: number; // <-- agregado
+  nacimiento?: string;
+  genero?: string;
+  telefono?: string;
   preferences?: {
     language: 'es' | 'en';
     theme: 'light' | 'dark';

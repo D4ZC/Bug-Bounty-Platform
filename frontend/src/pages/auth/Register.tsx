@@ -38,6 +38,7 @@ const Register: React.FC = () => {
       avatar: undefined,
     });
     if (success) {
+      localStorage.setItem('tutorialShowNext', 'true');
       navigate('/', { replace: true });
     } else {
       setError('No se pudo crear la cuenta. Intenta con otro email o revisa los datos.');
