@@ -6,7 +6,7 @@ export interface ShopItem {
   price: number;
   img: string;
   desc: string;
-  category: 'fondo' | 'marco' | 'sticker';
+  category: 'fondo' | 'marco' | 'sticker' | 'avatar' | 'PortadaPerfil';
 }
 
 export interface UserItems {
@@ -15,6 +15,8 @@ export interface UserItems {
     fondo?: ShopItem;
     marco?: ShopItem;
     sticker?: ShopItem;
+    avatar?: ShopItem;
+    PortadaPerfil?: ShopItem;
   };
 }
 
@@ -23,7 +25,7 @@ interface ShopContextType {
   purchaseItem: (item: ShopItem) => void;
   selectItem: (item: ShopItem) => boolean; // returns true if replacement needed
   isItemPurchased: (itemId: number) => boolean;
-  getSelectedItem: (category: 'fondo' | 'marco' | 'sticker') => ShopItem | undefined;
+  getSelectedItem: (category: ShopItem['category']) => ShopItem | undefined;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -89,7 +91,7 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
     return userItems.purchased.some(item => item.id === itemId);
   };
 
-  const getSelectedItem = (category: 'fondo' | 'marco' | 'sticker'): ShopItem | undefined => {
+  const getSelectedItem = (category: ShopItem['category']): ShopItem | undefined => {
     return userItems.selected[category];
   };
 

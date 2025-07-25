@@ -255,11 +255,9 @@ const UsersScorePage: React.FC = () => {
         <div className="mb-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
           Clasificación {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
         </div>
-        <div className="mb-2 text-lg font-bold text-gray-700">{totalVulns} vulnerabilidades resueltas</div>
         <div className="mb-4 text-base font-semibold text-gray-600">Usuarios</div>
         <UserRankingTable users={sortedUsers.map(u => ({ ...u, nivel: 1 }))} />
         {/* Tabla de equipos debajo */}
-        <div className="mt-12 mb-2 text-lg font-bold text-gray-700">{totalTeamVulns} vulnerabilidades resueltas por equipos</div>
         <div className="mb-4 text-base font-semibold text-gray-600">Equipos</div>
         <TeamRankingTable teams={sortedTeams} />
       </div>

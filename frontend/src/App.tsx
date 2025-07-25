@@ -1,15 +1,12 @@
 import React from 'react';
-import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
-import AuthLayout from '@/components/layouts/AuthLayout';
 
 // Pages
 import Dashboard from '@/pages/Dashboard';
-import Login from '@/pages/auth/Login';
-import Register from '@/pages/auth/Register';
 import Vulnerabilities from '@/pages/Vulnerabilities';
 import Challenges from '@/pages/Challenges';
 import Shop from '@/pages/Shop';
@@ -19,7 +16,6 @@ import Team from '@/pages/Team';
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
-import TeamsScorePage from '@/pages/TeamsScorePage';
 import UsersScorePage from '@/pages/UsersScorePage';
 import FormularioPage from '@/pages/formulario';
 import CrearVulnerabilidad from '@/pages/formulario/crear';
@@ -29,15 +25,8 @@ import Duelos from '@/pages/Duelos';
 import Equipos from '@/pages/Equipos';
 import Reglas from '@/pages/Reglas';
 
-// Components
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
-
 // Contexts
 import { ShopProvider } from '@/contexts/ShopContext';
-
-// Hooks
-import { useAuth } from '@/contexts/AuthContext';
 
 function App() {
   return (

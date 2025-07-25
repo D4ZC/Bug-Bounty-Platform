@@ -4,6 +4,24 @@ import { useShop, ShopItem } from '../contexts/ShopContext';
 import ReplaceItemModal from '../components/ReplaceItemModal';
 import { useWallet } from '../contexts/WalletContext';
 import { useAuth } from '../contexts/AuthContext';
+// Importa insignias
+import insignia1 from '../assets/images/Insignias/Insignia1.png';
+import insignia2 from '../assets/images/Insignias/Insignia2.png';
+import insignia3 from '../assets/images/Insignias/Insignia3.png';
+import insignia4 from '../assets/images/Insignias/Insignia4.png';
+import insignia5 from '../assets/images/Insignias/Insignia5.png';
+import insignia6 from '../assets/images/Insignias/Insignia6.png';
+import insignia7 from '../assets/images/Insignias/Insignia7.png';
+
+const ALL_BADGES = [
+  { img: insignia1, name: 'Insignia 1' },
+  { img: insignia2, name: 'Insignia 2' },
+  { img: insignia3, name: 'Insignia 3' },
+  { img: insignia4, name: 'Insignia 4' },
+  { img: insignia5, name: 'Insignia 5' },
+  { img: insignia6, name: 'Insignia 6' },
+  { img: insignia7, name: 'Insignia 7' },
+];
 
 const pieData = [
   { name: 'HARD', value: 50, color: '#f43f5e' },
@@ -87,7 +105,8 @@ const Profile: React.FC = () => {
   const { userItems, selectItem, getSelectedItem } = useShop();
   const { coins, bluepoints } = useWallet();
   const { user } = useAuth();
-  const [activeSection, setActiveSection] = useState<'avatar' | 'fondos' | 'marcos' | 'badges' | null>(null);
+  // Cambia el tipo de activeSection:
+  const [activeSection, setActiveSection] = useState<'avatar' | 'fondos' | 'marcos' | 'badges' | 'portada' | null>(null);
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [desc, setDesc] = useState(mockUser.description);
@@ -121,6 +140,13 @@ const Profile: React.FC = () => {
   const [selectedAvatar, setSelectedAvatar] = useState(() => {
     return localStorage.getItem('selectedAvatar') || '';
   });
+  // Portadas de perfil compradas
+  const portadasCompradas = userItems.purchased.filter(item => item.category === 'PortadaPerfil');
+  const [selectedPortada, setSelectedPortada] = useState(() => localStorage.getItem('selectedPortadaPerfil') || '');
+  const handleSelectPortada = (img: string) => {
+    setSelectedPortada(img);
+    localStorage.setItem('selectedPortadaPerfil', img);
+  };
 
   // Actualizar fondo al seleccionar
   const handleSelectBg = (img: string) => {
@@ -152,7 +178,7 @@ const Profile: React.FC = () => {
   // Avatares comprados
   const avatarsComprados = userItems.purchased.filter(item => item.category === 'avatar');
 
-  // Usar fondo seleccionado en el div principal
+  // Usar solo el fondo seleccionado en el div principal
   const mainBg = selectedBg || 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80';
 
   // Likes/dislikes totales de los formularios publicados por el usuario
@@ -194,7 +220,7 @@ const Profile: React.FC = () => {
 
   // Modal para FONDOS, MARCOS, BADGES
   const closeSectionModal = () => setActiveSection(null);
-  const openSectionModal = (section: 'avatar' | 'fondos' | 'marcos' | 'badges') => setActiveSection(section);
+  const openSectionModal = (section: 'avatar' | 'fondos' | 'marcos' | 'badges' | 'portada') => setActiveSection(section);
 
   // Función para manejar la selección de ítems
   const handleItemSelection = (item: ShopItem) => {
@@ -223,6 +249,37 @@ const Profile: React.FC = () => {
 
   // Carrusel handlers
   // Eliminar los handlers prevImg y nextImg
+
+  // Estado para insignias seleccionadas (persistente)
+  const [selectedBadges, setSelectedBadges] = useState<string[]>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('selectedBadges');
+      if (saved) return JSON.parse(saved);
+    }
+    // Por defecto, las 3 primeras
+    return ALL_BADGES.slice(0, 3).map(b => b.img);
+  });
+  useEffect(() => {
+    localStorage.setItem('selectedBadges', JSON.stringify(selectedBadges));
+  }, [selectedBadges]);
+
+  // Cambia toggleBadge para permitir deseleccionar si hay más de 1 seleccionada
+  const toggleBadge = (img: string) => {
+    if (selectedBadges.includes(img)) {
+      if (selectedBadges.length > 1) {
+        setSelectedBadges(selectedBadges.filter(b => b !== img));
+      }
+      // Si solo hay 1, no permite quitarla
+      return;
+    } else {
+      if (selectedBadges.length < 3) {
+        setSelectedBadges([...selectedBadges, img]);
+      } else {
+        // Si ya hay 3, reemplaza el más antiguo
+        setSelectedBadges([...selectedBadges.slice(1), img]);
+      }
+    }
+  };
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center bg-gray-50 py-8 px-2">
@@ -262,6 +319,7 @@ const Profile: React.FC = () => {
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'avatar' ? 'border-yellow-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-yellow-50`} onClick={() => openSectionModal('avatar')}>AVATAR</button>
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'fondos' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('fondos')}>FONDOS</button>
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'marcos' ? 'border-purple-600 shadow-lg' : 'border-gray-200'} bg-gray-100 hover:bg-purple-50`} onClick={() => openSectionModal('marcos')}>MARCOS</button>
+              <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'portada' ? 'border-cyan-600 shadow-lg' : 'border-gray-200'} bg-gray-100 hover:bg-cyan-50`} onClick={() => openSectionModal('portada')}>Portada de Perfil</button>
               <button className={`w-full py-3 rounded-lg font-bold text-lg border ${activeSection === 'badges' ? 'border-blue-500 shadow' : 'border-gray-200'} bg-gray-100 hover:bg-blue-50`} onClick={() => openSectionModal('badges')}>BADGES</button>
             </div>
           </div>
@@ -529,20 +587,63 @@ const Profile: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-strong-blue animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
             <h2 className="font-gamer-title text-2xl text-strong-blue mb-4">Tus badges</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-6 w-full">
-              {badgesComprados.length === 0 ? (
-                <span className="text-gray-500 col-span-2 md:col-span-3">No tienes badges.</span>
-              ) : (
-                badgesComprados.map(badge => (
-                  <div key={badge.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md">
+            <div className="flex flex-row gap-6 w-full overflow-x-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200 py-2 px-1">
+              {ALL_BADGES.map(badge => {
+                const selected = selectedBadges.includes(badge.img);
+                return (
+                  <div
+                    key={badge.img}
+                    className={`relative flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md cursor-pointer border-2 min-w-[110px] ${selected ? 'border-green-500' : 'border-transparent'}`}
+                    onClick={() => toggleBadge(badge.img)}
+                  >
                     <img src={badge.img} alt={badge.name} className="w-20 h-20 object-cover rounded mb-2" />
                     <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{badge.name}</span>
+                    {selected && (
+                      <span className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow-lg">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-4 text-gray-500 text-sm">Selecciona exactamente 3 insignias.</div>
+            <button
+              className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
+              onClick={closeSectionModal}
+              disabled={selectedBadges.length !== 3}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para Portada de Perfil */}
+      {activeSection === 'portada' && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white dark:bg-carbon-dark rounded-xl shadow-2xl p-8 w-[90vw] max-w-2xl max-h-[80vh] flex flex-col items-center border-2 border-cyan-400 animate-fade-in overflow-y-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200">
+            <h2 className="font-gamer-title text-2xl text-cyan-600 mb-4">Tus Portadas de Perfil</h2>
+            <div className="flex flex-row gap-6 w-full overflow-x-auto scrollbar-thin scrollbar-thumb-cyber-blue scrollbar-track-gray-200 py-2 px-1">
+              {portadasCompradas.length === 0 ? (
+                <span className="text-gray-500">No tienes portadas compradas.</span>
+              ) : (
+                portadasCompradas.map(portada => (
+                  <div key={portada.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
+                    <img src={portada.img} alt={portada.name} className="w-28 h-20 object-cover rounded mb-2" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{portada.name}</span>
+                    <button
+                      className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedPortada === portada.img ? 'bg-green-500 text-white' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}
+                      onClick={() => handleSelectPortada(portada.img)}
+                    >
+                      {selectedPortada === portada.img ? 'Seleccionado' : 'Seleccionar'}
+                    </button>
                   </div>
                 ))
               )}
             </div>
             <button
-              className="mt-6 px-4 py-2 rounded font-gamer-body bg-purple-200 text-purple-900 hover:bg-purple-300 transition-colors border border-purple-300"
+              className="mt-6 px-4 py-2 rounded font-gamer-body bg-cyan-200 text-cyan-900 hover:bg-cyan-300 transition-colors border border-cyan-300"
               onClick={closeSectionModal}
             >
               Cerrar

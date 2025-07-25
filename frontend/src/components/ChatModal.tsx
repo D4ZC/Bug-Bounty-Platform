@@ -35,7 +35,19 @@ const mockGlobalMessagesInit = [
   { from: 'Otro', text: '¡Hola a todos!', time: '09:56' },
 ];
 
-const ChatModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onClose }) => {
+const mensajes = [
+  { title: 'HOLA', content: '¡Bienvenido a la plataforma! Aquí recibirás tus notificaciones importantes.' },
+  { title: 'Recordatorio', content: 'No olvides revisar los nuevos retos de la semana.' },
+  { title: 'Actualización', content: 'Se han mejorado las funciones de la tienda. ¡Explora las novedades!' },
+];
+
+interface ChatModalProps {
+  open: boolean;
+  onClose: () => void;
+  position?: 'left' | 'center';
+}
+
+const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center' }) => {
   const [tab, setTab] = useState<'global' | 'equipo' | 'usuario'>('global');
   const [selectedUser, setSelectedUser] = useState<number>(mockTeam.users[0].id);
   const [input, setInput] = useState('');
@@ -47,7 +59,13 @@ const ChatModal: React.FC<{ open: boolean; onClose: () => void }> = ({ open, onC
   const [selectedMsg, setSelectedMsg] = useState(0);
   if (!open) return null;
   return (
-    <div className="fixed top-[50px] left-0 z-50 w-1/2 h-[100vh] bg-white rounded-r-2xl shadow-2xl flex flex-col animate-fade-in border border-gray-300">
+    <div
+      className={
+        position === 'left'
+          ? 'fixed left-0 top-24 z-50 w-[480px] h-[calc(100vh-96px)] bg-white shadow-2xl flex flex-col animate-fade-in border border-gray-300 rounded-none rounded-r-2xl'
+          : 'fixed top-[50px] left-0 z-50 w-1/2 h-[100vh] bg-white rounded-r-2xl shadow-2xl flex flex-col animate-fade-in border border-gray-300'
+      }
+    >
       {/* Encabezado */}
       <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-tr-2xl">
         <span className="font-bold text-xl flex items-center gap-2">💬 Chat</span>

@@ -1,4 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import insigniaImg from '../assets/images/Insignias/Insignia.png';
+import insignia1 from '../assets/images/Insignias/Insignia1.png';
+import insignia2 from '../assets/images/Insignias/Insignia2.png';
+import insignia3 from '../assets/images/Insignias/Insignia3.png';
+import insignia4 from '../assets/images/Insignias/Insignia4.png';
+import insignia5 from '../assets/images/Insignias/Insignia5.png';
+import insignia6 from '../assets/images/Insignias/Insignia6.png';
+import insignia7 from '../assets/images/Insignias/Insignia7.png';
 
 interface User {
   id: string;
@@ -22,9 +30,205 @@ function getAvatarProps(name: string) {
   return { color, initials };
 }
 
-const UserRankingTable: React.FC<UserRankingTableProps> = ({ users }) => {
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+// Generar usuarios mock realistas y equipos
+const TEAM_NAMES = ['P-TECH', 'Data', 'Apps', 'Consulting', 'CyberWolves'];
+const CONSULTING_USERS = [
+  { id: 'USR-001', name: 'Alex Turner', team: 'Consulting' },
+  { id: 'USR-002', name: 'Samus Aran', team: 'Consulting' },
+  { id: 'USR-003', name: 'D4ZC', team: 'Consulting' },
+  { id: 'USR-004', name: 'Zero Cool', team: 'Consulting' },
+  { id: 'USR-005', name: 'Trinity', team: 'Consulting' },
+  { id: 'USR-006', name: 'Neo', team: 'Consulting' },
+  { id: 'USR-007', name: 'Ada Lovelace', team: 'Consulting' },
+  { id: 'USR-008', name: 'Kevin Mitnick', team: 'Consulting' },
+  { id: 'USR-009', name: 'Cyb3rW0lf', team: 'Consulting' },
+  { id: 'USR-010', name: 'Rootkit', team: 'Consulting' },
+];
+const MOCK_NAMES = [
+  'Sophie Müller', 'Liam Smith', 'Emma Johnson', 'Noah Williams', 'Olivia Brown',
+  'Elena García', 'Lucas Martin', 'Mia Lee', 'Ethan Kim', 'Ava Chen',
+  'Mateo Rossi', 'Isabella Silva', 'Leo Dubois', 'Chloe Laurent', 'Mason Clark',
+  'Emily Davis', 'Benjamin Wilson', 'Charlotte Moore', 'Henry Taylor', 'Amelia Anderson',
+  'Jack Thomas', 'Grace Martinez', 'Sebastian Lopez', 'Victoria Perez', 'Daniel Harris',
+  'Sofia Gonzalez', 'David Young', 'Ella King', 'Gabriel Scott', 'Lily Walker',
+  'Julian Hall', 'Zoe Allen', 'Samuel Wright', 'Hannah Adams', 'Alexander Nelson',
+  'Layla Baker', 'Owen Carter', 'Scarlett Rivera', 'Isaac Evans', 'Penelope Murphy',
+];
+const MOCK_USERS = MOCK_NAMES.map((name, i) => ({
+  id: `USR-${i + 11}`,
+  name,
+  team: TEAM_NAMES[(i + 1) % TEAM_NAMES.length],
+}));
+// Unir todos los usuarios
+const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => ({
+  ...u,
+  role: 'Miembro',
+  stats: { puntos: Math.floor(Math.random() * 1000), vulnerabilidades: Math.floor(Math.random() * 100), retos: Math.floor(Math.random() * 50) },
+  badges: [],
+}));
 
+const ALL_BADGES = [
+  { img: insignia1, name: 'Insignia 1' },
+  { img: insignia2, name: 'Insignia 2' },
+  { img: insignia3, name: 'Insignia 3' },
+  { img: insignia4, name: 'Insignia 4' },
+  { img: insignia5, name: 'Insignia 5' },
+  { img: insignia6, name: 'Insignia 6' },
+  { img: insignia7, name: 'Insignia 7' },
+];
+
+const UserRankingTable: React.FC<UserRankingTableProps> = () => {
+  const [modalUser, setModalUser] = useState<User | null>(null);
+  const [showAll, setShowAll] = useState(false);
+  const [search, setSearch] = useState('');
+  const [filtered, setFiltered] = useState(ALL_USERS);
+
+  useEffect(() => {
+    setFiltered(
+      ALL_USERS.filter(u =>
+        u.name.toLowerCase().includes(search.toLowerCase()) ||
+        u.team.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search]);
+
+  // 1. Bloquea el scroll del body cuando cualquier modal esté abierto
+  useEffect(() => {
+    if (showAll || modalUser) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = original; };
+    }
+  }, [showAll, modalUser]);
+
+  // Asignar insignias diferentes a cada usuario (cíclico)
+  const INSIGNIAS = [
+    { img: insignia1, label: 'TOP 10 BUGS' },
+    { img: insignia2, label: 'MVP' },
+    { img: insignia3, label: 'BUG HUNTER DEL MES' },
+  ];
+
+  // Modal de usuario
+  const UserModal = ({ user, onClose, idx }: { user: User; onClose: () => void; idx: number }) => {
+    // Obtener insignias seleccionadas
+    let selectedBadges: string[] = [];
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('selectedBadges');
+      if (saved) selectedBadges = JSON.parse(saved);
+    }
+    if (!selectedBadges || selectedBadges.length !== 3) {
+      selectedBadges = ALL_BADGES.slice(0, 3).map(b => b.img);
+    }
+    const userInsignias = selectedBadges.map(img => ALL_BADGES.find(b => b.img === img)).filter(Boolean) as {img: string, name: string}[];
+    // Obtener portada seleccionada
+    const portada = typeof window !== 'undefined' ? localStorage.getItem('selectedPortadaPerfil') : null;
+    const bg = portada || 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80';
+    // Obtener avatar seleccionado
+    let selectedAvatar = '';
+    if (typeof window !== 'undefined') {
+      selectedAvatar = localStorage.getItem('selectedAvatar') || '';
+    }
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+        <div
+          className="relative bg-white rounded-2xl shadow-2xl flex flex-col items-center p-8 w-[340px] max-w-[90vw]"
+          style={{ backgroundImage: `url('${bg}')`, backgroundSize: 'cover', backgroundPosition: 'center' }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg mb-4 bg-gray-200 flex items-center justify-center overflow-hidden">
+            {selectedAvatar ? (
+              <img src={selectedAvatar} alt="avatar" className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <span className="text-4xl font-bold text-white bg-blue-500 w-full h-full flex items-center justify-center">{user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</span>
+            )}
+          </div>
+          <div className="text-2xl font-extrabold text-white drop-shadow mb-2 text-center">{user.name}</div>
+          <div className="text-base font-semibold text-white drop-shadow mb-1">Equipo: <span className="font-bold">{user.team}</span></div>
+          <div className="text-sm text-white/80 mb-1">ID: {user.id}</div>
+          {/* Insignias seleccionadas en V */}
+          <div className="flex flex-row gap-3 mt-4 mb-2 justify-center items-end" style={{ height: 70 }}>
+            {userInsignias.map((ins, i) => (
+              <div
+                key={i}
+                className="relative group"
+                style={
+                  i === 1
+                    ? { marginBottom: -12, zIndex: 2 }
+                    : { marginBottom: 0, zIndex: 1 }
+                }
+              >
+                <img src={ins.img} alt={ins.name} className="w-16 h-16 rounded-full border-2 border-yellow-500 shadow object-cover bg-white cursor-pointer" />
+                <span className="absolute left-1/2 -translate-x-1/2 bottom-[-2.2rem] bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg">
+                  {ins.name}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Modal de ranking completo
+  const RankingModal = ({ onClose }: { onClose: () => void }) => {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col p-6" onClick={e => e.stopPropagation()}>
+          <button className="absolute top-4 right-4 text-2xl text-gray-700 hover:text-red-600 font-bold z-10" onClick={onClose}>&times;</button>
+          <div className="mb-4 flex items-center gap-3">
+            <input
+              type="text"
+              className="w-64 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 mr-8"
+              placeholder="Buscar usuario o equipo..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <div className="overflow-y-auto transition-all duration-300" style={{ maxHeight: '65vh' }}>
+            <table className="min-w-full border-separate border-spacing-0 rounded-xl shadow-lg overflow-hidden" style={{ borderRadius: '16px' }}>
+              <thead className="sticky top-0 z-10" style={{ backgroundColor: '#181A20' }}>
+                <tr>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Puesto</th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Jugador</th>
+                  <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Puntos</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((user) => {
+                  const { color, initials } = getAvatarProps(user.name);
+                  const puesto = ALL_USERS.findIndex(u => u.id === user.id) + 1;
+                  return (
+                    <tr key={user.id} className={`transition group`} style={{ borderBottom: '1px solid #E5E7EB', background: 'inherit' }}>
+                      <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">{puesto}</td>
+                      <td className="px-4 py-3 flex items-center gap-3 min-w-[160px] align-middle">
+                        <span
+                          className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base shrink-0 ${color} cursor-pointer`}
+                          onClick={() => setModalUser(user)}
+                        >{initials}</span>
+                        <span
+                          className="truncate max-w-[120px] font-medium text-gray-800 cursor-pointer"
+                          title={user.name}
+                          onClick={() => setModalUser(user)}
+                        >{user.name}</span>
+                      </td>
+                      <td className="px-4 py-3 text-center align-middle">
+                        <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600 drop-shadow-sm">
+                          {user.stats.vulnerabilidades}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Mostrar solo los 5 primeros usuarios y el botón
   return (
     <div className="overflow-x-auto w-full">
       <table className="min-w-full border-separate border-spacing-0 rounded-xl shadow-lg overflow-hidden" style={{ borderRadius: '16px' }}>
@@ -33,68 +237,46 @@ const UserRankingTable: React.FC<UserRankingTableProps> = ({ users }) => {
             <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Puesto</th>
             <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Jugador</th>
             <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Puntos</th>
-            <th className="px-4 py-3 text-center"></th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user, idx) => {
+          {ALL_USERS.slice(0, 5).map((user) => {
             const { color, initials } = getAvatarProps(user.name);
-            const isExpanded = expandedId === user.id;
-            const rowBg = idx % 2 === 0 ? 'bg-white' : 'bg-[#F4F6FA]';
+            const puesto = ALL_USERS.findIndex(u => u.id === user.id) + 1;
             return (
-              <React.Fragment key={user.id}>
-                <tr className={`${rowBg} transition group`} style={{ borderBottom: '1px solid #E5E7EB' }}>
-                  <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">🇲🇽 <span className='ml-1'>{idx + 1}</span></td>
-                  <td className="px-4 py-3 flex items-center gap-3 min-w-[160px] align-middle">
-                    <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base shrink-0 ${color}`}>{initials}</span>
-                    <span className="truncate max-w-[120px] font-medium text-gray-800" title={user.name}>{user.name}</span>
-                  </td>
-                  <td className="px-4 py-3 text-center align-middle">
-                    <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600 drop-shadow-sm">
-                      {user.stats.vulnerabilidades}
-                      <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.388-2.46a1 1 0 00-1.176 0l-3.388 2.46c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118l-3.388-2.46c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.967z" /></svg>
-                    </span>
-                  </td>
-                  <td
-                    className="px-4 py-3 text-center align-middle cursor-pointer select-none"
-                    onClick={() => setExpandedId(isExpanded ? null : user.id)}
-                    aria-expanded={isExpanded}
-                  >
-                    <div className="flex items-center justify-end gap-3">
-                      <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-green-100">
-                        <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                      </span>
-                      <span className="inline-flex items-center justify-center w-5 h-5">
-                        <svg
-                          className={`w-[18px] h-[18px] text-blue-500 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`}
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          viewBox="0 0 24 24"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-                {isExpanded && (
-                  <tr className="bg-[#F4F6FA]">
-                    <td colSpan={4} className="px-6 pb-4 pt-2 rounded-b-xl">
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Rol:</span> {user.role}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Equipo:</span> {user.team}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Puntos:</span> {user.stats.vulnerabilidades}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Retos completados:</span> {user.stats.retos}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Insignias:</span> {user.badges.join(', ')}</div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
+              <tr key={user.id} className={`transition group`} style={{ borderBottom: '1px solid #E5E7EB', background: 'inherit' }}>
+                <td className="px-4 py-3 font-semibold text-gray-900 text-center align-middle">{puesto}</td>
+                <td className="px-4 py-3 flex items-center gap-3 min-w-[160px] align-middle">
+                  <span
+                    className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base shrink-0 ${color} cursor-pointer`}
+                    onClick={() => setModalUser(user)}
+                  >{initials}</span>
+                  <span
+                    className="truncate max-w-[120px] font-medium text-gray-800 cursor-pointer"
+                    title={user.name}
+                    onClick={() => setModalUser(user)}
+                  >{user.name}</span>
+                </td>
+                <td className="px-4 py-3 text-center align-middle">
+                  <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600 drop-shadow-sm">
+                    {user.stats.vulnerabilidades}
+                  </span>
+                </td>
+              </tr>
             );
           })}
         </tbody>
       </table>
-      {/* Elimino el botón de ranking de equipos */}
+      <div className="flex justify-center mt-4">
+        <button
+          className="px-6 py-2 rounded-lg bg-cyan-600 text-white font-bold shadow hover:bg-cyan-700 transition"
+          onClick={() => setShowAll(true)}
+        >
+          Mostrar ranking completo
+        </button>
+      </div>
+      {showAll && <RankingModal onClose={() => setShowAll(false)} />}
+      {modalUser && <UserModal user={modalUser} onClose={() => setModalUser(null)} idx={ALL_USERS.findIndex(u => u.id === modalUser.id)} />}
     </div>
   );
 };

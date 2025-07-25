@@ -51,9 +51,6 @@ const TeamCard: React.FC<TeamCardProps> = ({ team, expanded, onExpand, ranking }
             <span className="font-semibold text-gray-700">Retos completados:</span> {team.stats.retos}
           </div>
           <div className="mb-2">
-            <span className="font-semibold text-gray-700">Vulnerabilidades resueltas:</span> {team.stats.vulnerabilidades}
-          </div>
-          <div className="mb-2">
             <span className="font-semibold text-gray-700">Integrantes:</span>
             <ul className="ml-4 list-disc text-gray-600">
               {team.members.map(id => (

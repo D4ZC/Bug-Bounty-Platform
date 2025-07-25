@@ -18,11 +18,18 @@ import fondoGamer2 from '../assets/images/fondos/FONDO_GAMER2.jpg';
 import marco from '../assets/images/marcos/Marco.png';
 import marco1 from '../assets/images/marcos/Marco1.png';
 import marco2 from '../assets/images/marcos/Marco2.png';
+// Importa las portadas
+import portada from '../assets/images/PortadaPerfil/PortadaPerfil.jpg';
+import portada1 from '../assets/images/PortadaPerfil/PortadaPerfil1.jpg';
+import portada2 from '../assets/images/PortadaPerfil/PortadaPerfil2.jpg';
+import portada3 from '../assets/images/PortadaPerfil/PortadaPerfil3.jpg';
+import portada4 from '../assets/images/PortadaPerfil/PortadaPerfil4.jpg';
 
 const CATEGORIES = [
   { key: 'avatar', label: 'AVATAR' },
   { key: 'fondo', label: 'FONDOS' },
   { key: 'marco', label: 'MARCOS' },
+  { key: 'portada', label: 'Portada de Perfil' },
   { key: 'etc', label: 'RULETA' },
 ];
 
@@ -48,6 +55,13 @@ const PRODUCTS = {
     { id: 7, name: 'Marco Neon', price: 200, img: marco, desc: 'Marco neón brillante.', category: 'marco' as const },
     { id: 8, name: 'Marco Pro', price: 250, img: marco1, desc: 'Marco profesional.', category: 'marco' as const },
     { id: 9, name: 'Marco Retro', price: 180, img: marco2, desc: 'Marco retro.', category: 'marco' as const },
+  ],
+  portada: [
+    { id: 201, name: 'Portada 1', price: 150, img: portada, desc: 'Portada de perfil especial 1.', category: 'PortadaPerfil' as const },
+    { id: 202, name: 'Portada 2', price: 160, img: portada1, desc: 'Portada de perfil especial 2.', category: 'PortadaPerfil' as const },
+    { id: 203, name: 'Portada 3', price: 170, img: portada2, desc: 'Portada de perfil especial 3.', category: 'PortadaPerfil' as const },
+    { id: 204, name: 'Portada 4', price: 180, img: portada3, desc: 'Portada de perfil especial 4.', category: 'PortadaPerfil' as const },
+    { id: 205, name: 'Portada 5', price: 190, img: portada4, desc: 'Portada de perfil especial 5.', category: 'PortadaPerfil' as const },
   ],
   etc: [
     { id: 1, name: 'Producto X', price: 80, img: 'https://cdn.pixabay.com/photo/2016/03/31/20/11/box-1294471_1280.png', desc: 'Producto especial X.', category: 'etc' as const },
@@ -141,16 +155,16 @@ const Shop: React.FC = () => {
           {selectedCategory === 'etc' ? (
             <Ruleta />
           ) : (
-            <div className="grid grid-cols-2 gap-8 w-full max-w-lg overflow-y-auto" style={{ maxHeight: 520, minHeight: 200 }}>
+            <div className="grid grid-cols-2 gap-8 w-full max-w-lg overflow-y-auto" style={{ maxHeight: 520, minHeight: 200, padding: '16px 0' }}>
               {products.map((prod, idx) => (
                 <div
                   key={prod.id}
-                  className={`relative rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-hidden`}
+                  className={`relative rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-visible min-h-[60px] min-w-[60px]`}
                   onClick={() => setSelectedProductIdx(idx)}
-                  style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined }}
+                  style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined, margin: '8px 0' }}
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-200 opacity-70 group-hover:h-2 transition-all duration-300" />
-                  <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" />
+                  <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ zIndex: 2 }} />
                   <span className="font-semibold text-gray-700 text-center text-lg group-hover:text-cyan-700 transition-colors">{prod.name}</span>
                   <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded-full text-xs shadow">${prod.price}</span>
                   {isItemPurchased(prod.id) && (

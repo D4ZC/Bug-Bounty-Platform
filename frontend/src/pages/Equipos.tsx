@@ -128,25 +128,25 @@ const Equipos: React.FC = () => {
   return (
     <div className="w-full h-screen flex flex-row overflow-x-auto">
       {/* Panel izquierdo */}
-      <div style={{ width: 250, minWidth: 250, height: '100vh', background: '#23272b', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '24px 0', overflowY: 'auto' }} className="flex-shrink-0 flex-grow-0">
+      <div style={{ width: 330, minWidth: 330, height: '100vh', background: '#23272b', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '32px 0', overflowY: 'auto' }} className="flex-shrink-0 flex-grow-0">
         {/* Foto de equipo */}
-        <div style={{ position: 'relative', marginBottom: 18 }}>
+        <div style={{ position: 'relative', marginBottom: 24 }}>
           <img
             src={perfilUsuario.avatar}
             alt={perfilUsuario.nombre}
-            style={{ width: 130, height: 130, borderRadius: '50%', objectFit: 'cover', border: '3px solid #101114', boxShadow: '0 2px 8px 0 rgba(0,0,0,0.25)' }}
+            style={{ width: 160, height: 160, borderRadius: '50%', objectFit: 'cover', border: '4px solid #101114', boxShadow: '0 2px 12px 0 rgba(0,0,0,0.25)' }}
           />
           {isAdmin && (
             <button
               style={{
                 position: 'absolute',
-                right: 6,
-                bottom: 6,
+                right: 10,
+                bottom: 10,
                 background: '#181a20',
                 borderRadius: '50%',
                 border: '2px solid #23272b',
-                width: 28,
-                height: 28,
+                width: 36,
+                height: 36,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -157,28 +157,28 @@ const Equipos: React.FC = () => {
               title="Cambiar avatar"
               tabIndex={-1}
             >
-              <Pencil size={17} color="#b6e3ff" style={{ opacity: 0.7 }} />
+              <Pencil size={20} color="#b6e3ff" style={{ opacity: 0.7 }} />
             </button>
           )}
         </div>
         {/* Nombre de equipo */}
-        <div className="text-white font-extrabold text-lg mb-2 tracking-wide text-center" style={{ letterSpacing: 2 }}>{teamName}</div>
+        <div className="text-white font-extrabold text-xl mb-3 tracking-wide text-center" style={{ letterSpacing: 2 }}>{teamName}</div>
         {/* Descripción editable */}
-        <div className="w-full flex justify-center mb-4">
+        <div className="w-full flex justify-center mb-6">
           {isAdmin && editing ? (
             <textarea
-              className="w-11/12 rounded-md bg-[#181a20] text-white p-2 text-xs border border-[#23272b] focus:outline-none focus:ring-2 focus:ring-blue-700"
+              className="w-11/12 rounded-md bg-[#181a20] text-white p-3 text-sm border border-[#23272b] focus:outline-none focus:ring-2 focus:ring-blue-700"
               value={description}
               onChange={e => setDescription(e.target.value)}
               onBlur={() => setEditing(false)}
               autoFocus
-              rows={2}
-              maxLength={120}
+              rows={3}
+              maxLength={160}
             />
           ) : (
             <div
-              className="w-11/12 rounded-md bg-[#1de9f6] text-[#23272b] text-xs font-semibold text-center py-2 cursor-pointer select-none"
-              style={{ minHeight: 36, opacity: 0.95 }}
+              className="w-11/12 rounded-md bg-[#1de9f6] text-[#23272b] text-sm font-semibold text-center py-3 cursor-pointer select-none"
+              style={{ minHeight: 44, opacity: 0.95 }}
               onClick={() => isAdmin && setEditing(true)}
               title={isAdmin ? 'Editar descripción' : ''}
             >
@@ -187,50 +187,47 @@ const Equipos: React.FC = () => {
           )}
         </div>
         {/* Trofeos en V */}
-        <div className="flex flex-row items-end justify-center gap-2 mb-4 w-full relative" style={{ height: 60 }}>
+        <div className="flex flex-row items-end justify-center gap-4 mb-6 w-full relative" style={{ height: 70 }}>
           <div style={{ alignSelf: 'flex-end' }}>
-            <TrophySVG />
+            <TrophySVG style={{ width: 56, height: 56 }} />
           </div>
-          <div style={{ alignSelf: 'flex-end', position: 'relative', top: 25 }}>
-            <TrophySVG />
+          <div style={{ alignSelf: 'flex-end', position: 'relative', top: 30 }}>
+            <TrophySVG style={{ width: 56, height: 56 }} />
           </div>
           <div style={{ alignSelf: 'flex-end' }}>
-            <TrophySVG />
+            <TrophySVG style={{ width: 56, height: 56 }} />
           </div>
         </div>
         {/* Gráfica radar */}
-        <div className="w-full flex items-center justify-center mb-4" style={{ marginTop: 24 }}>
-          <div style={{ width: 180, height: 180, background: 'rgba(16,17,20,0.85)', borderRadius: 12, padding: 8, boxShadow: '0 2px 8px 0 #0004' }}>
+        <div className="w-full flex items-center justify-center mb-6" style={{ marginTop: 32 }}>
+          <div style={{ width: 220, height: 220, background: 'rgba(16,17,20,0.85)', borderRadius: 16, padding: 12, boxShadow: '0 2px 12px 0 #0004' }}>
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={radarData}>
                 <PolarGrid stroke="#444" />
-                <PolarAngleAxis dataKey="subject" stroke="#b6e3ff" fontSize={10} />
-                <PolarRadiusAxis angle={30} domain={[0, 150]} stroke="#888" fontSize={8} />
+                <PolarAngleAxis dataKey="subject" stroke="#b6e3ff" fontSize={12} />
+                <PolarRadiusAxis angle={30} domain={[0, 150]} stroke="#888" fontSize={10} />
                 <Radar name="Equipo" dataKey="A" stroke="#1de9f6" fill="#1de9f6" fillOpacity={0.4} />
               </RadarChart>
             </ResponsiveContainer>
           </div>
         </div>
         {/* Área de estadísticas */}
-        <div className="w-full flex flex-col items-center justify-center mb-4 px-2">
-          <div className="w-full flex flex-row items-center justify-between mb-1">
-            <span className="text-xs text-[#b6e3ff] font-bold">Estadísticas</span>
-            {/* Eliminado 'Ver más' */}
+        <div className="w-full flex flex-col items-center justify-center mb-6 px-4">
+          <div className="w-full flex flex-row items-center justify-between mb-2">
+            <span className="text-sm text-[#b6e3ff] font-bold">Estadísticas</span>
           </div>
-          {/* Barra azul y roja proporcional */}
-          <div className="w-full h-2 rounded-full flex mb-2 overflow-hidden" style={{ opacity: 0.7 }}>
+          <div className="w-full h-3 rounded-full flex mb-3 overflow-hidden" style={{ opacity: 0.7 }}>
             <div style={{ width: `${(9/12)*100}%`, background: '#1de9f6', height: '100%' }} />
             <div style={{ width: `${(3/12)*100}%`, background: '#e74c3c', height: '100%' }} />
           </div>
-          {/* Placeholder de datos */}
-          <div className="w-full flex flex-row justify-between text-xs text-white">
+          <div className="w-full flex flex-row justify-between text-sm text-white">
             <span>Victorias: <b>9</b></span>
             <span>Derrotas: <b>3</b></span>
           </div>
         </div>
       </div>
       {/* Div central (ocupa el resto) */}
-      <div style={{ flex: 1, height: '100vh', background: '#f3f4f6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative', overflowY: 'auto', paddingTop: 40 }} className="flex-shrink-0">
+      <div style={{ flex: 1, height: '100vh', background: '#f3f4f6', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', position: 'relative', overflowY: 'auto', paddingTop: 60 }} className="flex-shrink-0">
         {/* Cards de top 3 usuarios en V */}
         {(() => {
           // Ordenar por racha (victorias) descendente y tomar top 3
@@ -242,7 +239,7 @@ const Equipos: React.FC = () => {
             { left: '100%', top: -40, z: 1 },
           ];
           return (
-            <div style={{ width: 400, maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', gap: 0, marginBottom: 32 }}>
+            <div style={{ width: 520, maxWidth: '100%', display: 'flex', justifyContent: 'center', alignItems: 'flex-end', position: 'relative', gap: 0, marginBottom: 40 }}>
               {top3.map((user, idx) => (
                 <div
                   key={user.nombre}
@@ -319,7 +316,7 @@ const Equipos: React.FC = () => {
           );
         })()}
         {/* NUEVAS SECCIONES VISUALES */}
-        <div style={{ width: 420, maxWidth: '95vw', margin: '40px auto 0 auto', display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ width: 540, maxWidth: '98vw', margin: '48px auto 0 auto', display: 'flex', flexDirection: 'column', gap: 32 }}>
           {/* Área para invitar/agregar miembros */}
           <div className="w-full flex flex-col items-center mb-2 px-4">
             <div className="w-full bg-[#181a20] rounded-lg border border-[#23272b] p-3 flex flex-col items-center gap-2" style={{ opacity: 0.95 }}>
