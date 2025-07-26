@@ -119,7 +119,7 @@ const Leaderboard = ({ title, data, isTeam }: { title: string, data: any[], isTe
 const Eventos: React.FC = () => (
   <MainLayout>
     <div className="w-full max-w-7xl mx-auto px-2 md:px-4 py-8 min-h-screen bg-white">
-      <h1 className="text-3xl font-bold mb-8">Eventos</h1>
+      <h1 className="text-3xl font-bold text-black mb-8">Eventos</h1>
       {/* Recuadros de puntuación y MVPs */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         <TeamsScoreCard teams={teams} />

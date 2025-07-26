@@ -171,4 +171,15 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-500;
+}
+
+/* Animación para el icono de Bugcoins */
+.bugcoins-spin-3d {
+  animation: bugcoins-spin-3d-rotate 2.5s linear infinite;
+  transform-style: preserve-3d;
+}
+
+@keyframes bugcoins-spin-3d-rotate {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
 } 

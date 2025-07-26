@@ -10,7 +10,7 @@ interface GulagUser {
 const GulagCard: React.FC<{ gulag: GulagUser[] }> = ({ gulag }) => {
   const navigate = useNavigate();
   return (
-    <div className="col-span-1 min-h-[160px] bg-white flex flex-col p-6 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200" onClick={() => navigate('/gulag')}>
+    <div className="col-span-1 min-h-[160px] bg-white flex flex-col p-6 rounded-lg border-2 border-gray-200 shadow-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200" onClick={() => navigate('/gulag')}>
       <h2 className="text-lg font-semibold text-danger-700 mb-1">Gulag</h2>
       <ol className="mt-1">
         {gulag.map((user, idx) => (

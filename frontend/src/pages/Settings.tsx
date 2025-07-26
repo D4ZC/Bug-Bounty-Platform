@@ -27,8 +27,10 @@ const Settings: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="flex flex-col w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 mt-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">Ajustes de Usuario</h2>
+      <div className="w-full max-w-7xl mx-auto px-2 md:px-4 py-8 min-h-screen bg-white">
+        <h1 className="text-3xl font-bold text-black mb-8">Configuración</h1>
+        <div className="flex flex-col w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
+          <h2 className="text-2xl font-bold mb-6 text-gray-900">Ajustes de Usuario</h2>
         <table className="w-full text-left mb-8">
           <tbody>
             <tr>
@@ -129,12 +131,13 @@ const Settings: React.FC = () => {
             </tr>
           </tbody>
         </table>
-      </div>
-      <div className="flex justify-center mt-6">
-        <button className="px-6 py-3 bg-gray-700 text-white font-bold rounded-lg shadow hover:bg-gray-800 transition text-lg mb-4" onClick={() => navigate('/auth/login')}>Cerrar Sesión</button>
-      </div>
-      <div className="flex justify-center mt-2 mb-10">
-        <button className="px-6 py-3 bg-red-600 text-white font-bold rounded-lg shadow hover:bg-red-700 transition text-lg">Solicitar Eliminación de cuenta</button>
+        </div>
+        <div className="flex justify-center mt-6">
+          <button className="px-6 py-3 bg-gray-700 text-white font-bold rounded-lg shadow hover:bg-gray-800 transition text-lg mb-4" onClick={() => navigate('/auth/login')}>Cerrar Sesión</button>
+        </div>
+        <div className="flex justify-center mt-2 mb-10">
+          <button className="px-6 py-3 bg-red-600 text-white font-bold rounded-lg shadow hover:bg-red-700 transition text-lg">Solicitar Eliminación de cuenta</button>
+        </div>
       </div>
     </MainLayout>
   );
