@@ -146,54 +146,68 @@ const Gulag: React.FC = () => {
     return Math.round((l / s) * 100);
   };
 
-  // Obtener los últimos 5 usuarios con menos puntos (los mismos que en UsersScorePage)
-  const gulagUsers = [
-    { 
-      id: 'USR-046', 
-      name: 'Monica Rojas', 
-      role: 'Miembro', 
-      team: 'P-TECH', 
-      stats: { puntos: 45, vulnerabilidades: 2, retos: 1 }, 
-      badges: ['Team Player'],
-      puntosGulag: 20 
-    },
-    { 
-      id: 'USR-047', 
-      name: 'Alberto Silva', 
-      role: 'Miembro', 
-      team: 'Data', 
-      stats: { puntos: 42, vulnerabilidades: 1, retos: 1 }, 
-      badges: ['Team Player'],
-      puntosGulag: 19 
-    },
-    { 
-      id: 'USR-048', 
-      name: 'Graciela Mendoza', 
-      role: 'Miembro', 
-      team: 'Apps', 
-      stats: { puntos: 38, vulnerabilidades: 1, retos: 0 }, 
-      badges: ['Team Player'],
-      puntosGulag: 17 
-    },
-    { 
-      id: 'USR-049', 
-      name: 'Felipe Castro', 
-      role: 'Miembro', 
-      team: 'CyberWolves', 
-      stats: { puntos: 35, vulnerabilidades: 1, retos: 0 }, 
-      badges: ['Team Player'],
-      puntosGulag: 15 
-    },
-    { 
-      id: 'USR-050', 
-      name: 'Silvia Herrera', 
-      role: 'Miembro', 
-      team: 'P-TECH', 
-      stats: { puntos: 32, vulnerabilidades: 0, retos: 0 }, 
-      badges: ['Team Player'],
-      puntosGulag: 12 
-    },
+  // Función para generar números pseudo-aleatorios consistentes (igual que en UserRankingTable)
+  const seededRandom = (seed: number) => {
+    const x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  };
+
+  // Generar puntos estables basados en el ID del usuario (igual que en UserRankingTable)
+  const generateStablePoints = (userId: string) => {
+    const seed = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return Math.floor(seededRandom(seed) * 1000) + 100; // Entre 100 y 1100
+  };
+
+  // Generar usuarios mock realistas y equipos (igual que en UserRankingTable)
+  const TEAM_NAMES = ['P-TECH', 'Data', 'Apps', 'Consulting', 'CyberWolves'];
+  const CONSULTING_USERS = [
+    { id: 'USR-001', name: 'Alex Turner', team: 'Consulting' },
+    { id: 'USR-002', name: 'Samus Aran', team: 'Consulting' },
+    { id: 'USR-003', name: 'D4ZC', team: 'Consulting' },
+    { id: 'USR-004', name: 'Zero Cool', team: 'Consulting' },
+    { id: 'USR-005', name: 'Trinity', team: 'Consulting' },
+    { id: 'USR-006', name: 'Neo', team: 'Consulting' },
+    { id: 'USR-007', name: 'Ada Lovelace', team: 'Consulting' },
+    { id: 'USR-008', name: 'Kevin Mitnick', team: 'Consulting' },
+    { id: 'USR-009', name: 'Cyb3rW0lf', team: 'Consulting' },
+    { id: 'USR-010', name: 'Rootkit', team: 'Consulting' },
   ];
+  const MOCK_NAMES = [
+    'Sophie Müller', 'Liam Smith', 'Emma Johnson', 'Noah Williams', 'Olivia Brown',
+    'Elena García', 'Lucas Martin', 'Mia Lee', 'Ethan Kim', 'Ava Chen',
+    'Mateo Rossi', 'Isabella Silva', 'Leo Dubois', 'Chloe Laurent', 'Mason Clark',
+    'Emily Davis', 'Benjamin Wilson', 'Charlotte Moore', 'Henry Taylor', 'Amelia Anderson',
+    'Jack Thomas', 'Grace Martinez', 'Sebastian Lopez', 'Victoria Perez', 'Daniel Harris',
+    'Sofia Gonzalez', 'David Young', 'Ella King', 'Gabriel Scott', 'Lily Walker',
+    'Julian Hall', 'Zoe Allen', 'Samuel Wright', 'Hannah Adams', 'Alexander Nelson',
+    'Layla Baker', 'Owen Carter', 'Scarlett Rivera', 'Isaac Evans', 'Penelope Murphy',
+  ];
+  const MOCK_USERS = MOCK_NAMES.map((name, i) => ({
+    id: `USR-${i + 11}`,
+    name,
+    team: TEAM_NAMES[(i + 1) % TEAM_NAMES.length],
+  }));
+
+  // Crear array de todos los usuarios (igual que en UserRankingTable)
+  const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => ({
+    ...u,
+    role: 'Miembro',
+    stats: { 
+      puntos: generateStablePoints(u.id), 
+      vulnerabilidades: Math.floor(seededRandom(u.id.charCodeAt(0) + i) * 100) + 1, 
+      retos: Math.floor(seededRandom(u.id.charCodeAt(0) + i + 100) * 50) + 1 
+    },
+    badges: [],
+  })).sort((a, b) => b.stats.puntos - a.stats.puntos); // Ordenar por puntos de mayor a menor
+
+  // Obtener automáticamente los últimos 5 usuarios con menos puntos
+  const last5Users = ALL_USERS.slice(-5);
+
+  // Generar puntos Gulag inventados para estos usuarios
+  const gulagUsers = last5Users.map((user, index) => ({
+    ...user,
+    puntosGulag: 30 - (index * 3) // 30, 27, 24, 21, 18
+  }));
 
   // Ordenar por Puntos Gulag (de mayor a menor)
   const sortedGulagUsers = [...gulagUsers].sort((a, b) => b.puntosGulag - a.puntosGulag);
@@ -208,12 +222,8 @@ const Gulag: React.FC = () => {
       <h1 className="text-6xl font-bold mb-2 text-center font-sprite-graffiti-shadow">GULAG</h1>
       <h2 className="text-lg md:text-xl font-normal mb-8 text-center italic">Zona de desafíos y pruebas especiales</h2>
       
-      {/* Tabla de usuarios del GULAG - Reemplaza la tabla de desafíos original */}
-      <div className="w-full max-w-4xl">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">👥 Usuarios del GULAG</h2>
-          <p className="text-gray-600">Los últimos 5 usuarios con menos puntos - Haz clic en un nombre para ver más información</p>
-        </div>
+             {/* Tabla de usuarios del GULAG - Reemplaza la tabla de desafíos original */}
+       <div className="w-full max-w-4xl">
         
         <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-gray-200">
           <table className="min-w-full border-separate border-spacing-0">
