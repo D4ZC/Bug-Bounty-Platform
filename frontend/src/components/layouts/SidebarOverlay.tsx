@@ -109,12 +109,6 @@ const SidebarOverlay: React.FC<SidebarOverlayProps> = ({ open, onClose, onChatOp
             <span className="font-gamer-body">Reglas</span>
           </button>
           
-          {/* Documentación */}
-          <button onClick={() => handleNav('/contributions')} className="flex items-center gap-3 px-4 py-2 text-white hover:text-cyber-blue font-carbon-base mt-2">
-            <BookOpen size={24} />
-            <span className="font-gamer-body">Documentación</span>
-          </button>
-          
           {/* Formulario */}
           <div className="w-full mt-2">
             <button
