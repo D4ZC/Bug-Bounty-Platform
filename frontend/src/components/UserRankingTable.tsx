@@ -53,11 +53,12 @@ const MOCK_NAMES = [
   'Sofia Gonzalez', 'David Young', 'Ella King', 'Gabriel Scott', 'Lily Walker',
   'Julian Hall', 'Zoe Allen', 'Samuel Wright', 'Hannah Adams', 'Alexander Nelson',
   'Layla Baker', 'Owen Carter', 'Scarlett Rivera', 'Isaac Evans', 'Penelope Murphy',
+  'Andres Vargas',
 ];
 const MOCK_USERS = MOCK_NAMES.map((name, i) => ({
   id: `USR-${i + 11}`,
   name,
-  team: TEAM_NAMES[(i + 1) % TEAM_NAMES.length],
+  team: name === 'Andres Vargas' ? 'CyberWolves' : TEAM_NAMES[(i + 1) % TEAM_NAMES.length],
 }));
 // Función para generar números pseudo-aleatorios consistentes
 const seededRandom = (seed: number) => {
@@ -72,16 +73,25 @@ const generateStablePoints = (userId: string) => {
 };
 
 // Unir todos los usuarios
-const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => ({
-  ...u,
-  role: 'Miembro',
-  stats: { 
-    puntos: generateStablePoints(u.id), 
-    vulnerabilidades: Math.floor(seededRandom(u.id.charCodeAt(0) + i) * 100) + 1, 
-    retos: Math.floor(seededRandom(u.id.charCodeAt(0) + i + 100) * 50) + 1 
-  },
-  badges: [],
-})).sort((a, b) => b.stats.puntos - a.stats.puntos); // Ordenar por puntos de mayor a menor
+const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => {
+  let puntos;
+  if (u.id === 'USR-011') { // Liam Smith - MVP (según la imagen, posición 0 en MOCK_NAMES + 11)
+    puntos = 1065; // Puntos exactos de la imagen para asegurar primera posición
+  } else {
+    puntos = generateStablePoints(u.id);
+  }
+  
+  return {
+    ...u,
+    role: 'Miembro',
+    stats: { 
+      puntos: puntos, 
+      vulnerabilidades: Math.floor(seededRandom(u.id.charCodeAt(0) + i) * 100) + 1, 
+      retos: Math.floor(seededRandom(u.id.charCodeAt(0) + i + 100) * 50) + 1 
+    },
+    badges: [],
+  };
+}).sort((a, b) => b.stats.puntos - a.stats.puntos); // Ordenar por puntos de mayor a menor
 
 const ALL_BADGES = [
   { img: insignia1, name: 'Insignia 1' },

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, FileText, SlidersHorizontal, ShoppingBag, Landmark, Shield, Mail, Users } from 'lucide-react';
+import { Home, FileText, SlidersHorizontal, ShoppingBag, Landmark, Shield, Users, Trophy } from 'lucide-react';
 
 interface SidebarOverlayProps {
   open: boolean;
@@ -89,9 +89,9 @@ const SidebarOverlay: React.FC<SidebarOverlayProps> = ({ open, onClose }) => {
             <Users size={24} />
             <span className="font-gamer-body">Equipos</span>
           </button>
-          <button onClick={() => handleNav('/chat')} className="flex items-center gap-3 px-4 py-2 text-white hover:text-cyber-blue font-carbon-base mt-2">
-            <Mail size={24} />
-            <span className="font-gamer-body">CHAT</span>
+          <button onClick={() => handleNav('/users-score')} className="flex items-center gap-3 px-4 py-2 text-white hover:text-cyber-blue font-carbon-base mt-2">
+            <Trophy size={24} />
+            <span className="font-gamer-body">Tablas de Ranking</span>
           </button>
           <button onClick={() => handleNav('/duelos')} className="flex items-center gap-3 px-4 py-2 text-white hover:text-cyber-blue font-carbon-base mt-2">
             <span className="inline-block" style={{ width: 24, height: 24 }}>

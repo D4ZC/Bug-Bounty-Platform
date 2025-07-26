@@ -155,24 +155,24 @@ const Shop: React.FC = () => {
           {selectedCategory === 'etc' ? (
             <Ruleta />
           ) : (
-            <div className="grid grid-cols-2 gap-8 w-full max-w-lg overflow-y-auto" style={{ maxHeight: 520, minHeight: 200, padding: '16px 0' }}>
+            <div className="grid grid-cols-2 gap-3 w-full max-w-sm overflow-y-auto" style={{ maxHeight: 520, minHeight: 200, padding: '16px 0' }}>
               {products.map((prod, idx) => (
                 <div
                   key={prod.id}
-                  className={`relative rounded-2xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-visible min-h-[60px] min-w-[60px]`}
+                  className={`relative rounded-xl border-2 cursor-pointer flex flex-col items-center justify-center aspect-square transition-all duration-200 bg-gradient-to-br ${selectedProductIdx === idx ? 'from-cyan-50 to-blue-100 border-cyan-400 shadow-2xl scale-105 z-10' : 'from-gray-100 to-white border-gray-200 hover:border-cyan-300 hover:shadow-lg'} group overflow-visible min-h-[50px] min-w-[50px]`}
                   onClick={() => setSelectedProductIdx(idx)}
-                  style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined, margin: '8px 0' }}
+                  style={{ boxShadow: selectedProductIdx === idx ? '0 8px 32px 0 rgba(31, 38, 135, 0.15)' : undefined, margin: '4px 0' }}
                 >
                   <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 via-blue-300 to-cyan-200 opacity-70 group-hover:h-2 transition-all duration-300" />
-                  <img src={prod.img} alt={prod.name} className="w-20 h-20 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ zIndex: 2 }} />
-                  <span className="font-semibold text-gray-700 text-center text-lg group-hover:text-cyan-700 transition-colors">{prod.name}</span>
-                  <span className="absolute top-2 right-2 bg-yellow-200 text-yellow-800 font-bold px-2 py-1 rounded-full text-xs shadow">${prod.price}</span>
+                  <img src={prod.img} alt={prod.name} className="w-16 h-16 object-contain mb-2 drop-shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ zIndex: 2 }} />
+                  <span className="font-semibold text-gray-700 text-center text-sm group-hover:text-cyan-700 transition-colors">{prod.name}</span>
+                  <span className="absolute top-1 right-1 bg-yellow-200 text-yellow-800 font-bold px-1 py-0.5 rounded-full text-xs shadow">${prod.price}</span>
                   {isItemPurchased(prod.id) && (
-                    <div className="absolute top-2 left-2 bg-green-400 text-white font-bold px-2 py-1 rounded-full text-xs shadow animate-bounce">✓ COMPRADO</div>
+                    <div className="absolute top-1 left-1 bg-green-400 text-white font-bold px-1 py-0.5 rounded-full text-xs shadow animate-bounce">✓ COMPRADO</div>
                   )}
                   {/* Badge de oferta o nuevo */}
                   {prod.price < 100 && (
-                    <span className="absolute bottom-2 left-2 bg-cyan-200 text-cyan-800 font-bold px-2 py-1 rounded-full text-xs shadow">OFERTA</span>
+                    <span className="absolute bottom-1 left-1 bg-cyan-200 text-cyan-800 font-bold px-1 py-0.5 rounded-full text-xs shadow">OFERTA</span>
                   )}
                 </div>
               ))}

@@ -37,7 +37,7 @@ const CONSULTING_USERS = [
 // Usuarios mock adicionales
 const MOCK_USERS = [
   { id: 'USR-011', name: 'Carlos Mendoza', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-012', name: 'Isabella Silva', team: 'Data', role: 'Miembro' }, // MVP - puntos más altos
+  { id: 'USR-012', name: 'Liam Smith', team: 'Apps', role: 'Miembro' }, // MVP - puntos más altos
   { id: 'USR-013', name: 'Lucas Martin', team: 'Data', role: 'Miembro' },
   { id: 'USR-014', name: 'Mia Lee', team: 'Data', role: 'Miembro' },
   { id: 'USR-015', name: 'Ethan Kim', team: 'Data', role: 'Miembro' },
@@ -81,8 +81,8 @@ const MOCK_USERS = [
 // Combinar usuarios y asignar puntos estables
 const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => {
   let puntos;
-  if (u.id === 'USR-012') { // Isabella Silva - MVP
-    puntos = 999; // Puntos más altos para asegurar primera posición
+  if (u.id === 'USR-012') { // Liam Smith - MVP
+    puntos = 1065; // Puntos más altos para asegurar primera posición
   } else {
     puntos = generateStablePoints(u.id);
   }
@@ -162,12 +162,6 @@ const MVP: React.FC = () => {
   return (
     <div className="w-full min-h-screen bg-gray-50 py-8 px-4">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">🏆 MVP</h1>
-          <p className="text-gray-600">Valuable Player & Team - Diciembre 2024</p>
-        </div>
-
         {/* Tabs */}
         <div className="flex justify-center mb-8">
           <div className="flex gap-2 bg-white rounded-lg p-2 shadow-sm">
@@ -196,6 +190,24 @@ const MVP: React.FC = () => {
         {activeTab === 'user' && (
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-8">
+              {/* MVP User Section */}
+              <div className="mb-8">
+                {/* Marco cuadrado blanco con Avatar integrado */}
+                <div className="flex justify-center mb-4">
+                  {/* Marco cuadrado blanco con Avatar dentro */}
+                  <div className="w-48 h-48 bg-white rounded-lg flex items-center justify-center shadow-lg border-2 border-gray-200">
+                    {/* Avatar dentro del marco */}
+                    <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-4xl font-bold">
+                      {mvpUser.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Nombre y Equipo */}
+                <h2 className="text-3xl font-bold text-gray-800 mb-2">{mvpUser.name}</h2>
+                <p className="text-xl text-blue-600 font-semibold">{mvpUser.team}</p>
+              </div>
+
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                 <div className="bg-red-50 rounded-lg p-4 text-center">
@@ -254,23 +266,26 @@ const MVP: React.FC = () => {
         {activeTab === 'team' && (
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="text-center mb-8">
-              <div className="text-8xl mb-4">🏆</div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">{mvpUser.team}</h2>
+              {/* Avatar del equipo */}
+              <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                C
+              </div>
+              <h2 className="text-3xl font-bold text-gray-800 mb-2">CyberWolves</h2>
               <p className="text-xl text-blue-600 font-semibold">Equipo Destacado del Mes</p>
             </div>
 
             {/* Team Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-blue-50 rounded-lg p-6 text-center">
-                <div className="text-3xl font-bold text-blue-600">1,250</div>
+                <div className="text-3xl font-bold text-blue-600">3,674</div>
                 <div className="text-sm text-blue-700">PUNTOS TOTALES</div>
               </div>
               <div className="bg-green-50 rounded-lg p-6 text-center">
-                <div className="text-3xl font-bold text-green-600">89</div>
+                <div className="text-3xl font-bold text-green-600">156</div>
                 <div className="text-sm text-green-700">VULNERABILIDADES</div>
               </div>
               <div className="bg-purple-50 rounded-lg p-6 text-center">
-                <div className="text-3xl font-bold text-purple-600">34</div>
+                <div className="text-3xl font-bold text-purple-600">67</div>
                 <div className="text-sm text-purple-700">CHALLENGES</div>
               </div>
             </div>
@@ -278,26 +293,46 @@ const MVP: React.FC = () => {
             {/* Team Members */}
             <div className="mb-8">
               <h3 className="text-xl font-bold text-gray-800 mb-4">Miembros del Equipo</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {ALL_USERS.filter(user => user.team === mvpUser.team).slice(0, 4).map((member, index) => (
-                  <div key={index} className="bg-gray-50 rounded-lg p-4 text-center">
-                    <div className="text-2xl mb-2">👤</div>
-                    <div className="font-semibold text-gray-700">{member.name}</div>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <div className="flex gap-4 min-w-max pb-2">
+                  {ALL_USERS.filter(user => user.team === 'CyberWolves').map((member, index) => {
+                    const initials = member.name.split(' ').map(n => n[0]).join('').toUpperCase();
+                    return (
+                      <div key={member.id} className="bg-gray-50 rounded-lg p-4 text-center min-w-[120px]">
+                        <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-lg font-bold shadow-sm">
+                          {initials}
+                        </div>
+                        <div className="font-semibold text-gray-700 text-sm">{member.name}</div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            {/* Team Achievements */}
+            {/* Insignias seleccionadas */}
             <div>
-              <h3 className="text-xl font-bold text-gray-800 mb-4">🏅 Logros del Equipo</h3>
-              <div className="space-y-3">
-                {['Equipo del mes', 'Mejor colaboración', 'Innovación técnica'].map((achievement, index) => (
-                  <div key={index} className="flex items-center gap-3 bg-gray-50 rounded-lg p-3">
-                    <span className="text-yellow-500">🏆</span>
-                    <span className="font-semibold text-gray-700">{achievement}</span>
+              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">🏅 Insignias del Equipo</h3>
+              <div className="flex justify-center gap-4">
+                {userInsignias.length > 0 ? (
+                  userInsignias.map((ins, i) => (
+                    <div key={i} className="relative group">
+                      <img 
+                        src={ins.img} 
+                        alt={ins.name} 
+                        className="w-16 h-16 rounded-full border-2 border-yellow-500 shadow object-cover bg-white" 
+                      />
+                      <span className="absolute left-1/2 -translate-x-1/2 bottom-[-2.2rem] bg-black text-white text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity whitespace-nowrap z-50 shadow-lg">
+                        {ins.name}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 text-center">
+                    <p>No hay insignias seleccionadas</p>
+                    <p className="text-sm">Selecciona insignias en tu perfil para verlas aquí</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>
