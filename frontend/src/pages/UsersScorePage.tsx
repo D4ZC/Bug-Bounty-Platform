@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import UserRankingTable from '../components/UserRankingTable';
 import TeamRankingTable from '../components/TeamRankingTable';
+import UserModal from '../components/UserModal';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const mockUsers = [
@@ -26,6 +27,104 @@ const mockUsers = [
     role: 'Red Team',
     team: 'P-TECH',
     stats: { puntos: 800, vulnerabilidades: 10, retos: 3 },
+    badges: ['Team Player'],
+  },
+  // Agregar más usuarios para que los últimos 5 sean los del GULAG
+  {
+    id: 'U004',
+    name: 'Carlos Mendoza',
+    role: 'Miembro',
+    team: 'CyberWolves',
+    stats: { puntos: 650, vulnerabilidades: 8, retos: 2 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'U005',
+    name: 'Isabella Silva',
+    role: 'Miembro',
+    team: 'Data',
+    stats: { puntos: 580, vulnerabilidades: 7, retos: 2 },
+    badges: ['Fast Solver'],
+  },
+  {
+    id: 'U006',
+    name: 'Lucas Martin',
+    role: 'Miembro',
+    team: 'Data',
+    stats: { puntos: 520, vulnerabilidades: 6, retos: 1 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'U007',
+    name: 'Mia Lee',
+    role: 'Miembro',
+    team: 'Data',
+    stats: { puntos: 480, vulnerabilidades: 5, retos: 1 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'U008',
+    name: 'Ethan Kim',
+    role: 'Miembro',
+    team: 'Data',
+    stats: { puntos: 420, vulnerabilidades: 4, retos: 1 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'U009',
+    name: 'Gabriel Torres',
+    role: 'Miembro',
+    team: 'Apps',
+    stats: { puntos: 380, vulnerabilidades: 3, retos: 1 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'U010',
+    name: 'Valentina Ruiz',
+    role: 'Miembro',
+    team: 'P-TECH',
+    stats: { puntos: 340, vulnerabilidades: 3, retos: 0 },
+    badges: ['Team Player'],
+  },
+  // Los últimos 5 usuarios (los mismos que en GULAG)
+  {
+    id: 'USR-046',
+    name: 'Monica Rojas',
+    role: 'Miembro',
+    team: 'P-TECH',
+    stats: { puntos: 45, vulnerabilidades: 2, retos: 1 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'USR-047',
+    name: 'Alberto Silva',
+    role: 'Miembro',
+    team: 'Data',
+    stats: { puntos: 42, vulnerabilidades: 1, retos: 1 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'USR-048',
+    name: 'Graciela Mendoza',
+    role: 'Miembro',
+    team: 'Apps',
+    stats: { puntos: 38, vulnerabilidades: 1, retos: 0 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'USR-049',
+    name: 'Felipe Castro',
+    role: 'Miembro',
+    team: 'CyberWolves',
+    stats: { puntos: 35, vulnerabilidades: 1, retos: 0 },
+    badges: ['Team Player'],
+  },
+  {
+    id: 'USR-050',
+    name: 'Silvia Herrera',
+    role: 'Miembro',
+    team: 'P-TECH',
+    stats: { puntos: 32, vulnerabilidades: 0, retos: 0 },
     badges: ['Team Player'],
   },
 ];
@@ -248,6 +347,16 @@ const TrophyCartoonSVG: React.FC<{ color: string; className?: string; place: str
 const UsersScorePage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  // Estados para la modal de usuario
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setIsUserModalOpen(true);
+  };
+
   return (
     <>
       {/* Contenido principal */}
@@ -256,11 +365,24 @@ const UsersScorePage: React.FC = () => {
           Clasificación {getCurrentMonthName().charAt(0).toUpperCase() + getCurrentMonthName().slice(1)}
         </div>
         <div className="mb-4 text-base font-semibold text-gray-600">Usuarios</div>
-        <UserRankingTable users={sortedUsers.map(u => ({ ...u, nivel: 1 }))} />
+        <UserRankingTable 
+          users={sortedUsers.map(u => ({ ...u, nivel: 1 }))} 
+          onUserClick={handleUserClick}
+        />
         {/* Tabla de equipos debajo */}
         <div className="mb-4 text-base font-semibold text-gray-600">Equipos</div>
         <TeamRankingTable teams={sortedTeams} />
       </div>
+
+      {/* Modal de usuario */}
+      <UserModal
+        user={selectedUser}
+        isOpen={isUserModalOpen}
+        onClose={() => {
+          setIsUserModalOpen(false);
+          setSelectedUser(null);
+        }}
+      />
     </>
   );
 };

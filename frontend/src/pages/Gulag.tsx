@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Shield, ThumbsUp, X } from 'lucide-react';
+import UserModal from '../components/UserModal';
 
 const initialChallenges = [
   { id: 'sql-injection', nombre: 'SQL Injection', descripcion: 'Encuentra y explota una vulnerabilidad de inyección SQL en la base de datos.' },
@@ -94,107 +95,177 @@ const Gulag: React.FC = () => {
   const { solves, addSolve } = usePersistentSolves(cardIds);
   const { completed, markCompleted } = usePersistentCompleted(cardIds);
 
+  // Estados para la modal de usuario
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+
   // Separar desafíos y completados
   const desafios = initialChallenges.filter(c => !completed[c.id]);
   const completados = initialChallenges.filter(c => completed[c.id]);
   const cards = tab === 'desafios' ? desafios : completados;
 
-  // Modal state
+  // Estados para la modal de desafío
   const [modalOpen, setModalOpen] = useState(false);
   const [modalCard, setModalCard] = useState(null);
-  const [timer, setTimer] = useState(0); // seconds left
-  const [timerActive, setTimerActive] = useState(false);
   const [answer, setAnswer] = useState('');
+  const [timer, setTimer] = useState(0);
+  const [timerActive, setTimerActive] = useState(false);
 
-  // Persist timer per card
+  // Timer effect
   useEffect(() => {
-    if (!modalCard) return;
-    const stored = localStorage.getItem(`gulag_timer_${modalCard.id}`);
-    if (stored) {
-      const { timer: t, timerActive: ta, lastUpdate } = JSON.parse(stored);
-      if (ta && t > 0 && lastUpdate) {
-        const now = Date.now();
-        const elapsed = Math.floor((now - lastUpdate) / 1000);
-        const newTimer = Math.max(0, t - elapsed);
-        setTimer(newTimer);
-        setTimerActive(newTimer > 0 ? ta : false);
-      } else {
-        setTimer(t || 0);
-        setTimerActive(ta || false);
-      }
-    } else {
-      setTimer(0);
-      setTimerActive(false);
+    if (timerActive && timer > 0) {
+      const interval = setInterval(() => {
+        setTimer(prev => {
+          if (prev <= 1) {
+            setTimerActive(false);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(interval);
     }
-  }, [modalCard]);
-  useEffect(() => {
-    if (!modalCard) return;
-    localStorage.setItem(
-      `gulag_timer_${modalCard.id}`,
-      JSON.stringify({ timer, timerActive, lastUpdate: timerActive ? Date.now() : null })
-    );
-  }, [timer, timerActive, modalCard]);
-  useEffect(() => {
-    if (!timerActive) return;
-    if (timer <= 0) {
-      setTimerActive(false);
-      setTimer(0);
-      return;
-    }
-    const interval = setInterval(() => {
-      setTimer(t => t - 1);
-    }, 1000);
-    return () => clearInterval(interval);
   }, [timerActive, timer]);
-  // Reset modal state on close (no borra timer ni respuesta)
+
   const closeModal = () => {
     setModalOpen(false);
     setModalCard(null);
     setAnswer('');
+    setTimer(0);
+    setTimerActive(false);
   };
+
   const openModal = (card) => {
     setModalCard(card);
     setModalOpen(true);
-    setAnswer('');
   };
-  // Porcentaje de likes
+
   const getLikePercent = (id) => {
-    const s = solves[id] || 0;
     const l = likes[id] ? 1 : 0;
-    if (s === 0) return 0;
+    const s = solves[id] || 1;
     return Math.round((l / s) * 100);
+  };
+
+  // Obtener los últimos 5 usuarios con menos puntos (los mismos que en UsersScorePage)
+  const gulagUsers = [
+    { 
+      id: 'USR-046', 
+      name: 'Monica Rojas', 
+      role: 'Miembro', 
+      team: 'P-TECH', 
+      stats: { puntos: 45, vulnerabilidades: 2, retos: 1 }, 
+      badges: ['Team Player'],
+      puntosGulag: 20 
+    },
+    { 
+      id: 'USR-047', 
+      name: 'Alberto Silva', 
+      role: 'Miembro', 
+      team: 'Data', 
+      stats: { puntos: 42, vulnerabilidades: 1, retos: 1 }, 
+      badges: ['Team Player'],
+      puntosGulag: 19 
+    },
+    { 
+      id: 'USR-048', 
+      name: 'Graciela Mendoza', 
+      role: 'Miembro', 
+      team: 'Apps', 
+      stats: { puntos: 38, vulnerabilidades: 1, retos: 0 }, 
+      badges: ['Team Player'],
+      puntosGulag: 17 
+    },
+    { 
+      id: 'USR-049', 
+      name: 'Felipe Castro', 
+      role: 'Miembro', 
+      team: 'CyberWolves', 
+      stats: { puntos: 35, vulnerabilidades: 1, retos: 0 }, 
+      badges: ['Team Player'],
+      puntosGulag: 15 
+    },
+    { 
+      id: 'USR-050', 
+      name: 'Silvia Herrera', 
+      role: 'Miembro', 
+      team: 'P-TECH', 
+      stats: { puntos: 32, vulnerabilidades: 0, retos: 0 }, 
+      badges: ['Team Player'],
+      puntosGulag: 12 
+    },
+  ];
+
+  // Ordenar por Puntos Gulag (de mayor a menor)
+  const sortedGulagUsers = [...gulagUsers].sort((a, b) => b.puntosGulag - a.puntosGulag);
+
+  const handleUserClick = (user) => {
+    setSelectedUser(user);
+    setIsUserModalOpen(true);
   };
 
   return (
     <div className="w-full min-h-screen bg-white flex flex-col items-center py-10">
       <h1 className="text-6xl font-bold mb-2 text-center font-sprite-graffiti-shadow">GULAG</h1>
       <h2 className="text-lg md:text-xl font-normal mb-8 text-center italic">Zona de desafíos y pruebas especiales</h2>
+      
+      {/* Tabla de usuarios del GULAG - Reemplaza la tabla de desafíos original */}
       <div className="w-full max-w-4xl">
-        {/* Encabezado de la tabla */}
-        <div className="flex w-full" style={{ background: '#b3b3b3', height: 40 }}>
-          <div className="flex-1 flex items-center pl-6 text-white font-bold uppercase tracking-wide" style={{ letterSpacing: 1 }}>NOMBRE</div>
-          <div className="flex-1 flex items-center justify-end pr-6 text-white font-bold uppercase tracking-wide" style={{ letterSpacing: 1 }}>PUNTAJE</div>
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">👥 Usuarios del GULAG</h2>
+          <p className="text-gray-600">Los últimos 5 usuarios con menos puntos - Haz clic en un nombre para ver más información</p>
         </div>
-        {/* Filas de la tabla */}
-        {['sql-injection','xss-hunter','phishing-trap','csrf-bypass','reverse-shell'].map((id, idx) => (
-          <div
-            key={id}
-            className="flex w-full"
-            style={{
-              ...rowStyles[idx],
-              height: 48,
-              marginTop: 8,
-              marginBottom: 0,
-              borderRadius: 0,
-            }}
-          >
-            <div className="flex-1 flex items-center pl-6 text-lg font-semibold" style={{ color: rowStyles[idx].color }}>{initialChallenges.find(c => c.id === id)?.nombre || ''}</div>
-            <div className="flex-1 flex items-center justify-end pr-6 text-lg font-semibold" style={{ color: rowStyles[idx].color }}>{1000 - idx * 200}pts</div>
-          </div>
-        ))}
+        
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden border-2 border-gray-200">
+          <table className="min-w-full border-separate border-spacing-0">
+            <thead className="bg-gray-800">
+                             <tr>
+                 <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Puesto</th>
+                 <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Usuario</th>
+                 <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Puntos</th>
+                 <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Puntos Gulag</th>
+               </tr>
+            </thead>
+            <tbody>
+              {sortedGulagUsers.map((user, idx) => {
+                const color = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-green-500', 'bg-blue-500'][idx % 5];
+                const initials = user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+                return (
+                  <tr key={user.id} className={`${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'} hover:bg-gray-100 transition-colors`}>
+                    <td className="px-4 py-3 font-semibold text-gray-900 text-center">#{idx + 1}</td>
+                    <td className="px-4 py-3">
+                      <div 
+                        className="flex items-center gap-3 cursor-pointer"
+                        onClick={() => handleUserClick(user)}
+                      >
+                        <span className={`inline-flex items-center justify-center w-9 h-9 rounded-full text-white font-bold text-base ${color}`}>
+                          {initials}
+                        </span>
+                        <span className="font-medium text-gray-800 hover:text-blue-600 transition-colors">
+                          {user.name}
+                        </span>
+                      </div>
+                    </td>
+                                         <td className="px-4 py-3 text-center">
+                       <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600">
+                         {user.stats.puntos}
+                       </span>
+                     </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className="inline-flex items-center gap-1 text-lg font-extrabold text-red-600">
+                        {user.puntosGulag}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
+
       {/* Línea horizontal negra */}
       <div className="w-full" style={{ height: '6px', background: '#000', margin: '32px 0 0 0' }} />
+      
       {/* Botones de tabs */}
       <div className="w-full max-w-4xl flex flex-row justify-between items-center mt-6 mb-8">
         <button
@@ -212,6 +283,7 @@ const Gulag: React.FC = () => {
           COMPLETADOS
         </button>
       </div>
+      
       {/* Cards blancas con diseño tipo challenge */}
       <div className="w-full max-w-4xl flex flex-col items-center">
         <div
@@ -320,6 +392,7 @@ const Gulag: React.FC = () => {
         {/* Línea negra horizontal debajo del área de desafíos */}
         <div className="w-full max-w-4xl mx-auto" style={{ height: '6px', background: '#000', margin: '32px 0 0 0' }} />
       </div>
+
       {/* Modal de desafío */}
       {modalOpen && modalCard && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
@@ -387,6 +460,16 @@ const Gulag: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Modal de usuario */}
+      <UserModal
+        user={selectedUser}
+        isOpen={isUserModalOpen}
+        onClose={() => {
+          setIsUserModalOpen(false);
+          setSelectedUser(null);
+        }}
+      />
     </div>
   );
 };

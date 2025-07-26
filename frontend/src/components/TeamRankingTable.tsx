@@ -21,6 +21,18 @@ function getAvatarProps(name: string) {
   return { color, initials };
 }
 
+// Función para generar números pseudo-aleatorios consistentes
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
+// Generar puntos estables basados en el ID del equipo
+const generateStablePoints = (teamId: string) => {
+  const seed = teamId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return Math.floor(seededRandom(seed) * 3000) + 1000; // Entre 1000 y 4000
+};
+
 // Mock de equipos si no hay suficientes
 const DEFAULT_TEAMS = [
   {
@@ -28,37 +40,57 @@ const DEFAULT_TEAMS = [
     name: 'P-TECH',
     description: 'Equipo de tecnología y desarrollo.',
     members: ['Sophie Müller', 'Liam Smith', 'Emma Johnson', 'Noah Williams', 'Olivia Brown'],
-    stats: { puntos: 3200, retos: 25, vulnerabilidades: 88 },
+    stats: { 
+      puntos: generateStablePoints('TEAM-001'), 
+      retos: Math.floor(seededRandom('TEAM-001'.charCodeAt(0)) * 50) + 10, 
+      vulnerabilidades: Math.floor(seededRandom('TEAM-001'.charCodeAt(0) + 100) * 100) + 20 
+    },
   },
   {
     id: 'TEAM-002',
     name: 'Data',
     description: 'Equipo de análisis de datos.',
     members: ['Elena García', 'Lucas Martin', 'Mia Lee', 'Ethan Kim', 'Ava Chen'],
-    stats: { puntos: 2950, retos: 22, vulnerabilidades: 75 },
+    stats: { 
+      puntos: generateStablePoints('TEAM-002'), 
+      retos: Math.floor(seededRandom('TEAM-002'.charCodeAt(0)) * 50) + 10, 
+      vulnerabilidades: Math.floor(seededRandom('TEAM-002'.charCodeAt(0) + 100) * 100) + 20 
+    },
   },
   {
     id: 'TEAM-003',
     name: 'Apps',
     description: 'Equipo de desarrollo de aplicaciones.',
     members: ['Mateo Rossi', 'Isabella Silva', 'Leo Dubois', 'Chloe Laurent', 'Mason Clark'],
-    stats: { puntos: 2780, retos: 20, vulnerabilidades: 68 },
+    stats: { 
+      puntos: generateStablePoints('TEAM-003'), 
+      retos: Math.floor(seededRandom('TEAM-003'.charCodeAt(0)) * 50) + 10, 
+      vulnerabilidades: Math.floor(seededRandom('TEAM-003'.charCodeAt(0) + 100) * 100) + 20 
+    },
   },
   {
     id: 'TEAM-004',
     name: 'Consulting',
     description: 'Equipo de consultoría y seguridad.',
     members: ['Alex Turner', 'Samus Aran', 'D4ZC', 'Zero Cool', 'Trinity', 'Neo', 'Ada Lovelace', 'Kevin Mitnick', 'Cyb3rW0lf', 'Rootkit'],
-    stats: { puntos: 3500, retos: 30, vulnerabilidades: 99 },
+    stats: { 
+      puntos: generateStablePoints('TEAM-004'), 
+      retos: Math.floor(seededRandom('TEAM-004'.charCodeAt(0)) * 50) + 10, 
+      vulnerabilidades: Math.floor(seededRandom('TEAM-004'.charCodeAt(0) + 100) * 100) + 20 
+    },
   },
   {
     id: 'TEAM-005',
     name: 'CyberWolves',
     description: 'Equipo de ciberseguridad avanzada.',
     members: ['Scarlett Rivera', 'Isaac Evans', 'Penelope Murphy', 'Layla Baker', 'Owen Carter'],
-    stats: { puntos: 2600, retos: 18, vulnerabilidades: 60 },
+    stats: { 
+      puntos: generateStablePoints('TEAM-005'), 
+      retos: Math.floor(seededRandom('TEAM-005'.charCodeAt(0)) * 50) + 10, 
+      vulnerabilidades: Math.floor(seededRandom('TEAM-005'.charCodeAt(0) + 100) * 100) + 20 
+    },
   },
-];
+].sort((a, b) => b.stats.puntos - a.stats.puntos); // Ordenar por puntos de mayor a menor
 
 const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
   // Usar los equipos recibidos o los mock si no hay suficientes
@@ -72,7 +104,7 @@ const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
           <tr>
             <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Puesto</th>
             <th className="px-4 py-3 text-left text-sm font-bold text-white uppercase">Equipo</th>
-            <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Vulnerabilidades</th>
+            <th className="px-4 py-3 text-center text-sm font-bold text-white uppercase">Puntos</th>
             <th className="px-4 py-3 text-center"></th>
           </tr>
         </thead>
@@ -91,7 +123,7 @@ const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
                   </td>
                   <td className="px-4 py-3 text-center align-middle">
                     <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600 drop-shadow-sm">
-                      {team.stats.vulnerabilidades}
+                      {team.stats.puntos}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center align-middle cursor-pointer select-none" onClick={() => setExpandedId(isExpanded ? null : team.id)} aria-expanded={isExpanded}>
@@ -116,10 +148,16 @@ const TeamRankingTable: React.FC<TeamRankingTableProps> = ({ teams }) => {
                 {isExpanded && (
                   <tr className="bg-[#F4F6FA]">
                     <td colSpan={4} className="px-6 pb-4 pt-2 rounded-b-xl">
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Descripción:</span> {team.description}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Puntos:</span> {team.stats.puntos}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Retos completados:</span> {team.stats.retos}</div>
-                      <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Miembros:</span> {team.members.join(', ')}</div>
+                      <div 
+                        className="text-sm text-gray-700 mb-2 p-4 rounded-lg relative overflow-hidden bg-gray-200"
+                      >
+                        <div className="relative z-10">
+                          <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Descripción:</span> {team.description}</div>
+                          <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Puntos:</span> {team.stats.puntos}</div>
+                          <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Retos completados:</span> {team.stats.retos}</div>
+                          <div className="text-sm text-gray-700 mb-2"><span className="font-semibold">Miembros:</span> {team.members.join(', ')}</div>
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 )}

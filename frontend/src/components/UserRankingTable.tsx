@@ -59,13 +59,29 @@ const MOCK_USERS = MOCK_NAMES.map((name, i) => ({
   name,
   team: TEAM_NAMES[(i + 1) % TEAM_NAMES.length],
 }));
+// Función para generar números pseudo-aleatorios consistentes
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
+// Generar puntos estables basados en el ID del usuario
+const generateStablePoints = (userId: string) => {
+  const seed = userId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return Math.floor(seededRandom(seed) * 1000) + 100; // Entre 100 y 1100
+};
+
 // Unir todos los usuarios
 const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => ({
   ...u,
   role: 'Miembro',
-  stats: { puntos: Math.floor(Math.random() * 1000), vulnerabilidades: Math.floor(Math.random() * 100), retos: Math.floor(Math.random() * 50) },
+  stats: { 
+    puntos: generateStablePoints(u.id), 
+    vulnerabilidades: Math.floor(seededRandom(u.id.charCodeAt(0) + i) * 100) + 1, 
+    retos: Math.floor(seededRandom(u.id.charCodeAt(0) + i + 100) * 50) + 1 
+  },
   badges: [],
-}));
+})).sort((a, b) => b.stats.puntos - a.stats.puntos); // Ordenar por puntos de mayor a menor
 
 const ALL_BADGES = [
   { img: insignia1, name: 'Insignia 1' },
@@ -120,14 +136,16 @@ const UserRankingTable: React.FC<UserRankingTableProps> = () => {
       selectedBadges = ALL_BADGES.slice(0, 3).map(b => b.img);
     }
     const userInsignias = selectedBadges.map(img => ALL_BADGES.find(b => b.img === img)).filter(Boolean) as {img: string, name: string}[];
-    // Obtener portada seleccionada
-    const portada = typeof window !== 'undefined' ? localStorage.getItem('selectedPortadaPerfil') : null;
-    const bg = portada || 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80';
-    // Obtener avatar seleccionado
+    
+    // Solo mostrar avatar y fondo personalizados si es el usuario autenticado (Alex Turner)
+    const isCurrentUser = user.id === 'USR-001'; // Alex Turner
     let selectedAvatar = '';
-    if (typeof window !== 'undefined') {
+    let portada = null;
+    if (isCurrentUser && typeof window !== 'undefined') {
       selectedAvatar = localStorage.getItem('selectedAvatar') || '';
+      portada = localStorage.getItem('selectedPortadaPerfil');
     }
+    const bg = isCurrentUser && portada ? portada : 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80';
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
         <div
@@ -136,7 +154,7 @@ const UserRankingTable: React.FC<UserRankingTableProps> = () => {
           onClick={e => e.stopPropagation()}
         >
           <div className="w-32 h-32 rounded-full border-4 border-white shadow-lg mb-4 bg-gray-200 flex items-center justify-center overflow-hidden">
-            {selectedAvatar ? (
+            {isCurrentUser && selectedAvatar ? (
               <img src={selectedAvatar} alt="avatar" className="w-full h-full object-cover rounded-full" />
             ) : (
               <span className="text-4xl font-bold text-white bg-blue-500 w-full h-full flex items-center justify-center">{user.name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}</span>
@@ -214,7 +232,7 @@ const UserRankingTable: React.FC<UserRankingTableProps> = () => {
                       </td>
                       <td className="px-4 py-3 text-center align-middle">
                         <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600 drop-shadow-sm">
-                          {user.stats.vulnerabilidades}
+                          {user.stats.puntos}
                         </span>
                       </td>
                     </tr>
@@ -259,7 +277,7 @@ const UserRankingTable: React.FC<UserRankingTableProps> = () => {
                 </td>
                 <td className="px-4 py-3 text-center align-middle">
                   <span className="inline-flex items-center gap-1 text-lg font-extrabold text-green-600 drop-shadow-sm">
-                    {user.stats.vulnerabilidades}
+                    {user.stats.puntos}
                   </span>
                 </td>
               </tr>
