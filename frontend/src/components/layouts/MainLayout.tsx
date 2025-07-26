@@ -40,9 +40,6 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="flex-1" />
         <div className="flex items-center gap-6 mr-6">
           <LanguageSelector />
-          <button onClick={() => setShowChat(true)} aria-label="Chat" className="text-white hover:text-cyber-blue transition-colors">
-            <Mail size={24} color="#fff" />
-          </button>
           <button aria-label="Perfil" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/profile')}>
             <User size={28} />
           </button>
@@ -75,7 +72,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         )}
       </Header>
       {/* SidebarOverlay superpuesto */}
-      <SidebarOverlay open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <SidebarOverlay 
+        open={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)} 
+        onChatOpen={() => setShowChat(true)}
+      />
       <div className="flex flex-1">
          {/* Sidebar lateral restaurado ELIMINADO */}
         {/* Contenido principal */}

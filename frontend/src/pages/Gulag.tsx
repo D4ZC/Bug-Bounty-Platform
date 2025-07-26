@@ -158,38 +158,66 @@ const Gulag: React.FC = () => {
     return Math.floor(seededRandom(seed) * 1000) + 100; // Entre 100 y 1100
   };
 
-  // Generar usuarios mock realistas y equipos (igual que en UserRankingTable)
+  // Generar usuarios mock realistas y equipos (35 usuarios total)
   const TEAM_NAMES = ['P-TECH', 'Data', 'Apps', 'Consulting', 'CyberWolves'];
+  
+  // Usuarios del equipo Consulting (7 usuarios - manteniendo Alex Turner)
   const CONSULTING_USERS = [
     { id: 'USR-001', name: 'Alex Turner', team: 'Consulting' },
-    { id: 'USR-002', name: 'Samus Aran', team: 'Consulting' },
-    { id: 'USR-003', name: 'D4ZC', team: 'Consulting' },
-    { id: 'USR-004', name: 'Zero Cool', team: 'Consulting' },
-    { id: 'USR-005', name: 'Trinity', team: 'Consulting' },
-    { id: 'USR-006', name: 'Neo', team: 'Consulting' },
-    { id: 'USR-007', name: 'Ada Lovelace', team: 'Consulting' },
-    { id: 'USR-008', name: 'Kevin Mitnick', team: 'Consulting' },
-    { id: 'USR-009', name: 'Cyb3rW0lf', team: 'Consulting' },
-    { id: 'USR-010', name: 'Rootkit', team: 'Consulting' },
+    { id: 'USR-002', name: 'Sarah Chen', team: 'Consulting' },
+    { id: 'USR-003', name: 'Michael Rodriguez', team: 'Consulting' },
+    { id: 'USR-004', name: 'Emily Watson', team: 'Consulting' },
+    { id: 'USR-005', name: 'David Kim', team: 'Consulting' },
+    { id: 'USR-006', name: 'Lisa Park', team: 'Consulting' },
+    { id: 'USR-007', name: 'James Wilson', team: 'Consulting' },
   ];
-  const MOCK_NAMES = [
-    'Sophie Müller', 'Liam Smith', 'Emma Johnson', 'Noah Williams', 'Olivia Brown',
-    'Elena García', 'Lucas Martin', 'Mia Lee', 'Ethan Kim', 'Ava Chen',
-    'Mateo Rossi', 'Isabella Silva', 'Leo Dubois', 'Chloe Laurent', 'Mason Clark',
-    'Emily Davis', 'Benjamin Wilson', 'Charlotte Moore', 'Henry Taylor', 'Amelia Anderson',
-    'Jack Thomas', 'Grace Martinez', 'Sebastian Lopez', 'Victoria Perez', 'Daniel Harris',
-    'Sofia Gonzalez', 'David Young', 'Ella King', 'Gabriel Scott', 'Lily Walker',
-    'Julian Hall', 'Zoe Allen', 'Samuel Wright', 'Hannah Adams', 'Alexander Nelson',
-    'Layla Baker', 'Owen Carter', 'Scarlett Rivera', 'Isaac Evans', 'Penelope Murphy',
-  ];
-  const MOCK_USERS = MOCK_NAMES.map((name, i) => ({
-    id: `USR-${i + 11}`,
-    name,
-    team: TEAM_NAMES[(i + 1) % TEAM_NAMES.length],
-  }));
 
-  // Crear array de todos los usuarios (igual que en UserRankingTable)
-  const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => ({
+  // Usuarios del equipo CyberWolves (7 usuarios)
+  const CYBERWOLVES_USERS = [
+    { id: 'USR-008', name: 'Carlos Mendoza', team: 'CyberWolves' },
+    { id: 'USR-009', name: 'Diego Ramirez', team: 'CyberWolves' },
+    { id: 'USR-010', name: 'Sofia Castro', team: 'CyberWolves' },
+    { id: 'USR-011', name: 'Andres Vargas', team: 'CyberWolves' },
+    { id: 'USR-012', name: 'Mateo Silva', team: 'CyberWolves' },
+    { id: 'USR-013', name: 'Fernando Ruiz', team: 'CyberWolves' },
+    { id: 'USR-014', name: 'Oscar Herrera', team: 'CyberWolves' },
+  ];
+
+  // Usuarios del equipo Apps (7 usuarios - manteniendo Liam Smith MVP)
+  const APPS_USERS = [
+    { id: 'USR-015', name: 'Liam Smith', team: 'Apps' }, // MVP
+    { id: 'USR-016', name: 'Ana Torres', team: 'Apps' },
+    { id: 'USR-017', name: 'Luis Pérez', team: 'Apps' },
+    { id: 'USR-018', name: 'Gabriel Torres', team: 'Apps' },
+    { id: 'USR-019', name: 'Camila Morales', team: 'Apps' },
+    { id: 'USR-020', name: 'Isabella Rodriguez', team: 'Apps' },
+    { id: 'USR-021', name: 'Lucia Herrera', team: 'Apps' },
+  ];
+
+  // Usuarios del equipo Data (7 usuarios)
+  const DATA_USERS = [
+    { id: 'USR-022', name: 'Lucas Martin', team: 'Data' },
+    { id: 'USR-023', name: 'Mia Lee', team: 'Data' },
+    { id: 'USR-024', name: 'Ethan Kim', team: 'Data' },
+    { id: 'USR-025', name: 'Daniel Herrera', team: 'Data' },
+    { id: 'USR-026', name: 'Sebastian Rojas', team: 'Data' },
+    { id: 'USR-027', name: 'Adrian Castro', team: 'Data' },
+    { id: 'USR-028', name: 'Ricardo Morales', team: 'Data' },
+  ];
+
+  // Usuarios del equipo P-TECH (7 usuarios)
+  const PTECH_USERS = [
+    { id: 'USR-029', name: 'Marta López', team: 'P-TECH' },
+    { id: 'USR-030', name: 'Valentina Ruiz', team: 'P-TECH' },
+    { id: 'USR-031', name: 'Natalia Jimenez', team: 'P-TECH' },
+    { id: 'USR-032', name: 'Valeria Mendoza', team: 'P-TECH' },
+    { id: 'USR-033', name: 'Carmen Vargas', team: 'P-TECH' },
+    { id: 'USR-034', name: 'Rosa Ruiz', team: 'P-TECH' },
+    { id: 'USR-035', name: 'Monica Rojas', team: 'P-TECH' },
+  ];
+
+  // Crear array de todos los usuarios (35 usuarios total)
+  const ALL_USERS = [...CONSULTING_USERS, ...CYBERWOLVES_USERS, ...APPS_USERS, ...DATA_USERS, ...PTECH_USERS].map((u, i) => ({
     ...u,
     role: 'Miembro',
     stats: { 

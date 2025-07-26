@@ -20,7 +20,7 @@ const generateStablePoints = (userId: string) => {
   return Math.floor(seededRandom(seed) * 1000) + 100;
 };
 
-// Usuarios del equipo Consulting
+// Usuarios del equipo Consulting (7 usuarios - manteniendo Alex Turner)
 const CONSULTING_USERS = [
   { id: 'USR-001', name: 'Alex Turner', team: 'Consulting', role: 'Líder' },
   { id: 'USR-002', name: 'Sarah Chen', team: 'Consulting', role: 'Miembro' },
@@ -29,59 +29,56 @@ const CONSULTING_USERS = [
   { id: 'USR-005', name: 'David Kim', team: 'Consulting', role: 'Miembro' },
   { id: 'USR-006', name: 'Lisa Park', team: 'Consulting', role: 'Miembro' },
   { id: 'USR-007', name: 'James Wilson', team: 'Consulting', role: 'Miembro' },
-  { id: 'USR-008', name: 'Maria Garcia', team: 'Consulting', role: 'Miembro' },
-  { id: 'USR-009', name: 'Robert Johnson', team: 'Consulting', role: 'Miembro' },
-  { id: 'USR-010', name: 'Jennifer Lee', team: 'Consulting', role: 'Miembro' },
 ];
 
-// Usuarios mock adicionales
-const MOCK_USERS = [
-  { id: 'USR-011', name: 'Carlos Mendoza', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-012', name: 'Liam Smith', team: 'Apps', role: 'Miembro' }, // MVP - puntos más altos
-  { id: 'USR-013', name: 'Lucas Martin', team: 'Data', role: 'Miembro' },
-  { id: 'USR-014', name: 'Mia Lee', team: 'Data', role: 'Miembro' },
-  { id: 'USR-015', name: 'Ethan Kim', team: 'Data', role: 'Miembro' },
+// Usuarios del equipo CyberWolves (7 usuarios)
+const CYBERWOLVES_USERS = [
+  { id: 'USR-008', name: 'Carlos Mendoza', team: 'CyberWolves', role: 'Miembro' },
+  { id: 'USR-009', name: 'Diego Ramirez', team: 'CyberWolves', role: 'Miembro' },
+  { id: 'USR-010', name: 'Sofia Castro', team: 'CyberWolves', role: 'Miembro' },
+  { id: 'USR-011', name: 'Andres Vargas', team: 'CyberWolves', role: 'Miembro' },
+  { id: 'USR-012', name: 'Mateo Silva', team: 'CyberWolves', role: 'Miembro' },
+  { id: 'USR-013', name: 'Fernando Ruiz', team: 'CyberWolves', role: 'Miembro' },
+  { id: 'USR-014', name: 'Oscar Herrera', team: 'CyberWolves', role: 'Miembro' },
+];
+
+// Usuarios del equipo Apps (7 usuarios - manteniendo Liam Smith MVP)
+const APPS_USERS = [
+  { id: 'USR-015', name: 'Liam Smith', team: 'Apps', role: 'Miembro' }, // MVP - puntos más altos
   { id: 'USR-016', name: 'Ana Torres', team: 'Apps', role: 'Miembro' },
   { id: 'USR-017', name: 'Luis Pérez', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-018', name: 'Marta López', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-019', name: 'Diego Ramirez', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-020', name: 'Sofia Castro', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-021', name: 'Gabriel Torres', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-022', name: 'Valentina Ruiz', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-023', name: 'Daniel Herrera', team: 'Data', role: 'Miembro' },
-  { id: 'USR-024', name: 'Camila Morales', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-025', name: 'Andres Vargas', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-026', name: 'Natalia Jimenez', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-027', name: 'Sebastian Rojas', team: 'Data', role: 'Miembro' },
-  { id: 'USR-028', name: 'Isabella Rodriguez', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-029', name: 'Mateo Silva', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-030', name: 'Valeria Mendoza', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-031', name: 'Adrian Castro', team: 'Data', role: 'Miembro' },
-  { id: 'USR-032', name: 'Lucia Herrera', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-033', name: 'Fernando Ruiz', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-034', name: 'Carmen Vargas', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-035', name: 'Ricardo Morales', team: 'Data', role: 'Miembro' },
-  { id: 'USR-036', name: 'Patricia Jimenez', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-037', name: 'Hector Rojas', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-038', name: 'Elena Silva', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-039', name: 'Roberto Mendoza', team: 'Data', role: 'Miembro' },
-  { id: 'USR-040', name: 'Diana Castro', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-041', name: 'Oscar Herrera', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-042', name: 'Rosa Ruiz', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-043', name: 'Manuel Vargas', team: 'Data', role: 'Miembro' },
-  { id: 'USR-044', name: 'Teresa Morales', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-045', name: 'Javier Jimenez', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-046', name: 'Monica Rojas', team: 'P-TECH', role: 'Miembro' },
-  { id: 'USR-047', name: 'Alberto Silva', team: 'Data', role: 'Miembro' },
-  { id: 'USR-048', name: 'Graciela Mendoza', team: 'Apps', role: 'Miembro' },
-  { id: 'USR-049', name: 'Felipe Castro', team: 'CyberWolves', role: 'Miembro' },
-  { id: 'USR-050', name: 'Silvia Herrera', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-018', name: 'Gabriel Torres', team: 'Apps', role: 'Miembro' },
+  { id: 'USR-019', name: 'Camila Morales', team: 'Apps', role: 'Miembro' },
+  { id: 'USR-020', name: 'Isabella Rodriguez', team: 'Apps', role: 'Miembro' },
+  { id: 'USR-021', name: 'Lucia Herrera', team: 'Apps', role: 'Miembro' },
+];
+
+// Usuarios del equipo Data (7 usuarios)
+const DATA_USERS = [
+  { id: 'USR-022', name: 'Lucas Martin', team: 'Data', role: 'Miembro' },
+  { id: 'USR-023', name: 'Mia Lee', team: 'Data', role: 'Miembro' },
+  { id: 'USR-024', name: 'Ethan Kim', team: 'Data', role: 'Miembro' },
+  { id: 'USR-025', name: 'Daniel Herrera', team: 'Data', role: 'Miembro' },
+  { id: 'USR-026', name: 'Sebastian Rojas', team: 'Data', role: 'Miembro' },
+  { id: 'USR-027', name: 'Adrian Castro', team: 'Data', role: 'Miembro' },
+  { id: 'USR-028', name: 'Ricardo Morales', team: 'Data', role: 'Miembro' },
+];
+
+// Usuarios del equipo P-TECH (7 usuarios)
+const PTECH_USERS = [
+  { id: 'USR-029', name: 'Marta López', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-030', name: 'Valentina Ruiz', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-031', name: 'Natalia Jimenez', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-032', name: 'Valeria Mendoza', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-033', name: 'Carmen Vargas', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-034', name: 'Rosa Ruiz', team: 'P-TECH', role: 'Miembro' },
+  { id: 'USR-035', name: 'Monica Rojas', team: 'P-TECH', role: 'Miembro' },
 ];
 
 // Combinar usuarios y asignar puntos estables
-const ALL_USERS = [...CONSULTING_USERS, ...MOCK_USERS].map((u, i) => {
+const ALL_USERS = [...CONSULTING_USERS, ...CYBERWOLVES_USERS, ...APPS_USERS, ...DATA_USERS, ...PTECH_USERS].map((u, i) => {
   let puntos;
-  if (u.id === 'USR-012') { // Liam Smith - MVP
+  if (u.id === 'USR-015') { // Liam Smith - MVP (nuevo ID)
     puntos = 1065; // Puntos más altos para asegurar primera posición
   } else {
     puntos = generateStablePoints(u.id);
