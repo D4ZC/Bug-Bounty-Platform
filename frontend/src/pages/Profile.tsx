@@ -100,8 +100,8 @@ const Profile: React.FC = () => {
               onChange={handleBannerChange}
             />
           </div>
-          {/* Avatar y botón */}
-          <div className="absolute left-16 top-60 flex flex-col items-start gap-4 z-10">
+          {/* Avatar y marco */}
+          <div className="absolute left-16 top-60 z-10">
             <div className="relative">
               <img
                 src={avatar}
@@ -160,20 +160,16 @@ const Profile: React.FC = () => {
                 <svg width="60" height="32" viewBox="0 0 40 24" fill="none"><ellipse cx="20" cy="12" rx="20" ry="8" fill="#F9A8D4" opacity="0.5"/></svg>
               </span>
             </div>
-            {/* Información del usuario debajo del avatar */}
-            <div className="flex flex-col gap-1 -mt-2">
+          </div>
+          
+          {/* Información del usuario */}
+          <div className="absolute left-16 top-80 flex flex-col items-start gap-4 z-10" style={{ marginTop: '120px' }}>
+            <div className="flex flex-col gap-1">
               <span className="text-4xl font-bold text-gray-900">JuanAM</span>
               <div className="text-gray-700 font-medium text-lg">@JuanDev</div>
             </div>
-          </div>
-          {/* Contenido principal */}
-          <div className="pt-44 pb-10 px-16 flex gap-8 flex-1">
-            {/* Información del perfil */}
-            <div className="flex flex-col gap-8 flex-1 mt-20">
-
-              
-            {/* Roles */}
-              <div className="flex gap-4 mt-8">
+            {/* Roles integrados */}
+            <div className="flex gap-4 mt-4">
               <span className="flex items-center gap-2 bg-green-200 text-green-800 px-5 py-2 rounded-full text-base font-semibold shadow">
                 <svg width="20" height="20" fill="none" viewBox="0 0 16 16"><circle cx="8" cy="8" r="8" fill="#22C55E"/><path d="M5 8l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round"/></svg>
                 Moderator
@@ -185,10 +181,16 @@ const Profile: React.FC = () => {
                   </svg>
                   Development Software
                 </span>
-              </div>
+            </div>
+          </div>
+          {/* Contenido principal */}
+          <div className="pt-44 pb-10 px-16 flex gap-8 flex-1">
+            {/* Información del perfil */}
+            <div className="flex flex-col gap-8 flex-1 mt-20">
+
               
               {/* Sección de Biografía */}
-              <div className="mt-8">
+              <div className="mt-40">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold text-gray-900">Biografía</h3>
                   <button 
@@ -773,7 +775,7 @@ const Profile: React.FC = () => {
       {/* Modal de selección de marcos */}
       {showFrameModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Seleccionar Marco</h2>
@@ -787,64 +789,76 @@ const Profile: React.FC = () => {
                 </button>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {/* Marco Dorado con Gemas Azules */}
-                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example1.png')}>
+              <div className="grid grid-cols-3 gap-4">
+                {/* Fila 1 */}
+                {/* Marco Dorado */}
+                <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco1.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-4 border-yellow-500 shadow-lg flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
-                    </div>
-                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 opacity-20"></div>
+                    <img 
+                      src="/marcos/marco1.png" 
+                      alt="Marco Dorado" 
+                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                    />
+                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Dorado</p>
                 </div>
 
                 {/* Marco Hacker */}
-                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example2.png')}>
+                <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco2.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-600 to-teal-800 border-4 border-teal-500 shadow-lg flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
-                    </div>
-                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-green-600 opacity-30"></div>
+                    <img 
+                      src="/marcos/marco2.png" 
+                      alt="Marco Hacker" 
+                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                    />
+                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Hacker</p>
                 </div>
 
                 {/* Marco Demoníaco */}
-                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example3.png')}>
+                <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco3.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-800 border-4 border-red-500 shadow-lg flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
-                    </div>
-                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 opacity-40"></div>
+                    <img 
+                      src="/marcos/marco3.png" 
+                      alt="Marco Demoníaco" 
+                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                    />
+                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Demoníaco</p>
                 </div>
 
+                {/* Fila 2 */}
                 {/* Marco Teal */}
-                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example4.png')}>
+                <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco4.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 border-4 border-teal-500 shadow-lg flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
-                    </div>
-                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 opacity-25"></div>
+                    <img 
+                      src="/marcos/marco4.png" 
+                      alt="Marco Teal" 
+                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                    />
+                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Teal</p>
                 </div>
 
                 {/* Marco Real */}
-                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example5.png')}>
+                <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco5.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
-                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-4 border-yellow-500 shadow-lg flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
-                    </div>
-                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 opacity-30"></div>
+                    <img 
+                      src="/marcos/marco5.png" 
+                      alt="Marco Real" 
+                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                    />
+                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Real</p>
                 </div>
 
                 {/* Sin Marco */}
-                <div className="group cursor-pointer" onClick={() => handleFrameSelect('')}>
+                <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-gray-300 shadow-lg flex items-center justify-center">
                       <div className="w-20 h-20 rounded-full bg-gray-300"></div>
