@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { GiCrossedSwords, GiWolfHowl, GiTeamIdea, GiLaurelsTrophy, GiPodiumWinner } from 'react-icons/gi';
+import { GiCrossedSwords, GiWolfHowl, GiLaurelsTrophy, GiPodiumWinner } from 'react-icons/gi';
 import { FaUserFriends, FaUserShield, FaUsers, FaMedal, FaCrown, FaFlag, FaClock, FaGavel, FaTools, FaUserSecret, FaGift, FaSmile, FaExclamationTriangle, FaFire, FaCheckCircle } from 'react-icons/fa';
-import { useRef } from 'react';
+
 
 // Retos mock por modo
 type Dificultad = 'Fácil' | 'Media' | 'Difícil';
@@ -271,20 +271,16 @@ function getStats(retos: RetoCTF[], dificultad: Dificultad) {
 }
 
 const DuelosPage: React.FC = () => {
+
   const [selectedMode, setSelectedMode] = useState<'individual'|'duo'|'equipo'>('individual');
   const [retos, setRetos] = useState<RetoCTF[]>(retosPorModo['individual']);
   const [flagInputs, setFlagInputs] = useState<{ [key: number]: string }>({});
-  const [feedback, setFeedback] = useState<{ [key: number]: string }>({});
   const [puntos, setPuntos] = useState(0);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [retoDetalle, setRetoDetalle] = useState<RetoCTFDetalle | null>(null);
   const [dificultadFiltro, setDificultadFiltro] = useState<'Todas'|Dificultad>('Todas');
   // Estado: intentos por reto
   const [intentos, setIntentos] = useState<{ [key: number]: number }>({});
-  // Estado: animación de check por reto
-  const [checkAnim, setCheckAnim] = useState<{ [key: number]: boolean }>({});
-  // Estado para tooltips del menú lateral
-  const [menuTooltip, setMenuTooltip] = useState<{ type: 'regla'|'premio', idx: number }|null>(null);
   // Estado para modal de info del menú lateral
   const [menuModal, setMenuModal] = useState<{ type: 'regla'|'premio', idx: number }|null>(null);
   const [modalReto, setModalReto] = useState<RetoCTFDetalle | null>(null);
@@ -296,44 +292,14 @@ const DuelosPage: React.FC = () => {
     setSelectedMode(mode as 'individual'|'duo'|'equipo');
     setRetos(retosPorModo[mode as 'individual'|'duo'|'equipo'].map(r => ({ ...r, resuelto: false })));
     setFlagInputs({});
-    setFeedback({});
     setPuntos(0);
     setIntentos({}); // Resetear intentos al cambiar modo
-    setCheckAnim({}); // Resetear animación de check
   };
 
   // Filtrar retos por dificultad
   const retosFiltrados = dificultadFiltro === 'Todas' ? retos : retos.filter(r => r.dificultad === dificultadFiltro);
 
-  // Handler para reintentar reto
-  const handleReintentar = (retoId: number) => {
-    setRetos(rs => rs.map(r => r.id === retoId ? { ...r, resuelto: false } : r));
-    setFeedback(f => {
-      const copy = { ...f };
-      delete copy[retoId];
-      return copy;
-    });
-    setFlagInputs(f => ({ ...f, [retoId]: '' }));
-    setIntentos(i => ({ ...i, [retoId]: 0 }));
-    setCheckAnim(a => ({ ...a, [retoId]: false }));
-  };
 
-  // Flag submit
-  const handleFlagSubmit = (retoId: number) => {
-    const reto = retos.find(r => r.id === retoId);
-    if (!reto) return;
-    if (reto.resuelto) return;
-    setIntentos(i => ({ ...i, [retoId]: (i[retoId] || 0) + 1 }));
-    if (flagInputs[retoId]?.trim() === reto.flag) {
-      setFeedback(f => ({ ...f, [retoId]: '¡Correcto! Flag válido.' }));
-      setRetos(rs => rs.map(r => r.id === retoId ? { ...r, resuelto: true } : r));
-      setPuntos(p => p + reto.puntos);
-      setCheckAnim(a => ({ ...a, [retoId]: true }));
-      setTimeout(() => setCheckAnim(a => ({ ...a, [retoId]: false })), 1200);
-    } else {
-      setFeedback(f => ({ ...f, [retoId]: 'Flag incorrecto, intenta de nuevo.' }));
-    }
-  };
 
   // Función personalizada para iniciar el reto
   const handleIniciarReto = (reto: RetoCTF) => {
@@ -351,17 +317,17 @@ const DuelosPage: React.FC = () => {
   const leaderboard = leaderboardMock.map(u => u.usuario === 'Tú' ? { ...u, puntos } : u).sort((a, b) => b.puntos - a.puntos);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center py-12 font-mono bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e]">
-      <div className="w-full max-w-7xl flex flex-col items-center justify-center gap-8">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center py-12 font-mono" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+      <div className="w-full flex flex-col items-center justify-center gap-8 px-4">
         {/* El menú lateral fue eliminado, así que todo el contenido está centrado */}
-        <div className="flex-1 min-w-[320px] max-w-2xl w-full flex flex-col items-center justify-center">
+        <div className="flex-1 w-full flex flex-col items-center justify-center">
           <h1 className="text-6xl font-extrabold text-[#00fff7] drop-shadow-[0_0_16px_#00fff7] mb-8 flex items-center gap-4 font-mono tracking-wide justify-center">
             <GiCrossedSwords size={64} color="#00fff7" /> Duelos
           </h1>
           {/* Selector de modo y acción, filtros, estadísticas, retos, progreso, leaderboard, modal de detalle */}
           {/* ...todo el contenido interactivo que ya tienes, desde el selector de modo hasta el modal de detalle... */}
           {/* Selector de modo y acción */}
-          <section className="w-full max-w-2xl mb-12">
+          <section className="w-full mb-12">
             <h2 className="text-2xl font-bold text-[#00fff7] mb-6 text-center">Participa en un Duelo</h2>
             <div className="flex flex-col md:flex-row gap-6 items-center justify-center mb-6">
               {duelModes.map(mode => (
@@ -390,7 +356,7 @@ const DuelosPage: React.FC = () => {
               ))}
             </div>
             {/* Estadísticas y barra de progreso por dificultad */}
-            <div className="w-full max-w-2xl mb-8">
+            <div className="w-full mb-8">
               {(['Fácil', 'Media', 'Difícil'] as Dificultad[]).map(dif => {
                 const stats = getStats(retos, dif);
                 const info = dificultadInfo[dif];
@@ -419,10 +385,9 @@ const DuelosPage: React.FC = () => {
                 );
               })}
             </div>
-            {/* Retos interactivos tipo CTF */}
-            <div className="w-full bg-[#181c2bcc] border-2 border-[#00fff7] rounded-2xl p-12 shadow-[0_0_32px_#00fff7] mb-8 max-w-7xl mx-auto">
-              <h3 className="text-3xl font-bold text-[#00fff7] mb-8">Retos Duelo Individual</h3>
-              <div className="flex flex-col gap-8">
+
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-12">
                 {retosFiltrados.map((reto: RetoCTF) => {
                   const detalle = detallesRetos[selectedMode][reto.id];
                   const dif = dificultadInfo[reto.dificultad];
@@ -430,40 +395,65 @@ const DuelosPage: React.FC = () => {
                   return (
                     <div
                       key={reto.id}
-                      className={`p-6 rounded-xl border-2 ${reto.resuelto ? 'border-[#39ff14] bg-[#101926]/80' : 'border-[#a259ff] bg-[#232b36]/80'} shadow-md flex flex-col gap-2 hover:scale-[1.02] transition relative`}
+                    className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-6 shadow-[0_0_24px_#00fff7] flex flex-col gap-4 animate-fade-in-up hover:shadow-[0_0_32px_#00fff7] transition-all duration-300 relative"
+                    style={{ 
+                      height: '280px'
+                    }}
                       onClick={() => setRetoDetalle(detalle)}
                       title={`Dificultad: ${reto.dificultad}\nPuntos: ${reto.puntos}\nIntentos: ${intentosReto}\nEstado: ${reto.resuelto ? 'Resuelto' : 'Pendiente'}`}
                     >
-                      <div className="flex items-center gap-2 mb-2">
-                        <FaFlag color="#00fff7" />
-                        <span className="font-bold text-lg text-[#00fff7]">{reto.nombre}</span>
-                        <span className="ml-2 flex items-center gap-1 px-2 py-1 rounded-full text-xs font-bold" style={{ background: dif.color, color: '#181c2b' }}>{dif.icon} {reto.dificultad}</span>
-                        <span className="ml-2 text-xs text-[#a259ff]">Intentos: {intentosReto}</span>
-                        {reto.resuelto && <span className="ml-2 px-2 py-1 rounded bg-[#39ff14] text-black text-xs font-bold flex items-center gap-1">Resuelto
-                          <FaCheckCircle color="#39ff14" size={18} />
-                        </span>}
+                    {/* Título */}
+                    <div className="mt-2">
+                      <h3 className="font-bold text-2xl text-[#39ff14] font-mono leading-tight">
+                        {reto.nombre}
+                      </h3>
                       </div>
-                      <div className="text-white text-base mb-2 font-mono">{reto.descripcion}</div>
-                      <div className="text-[#a259ff] text-sm font-mono mb-2">Puntos: {reto.puntos}</div>
-                      <button
-                        className="mt-2 px-6 py-2 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_8px_#00fff7] transition hover:bg-[#39ff14] hover:shadow-[0_0_16px_#39ff14] focus:outline-none"
-                        onClick={e => {
-                          e.stopPropagation();
-                          setRetoParaIniciar(detalle);
-                          setShowConfirm(true);
-                        }}
-                      >
-                        Acept
-                      </button>
+                    
+                    {/* Etiquetas de dificultad, intentos y estado */}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="px-3 py-1 rounded-full text-sm font-bold bg-[#ff00ea] text-white shadow-[0_0_8px_#ff00ea]">
+                        {dif.icon} {reto.dificultad}
+                      </span>
+                      <span className="px-3 py-1 rounded-full text-sm font-bold bg-[#232b36] text-[#00fff7] shadow-[0_0_8px_#00fff7]">
+                        Intentos: {intentosReto}
+                      </span>
+                      {reto.resuelto && (
+                        <span className="px-3 py-1 rounded-full text-sm font-bold bg-[#39ff14] text-black shadow-[0_0_8px_#39ff14] flex items-center gap-1">
+                          Resuelto <FaCheckCircle size={14} />
+                        </span>
+                      )}
+                    </div>
+                    
+                    {/* Descripción */}
+                    <div className="text-[#00fff7] text-sm font-mono flex-1">
+                      {reto.descripcion}
+                    </div>
+                    
+                    {/* Puntos */}
+                    <div className="text-[#39ff14] font-bold text-lg font-mono">
+                      Puntos: {reto.puntos}
+                    </div>
+                    
+                    {/* Botón funcional estilizado */}
+                    <button 
+                      className="w-full px-6 py-3 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_12px_#00fff7] transition-all duration-300 hover:bg-[#39ff14] hover:shadow-[0_0_20px_#39ff14] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#39ff14] text-base font-mono"
+                      style={{ height: '48px' }}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setRetoParaIniciar(detalle);
+                        setShowConfirm(true);
+                      }}
+                    >
+                      Iniciar Reto
+                    </button>
                     </div>
                   );
                 })}
               </div>
-              <div className="mt-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="mt-8 flex flex-col md:flex-row gap-4 items-center justify-between w-full">
                 <div className="text-[#00fff7] font-bold">Progreso: <span className="text-[#39ff14]">{progreso}%</span></div>
                 <div className="text-[#00fff7] font-bold">Tu puntuación: <span className="text-[#39ff14]">{puntos}</span></div>
                 <button className="px-6 py-2 bg-[#a259ff] text-white rounded-xl font-bold shadow-[0_0_8px_#a259ff] transition hover:bg-[#ff4fa3]" onClick={() => setShowLeaderboard(true)}>Ver Leaderboard</button>
-              </div>
             </div>
             {/* Leaderboard modal */}
             {showLeaderboard && (
@@ -479,7 +469,7 @@ const DuelosPage: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {leaderboard.map((u, idx) => (
+                      {leaderboard.map((u) => (
                         <tr key={u.usuario} className={u.usuario === 'Tú' ? 'bg-[#00fff7]/20 font-bold' : ''}>
                           <td className="py-2">{u.usuario}</td>
                           <td className="py-2">{u.puntos}</td>

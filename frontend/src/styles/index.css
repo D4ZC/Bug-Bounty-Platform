@@ -142,6 +142,107 @@
   animation: float 3s ease-in-out infinite;
 }
 
+/* Animaciones de fade */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-fast {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación de glow */
+@keyframes glow {
+  0%, 100% {
+    text-shadow: 0 0 24px #00fff7, 0 0 48px #00fff7;
+  }
+  50% {
+    text-shadow: 0 0 32px #00fff7, 0 0 64px #00fff7;
+  }
+}
+
+/* Animación de medal glow */
+@keyframes medal-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 8px #FFD700);
+  }
+  50% {
+    filter: drop-shadow(0 0 16px #FFD700);
+  }
+}
+
+/* Animación de avatar glow */
+@keyframes avatar-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px #00fff7;
+  }
+  50% {
+    box-shadow: 0 0 16px #00fff7;
+  }
+}
+
+/* Animación de MVP glow */
+@keyframes mvp-glow {
+  0%, 100% {
+    box-shadow: 0 0 24px #00fff7;
+  }
+  50% {
+    box-shadow: 0 0 48px #00fff7;
+  }
+}
+
+/* Clases de animación */
+.animate-fade-in {
+  animation: fade-in 0.8s both;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s both;
+}
+
+.animate-fade-in-fast {
+  animation: fade-in-fast 0.3s both;
+}
+
+.animate-glow {
+  animation: glow 2s infinite alternate;
+}
+
+.animate-medal-glow {
+  animation: medal-glow 2s infinite alternate;
+}
+
+.animate-avatar-glow {
+  animation: avatar-glow 2.5s infinite alternate;
+}
+
+.animate-mvp-glow {
+  animation: mvp-glow 2s infinite alternate;
+}
+
 /* Estilos para el modo oscuro */
 @media (prefers-color-scheme: dark) {
   .dark-mode-auto {

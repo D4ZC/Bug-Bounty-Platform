@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useBackground } from '../contexts/BackgroundContext';
 import { Publication, Vulnerability, PublicationForm } from '../types';
 import apiService from '../services/api';
 import { toast } from 'react-hot-toast';
@@ -9,6 +10,7 @@ import { toast } from 'react-hot-toast';
 const MisDocumentaciones: React.FC = () => {
   const { isDark } = useTheme();
   const { user } = useAuth();
+  const { backgroundUrl } = useBackground();
   const [publications, setPublications] = useState<Publication[]>([]);
   const [vulnerabilities, setVulnerabilities] = useState<Vulnerability[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,7 +53,9 @@ const MisDocumentaciones: React.FC = () => {
     }
     try {
       const response = await apiService.post<Publication>('/publications', formData);
-      setPublications(prev => [response.data, ...prev]);
+      if (response.data) {
+        setPublications(prev => [response.data as Publication, ...prev]);
+      }
       setShowCreateForm(false);
       setFormData({ title: '', description: '', content: '', vulnerabilityId: '', tags: [] });
       toast.success('Documentación enviada para revisión');
@@ -102,7 +106,7 @@ const MisDocumentaciones: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500">
+    <div className="min-h-screen w-full font-mono transition-colors duration-500" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="max-w-7xl mx-auto p-6">
         <div className="text-center mb-8">
           <h1 className="text-4xl md:text-5xl font-extrabold text-[#00fff7] drop-shadow-[0_0_8px_#00fff7] mb-4 font-mono">

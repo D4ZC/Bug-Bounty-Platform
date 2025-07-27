@@ -5,7 +5,7 @@ import apiService from '@/services/api';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import Bar3DChart from './Bar3DChart';
-import { useBackground } from '../../contexts/BackgroundContext';
+
 
 // Datos de ejemplo para OCAMPO
 const d4zcProfile = {
@@ -35,7 +35,7 @@ const CustomBarTooltip = ({ active, payload, label }: any) => {
 const Dashboard: React.FC = () => {
   const { isDark } = useTheme();
   const navigate = useNavigate();
-  const { backgroundUrl } = useBackground();
+
 
   // Datos de ejemplo (puedes conectar a la API real si lo deseas)
   const [teams, setTeams] = useState<Team[]>([]);
@@ -73,13 +73,9 @@ const Dashboard: React.FC = () => {
   const mvpUser = topUsers[0];
 
   return (
-    <div className="min-h-screen w-full font-mono text-white" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+    <div className="min-h-screen w-full font-mono text-white" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="max-w-7xl mx-auto px-4 py-10 flex flex-col gap-10">
-        {/* Header */}
-        <header className="flex flex-col items-center gap-2 mb-8">
-          <h1 className="text-5xl font-extrabold text-[#00fff7] drop-shadow-[0_0_16px_#00fff7] tracking-wide mb-1">Bug Bounty Platform</h1>
-          <p className="text-xl text-[#39ff14] font-mono tracking-wide">¡Bienvenido cazador! Explora, compite y gana recompensas.</p>
-        </header>
+
         {/* Resumen rápido */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-2">
           <div className="bg-[#181c2b]/80 border-2 border-[#00fff7] rounded-2xl p-6 flex flex-col items-center shadow-[0_0_24px_#00fff7]">

@@ -12,6 +12,8 @@ import App from './App'
 import { AuthProvider } from './contexts/AuthContext'
 import { SocketProvider } from './contexts/SocketContext'
 import { ThemeProvider } from './contexts/ThemeContext'
+import { BackgroundProvider } from './contexts/BackgroundContext'
+import { UserProvider } from './contexts/UserContext'
 import ErrorFallback from './components/ErrorFallback'
 import './styles/index.css'
 
@@ -32,21 +34,25 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>
             <ThemeProvider>
-              <AuthProvider>
-                <SocketProvider>
-                  <App />
-                  <Toaster
-                    position="top-right"
-                    toastOptions={{
-                      duration: 4000,
-                      style: {
-                        background: '#363636',
-                        color: '#fff',
-                      },
-                    }}
-                  />
-                </SocketProvider>
-              </AuthProvider>
+              <BackgroundProvider>
+                <UserProvider>
+                  <AuthProvider>
+                    <SocketProvider>
+                      <App />
+                      <Toaster
+                        position="top-right"
+                        toastOptions={{
+                          duration: 4000,
+                          style: {
+                            background: '#363636',
+                            color: '#fff',
+                          },
+                        }}
+                      />
+                    </SocketProvider>
+                  </AuthProvider>
+                </UserProvider>
+              </BackgroundProvider>
             </ThemeProvider>
           </BrowserRouter>
           <ReactQueryDevtools initialIsOpen={false} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useBackground } from '../contexts/BackgroundContext';
+
 
 const months = [
   { value: '2024-07', label: 'Julio 2024' },
@@ -46,7 +46,7 @@ const mockVulns = [
 ];
 
 const RankingUsuarios: React.FC = () => {
-  const { backgroundUrl } = useBackground();
+
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<string>(months[0].value);
   const ranking: UserRanking[] = mockRanking[selectedMonth] || [];
@@ -75,7 +75,7 @@ const RankingUsuarios: React.FC = () => {
   }, [totalVulns, selectedMonth]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-12 font-mono relative overflow-hidden" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+    <div className="min-h-screen w-full flex flex-col items-center py-12 font-mono relative overflow-hidden" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       {/* Fondo animado de partículas */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <svg width="100%" height="100%" className="w-full h-full" style={{ position: 'absolute', top: 0, left: 0 }}>

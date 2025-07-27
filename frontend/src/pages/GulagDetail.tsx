@@ -100,7 +100,7 @@ const GulagDetail: React.FC = () => {
   };
 
   return (
-    <div className={`min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono`}>
+    <div className={`min-h-screen w-full flex flex-col items-center py-10 px-2 transition-colors duration-500 font-mono`} style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <Toaster position="top-right" />
       <div className="w-full max-w-3xl bg-[#181a20]/90 rounded-2xl shadow-lg p-8 border-2 border-[#00f7fa] backdrop-blur-md animate-fade-in-up">
         <h1 className="text-3xl font-extrabold mb-2 text-[#00f7fa] drop-shadow-[0_0_8px_#00fff7] font-mono">{challenge.title}</h1>

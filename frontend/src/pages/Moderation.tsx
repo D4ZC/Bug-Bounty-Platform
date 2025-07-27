@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useBackground } from '../contexts/BackgroundContext';
 import { Publication } from '../types';
 import apiService from '../services/api';
 import { toast } from 'react-hot-toast';
@@ -9,6 +10,7 @@ import { toast } from 'react-hot-toast';
 const Moderation: React.FC = () => {
   const { isDark } = useTheme();
   const { user } = useAuth();
+  const { backgroundUrl } = useBackground();
   const [pendingPublications, setPendingPublications] = useState<Publication[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPublication, setSelectedPublication] = useState<Publication | null>(null);
@@ -118,7 +120,7 @@ const Moderation: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0a183d] via-[#1a0033] to-[#2d003e] font-mono transition-colors duration-500">
+    <div className="min-h-screen w-full font-mono transition-colors duration-500" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-8">

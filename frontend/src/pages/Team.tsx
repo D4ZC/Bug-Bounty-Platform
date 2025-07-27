@@ -52,7 +52,7 @@ const TeamPage: React.FC = () => {
   const [unido, setUnido] = useState<string | null>(null);
   const [detalleEquipo, setDetalleEquipo] = useState<Team | null>(null);
   const [tabDetalle, setTabDetalle] = useState<'resumen'|'miembros'|'historial'|'logros'|'chat'>('resumen');
-  const [notificaciones, setNotificaciones] = useState([
+  const [notificaciones] = useState([
     { id: 1, texto: 'Invitación pendiente para CyberGuard', leida: false },
     { id: 2, texto: 'OCAMPO añadió a María García', leida: false },
   ]);
@@ -61,13 +61,13 @@ const TeamPage: React.FC = () => {
     { id: 2, user: 'sofia', text: '¡Gracias! ¿Cuándo la próxima reunión?', time: '10:01' },
   ]);
   const [chatInput, setChatInput] = useState('');
-  const [activityHistory, setActivityHistory] = useState([
+  const [activityHistory] = useState([
     { id: 1, type: 'join', user: 'sofia', text: 'Sofía se unió al equipo', date: '2024-06-01 10:00' },
     { id: 2, type: 'leave', user: 'juan', text: 'Juan salió del equipo', date: '2024-06-01 09:00' },
     { id: 3, type: 'leader', user: 'OCAMPO', text: 'OCAMPO transfirió el liderazgo a Sofía', date: '2024-05-31 18:00' },
     { id: 4, type: 'trophy', user: 'equipo', text: '¡El equipo ganó un trofeo!', date: '2024-05-30 20:00' },
   ]);
-  const [achievements, setAchievements] = useState([
+  const [achievements] = useState([
     { id: 1, name: 'Primer bug', icon: '🐞', unlocked: true, date: '2024-05-01' },
     { id: 2, name: 'Equipo MVP', icon: '🏆', unlocked: true, date: '2024-05-10' },
     { id: 3, name: 'Top 3', icon: '🥉', unlocked: false },

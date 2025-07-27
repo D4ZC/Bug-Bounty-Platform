@@ -3,7 +3,7 @@ import { FaUsers, FaPlus, FaSearch, FaTrash, FaUserPlus, FaCrown, FaBell, FaUser
 import { apiService } from '../services/api';
 import { Team } from '../types';
 import socketService from '../services/socket';
-import { useBackground } from '../contexts/BackgroundContext';
+
 
 // Mock de datos
 const mockEquipos: Team[] = [
@@ -50,7 +50,7 @@ const mockActividad = [
 ];
 
 const Equipos: React.FC = () => {
-  const { backgroundUrl } = useBackground();
+
   const [tab, setTab] = useState<'miEquipo' | 'buscar' | 'crear'>('miEquipo');
   const [equipos, setEquipos] = useState<Team[]>(mockEquipos);
   const [equipoSeleccionado, setEquipoSeleccionado] = useState<any | null>(null);
@@ -368,7 +368,7 @@ const Equipos: React.FC = () => {
   }, [createSuccess]);
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center py-12 font-mono" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+    <div className="min-h-screen w-full flex flex-col items-center py-12 font-mono" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="w-full max-w-6xl mx-auto bg-[#181c2b]/90 border-2 border-[#00fff7] rounded-3xl p-10 flex flex-col items-center relative animate-fade-in-up">
         {/* Barra superior: Dashboard, notificaciones, perfil */}
         <div className="w-full flex flex-row items-center justify-between mb-10">
@@ -587,7 +587,7 @@ const Equipos: React.FC = () => {
           </div>
         )}
         {/* Modal de búsqueda de equipos */}
-        {tab === 'buscar' && (
+          {tab === 'buscar' && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" onClick={e => { if (e.target === e.currentTarget) setTab('miEquipo'); }}>
             <div className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-10 shadow-2xl w-full max-w-md animate-fade-in-up">
               <div className="text-2xl font-bold text-[#00fff7] mb-6">Buscar Equipos</div>
@@ -609,11 +609,11 @@ const Equipos: React.FC = () => {
                         <div className="text-xs text-[#a259ff]">Creado: {team.createdAt instanceof Date ? team.createdAt.toISOString().slice(0,10) : new Date(team.createdAt).toISOString().slice(0,10)}</div>
                       </div>
                     ))}
-                  </div>
-                )}
+            </div>
+          )}
                 <div className="flex gap-2 justify-end">
                   <button type="button" onClick={() => setTab('miEquipo')} className="px-4 py-2 rounded-lg bg-gray-500 text-white font-bold font-mono">Volver</button>
-                </div>
+        </div>
               </div>
             </div>
           </div>
@@ -623,4 +623,4 @@ const Equipos: React.FC = () => {
   );
 };
 
-export default Equipos;
+export default Equipos; 

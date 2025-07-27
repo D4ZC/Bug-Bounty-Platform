@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Home, List, Chat, UserAvatar, Edit } from '@carbon/icons-react';
+import { Home, List, Chat, UserAvatar, Edit, ShoppingCart } from '@carbon/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { FaUsers } from 'react-icons/fa';
 import { GiCrossedSwords, GiPodiumWinner } from 'react-icons/gi';
-import { useBackground } from '../../contexts/BackgroundContext';
+// Eliminar import { useBackground } from '../../contexts/BackgroundContext';
 
 const neon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
 const neonIcon = 'text-[#00fff7] drop-shadow-[0_0_8px_#00fff7]';
@@ -30,33 +30,33 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isDark } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { backgroundUrl } = useBackground();
+  // Eliminar const { backgroundUrl } = useBackground();
 
   return (
     <div
       className="min-h-screen flex flex-col font-mono transition-colors duration-500"
       style={{
-        background: backgroundUrl
-          ? `url(${backgroundUrl}) center/cover no-repeat`
-          : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)',
+        background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)',
       }}
     >
       {/* Navbar superior */}
-      <header className="w-full py-4 flex justify-center items-center bg-[#181c2bcc] border-b-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] backdrop-blur-md">
+      <header className="w-full py-4 flex justify-between items-center bg-[#181c2bcc] border-b-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] backdrop-blur-md px-6">
+        <div className="flex-1"></div>
         <h1
-          className="text-4xl md:text-5xl font-extrabold tracking-wide uppercase text-[#00fff7] drop-shadow-[0_0_8px_#00fff7] font-mono"
-          style={{ letterSpacing: '2px', textAlign: 'center' }}
+          className="text-2xl md:text-3xl lg:text-4xl font-extrabold tracking-wide uppercase text-[#00fff7] drop-shadow-[0_0_8px_#00fff7] font-mono flex-1 text-center whitespace-nowrap"
+          style={{ letterSpacing: '1px' }}
         >
           BUG BOUNTY PLATFORM
         </h1>
+        <div className="flex-1 flex justify-end items-end">
+          <SidebarIcon to="/profile" className="hover:scale-125 transition-transform duration-200 mb-2">
+            <UserAvatar size={36} className={neonIcon} />
+          </SidebarIcon>
+        </div>
       </header>
       <div className="flex flex-1">
         {/* Sidebar lateral */}
-        <nav className="min-h-full w-20 flex flex-col items-center pb-4 bg-[#181c2bcc] border-r-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] backdrop-blur-md">
-          {/* Icono de usuario con margen superior y mismo efecto de hover/click */}
-          <SidebarIcon to="/profile" className="mt-8">
-            <UserAvatar size={36} className={neonIcon} />
-          </SidebarIcon>
+        <nav className="min-h-full w-20 flex flex-col items-center pb-4 border-r-2 border-[#00fff7] shadow-[0_0_24px_#00fff7]" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
           <div className="flex flex-col items-center gap-8 mt-8 w-full">
             <SidebarIcon to="/">
               <Home size={36} className={neonIcon} />
@@ -66,6 +66,9 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             </SidebarIcon>
             <SidebarIcon to="/documentacion">
               <List size={36} className={neonIcon} />
+            </SidebarIcon>
+            <SidebarIcon to="/store">
+              <ShoppingCart size={36} className={neonIcon} />
             </SidebarIcon>
             {/* Moderación solo para admin o moderator */}
             {user && (user.role === 'admin' || user.role === 'moderator') && (

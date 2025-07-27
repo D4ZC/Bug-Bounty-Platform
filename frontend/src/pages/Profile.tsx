@@ -281,9 +281,9 @@ const Profile: React.FC = () => {
               <div><span className="text-[#00fff7] font-bold">Groups</span> 36</div>
             </div>
           </div>
-        </div>
+        </div> {/* Cierre de grid de showcase y estadísticas */}
         {(inventory.filter(i => i.category === 'Avatar').length > 0 || inventory.filter(i => i.category === 'Fondo').length > 0) && (
-          <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 backdrop-blur-md animate-fade-in-up">
+          <div className="bg-[#181c2bcc] rounded-2xl shadow-[0_0_24px_#00fff7] border-2 border-[#00fff7] p-6 mt-6 mb-8 backdrop-blur-md animate-fade-in-up max-w-5xl mx-auto">
             <div className="text-xl font-bold text-[#00fff7] mb-4 font-mono">Inventario</div>
             {inventory.filter(i => i.category === 'Avatar').length > 0 && (
               <>
@@ -313,7 +313,7 @@ const Profile: React.FC = () => {
             )}
           </div>
         )}
-      </div>
+      </div> {/* Cierre de main content */}
       {/* Barra lateral tipo Steam */}
       <aside className="w-full md:w-80 flex-shrink-0 bg-gradient-to-b from-[#1a0033cc] to-[#181c2bcc] p-6 flex flex-col gap-8 z-20 border-l-2 border-[#a259ff] shadow-[0_0_24px_#a259ff] backdrop-blur-md animate-fade-in-up">
         <div className="flex flex-col gap-2">
