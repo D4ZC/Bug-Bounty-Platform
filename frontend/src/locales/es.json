@@ -120,6 +120,7 @@
     "deleteConfirmNo": "No",
     "deleteFinalTitle": "Confirma la eliminación del proyecto {{name}}",
     "deleteFinalConfirm": "Confirmar",
-    "deleteFinalCancel": "Cancelar"
+    "deleteFinalCancel": "Cancelar",
+    "searchVuln": "Buscar"
   }
 } 

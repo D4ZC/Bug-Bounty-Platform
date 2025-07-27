@@ -1,7 +1,8 @@
 import { t } from 'i18next';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Edit, TrashCan } from '@carbon/icons-react';
+import { Edit, TrashCan, Search, Add } from '@carbon/icons-react';
+import TextareaAutosize from 'react-textarea-autosize';
 
 // Tipos para los mocks
 interface VulnerabilityItem {
@@ -227,12 +228,6 @@ const Home: React.FC = () => {
       </div>
       {/* Formulario expandible para crear/editar proyecto */}
       <div className="mb-8">
-        <button
-          className="mb-2 px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700"
-          onClick={() => { setShowForm((prev) => !prev); if (!showForm) resetForm(); }}
-        >
-          {showForm ? t('home.cancel') : (editIndex !== null ? t('home.editProject') : t('home.addProject'))}
-        </button>
         {showForm && (
           <form className="bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 border-4 border-blue-400" onSubmit={handleSubmit}>
             {formError && <div className="text-red-600 text-sm font-bold mb-2">{formError}</div>}
@@ -354,36 +349,43 @@ const Home: React.FC = () => {
                           <button type="button" className="px-2 py-1 bg-gray-600 text-white rounded hover:bg-gray-700" onClick={() => addVulnItem(vIdx, diff)}>{t('home.addItem')}</button>
                         </div>
                         {(vuln.difficulties[diff] || []).map((item, iIdx) => (
-                          <div key={iIdx} className="flex flex-col md:flex-row gap-2 mt-1 border rounded p-2 bg-white dark:bg-gray-700">
-                            <input
-                              placeholder={t('home.help.name')}
-                              value={item.name}
-                              onChange={e => handleVulnItemChange(vIdx, diff, iIdx, 'name', e.target.value)}
-                              className={`border rounded p-1 flex-1 placeholder-gray-400 ${item.name ? 'text-black font-bold' : 'text-gray-400'}`}
-                              required
-                            />
-                            <input
-                              placeholder={t('home.help.description')}
-                              value={item.description}
-                              onChange={e => handleVulnItemChange(vIdx, diff, iIdx, 'description', e.target.value)}
-                              className={`border rounded p-1 flex-1 placeholder-gray-400 ${item.description ? 'text-black font-bold' : 'text-gray-400'}`}
-                              required
-                            />
-                            <input
-                              placeholder={t('home.help.problem')}
-                              value={item.problem}
-                              onChange={e => handleVulnItemChange(vIdx, diff, iIdx, 'problem', e.target.value)}
-                              className={`border rounded p-1 flex-1 placeholder-gray-400 ${item.problem ? 'text-black font-bold' : 'text-gray-400'}`}
-                              required
-                            />
-                            <input
-                              placeholder={t('home.help.howDetected')}
-                              value={item.howDetected}
-                              onChange={e => handleVulnItemChange(vIdx, diff, iIdx, 'howDetected', e.target.value)}
-                              className={`border rounded p-1 flex-1 placeholder-gray-400 ${item.howDetected ? 'text-black font-bold' : 'text-gray-400'}`}
-                              required
-                            />
-                            <button type="button" className="text-red-600 font-bold" onClick={() => removeVulnItem(vIdx, diff, iIdx)}>{t('home.removeItem')}</button>
+                          <div key={iIdx} className="flex flex-col gap-2 mt-1 border rounded p-2 bg-white dark:bg-gray-700">
+                            <div className="w-full">
+                              <input
+                                placeholder={t('home.help.name')}
+                                value={item.name}
+                                onChange={e => handleVulnItemChange(vIdx, diff, iIdx, 'name', e.target.value)}
+                                className={`border rounded p-1 w-full placeholder-gray-400 ${item.name ? 'text-black font-bold' : 'text-gray-400'}`}
+                                required
+                              />
+                            </div>
+                            <div className="flex gap-2">
+                              <TextareaAutosize
+                                minRows={2}
+                                placeholder={t('home.help.description')}
+                                value={item.description}
+                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleVulnItemChange(vIdx, diff, iIdx, 'description', e.target.value)}
+                                className={`border rounded p-1 flex-1 placeholder-gray-400 resize-none ${item.description ? 'text-black font-bold' : 'text-gray-400'}`}
+                                required
+                              />
+                              <TextareaAutosize
+                                minRows={2}
+                                placeholder={t('home.help.problem')}
+                                value={item.problem}
+                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleVulnItemChange(vIdx, diff, iIdx, 'problem', e.target.value)}
+                                className={`border rounded p-1 flex-1 placeholder-gray-400 resize-none ${item.problem ? 'text-black font-bold' : 'text-gray-400'}`}
+                                required
+                              />
+                              <TextareaAutosize
+                                minRows={2}
+                                placeholder={t('home.help.howDetected')}
+                                value={item.howDetected}
+                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleVulnItemChange(vIdx, diff, iIdx, 'howDetected', e.target.value)}
+                                className={`border rounded p-1 flex-1 placeholder-gray-400 resize-none ${item.howDetected ? 'text-black font-bold' : 'text-gray-400'}`}
+                                required
+                              />
+                              <button type="button" className="text-red-600 font-bold" onClick={() => removeVulnItem(vIdx, diff, iIdx)}>{t('home.removeItem')}</button>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -401,19 +403,35 @@ const Home: React.FC = () => {
                 </div>
               ))}
             </div>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">{editIndex !== null ? t('home.save') : t('home.create')}</button>
+            <div className="flex gap-2 justify-end">
+              <button 
+                type="button" 
+                className="px-4 py-2 bg-gray-500 text-white rounded font-bold hover:bg-gray-600"
+                onClick={() => setShowForm(false)}
+              >
+                {t('home.cancel')}
+              </button>
+              <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">
+                {editIndex !== null ? t('home.save') : t('home.create')}
+              </button>
+            </div>
           </form>
         )}
       </div>
       {/* Buscador arriba de las cards (sin filtros globales) */}
       <div className="mb-6">
-        <input
-          type="text"
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder={t('home.searchVuln')}
-          className="w-full border rounded p-2 placeholder-gray-400"
-        />
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search size={20} className="text-gray-800" />
+          </div>
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder={t('home.searchVuln')}
+            className={`w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600 ${search ? 'text-black' : 'text-gray-600'}`}
+          />
+        </div>
       </div>
       {/* Cards filtradas */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -632,6 +650,30 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
+      {/* Botón flotante Add Project en esquina inferior derecha */}
+      <button
+        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50 ${
+          showForm 
+            ? 'bg-red-600 hover:bg-red-700 text-white' 
+            : 'bg-blue-600 hover:bg-blue-700 text-white'
+        }`}
+        onClick={() => { 
+          if (showForm) {
+            setShowForm(false);
+          } else {
+            setShowForm(true); 
+            resetForm();
+          }
+        }}
+        title={showForm ? t('home.cancel') : t('home.addProject')}
+        aria-label={showForm ? t('home.cancel') : t('home.addProject')}
+      >
+        {showForm ? (
+          <span className="text-2xl font-bold">&times;</span>
+        ) : (
+          <Add size={24} />
+        )}
+      </button>
     </div>
   );
 };

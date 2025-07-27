@@ -111,6 +111,7 @@
     "deleteConfirmNo": "No",
     "deleteFinalTitle": "Confirm deletion of project {{name}}",
     "deleteFinalConfirm": "Confirm",
-    "deleteFinalCancel": "Cancel"
+    "deleteFinalCancel": "Cancel",
+    "searchVuln": "Search"
   }
 } 
