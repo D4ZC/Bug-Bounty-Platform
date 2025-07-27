@@ -12,6 +12,7 @@ const Profile: React.FC = () => {
   const [profileFrame, setProfileFrame] = useState<string | null>(null);
   const [bannerImage, setBannerImage] = useState<string>('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80');
   const [profileBackground, setProfileBackground] = useState<string>('bg-gray-200');
+  const [showFrameModal, setShowFrameModal] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const frameInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
@@ -65,6 +66,11 @@ const Profile: React.FC = () => {
     setProfileBackground(color);
   };
 
+  const handleFrameSelect = (frameUrl: string) => {
+    setProfileFrame(frameUrl);
+    setShowFrameModal(false);
+  };
+
   return (
     <MainLayout>
       <div className="w-full min-h-screen bg-white flex flex-col items-center justify-center">
@@ -115,7 +121,7 @@ const Profile: React.FC = () => {
               {/* Botón para cambiar avatar */}
               <button
                 className="absolute bottom-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center justify-center z-20"
-                style={{ right: '-60px' }}
+                style={{ right: '-70px' }}
                 onClick={() => fileInputRef.current?.click()}
                 title="Cambiar foto de perfil"
               >
@@ -125,8 +131,8 @@ const Profile: React.FC = () => {
               {/* Botón para cambiar marco */}
               <button
                 className="absolute bottom-2 bg-purple-700 hover:bg-purple-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 flex items-center justify-center z-20"
-                style={{ right: '-120px' }}
-                onClick={() => frameInputRef.current?.click()}
+                style={{ right: '-130px' }}
+                onClick={() => setShowFrameModal(true)}
                 title="Cambiar marco de perfil"
               >
                 {/* Icono de marco */}
@@ -763,6 +769,94 @@ const Profile: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      {/* Modal de selección de marcos */}
+      {showFrameModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Seleccionar Marco</h2>
+                <button
+                  onClick={() => setShowFrameModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {/* Marco Dorado con Gemas Azules */}
+                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example1.png')}>
+                  <div className="relative w-32 h-32 mx-auto mb-2">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-4 border-yellow-500 shadow-lg flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                    </div>
+                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 opacity-20"></div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 text-center">Marco Dorado</p>
+                </div>
+
+                {/* Marco Hacker */}
+                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example2.png')}>
+                  <div className="relative w-32 h-32 mx-auto mb-2">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-600 to-teal-800 border-4 border-teal-500 shadow-lg flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                    </div>
+                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-green-400 to-green-600 opacity-30"></div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 text-center">Marco Hacker</p>
+                </div>
+
+                {/* Marco Demoníaco */}
+                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example3.png')}>
+                  <div className="relative w-32 h-32 mx-auto mb-2">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-600 to-red-800 border-4 border-red-500 shadow-lg flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                    </div>
+                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 opacity-40"></div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 text-center">Marco Demoníaco</p>
+                </div>
+
+                {/* Marco Teal */}
+                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example4.png')}>
+                  <div className="relative w-32 h-32 mx-auto mb-2">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 border-4 border-teal-500 shadow-lg flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                    </div>
+                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 opacity-25"></div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 text-center">Marco Teal</p>
+                </div>
+
+                {/* Marco Real */}
+                <div className="group cursor-pointer" onClick={() => handleFrameSelect('https://i.imgur.com/example5.png')}>
+                  <div className="relative w-32 h-32 mx-auto mb-2">
+                    <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 border-4 border-yellow-500 shadow-lg flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                    </div>
+                    <div className="absolute inset-0 w-32 h-32 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 opacity-30"></div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 text-center">Marco Real</p>
+                </div>
+
+                {/* Sin Marco */}
+                <div className="group cursor-pointer" onClick={() => handleFrameSelect('')}>
+                  <div className="relative w-32 h-32 mx-auto mb-2">
+                    <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-gray-300 shadow-lg flex items-center justify-center">
+                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium text-gray-900 text-center">Sin Marco</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 };
