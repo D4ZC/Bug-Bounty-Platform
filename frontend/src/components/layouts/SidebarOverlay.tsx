@@ -109,7 +109,7 @@ const SidebarOverlay: React.FC<SidebarOverlayProps> = ({ open, onClose, onChatOp
             <span className="font-gamer-body">Reglas</span>
           </button>
           
-          {/* Formulario */}
+          {/* Documentación */}
           <div className="w-full mt-2">
             <button
               type="button"
@@ -119,7 +119,7 @@ const SidebarOverlay: React.FC<SidebarOverlayProps> = ({ open, onClose, onChatOp
               aria-controls="submenu-formulario"
             >
               <FileText size={24} />
-              <span className="font-gamer-body">Formulario</span>
+              <span className="font-gamer-body">Documentación</span>
               <svg className={`ml-auto w-4 h-4 transition-transform ${formOpen ? 'rotate-90' : ''}`} fill="none" stroke="#fff" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
             </button>
             {formOpen && (
