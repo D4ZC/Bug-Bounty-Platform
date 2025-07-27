@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LanguageSelector from '../LanguageSelector';
 import ChatModal from '../ChatModal';
+import NotificationModal from '../NotificationModal';
 import SidebarOverlay from './SidebarOverlay';
 import { Header } from '@carbon/react';
-import { Mail, User, AlignJustify } from 'lucide-react';
+import { Mail, User, AlignJustify, Bell } from 'lucide-react';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showMsgModal, setShowMsgModal] = useState(false);
   const [selectedMsg, setSelectedMsg] = useState(0);
   const [showChat, setShowChat] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(3);
   const navigate = useNavigate();
   // Mock de mensajes
   const mensajes = [
@@ -39,6 +42,18 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </span>
         <div className="flex-1" />
         <div className="flex items-center gap-6 mr-6">
+          <button 
+            aria-label="Notificaciones" 
+            className="text-white hover:text-cyber-blue transition-colors relative" 
+            onClick={() => setShowNotifications(true)}
+          >
+            <Bell size={28} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full">
+                {unreadCount}
+              </span>
+            )}
+          </button>
           <LanguageSelector />
           <button aria-label="Perfil" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/profile')}>
             <User size={28} />
@@ -82,6 +97,11 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         {/* Contenido principal */}
         <main className="flex-1 p-6 bg-gray-100 min-h-screen transition-all duration-300 dark:bg-carbon-dark dark:text-gray-100">{children}</main>
         <ChatModal open={showChat} onClose={() => setShowChat(false)} position="left" />
+        <NotificationModal 
+          open={showNotifications} 
+          onClose={() => setShowNotifications(false)} 
+          onUnreadCountChange={setUnreadCount}
+        />
       </div>
     </div>
   );

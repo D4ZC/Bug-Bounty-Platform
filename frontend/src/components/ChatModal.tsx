@@ -41,6 +41,54 @@ const mensajes = [
   { title: 'Actualización', content: 'Se han mejorado las funciones de la tienda. ¡Explora las novedades!' },
 ];
 
+// Emojis disponibles
+const emojis = [
+  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+  '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+  '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+  '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬',
+  '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗',
+  '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😯', '😦', '😧',
+  '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '💪', '👈', '👉',
+  '👆', '🖕', '👇', '☝️', '👋', '🤚', '🖐️', '✋', '🖖', '👌',
+  '🤌', '🤏', '✌️', '🤞', '🤟', '🤘', '🤙', '👈', '👉', '👆',
+  '🖕', '👇', '☝️', '👍', '👎', '👊', '✊', '🤛', '🤜', '👏',
+  '🙌', '👐', '🤲', '🤝', '🙏', '✍️', '💪', '🦾', '🦿', '🦵',
+  '🦶', '👂', '🦻', '👃', '🧠', '🫀', '🫁', '🦷', '🦴', '👀',
+  '👁️', '👅', '👄', '💋', '🩸', '❤️', '🧡', '💛', '💚', '💙',
+  '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗',
+  '💖', '💘', '💝', '💟', '🎵', '🎶', '💯', '💢', '💥', '💫',
+  '💦', '💨', '🕳️', '💬', '🗨️', '🗯️', '💭', '💤', '🔥', '⚡',
+  '💥', '💢', '💫', '💦', '💨', '🕳️', '💬', '🗨️', '🗯️', '💭',
+  '💤', '🔥', '⚡', '💥', '💢', '💫', '💦', '💨', '🕳️', '💬'
+];
+
+// Mensajes predeterminados
+const mensajesPredeterminados = [
+  '¡Hola! 👋',
+  '¿Cómo estás? 😊',
+  '¡Perfecto! 👍',
+  '¡Excelente trabajo! 🎉',
+  '¡Vamos con todo! 💪',
+  '¡Buena idea! 💡',
+  '¡Gracias! 🙏',
+  '¡Nos vemos! 👋',
+  '¡Éxito en el reto! 🚀',
+  '¡Suerte! 🍀',
+  '¡Increíble! 🤩',
+  '¡Wow! 😮',
+  '¡Genial! 😎',
+  '¡Felicidades! 🎊',
+  '¡Bien hecho! 👏',
+  '¡Lo siento! 😔',
+  '¡No te preocupes! 😌',
+  '¡Todo bien! 😊',
+  '¡Claro que sí! ✅',
+  '¡Por supuesto! 👍'
+];
+
 interface ChatModalProps {
   open: boolean;
   onClose: () => void;
@@ -57,13 +105,68 @@ const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center
   const [globalMessages, setGlobalMessages] = useState(mockGlobalMessagesInit);
   const [showMsgModal, setShowMsgModal] = useState(false);
   const [selectedMsg, setSelectedMsg] = useState(0);
+  const [showEmojis, setShowEmojis] = useState(false);
+  const [showQuickMessages, setShowQuickMessages] = useState(false);
+
+  // Función para agregar emoji al input
+  const addEmoji = (emoji: string) => {
+    if (tab === 'global') {
+      setGlobalInput(prev => prev + emoji);
+    } else if (tab === 'equipo') {
+      setGroupInput(prev => prev + emoji);
+    } else {
+      setInput(prev => prev + emoji);
+    }
+    setShowEmojis(false);
+  };
+
+  // Función para agregar mensaje predeterminado
+  const addQuickMessage = (message: string) => {
+    if (tab === 'global') {
+      setGlobalInput(message);
+    } else if (tab === 'equipo') {
+      setGroupInput(message);
+    } else {
+      setInput(message);
+    }
+    setShowQuickMessages(false);
+  };
+
+  // Función para enviar mensaje
+  const sendMessage = (text: string) => {
+    const newMessage = {
+      from: 'Yo',
+      text: text,
+      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    if (tab === 'global') {
+      setGlobalMessages([...globalMessages, newMessage]);
+      setGlobalInput('');
+    } else if (tab === 'equipo') {
+      setGroupMessages([...groupMessages, newMessage]);
+      setGroupInput('');
+    } else {
+      mockMessages[selectedUser] = [...(mockMessages[selectedUser] || []), newMessage];
+      setInput('');
+    }
+  };
+
+  // Función para manejar envío con Enter
+  const handleKeyDown = (e: React.KeyboardEvent, currentInput: string) => {
+    if (e.key === 'Enter' && currentInput.trim()) {
+      sendMessage(currentInput);
+    }
+  };
+
   if (!open) return null;
+
   return (
     <div
       className={
         position === 'left'
           ? 'fixed left-0 top-24 z-50 w-[480px] h-[calc(100vh-96px)] bg-white shadow-2xl flex flex-col animate-fade-in border border-gray-300 rounded-none rounded-r-2xl'
-          : 'fixed top-[50px] left-0 z-50 w-1/2 h-[100vh] bg-white rounded-r-2xl shadow-2xl flex flex-col animate-fade-in border border-gray-300'
+          : 'fixed top-[50px] left-0 z-50 w-4/5 h-[calc(100vh-200px)] bg-white rounded-r-2xl shadow-2xl flex flex-col animate-fade-in border border-gray-300'
       }
     >
       {/* Encabezado */}
@@ -118,11 +221,11 @@ const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center
             <div className="flex flex-col items-center justify-center h-full text-gray-500 font-semibold text-lg w-full">Chat global (visual)</div>
           )}
         </div>
-        {/* Panel derecho: chat */}
-        <div className="flex-1 flex flex-col justify-between p-4 bg-white">
-          {tab === 'global' ? (
-            <div className="flex flex-col h-full">
-              <div className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2">
+                 {/* Panel derecho: chat */}
+         <div className="flex-1 flex flex-col justify-between p-2 bg-white min-h-0">
+                                           {tab === 'global' ? (
+              <div className="flex flex-col h-full min-h-0">
+                <div className="flex-1 overflow-y-auto mb-2 flex flex-col gap-2 min-h-0">
                 {globalMessages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.from === 'Yo' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`px-3 py-2 rounded-lg max-w-xs ${msg.from === 'Yo' ? 'bg-black text-white' : 'bg-gray-200 text-gray-800'}`}>
@@ -131,26 +234,40 @@ const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center
                       <span className="block text-[10px] text-gray-500 mt-1 text-right">{msg.time}</span>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 mt-auto pb-12">
-                <input
-                  className="flex-1 px-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-black"
-                  placeholder="Escribe mensaje"
-                  value={globalInput}
-                  onChange={e => setGlobalInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && globalInput.trim()) { setGlobalMessages([...globalMessages, { from: 'Yo', text: globalInput, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]); setGlobalInput(''); } }}
-                />
+                                 ))}
+               </div>
+               <div className="flex items-center gap-2 mt-auto relative flex-shrink-0">
+                 <input
+                   className="flex-1 px-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-black"
+                   placeholder="Escribe mensaje"
+                   value={globalInput}
+                   onChange={e => setGlobalInput(e.target.value)}
+                   onKeyDown={e => handleKeyDown(e, globalInput)}
+                 />
+                <button
+                  className="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition"
+                  onClick={() => setShowEmojis(!showEmojis)}
+                >
+                  😀
+                </button>
+                <button
+                  className="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition"
+                  onClick={() => setShowQuickMessages(!showQuickMessages)}
+                >
+                  💬
+                </button>
                 <button
                   className="px-6 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 transition"
-                  onClick={() => { if (globalInput.trim()) { setGlobalMessages([...globalMessages, { from: 'Yo', text: globalInput, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]); setGlobalInput(''); } }}
+                  onClick={() => sendMessage(globalInput)}
                   disabled={!globalInput.trim()}
-                >Enviar</button>
+                >
+                  Enviar
+                </button>
               </div>
             </div>
-          ) : tab === 'equipo' ? (
-            <div className="flex flex-col h-full">
-              <div className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2">
+                                           ) : tab === 'equipo' ? (
+              <div className="flex flex-col h-full min-h-0">
+                <div className="flex-1 overflow-y-auto mb-2 flex flex-col gap-2 min-h-0">
                 {groupMessages.map((msg, idx) => (
                   <div key={idx} className={`flex ${msg.from === 'Yo' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`px-3 py-2 rounded-lg max-w-xs ${msg.from === 'Yo' ? 'bg-black text-white' : 'bg-gray-200 text-gray-800'}`}>
@@ -159,26 +276,40 @@ const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center
                       <span className="block text-[10px] text-gray-500 mt-1 text-right">{msg.time}</span>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 mt-auto pb-12">
-                <input
-                  className="flex-1 px-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-black"
-                  placeholder="Escribe mensaje"
-                  value={groupInput}
-                  onChange={e => setGroupInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && groupInput.trim()) { setGroupMessages([...groupMessages, { from: 'Yo', text: groupInput, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]); setGroupInput(''); } }}
-                />
+                                 ))}
+               </div>
+               <div className="flex items-center gap-2 mt-auto relative flex-shrink-0">
+                 <input
+                   className="flex-1 px-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-black"
+                   placeholder="Escribe mensaje"
+                   value={groupInput}
+                   onChange={e => setGroupInput(e.target.value)}
+                   onKeyDown={e => handleKeyDown(e, groupInput)}
+                 />
+                <button
+                  className="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition"
+                  onClick={() => setShowEmojis(!showEmojis)}
+                >
+                  😀
+                </button>
+                <button
+                  className="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition"
+                  onClick={() => setShowQuickMessages(!showQuickMessages)}
+                >
+                  💬
+                </button>
                 <button
                   className="px-6 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 transition"
-                  onClick={() => { if (groupInput.trim()) { setGroupMessages([...groupMessages, { from: 'Yo', text: groupInput, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]); setGroupInput(''); } }}
+                  onClick={() => sendMessage(groupInput)}
                   disabled={!groupInput.trim()}
-                >Enviar</button>
+                >
+                  Enviar
+                </button>
               </div>
             </div>
-          ) : (
-            <div className="flex flex-col h-full">
-              <div className="flex-1 overflow-y-auto mb-4 flex flex-col gap-2">
+                                           ) : (
+              <div className="flex flex-col h-full min-h-0">
+                <div className="flex-1 overflow-y-auto mb-2 flex flex-col gap-2 min-h-0">
                 {(mockMessages[selectedUser] || []).map((msg: MessageType, idx: number) => (
                   <div key={idx} className={`flex ${msg.from === 'Yo' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`px-3 py-2 rounded-lg max-w-xs ${msg.from === 'Yo' ? 'bg-black text-white' : 'bg-gray-200 text-gray-800'}`}>
@@ -187,26 +318,76 @@ const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center
                       <span className="block text-[10px] text-gray-500 mt-1 text-right">{msg.time}</span>
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-2 mt-auto pb-12">
-                <input
-                  className="flex-1 px-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-black"
-                  placeholder="Escribe mensaje"
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && input.trim()) { mockMessages[selectedUser] = [...(mockMessages[selectedUser] || []), { from: 'Yo', text: input, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]; setInput(''); } }}
-                />
+                                 ))}
+               </div>
+               <div className="flex items-center gap-2 mt-auto relative flex-shrink-0">
+                 <input
+                   className="flex-1 px-4 py-2 rounded-lg border border-black focus:outline-none focus:ring-2 focus:ring-black"
+                   placeholder="Escribe mensaje"
+                   value={input}
+                   onChange={e => setInput(e.target.value)}
+                   onKeyDown={e => handleKeyDown(e, input)}
+                 />
+                <button
+                  className="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition"
+                  onClick={() => setShowEmojis(!showEmojis)}
+                >
+                  😀
+                </button>
+                <button
+                  className="px-3 py-2 rounded-lg bg-gray-200 text-gray-700 font-bold hover:bg-gray-300 transition"
+                  onClick={() => setShowQuickMessages(!showQuickMessages)}
+                >
+                  💬
+                </button>
                 <button
                   className="px-6 py-2 rounded-lg bg-black text-white font-bold hover:bg-gray-800 transition"
-                  onClick={() => { if (input.trim()) { mockMessages[selectedUser] = [...(mockMessages[selectedUser] || []), { from: 'Yo', text: input, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]; setInput(''); } }}
+                  onClick={() => sendMessage(input)}
                   disabled={!input.trim()}
-                >Enviar</button>
+                >
+                  Enviar
+                </button>
               </div>
             </div>
           )}
         </div>
       </div>
+
+      {/* Modal de Emojis */}
+      {showEmojis && (
+        <div className="absolute bottom-24 right-4 bg-white border border-gray-300 rounded-lg shadow-lg p-4 w-80 h-64 overflow-y-auto z-10">
+          <div className="grid grid-cols-8 gap-2">
+            {emojis.map((emoji, index) => (
+              <button
+                key={index}
+                className="w-8 h-8 text-lg hover:bg-gray-100 rounded flex items-center justify-center"
+                onClick={() => addEmoji(emoji)}
+              >
+                {emoji}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Mensajes Rápidos */}
+      {showQuickMessages && (
+        <div className="absolute bottom-24 right-4 bg-white border border-gray-300 rounded-lg shadow-lg p-4 w-80 h-64 overflow-y-auto z-10">
+          <h3 className="font-bold text-lg mb-3 text-gray-800">Mensajes Rápidos</h3>
+          <div className="flex flex-col gap-2">
+            {mensajesPredeterminados.map((message, index) => (
+              <button
+                key={index}
+                className="text-left p-2 hover:bg-gray-100 rounded text-sm"
+                onClick={() => addQuickMessage(message)}
+              >
+                {message}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {showMsgModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="bg-carbon-light rounded-xl shadow-2xl flex w-[500px] h-[300px] border-2 border-black animate-fade-in">
