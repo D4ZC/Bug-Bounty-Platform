@@ -5,7 +5,15 @@ import { Button, TextArea } from '@carbon/react';
 const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/men/32.jpg"; // Nueva foto de perfil por defecto
 
 const Profile: React.FC = () => {
-  const [avatar, setAvatar] = useState<string>(DEFAULT_AVATAR);
+  const [avatar, setAvatar] = useState<string>(() => {
+    // Obtener la foto guardada en localStorage o usar la por defecto
+    return localStorage.getItem('userAvatar') || DEFAULT_AVATAR;
+  });
+  const [bugCoins, setBugCoins] = useState<number>(() => {
+    // Obtener los BugCoins guardados en localStorage o usar el valor por defecto
+    const savedBugCoins = localStorage.getItem('userBugCoins');
+    return savedBugCoins ? parseInt(savedBugCoins) : 1325;
+  });
   const [bio, setBio] = useState<string>('Desarrollador apasionado por la seguridad informática y la caza de bugs. Siempre buscando nuevos desafíos y aprendiendo nuevas tecnologías.');
   const [isEditingBio, setIsEditingBio] = useState<boolean>(false);
   const [tempBio, setTempBio] = useState<string>('');
@@ -24,7 +32,12 @@ const Profile: React.FC = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (ev) => {
-        if (ev.target?.result) setAvatar(ev.target.result as string);
+        if (ev.target?.result) {
+          const avatarData = ev.target.result as string;
+          setAvatar(avatarData);
+          // Guardar en localStorage para sincronizar con otras páginas
+          localStorage.setItem('userAvatar', avatarData);
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -76,6 +89,11 @@ const Profile: React.FC = () => {
   const handleBannerSelect = (bannerUrl: string) => {
     setBannerImage(bannerUrl);
     setShowBannerModal(false);
+  };
+
+  const updateBugCoins = (newAmount: number) => {
+    setBugCoins(newAmount);
+    localStorage.setItem('userBugCoins', newAmount.toString());
   };
 
   return (
@@ -798,7 +816,7 @@ const Profile: React.FC = () => {
                   Total de vulnerabilidades: <span className="font-semibold">10</span>
                 </div>
                 <div className="text-sm text-gray-600">
-                  Total de bugcoins: <span className="font-semibold text-green-600">+1,325</span>
+                  Total de bugcoins: <span className="font-semibold text-green-600">+{bugCoins.toLocaleString()}</span>
                 </div>
               </div>
             </div>

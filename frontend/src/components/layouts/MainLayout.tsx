@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, List, SettingsAdjust, ShoppingCart, Add, Notification, UserAvatar, Document } from '@carbon/icons-react';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -9,6 +9,25 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const isContributions = location.pathname.startsWith('/contributions');
   const isResolvedVulns = location.pathname.startsWith('/resolved-vulnerabilities');
+  
+  // Estado para los BugCoins
+  const [userBugCoins, setUserBugCoins] = useState<number>(() => {
+    const savedBugCoins = localStorage.getItem('userBugCoins');
+    return savedBugCoins ? parseInt(savedBugCoins) : 1325;
+  });
+
+  // Sincronizar BugCoins con localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const savedBugCoins = localStorage.getItem('userBugCoins');
+      if (savedBugCoins) {
+        setUserBugCoins(parseInt(savedBugCoins));
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
   return (
     <div className="min-h-screen flex flex-col bg-white">
       {/* Navbar superior */}
@@ -21,7 +40,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <div className="flex items-center gap-6 pr-2">
           <span className="group flex items-center" onClick={() => navigate('/eventos')}>
             <img src={'/bp-logo.png'} alt="BP Logo" style={{ width: 36, height: 36, display: 'block', objectFit: 'contain', transformStyle: 'preserve-3d' }} className="cursor-pointer mr-2 bugcoins-spin-3d" />
-            <span className="text-white text-lg font-bold ml-1 select-none">1325</span>
+            <span className="text-white text-lg font-bold ml-1 select-none">{userBugCoins}</span>
           </span>
           <span className="group" onClick={() => navigate('/notifications')}>
             <Notification size={28} className="text-white cursor-pointer group-hover:bg-white group-hover:text-gray-900 rounded-full transition-colors duration-200 p-1" />

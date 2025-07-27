@@ -6,6 +6,12 @@ import { Helmet } from 'react-helmet-async';
 import MainLayout from '@/components/layouts/MainLayout';
 import AuthLayout from '@/components/layouts/AuthLayout';
 
+// Contexts
+import { DuelProvider } from '@/contexts/DuelContext';
+
+// Components
+import DuelTimer from '@/components/DuelTimer';
+
 // Pages
 import Dashboard from '@/pages/Dashboard';
 import Login from './pages/auth/Login';
@@ -33,11 +39,13 @@ import { useAuth } from '@/contexts/AuthContext';
 
 function App() {
   return (
-    <>
+    <DuelProvider>
       <Helmet>
         <title>Bug Bounty Platform</title>
         <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
       </Helmet>
+
+      <DuelTimer />
 
       <Routes>
         <Route path="/auth/login" element={<Login />} />
@@ -57,7 +65,7 @@ function App() {
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </DuelProvider>
   );
 }
 

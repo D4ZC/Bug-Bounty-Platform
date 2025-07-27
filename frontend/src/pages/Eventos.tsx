@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TeamsScoreCard from './Dashboard/components/TeamsScoreCard';
 import MVPTeamCard from './Dashboard/components/MVPTeamCard';
 import GulagCard from './Dashboard/components/GulagCard';
@@ -6,6 +6,7 @@ import UserScoreCard from './Dashboard/components/UserScoreCard';
 import MVPUserCard from './Dashboard/components/MVPUserCard';
 import UserProfileCard from './Dashboard/components/UserProfileCard';
 import MainLayout from '../components/layouts/MainLayout';
+import { useDuel } from '../contexts/DuelContext';
 
 // Datos de ejemplo
 const users = [
@@ -118,9 +119,72 @@ const Leaderboard = ({ title, data, isTeam }: { title: string, data: any[], isTe
   </div>
 );
 
-const Eventos: React.FC = () => (
+const Eventos: React.FC = () => {
+  const { isInDuel, isStartingDuel, countdown, joinDuel, leaveDuel } = useDuel();
+
+  // Estado para la imagen de perfil sincronizada
+  const [userAvatar, setUserAvatar] = useState(() => {
+    const savedAvatar = localStorage.getItem('userAvatar');
+    const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/men/32.jpg";
+    return savedAvatar || DEFAULT_AVATAR;
+  });
+
+  // Estado para los BugCoins sincronizados
+  const [userBugCoins, setUserBugCoins] = useState(() => {
+    const savedBugCoins = localStorage.getItem('userBugCoins');
+    return savedBugCoins ? parseInt(savedBugCoins) : 1325; // Total de BugCoins sincronizado con Profile
+  });
+
+  // Datos del usuario actual - sincronizado con Profile
+  const [userProfile] = useState(() => {
+    return {
+      name: 'JuanAM',
+      avatar: userAvatar,
+      score: userBugCoins
+    };
+  });
+
+  // Efecto para sincronizar la imagen y BugCoins cuando cambien en localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Sincronizar avatar
+      const savedAvatar = localStorage.getItem('userAvatar');
+      const DEFAULT_AVATAR = "https://randomuser.me/api/portraits/men/32.jpg";
+      setUserAvatar(savedAvatar || DEFAULT_AVATAR);
+      
+      // Sincronizar BugCoins
+      const savedBugCoins = localStorage.getItem('userBugCoins');
+      if (savedBugCoins) {
+        setUserBugCoins(parseInt(savedBugCoins));
+      }
+    };
+
+    // Escuchar cambios en localStorage
+    window.addEventListener('storage', handleStorageChange);
+    
+    // También verificar al cargar la página
+    handleStorageChange();
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  const handleJoinDuel = () => {
+    joinDuel();
+    console.log('Unirse al duelo');
+  };
+
+  const handleLeaveDuel = () => {
+    leaveDuel();
+    console.log('Salir del duelo');
+  };
+
+  return (
   <MainLayout>
     <div className="w-full max-w-7xl mx-auto px-2 md:px-4 py-8 min-h-screen bg-white">
+
+      
       <h1 className="text-3xl font-bold text-black mb-8">Eventos</h1>
       
       {/* Sección de Duelos */}
@@ -137,39 +201,79 @@ const Eventos: React.FC = () => (
           <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-blue-200 to-purple-200 rounded-full opacity-30 transform translate-x-12 translate-y-12"></div>
           
           <div className="relative z-10 flex items-center justify-center gap-8">
+            {/* Botón dinámico - Unirse/Salir del Duelo */}
+            <div className="absolute left-8 top-1/2 transform -translate-y-1/2">
+              <button 
+                onClick={isInDuel ? handleLeaveDuel : handleJoinDuel}
+                className={`px-4 py-2 rounded-lg transition-colors text-xs font-medium shadow-lg cursor-pointer ${
+                  isInDuel 
+                    ? 'bg-red-600 hover:bg-red-700 text-white' 
+                    : 'bg-black hover:bg-gray-800 text-white'
+                }`}
+              >
+                {isInDuel ? 'Salir del Duelo' : 'Unirse al Duelo'}
+              </button>
+            </div>
+            
             {/* Tarjeta Izquierda */}
             <div className="bg-gray-200 rounded-xl p-6 relative min-w-[280px] max-w-[320px]">
               {/* Elemento decorativo izquierdo */}
               <div className="absolute left-0 top-0 bottom-0 w-3 bg-gradient-to-b from-blue-600 to-blue-800 rounded-l-xl"></div>
               
-                             <div className="text-center mb-4">
-                 <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-3 flex items-center justify-center">
-                   <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                   </svg>
-                 </div>
-                 <h3 className="text-lg font-bold text-gray-800 mb-1">Sin Participante</h3>
-               </div>
-              
-                             <div className="flex justify-center items-center">
-                 <div className="flex items-center gap-2">
-                   <img src="/bugcoin.png" alt="BP" className="w-5 h-5 bugcoins-spin-3d" />
-                   <div className="relative">
-                     <span className="text-xs text-gray-600 select-none animate-asterisk-spin">-</span>
-                   </div>
-                 </div>
-               </div>
-               <div className="flex justify-center mt-4">
-                 <button className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium">
-                   Participar
-                 </button>
-               </div>
+              {isInDuel ? (
+                // Usuario en el duelo - mostrar perfil real
+                <>
+                  <div className="text-center mb-4">
+                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-3 flex items-center justify-center overflow-hidden">
+                      <img 
+                        src={userAvatar} 
+                        alt={userProfile.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "https://randomuser.me/api/portraits/men/32.jpg";
+                        }}
+                      />
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800 mb-1">{userProfile.name}</h3>
+                  </div>
+                  
+                  <div className="flex justify-center items-center">
+                    <div className="flex items-center gap-2">
+                      <img src="/bugcoin.png" alt="BP" className="w-5 h-5 bugcoins-spin-3d" />
+                      <div className="relative">
+                        <span className="text-xs text-gray-600 select-none">{userBugCoins}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                // Sin participante - mostrar placeholder
+                <>
+                  <div className="text-center mb-4">
+                    <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-3 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-800 mb-1">Sin Participante</h3>
+                  </div>
+                  
+                  <div className="flex justify-center items-center">
+                    <div className="flex items-center gap-2">
+                      <img src="/bugcoin.png" alt="BP" className="w-5 h-5 bugcoins-spin-3d" />
+                      <div className="relative">
+                        <span className="text-xs text-gray-600 select-none animate-asterisk-spin">-</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
             
             {/* VS Central */}
             <div className="flex flex-col items-center">
-              <div className="w-16 h-16 bg-gray-800 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">VS</span>
+              <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center border border-gray-300">
+                <img src="/duelo.png" alt="Espadas cruzadas" className="w-15 h-15" />
               </div>
               <div className="mt-4 text-center">
                 <p className="text-sm text-gray-600 font-medium">Duelo #1</p>
@@ -178,7 +282,7 @@ const Eventos: React.FC = () => (
             </div>
             
             {/* Tarjeta Derecha */}
-            <div className="bg-white rounded-xl p-6 relative min-w-[280px] max-w-[320px]">
+            <div className="bg-gray-200 rounded-xl p-6 relative min-w-[280px] max-w-[320px]">
               
                              <div className="text-center mb-4">
                  <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-3 flex items-center justify-center relative overflow-hidden">
@@ -207,17 +311,14 @@ const Eventos: React.FC = () => (
           
           {/* Barra inferior */}
           <div className="relative z-10 mt-6 bg-white rounded-lg p-4 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                </svg>
-                <span className="text-sm text-gray-700 font-medium">3 Puntos</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                  Ver Detalles
-                </button>
+            <div className="flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-sm text-gray-600 font-medium">Duelo de Web Security</p>
+                {isStartingDuel ? (
+                  <p className="text-xs text-gray-500">Comenzando duelo en... {countdown}s</p>
+                ) : !isInDuel ? (
+                  <p className="text-xs text-gray-500">Tiempo restante: 5h</p>
+                ) : null}
               </div>
             </div>
           </div>
@@ -238,6 +339,7 @@ const Eventos: React.FC = () => (
       <Leaderboard title="Leaderboard de Equipos" data={sortedTeams} isTeam />
     </div>
   </MainLayout>
-);
+  );
+};
 
 export default Eventos; 

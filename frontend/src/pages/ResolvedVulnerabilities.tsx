@@ -197,8 +197,8 @@ const ResolvedVulnerabilities: React.FC = () => {
       link.click();
       document.body.removeChild(link);
     } else {
-      // No hay archivo real, solo nombre, así que muestra alerta
-      alert('Solo se almacena el nombre del archivo. No hay archivo real para descargar: ' + docName);
+    // No hay archivo real, solo nombre, así que muestra alerta
+    alert('Solo se almacena el nombre del archivo. No hay archivo real para descargar: ' + docName);
     }
   };
 
@@ -346,14 +346,14 @@ const ResolvedVulnerabilities: React.FC = () => {
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                       </button>
-                      <button
-                        type="button"
+                    <button
+                      type="button"
                         className="p-1 rounded hover:bg-blue-100 text-blue-700"
                         onClick={() => handleDownload(v.documento, v.fileData)}
-                        title="Descargar documento"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      </button>
+                      title="Descargar documento"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
                     </div>
                   )}
                 </div>
@@ -436,14 +436,14 @@ const ResolvedVulnerabilities: React.FC = () => {
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                   </button>
-                  <button
-                    type="button"
+                <button
+                  type="button"
                     className="p-1 rounded hover:bg-blue-100 text-blue-700"
                     onClick={() => handleDownload(detailVuln.documento, detailVuln.fileData)}
-                    title="Descargar documento"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
+                  title="Descargar documento"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                </button>
                 </div>
               )}
             </div>
@@ -456,8 +456,8 @@ const ResolvedVulnerabilities: React.FC = () => {
                 }`}
                 onClick={() => {
                   if (detailVuln.estado !== 'Verificado') {
-                    setShowDetail(false);
-                    navigate('/contributions', { state: { editVuln: detailVuln, editIdx: detailVuln.idx } });
+                  setShowDetail(false);
+                  navigate('/contributions', { state: { editVuln: detailVuln, editIdx: detailVuln.idx } });
                   }
                 }}
                 disabled={detailVuln.estado === 'Verificado'}

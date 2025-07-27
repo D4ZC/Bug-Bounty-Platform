@@ -27,100 +27,68 @@ const FONDOS = [
 
 const sampleProducts = [
   {
-    name: 'Marco Neon Azul',
+    name: 'Marco de Madera',
     category: 'Marco',
-    description: 'Marco digital con efecto neón azul para tu avatar.',
-    fileName: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80',
+    description: 'Marco elegante con textura de madera natural para un look rústico y sofisticado.',
+    fileName: '/gemini-product.png',
     price: 150,
     discount: 20,
   },
   {
-    name: 'Fondo Galaxia',
+    name: 'Marco de Gemas',
     category: 'Fondo',
-    description: 'Fondo espacial con estrellas y nebulosas para tu perfil.',
-    fileName: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80',
+    description: 'Marco brillante con cristales y gemas que reflejan la luz de manera mágica.',
+    fileName: '/gemini-product-2.png',
     price: 180,
     discount: 10,
   },
   {
     name: 'Marco Dorado',
     category: 'Marco',
-    description: 'Marco elegante dorado para destacar tu avatar.',
-    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    description: 'Marco premium con acabado dorado que transmite elegancia y prestigio.',
+    fileName: '/marcos/marco1.png',
     price: 220,
     discount: 15,
   },
   {
-    name: 'Fondo Ciberpunk',
+    name: 'Marco de Loki',
     category: 'Fondo',
-    description: 'Fondo con luces y ambiente ciberpunk para tu perfil.',
-    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    description: 'Marco místico inspirado en el dios del engaño con efectos místicos y misteriosos.',
+    fileName: '/marcos/marco2.png',
     price: 200,
     discount: 25,
   },
   {
-    name: 'Avatar Pixel Art',
+    name: 'Banner de Puente',
     category: 'Avatar',
-    description: 'Avatar estilo pixel art para personalizar tu perfil.',
-    fileName: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+    description: 'Banner con paisaje de puente sobre aguas tranquilas, perfecto para perfiles serenos.',
+    fileName: '/paradise1.jpg',
     price: 120,
     discount: 0,
   },
   {
-    name: 'Marco Retro',
+    name: 'Banner de Lago',
     category: 'Marco',
-    description: 'Marco con diseño retro y colores vibrantes.',
-    fileName: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=400&q=80',
+    description: 'Banner con vista panorámica de lago cristalino rodeado de naturaleza exuberante.',
+    fileName: '/paradise2.jpg',
     price: 160,
     discount: 5,
   },
   {
-    name: 'Fondo Minimalista',
+    name: 'Banner de Circuito',
     category: 'Fondo',
-    description: 'Fondo claro y minimalista para un perfil elegante.',
-    fileName: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80',
+    description: 'Banner tecnológico con patrones de circuitos electrónicos para amantes de la tecnología.',
+    fileName: '/circuit.jpg',
     price: 110,
     discount: 0,
   },
   {
-    name: 'Marco Animado',
+    name: 'Banner de Hola Mundo!',
     category: 'Marco',
-    description: 'Marco animado con efectos de luz para tu avatar.',
-    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
+    description: 'Banner programático con código "Hello World" para desarrolladores y entusiastas del código.',
+    fileName: '/code.jpg',
     price: 250,
     discount: 30,
-  },
-  {
-    name: 'Fondo Holográfico',
-    category: 'Fondo',
-    description: 'Fondo con efecto holográfico y colores iridiscentes.',
-    fileName: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80',
-    price: 210,
-    discount: 10,
-  },
-  {
-    name: 'Avatar Cómic',
-    category: 'Avatar',
-    description: 'Avatar con estilo de cómic para destacar tu perfil.',
-    fileName: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=400&q=80',
-    price: 130,
-    discount: 0,
-  },
-  {
-    name: 'Marco Prisma',
-    category: 'Marco',
-    description: 'Marco con efecto prisma y reflejos multicolor para tu avatar.',
-    fileName: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80',
-    price: 175,
-    discount: 12,
-  },
-  {
-    name: 'Fondo Digital Abstracto',
-    category: 'Fondo',
-    description: 'Fondo abstracto digital con formas geométricas y colores vivos.',
-    fileName: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=400&q=80',
-    price: 140,
-    discount: 8,
   },
 ];
 
@@ -128,8 +96,8 @@ const Shop: React.FC = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [isPulse, setIsPulse] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  // Eliminar el estado y lógica del carrusel
   const [products, setProducts] = useState(sampleProducts);
+
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newProduct, setNewProduct] = useState({
@@ -146,6 +114,14 @@ const Shop: React.FC = () => {
   const [deleteModalExit, setDeleteModalExit] = useState(false);
   const [buyModal, setBuyModal] = useState<{ open: boolean, idx: number | null }>({ open: false, idx: null });
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [showProductPreview, setShowProductPreview] = useState(false);
+  const [previewProduct, setPreviewProduct] = useState<any>(null);
+  const [showConfirmPurchase, setShowConfirmPurchase] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [purchaseText, setPurchaseText] = useState('Comprando...');
+  const [isJumping, setIsJumping] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [purchasedProduct, setPurchasedProduct] = useState<any>(null);
   // Para cerrar modal con ESC
   useEffect(() => {
     if (!showCreateModal) return;
@@ -154,8 +130,20 @@ const Shop: React.FC = () => {
     return () => window.removeEventListener('keydown', handler);
   }, [showCreateModal]);
 
-  // Eliminar el JSX del carrusel
-  // Eliminar el estado y lógica del carrusel
+  // Animación de puntos suspensivos durante la compra
+  useEffect(() => {
+    if (!isPurchasing) return;
+    
+    const dots = ['Comprando...', 'Comprando..', 'Comprando.', 'Comprando'];
+    let dotIndex = 0;
+    
+    const interval = setInterval(() => {
+      setPurchaseText(dots[dotIndex]);
+      dotIndex = (dotIndex + 1) % dots.length;
+    }, 500);
+    
+    return () => clearInterval(interval);
+  }, [isPurchasing]);
 
   // Leer productos de localStorage al cargar
   useEffect(() => {
@@ -169,6 +157,8 @@ const Shop: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('shopProducts', JSON.stringify(products));
   }, [products]);
+
+
 
   const handlePressStart = () => setIsPressed(true);
   const handlePressEnd = () => setIsPressed(false);
@@ -206,86 +196,81 @@ const Shop: React.FC = () => {
   };
   const confirmDelete = () => {
     if (deleteIdx !== null) {
-      setProducts(products.filter((_, i) => i !== deleteIdx));
+      const newProducts = products.filter((_, idx) => idx !== deleteIdx);
+      setProducts(newProducts);
       setShowDeleteConfirm(false);
       setDeleteIdx(null);
       setDeleteTimer(0);
     }
   };
 
-  // Agregar estado para el índice del carrusel
-  const [carouselIdx, setCarouselIdx] = useState(0);
-  const [carouselTransition, setCarouselTransition] = useState('');
-  // Carrusel: obtener imágenes de los productos
-  const productImages = products.map(p => p.fileName || '/bp-logo.png');
-  const nextCarousel = () => {
-    setCarouselTransition('slide-fade-out-left');
-    setTimeout(() => {
-      setCarouselIdx((prev) => (prev + 1) % productImages.length);
-      setCarouselTransition('slide-fade-in-left');
-    }, 300);
-    setTimeout(() => setCarouselTransition(''), 700);
-  };
-  const prevCarousel = () => {
-    setCarouselTransition('slide-fade-out-right');
-    setTimeout(() => {
-      setCarouselIdx((prev) => (prev - 1 + productImages.length) % productImages.length);
-      setCarouselTransition('slide-fade-in-right');
-    }, 300);
-    setTimeout(() => setCarouselTransition(''), 700);
+  const handleBuy = (idx: number) => {
+    setBuyModal({ open: true, idx });
   };
 
-  // Cambio automático de imagen cada 3 segundos
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCarouselTransition('slide-fade-out-left');
-      setTimeout(() => {
-        setCarouselIdx((prev) => (prev + 1) % productImages.length);
-        setCarouselTransition('slide-fade-in-left');
-      }, 300);
-      setTimeout(() => setCarouselTransition(''), 700);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [productImages.length]);
+  const handleProductPreview = (product: any) => {
+    setPreviewProduct(product);
+    setShowProductPreview(true);
+  };
+
+  const confirmBuy = () => {
+    if (buyModal.idx !== null) {
+      setSuccessMsg('¡Compra exitosa! Producto añadido a tu inventario.');
+      setTimeout(() => setSuccessMsg(null), 3000);
+      setBuyModal({ open: false, idx: null });
+    }
+  };
+
+  const cancelBuy = () => {
+    setBuyModal({ open: false, idx: null });
+  };
+
+  // Función para actualizar BugCoins
+  const updateBugCoins = (newAmount: number) => {
+    localStorage.setItem('userBugCoins', newAmount.toString());
+  };
 
   return (
     <MainLayout>
-      {/* Carrusel simple de imágenes de productos */}
-      <div className="w-full flex flex-col items-center justify-center mb-10">
-        <div className="relative w-full h-[420px] rounded-xl overflow-hidden shadow-md bg-gray-100 flex items-center justify-center">
-          <img
-            src={productImages[carouselIdx]}
-            alt={`Producto ${carouselIdx + 1}`}
-            className={`w-full h-full object-cover transition-all duration-500 ${carouselTransition}`}
-            style={{ background: '#fff', margin: 0, padding: 0 }}
-            onError={e => (e.currentTarget.src = '/bp-logo.png')}
-          />
-          <button
-            className="absolute top-1/2 left-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-black rounded-full p-2 shadow-md"
-            onClick={prevCarousel}
-            aria-label="Anterior"
-            type="button"
-          >
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M15 19l-7-7 7-7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-          <button
-            className="absolute top-1/2 right-2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-opacity-100 text-black rounded-full p-2 shadow-md"
-            onClick={nextCarousel}
-            aria-label="Siguiente"
-            type="button"
-          >
-            <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-          </button>
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
-            {productImages.map((_, idx) => (
-              <span
-                key={idx}
-                className={`w-2 h-2 rounded-full ${idx === carouselIdx ? 'bg-blue-600' : 'bg-white border border-blue-600'}`}
+      <div className="w-full max-w-7xl mx-auto px-2 md:px-4 py-8 min-h-screen bg-white">
+        <h1 className="text-3xl font-bold text-black mb-8">Tienda</h1>
+        
+        {/* Layout con texto promocional y anuncio alineados */}
+        <div className="flex gap-8 mb-8 items-start">
+          {/* Texto promocional */}
+          <div className="flex-1">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl p-8 relative overflow-hidden" style={{ height: '400px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {/* Fondo con patrones */}
+              <div className="absolute inset-0 bg-white opacity-20" style={{
+                backgroundImage: `radial-gradient(circle at 25% 25%, #e5e7eb 1px, transparent 1px),
+                                 radial-gradient(circle at 75% 75%, #e5e7eb 1px, transparent 1px)`,
+                backgroundSize: '20px 20px'
+              }}></div>
+              <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-blue-200 to-purple-200 rounded-full opacity-30 transform -translate-x-16 -translate-y-16"></div>
+              <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-indigo-200 to-blue-200 rounded-full opacity-30 transform translate-x-12 translate-y-12"></div>
+              
+              <div className="relative z-10 text-center">
+                <p className="text-6xl font-bold text-blue-800 leading-tight uppercase">
+                  ¡¡AQUÍ ENCONTRARÁS TODO LO NECESARIO PARA TU PERFIL!!
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          {/* Anuncio */}
+          <div className="w-96">
+            <div className="flex items-center justify-center bg-gray-50 rounded-2xl" style={{ height: '400px' }}>
+              <img 
+                src="/anuncio.png" 
+                alt="Publicidad" 
+                className="max-w-full h-auto rounded-lg shadow-lg"
+                style={{ maxHeight: '700px', maxWidth: '100%' }}
               />
-            ))}
+            </div>
           </div>
         </div>
-      </div>
+        
+        
       {/* Catálogo de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 px-0">
         {products.map((product, idx) => (
@@ -387,9 +372,20 @@ const Shop: React.FC = () => {
             <div
               key={idx}
               className="w-full max-w-xs bg-white rounded-xl shadow-md flex flex-col border border-gray-200 hover:shadow-lg transition-all duration-200 relative overflow-hidden cursor-pointer"
-              onClick={() => !editMode && setBuyModal({ open: true, idx })}
+              onClick={() => !editMode && handleProductPreview(product)}
               style={{ minHeight: 340 }}
             >
+              {/* Imagen principal */}
+              <div className="flex-1 flex items-center justify-center bg-gray-100" style={{ minHeight: 180 }}>
+                <img
+                  src={product.fileName || '/bp-logo.png'}
+                  alt={product.name}
+                  className="object-contain max-h-44 max-w-full rounded-t-xl"
+                  style={{ background: '#fff', width: '100%' }}
+                  onError={e => (e.currentTarget.src = '/bp-logo.png')}
+                />
+              </div>
+
               {editMode && (
                 <div className="absolute bottom-3 right-3 flex gap-2 z-10">
                   <Button
@@ -410,16 +406,7 @@ const Shop: React.FC = () => {
                   />
                 </div>
               )}
-              {/* Imagen principal */}
-              <div className="flex-1 flex items-center justify-center bg-gray-100" style={{ minHeight: 180 }}>
-                <img
-                  src={product.fileName || '/bp-logo.png'}
-                  alt={product.name}
-                  className="object-contain max-h-44 max-w-full rounded-t-xl"
-                  style={{ background: '#fff', width: '100%' }}
-                  onError={e => (e.currentTarget.src = '/bp-logo.png')}
-                />
-              </div>
+              
               {/* Texto y costo */}
               <div className="flex flex-col justify-between p-4">
                 <div className="font-bold text-base text-black mb-1 truncate" title={product.name}>{product.name}</div>
@@ -540,6 +527,8 @@ const Shop: React.FC = () => {
                 />
                 {newProduct.fileName && <div className="text-xs text-gray-500 mt-1">{newProduct.fileName}</div>}
               </div>
+
+              
               <div className="flex justify-end gap-3 mt-6">
                 <button type="button" className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" onClick={closeCreateModal}>Cancelar</button>
                 <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Crear</button>
@@ -600,23 +589,321 @@ const Shop: React.FC = () => {
           <div className="bg-white border border-gray-300 rounded-lg shadow-lg px-8 py-6 text-center">
             <h3 className="text-xl font-bold mb-4 text-gray-900">¿Estás seguro que quieres comprar este producto por <span className='text-blue-700'>{products[buyModal.idx].price} BugCoins</span>?</h3>
             <div className="flex gap-4 mt-4">
-              <button className="px-5 py-2 bg-gray-200 rounded text-gray-700 font-semibold hover:bg-gray-300" onClick={() => setBuyModal({ open: false, idx: null })}>Cancelar</button>
-              <button className="px-5 py-2 bg-blue-600 rounded text-white font-semibold hover:bg-blue-700" onClick={() => {
-                setBuyModal({ open: false, idx: null });
-                if (buyModal.idx !== null) {
-                  setSuccessMsg(`Has comprado "${products[buyModal.idx].name}" satisfactoriamente`);
-                  setTimeout(() => setSuccessMsg(null), 2500);
-                }
-              }}>Comprar</button>
+              <button className="px-5 py-2 bg-gray-200 rounded text-gray-700 font-semibold hover:bg-gray-300" onClick={cancelBuy}>Cancelar</button>
+              <button className="px-5 py-2 bg-blue-600 rounded text-white font-semibold hover:bg-blue-700" onClick={confirmBuy}>Comprar</button>
             </div>
           </div>
         </div>
       )}
+      {/* Modal de previsualización de productos */}
+      {showProductPreview && previewProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Fondo semitransparente */}
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-40 animate-fade-in" onClick={() => {
+            setShowProductPreview(false);
+            setShowConfirmPurchase(false);
+            setIsPurchasing(false);
+            setIsJumping(false);
+            setShowSuccessModal(false);
+            setPurchasedProduct(null);
+            setPurchaseText('Comprando...');
+          }} />
+          {/* Modal de previsualización */}
+          <div className="relative z-50 w-full max-w-4xl h-[80vh] mx-auto bg-white rounded-lg shadow-lg animate-slide-fade-modal">
+            {/* Header del modal */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <div>
+                <h3 className="text-2xl font-bold text-gray-900">{previewProduct.name}</h3>
+                <p className="text-sm text-gray-600 mt-1">{previewProduct.category}</p>
+              </div>
+              <button
+                className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                onClick={() => {
+                  setShowProductPreview(false);
+                  setShowConfirmPurchase(false);
+                  setIsPurchasing(false);
+                  setIsJumping(false);
+                  setShowSuccessModal(false);
+                  setPurchasedProduct(null);
+                  setPurchaseText('Comprando...');
+                }}
+                title="Cerrar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            
+            {/* Contenido del producto */}
+            <div className="flex-1 p-6 overflow-auto" style={{ height: 'calc(80vh - 120px)' }}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Imagen del producto */}
+                <div className="flex items-center justify-center">
+                  <div className="relative">
+                    <img
+                      src={previewProduct.fileName || '/bp-logo.png'}
+                      alt={previewProduct.name}
+                      className="max-w-full max-h-96 object-contain rounded-lg shadow-lg"
+                      onError={e => (e.currentTarget.src = '/bp-logo.png')}
+                    />
+                    {previewProduct.discount > 0 && (
+                      <div className="absolute -top-2 -right-2 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                        -{previewProduct.discount}%
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {/* Información del producto */}
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Descripción</h4>
+                    <p className="text-gray-700 leading-relaxed">{previewProduct.description}</p>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <img 
+                        src="/bugcoin.png" 
+                        alt="BugCoin" 
+                        className={`w-8 h-8 mr-2 ${isJumping ? 'bugcoins-jump' : isPurchasing ? 'bugcoins-spin-fast' : 'bugcoins-spin-3d'}`}
+                        style={{ transformStyle: 'preserve-3d' }}
+                      />
+                      <div>
+                        <span className="text-2xl font-bold text-blue-600">
+                          {previewProduct.price}
+                        </span>
+                        {previewProduct.discount > 0 && (
+                          <span className="text-lg text-gray-500 line-through ml-2">
+                            {Math.round(previewProduct.price * (1 + previewProduct.discount / 100))}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Categoría: {previewProduct.category}
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <button
+                      className={`flex-1 px-6 py-3 rounded-lg transition-all duration-300 font-semibold ${
+                        isPurchasing 
+                          ? 'bg-gray-500 text-white cursor-not-allowed' 
+                          : showConfirmPurchase 
+                            ? 'bg-red-600 text-white hover:bg-red-700 animate-pulse' 
+                            : (() => {
+                                const finalPrice = previewProduct.discount > 0 
+                                  ? Math.round(previewProduct.price * (1 - previewProduct.discount / 100))
+                                  : previewProduct.price;
+                                const currentBugCoins = parseInt(localStorage.getItem('userBugCoins') || '1325');
+                                return currentBugCoins >= finalPrice 
+                                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                                  : 'bg-gray-400 text-white cursor-not-allowed';
+                              })()
+                      }`}
+                      onClick={() => {
+                        if (isPurchasing) return; // No hacer nada si está comprando
+                        
+                        // Verificar si tiene suficientes BugCoins
+                        const finalPrice = previewProduct.discount > 0 
+                          ? Math.round(previewProduct.price * (1 - previewProduct.discount / 100))
+                          : previewProduct.price;
+                        
+                        const currentBugCoins = parseInt(localStorage.getItem('userBugCoins') || '1325');
+                        if (currentBugCoins < finalPrice) {
+                          alert('No tienes suficientes BugCoins para comprar este producto.');
+                          return;
+                        }
+                        
+                        if (!showConfirmPurchase) {
+                          setShowConfirmPurchase(true);
+                          // Resetear después de 3 segundos
+                          setTimeout(() => setShowConfirmPurchase(false), 3000);
+                        } else {
+                          // Confirmar compra - activar animación rápida
+                          setIsPurchasing(true);
+                          setShowConfirmPurchase(false);
+                          
+                          // Activar salto a los 3.5 segundos
+                          setTimeout(() => {
+                            setIsJumping(true);
+                          }, 3500);
+                          
+                          // Recuperar velocidad de moneda a los 4 segundos
+                          setTimeout(() => {
+                            setIsPurchasing(false);
+                            setIsJumping(false);
+                          }, 4000);
+                          
+                          // Cerrar modal después de 5 segundos
+                          setTimeout(() => {
+                            setShowProductPreview(false);
+                            setIsPurchasing(false);
+                            const productIndex = products.findIndex(p => p.name === previewProduct.name);
+                            if (productIndex !== -1) {
+                              // Calcular el precio final con descuento
+                              const finalPrice = previewProduct.discount > 0 
+                                ? Math.round(previewProduct.price * (1 - previewProduct.discount / 100))
+                                : previewProduct.price;
+                              
+                              // Rebajar BugCoins
+                              const currentBugCoins = parseInt(localStorage.getItem('userBugCoins') || '1325');
+                              const newBugCoins = currentBugCoins - finalPrice;
+                              updateBugCoins(newBugCoins);
+                              
+                              setPurchasedProduct(previewProduct);
+                              setShowSuccessModal(true);
+                              setTimeout(() => setShowSuccessModal(false), 4000);
+                            }
+                          }, 5000);
+                        }
+                      }}
+                    >
+                      {isPurchasing ? purchaseText : showConfirmPurchase ? '¿Estás Seguro?' : (() => {
+                        const finalPrice = previewProduct.discount > 0 
+                          ? Math.round(previewProduct.price * (1 - previewProduct.discount / 100))
+                          : previewProduct.price;
+                        const currentBugCoins = parseInt(localStorage.getItem('userBugCoins') || '1325');
+                        return currentBugCoins >= finalPrice ? 'Comprar Ahora' : 'BugCoins Insuficientes';
+                      })()}
+                    </button>
+                    <button
+                      className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
+                      onClick={() => {
+                        setShowProductPreview(false);
+                        setShowConfirmPurchase(false);
+                        setIsPurchasing(false);
+                        setIsJumping(false);
+                        setShowSuccessModal(false);
+                        setPurchasedProduct(null);
+                        setPurchaseText('Comprando...');
+                      }}
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal de compra exitosa */}
-      {successMsg && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black bg-opacity-30">
-          <div className="bg-green-100 border border-green-400 rounded-lg shadow-lg px-8 py-6 text-center">
-            <span className="text-green-700 text-lg font-bold">{successMsg}</span>
+      {showSuccessModal && purchasedProduct && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          {/* Fondo semitransparente */}
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-40 animate-fade-in" />
+          
+          {/* Modal de éxito */}
+          <div className="relative z-50 w-full max-w-md mx-auto bg-white rounded-2xl shadow-2xl animate-slide-fade-modal overflow-hidden">
+            {/* Confetis que se disparan */}
+            <div className="absolute inset-0 pointer-events-none overflow-hidden">
+              {/* Confetis que se disparan desde el centro */}
+              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                {/* Confeti 1 - Amarillo */}
+                <div className="absolute confetti-shoot-1">
+                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
+                </div>
+                {/* Confeti 2 - Rosa */}
+                <div className="absolute confetti-shoot-2">
+                  <div className="w-2 h-2 bg-pink-400 rounded-full"></div>
+                </div>
+                {/* Confeti 3 - Azul */}
+                <div className="absolute confetti-shoot-3">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                </div>
+                {/* Confeti 4 - Verde */}
+                <div className="absolute confetti-shoot-4">
+                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                </div>
+                {/* Confeti 5 - Púrpura */}
+                <div className="absolute confetti-shoot-5">
+                  <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+                </div>
+                {/* Confeti 6 - Naranja */}
+                <div className="absolute confetti-shoot-6">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                </div>
+                {/* Confeti 7 - Rojo */}
+                <div className="absolute confetti-shoot-7">
+                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+                </div>
+                {/* Confeti 8 - Cian */}
+                <div className="absolute confetti-shoot-8">
+                  <div className="w-3 h-3 bg-cyan-400 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Contenido del modal */}
+            <div className="p-8 text-center relative z-10">
+              {/* Imagen del producto */}
+              <div className="mb-6 flex justify-center">
+                <div className="relative">
+                  <img
+                    src={purchasedProduct.fileName || '/bp-logo.png'}
+                    alt={purchasedProduct.name}
+                    className="w-24 h-24 object-contain rounded-lg shadow-lg"
+                    onError={e => (e.currentTarget.src = '/bp-logo.png')}
+                  />
+                  {purchasedProduct.discount > 0 && (
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                      -{purchasedProduct.discount}%
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Mensaje de éxito */}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                ¡Has comprado exitosamente!
+              </h3>
+              
+              {/* Nombre del producto */}
+              <p className="text-lg font-semibold text-blue-600 mb-4">
+                {purchasedProduct.name}
+              </p>
+              
+              {/* Precio con moneda */}
+              <div className="flex items-center justify-center mb-4">
+                <img 
+                  src="/bugcoin.png" 
+                  alt="BugCoin" 
+                  className="w-6 h-6 mr-2 bugcoins-spin-3d" 
+                  style={{ transformStyle: 'preserve-3d' }}
+                />
+                <span className="text-xl font-bold text-blue-600">
+                  {purchasedProduct.discount > 0 
+                    ? Math.round(purchasedProduct.price * (1 - purchasedProduct.discount / 100))
+                    : purchasedProduct.price
+                  }
+                </span>
+                <span className="text-lg text-gray-600 ml-1">BugCoins</span>
+              </div>
+              
+              {/* Nuevo saldo de BugCoins */}
+              <div className="flex items-center justify-center mb-6">
+                <span className="text-sm text-gray-600 mr-2">Nuevo saldo:</span>
+                <img 
+                  src="/bugcoin.png" 
+                  alt="BugCoin" 
+                  className="w-5 h-5 mr-1 bugcoins-spin-3d" 
+                  style={{ transformStyle: 'preserve-3d' }}
+                />
+                <span className="text-lg font-bold text-green-600">
+                  {parseInt(localStorage.getItem('userBugCoins') || '1325')}
+                </span>
+                <span className="text-sm text-gray-600 ml-1">BugCoins</span>
+              </div>
+              
+              {/* Mensaje de agradecimiento */}
+              <p className="text-lg font-bold text-green-600">
+                ¡¡Gracias!!
+              </p>
+            </div>
           </div>
         </div>
       )}
@@ -699,11 +986,112 @@ const Shop: React.FC = () => {
           animation: bugcoins-spin-3d-rotate 2.5s linear infinite;
           transform-style: preserve-3d;
         }
+        .bugcoins-spin-fast {
+          animation: bugcoins-spin-fast-rotate 0.3s linear infinite;
+          transform-style: preserve-3d;
+        }
+        .bugcoins-jump {
+          animation: bugcoins-jump-animation 0.5s ease-in-out;
+          transform-style: preserve-3d;
+        }
         @keyframes bugcoins-spin-3d-rotate {
           0% { transform: rotateY(0deg); }
           100% { transform: rotateY(360deg); }
         }
+        @keyframes bugcoins-spin-fast-rotate {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
+        }
+        @keyframes bugcoins-jump-animation {
+          0% { transform: translateY(0px) rotateY(0deg); }
+          25% { transform: translateY(-20px) rotateY(90deg); }
+          50% { transform: translateY(-30px) rotateY(180deg); }
+          75% { transform: translateY(-20px) rotateY(270deg); }
+          100% { transform: translateY(0px) rotateY(360deg); }
+        }
+        
+        /* Animaciones de confetis que se disparan */
+        .confetti-shoot-1 {
+          animation: confetti-shoot-1-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-2 {
+          animation: confetti-shoot-2-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-3 {
+          animation: confetti-shoot-3-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-4 {
+          animation: confetti-shoot-4-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-5 {
+          animation: confetti-shoot-5-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-6 {
+          animation: confetti-shoot-6-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-7 {
+          animation: confetti-shoot-7-animation 2s ease-out forwards;
+        }
+        .confetti-shoot-8 {
+          animation: confetti-shoot-8-animation 2s ease-out forwards;
+        }
+        
+        @keyframes confetti-shoot-1-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(-80px, -60px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(-120px, 120px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-2-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(60px, -80px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(120px, 100px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-3-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(-60px, -40px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(-100px, 80px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-4-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(80px, -60px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(140px, 120px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-5-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(-40px, -80px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(-80px, 100px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-6-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(40px, -40px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(80px, 80px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-7-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(-60px, -20px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(-100px, 60px) rotate(360deg); opacity: 0; }
+        }
+        @keyframes confetti-shoot-8-animation {
+          0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+          50% { transform: translate(60px, -20px) rotate(180deg); opacity: 1; }
+          100% { transform: translate(100px, 60px) rotate(360deg); opacity: 0; }
+        }
+        .animate-fade-in {
+          animation: fadeInBg 0.2s;
+        }
+        @keyframes fadeInBg {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-slide-fade-modal {
+          animation: slideFadeInModal 0.25s cubic-bezier(0.4,0,0.2,1);
+        }
+        @keyframes slideFadeInModal {
+          from { opacity: 0; transform: translateY(-30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
       `}</style>
+      </div>
     </MainLayout>
   );
 };

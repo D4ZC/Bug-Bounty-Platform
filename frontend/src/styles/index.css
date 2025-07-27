@@ -182,7 +182,7 @@
 @keyframes bugcoins-spin-3d-rotate {
   0% { transform: rotateY(0deg); }
   100% { transform: rotateY(360deg); }
-}
+} 
 
 /* Animaciones para los iconos de la barra lateral */
 .home-anim:hover {

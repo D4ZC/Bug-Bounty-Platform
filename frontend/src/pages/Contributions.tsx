@@ -274,16 +274,16 @@ const Contributions: React.FC = () => {
             )}
           </div>
           <div className="relative">
-            {descriptionError && (
-              <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
-                <div className="flex items-start">
-                  <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                  </svg>
-                  <span className="text-black text-sm font-medium">{descriptionError}</span>
+              {descriptionError && (
+                <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
+                  <div className="flex items-start">
+                    <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-black text-sm font-medium">{descriptionError}</span>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
             <TextArea
               id="description"
               name="description"
