@@ -112,7 +112,7 @@ const Dashboard: React.FC = () => {
                 <span className="text-gray-400 text-xs">Score</span>
                 <span className="ml-2">{starRow(isTeam ? 0 : item.rank)}</span>
               </div>
-            </div>
+      </div>
           ))}
         </div>
       </div>
