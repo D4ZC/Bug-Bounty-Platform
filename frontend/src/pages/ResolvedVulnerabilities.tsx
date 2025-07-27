@@ -36,8 +36,8 @@ const initialVulns = [
     descripcion: 'Se encontró una vulnerabilidad Cross-Site Scripting en el campo de comentarios.',
     documento: 'xss-evidence.pdf',
     fileData: null, // Los archivos se agregarán cuando se suban desde Contributions
-    estado: 'Verificado',
-    editable: false,
+    estado: 'Enviado a Revisión',
+    editable: true,
   },
   {
     criticidad: 'High',
@@ -56,8 +56,8 @@ const initialVulns = [
     descripcion: 'Se detectó una vulnerabilidad de Insecure Direct Object Reference que permite acceder a recursos de otros usuarios.',
     documento: 'idor-evidence.pdf',
     fileData: null, // Los archivos se agregarán cuando se suban desde Contributions
-    estado: 'Verificado',
-    editable: false,
+    estado: 'Enviado a Revisión',
+    editable: true,
   },
 ];
 
@@ -76,6 +76,9 @@ const ResolvedVulnerabilities: React.FC = () => {
   const [selectedCriticidad, setSelectedCriticidad] = useState('Todas');
   const [showFilePreview, setShowFilePreview] = useState(false);
   const [previewFile, setPreviewFile] = useState<{name: string, data: string} | null>(null);
+  const [showStatusChange, setShowStatusChange] = useState(false);
+  const [statusChangeIdx, setStatusChangeIdx] = useState<number | null>(null);
+  const [showChangeButtons, setShowChangeButtons] = useState(false);
 
   // Cargar vulnerabilidades iniciales y del localStorage
   useEffect(() => {
@@ -89,7 +92,16 @@ const ResolvedVulnerabilities: React.FC = () => {
     const newInitialVulns = initialVulns.filter(v => !storedVulnsIds.includes(v.vulnerabilidad));
     
     // Combinar las vulnerabilidades iniciales nuevas con las del localStorage
-    const combinedVulns = [...stored, ...newInitialVulns];
+    let combinedVulns = [...stored, ...newInitialVulns];
+    
+    // Actualizar vulnerabilidades existentes con los nuevos datos de initialVulns
+    combinedVulns = combinedVulns.map(vuln => {
+      const matchingInitial = initialVulns.find(initial => initial.vulnerabilidad === vuln.vulnerabilidad);
+      if (matchingInitial) {
+        return { ...vuln, ...matchingInitial };
+      }
+      return vuln;
+    });
     
     // Ordenar: primero las no verificadas, luego las verificadas
     const sortedVulns = combinedVulns.sort((a, b) => {
@@ -98,20 +110,46 @@ const ResolvedVulnerabilities: React.FC = () => {
       return 0;
     });
     
-    // Guardar en localStorage si hay nuevas vulnerabilidades iniciales
-    if (newInitialVulns.length > 0) {
+    // Guardar en localStorage si hay cambios
+    if (newInitialVulns.length > 0 || JSON.stringify(sortedVulns) !== JSON.stringify(stored)) {
       localStorage.setItem('resolvedVulns', JSON.stringify(sortedVulns));
     }
     
     setVulns(sortedVulns);
   }, []);
 
+  // Escuchar cambios en localStorage para sincronización
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const stored = JSON.parse(localStorage.getItem('resolvedVulns') || '[]');
+      const sortedVulns = stored.sort((a: any, b: any) => {
+        if (a.estado === 'Verificado' && b.estado !== 'Verificado') return 1;
+        if (a.estado !== 'Verificado' && b.estado === 'Verificado') return -1;
+        return 0;
+      });
+      setVulns(sortedVulns);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Función para sincronizar cambios con localStorage
+  const syncWithLocalStorage = (updatedVulns: any[]) => {
+    const sortedVulns = updatedVulns.sort((a, b) => {
+      if (a.estado === 'Verificado' && b.estado !== 'Verificado') return 1;
+      if (a.estado !== 'Verificado' && b.estado === 'Verificado') return -1;
+      return 0;
+    });
+    localStorage.setItem('resolvedVulns', JSON.stringify(sortedVulns));
+    setVulns(sortedVulns);
+  };
+
   // Función para actualizar el estado de una vulnerabilidad
   const updateVulnerabilityStatus = (idx: number, newStatus: string) => {
     const updated = [...vulns];
     updated[idx] = { ...updated[idx], estado: newStatus, editable: newStatus === 'Enviado a Revisión' };
-    setVulns(updated);
-    localStorage.setItem('resolvedVulns', JSON.stringify(updated));
+    syncWithLocalStorage(updated);
   };
 
   const handleChange = (e: any) => {
@@ -145,8 +183,7 @@ const ResolvedVulnerabilities: React.FC = () => {
   // Eliminar vulnerabilidad
   const handleDelete = (idx: number) => {
     const updated = vulns.filter((_, i) => i !== idx);
-    setVulns(updated);
-    localStorage.setItem('resolvedVulns', JSON.stringify(updated));
+    syncWithLocalStorage(updated);
   };
 
   // Descargar documento
@@ -209,6 +246,23 @@ const ResolvedVulnerabilities: React.FC = () => {
     }
   };
 
+  // Confirmar cambio de estado
+  const confirmStatusChange = () => {
+    if (statusChangeIdx !== null) {
+      const vuln = vulns[statusChangeIdx];
+      const newStatus = vuln.estado === 'Verificado' ? 'Enviado a Revisión' : 'Verificado';
+      updateVulnerabilityStatus(statusChangeIdx, newStatus);
+      setShowStatusChange(false);
+      setStatusChangeIdx(null);
+    }
+  };
+
+  // Cancelar cambio de estado
+  const cancelStatusChange = () => {
+    setShowStatusChange(false);
+    setStatusChangeIdx(null);
+  };
+
 
 
   return (
@@ -222,6 +276,16 @@ const ResolvedVulnerabilities: React.FC = () => {
         >
           {criticidades.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+        <button
+          onClick={() => setShowChangeButtons(!showChangeButtons)}
+          className={`px-4 py-2 rounded transition-colors ${
+            showChangeButtons 
+              ? 'bg-green-600 text-white hover:bg-green-700' 
+              : 'bg-gray-800 text-white hover:bg-gray-900'
+          }`}
+        >
+          {showChangeButtons ? 'Ocultar botones' : 'Cambiar estado'}
+        </button>
 
       </div>
       <div className="flex flex-wrap gap-4 pb-4 max-w-full">
@@ -252,7 +316,7 @@ const ResolvedVulnerabilities: React.FC = () => {
                       (v.criticidad === 'Low' ? 'text-green-600' :
                        v.criticidad === 'Medium' ? 'text-yellow-500' :
                        v.criticidad === 'High' ? 'text-red-500' :
-                       v.criticidad === 'Critical' ? 'critical-breathing' :
+                       v.criticidad === 'Critical' ? (v.estado === 'Verificado' ? 'text-red-600' : 'critical-breathing') :
                        'text-black')
                     }
                   >
@@ -295,6 +359,17 @@ const ResolvedVulnerabilities: React.FC = () => {
                 </div>
               </>
               <div className="flex gap-2 mt-4 justify-end">
+                {showChangeButtons && (
+                  <button
+                    className="px-3 py-1 bg-black text-white rounded hover:bg-gray-800 transition-colors"
+                    onClick={() => {
+                      setStatusChangeIdx(idx);
+                      setShowStatusChange(true);
+                    }}
+                  >
+                    Cambiar
+                  </button>
+                )}
                 <button
                   className={`px-3 py-1 rounded ${
                     v.editable 
@@ -342,7 +417,7 @@ const ResolvedVulnerabilities: React.FC = () => {
                 detailVuln.criticidad === 'Low' ? 'text-green-600' :
                 detailVuln.criticidad === 'Medium' ? 'text-yellow-500' :
                 detailVuln.criticidad === 'High' ? 'text-red-500' :
-                detailVuln.criticidad === 'Critical' ? 'critical-breathing' :
+                detailVuln.criticidad === 'Critical' ? (detailVuln.estado === 'Verificado' ? 'text-red-600' : 'critical-breathing') :
                 'text-black'
               }`}>{detailVuln.criticidad}</span>
               <span className="font-bold text-base text-black ml-8">{detailVuln.fecha}</span>
@@ -565,6 +640,46 @@ const ResolvedVulnerabilities: React.FC = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Modal de confirmación de cambio de estado */}
+      {showStatusChange && statusChangeIdx !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Fondo semitransparente */}
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-40 animate-fade-in" onClick={cancelStatusChange} />
+          {/* Cuadro modal */}
+          <div className="relative z-50 w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-6 animate-slide-fade-modal">
+            <div className="text-center">
+              <div className="mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="none" viewBox="0 0 24 24" className="mx-auto mb-4 text-blue-500">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                </svg>
+                <h3 className="text-lg font-bold text-gray-900 mb-2">¿Cambiar estado?</h3>
+                <p className="text-gray-600 mb-6">
+                  ¿Estás seguro que quieres cambiar el estado de la vulnerabilidad "{vulns[statusChangeIdx]?.vulnerabilidad}"?
+                  <br />
+                  <span className="font-semibold">
+                    Estado actual: {vulns[statusChangeIdx]?.estado}
+                  </span>
+                </p>
+              </div>
+              <div className="flex gap-3 justify-center">
+                <button
+                  className="px-4 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+                  onClick={cancelStatusChange}
+                >
+                  Cancelar
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                  onClick={confirmStatusChange}
+                >
+                  Confirmar
+                </button>
+              </div>
             </div>
           </div>
         </div>
