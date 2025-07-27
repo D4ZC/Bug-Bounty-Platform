@@ -165,8 +165,8 @@ const ChatModal: React.FC<ChatModalProps> = ({ open, onClose, position = 'center
     <div
       className={
         position === 'left'
-          ? 'fixed left-0 top-24 z-50 w-[480px] h-[calc(100vh-96px)] bg-white shadow-2xl flex flex-col animate-fade-in border border-gray-300 rounded-none rounded-r-2xl'
-          : 'fixed top-[50px] left-0 z-50 w-4/5 h-[calc(100vh-200px)] bg-white rounded-r-2xl shadow-2xl flex flex-col animate-fade-in border border-gray-300'
+          ? 'fixed left-0 top-24 z-50 w-[630px] h-[calc(100vh-96px)] bg-white shadow-2xl flex flex-col animate-fade-in border border-gray-300 rounded-none rounded-r-2xl'
+          : 'fixed top-[50px] left-0 z-50 w-[calc(80%+150px)] h-[calc(100vh-200px)] bg-white rounded-r-2xl shadow-2xl flex flex-col animate-fade-in border border-gray-300'
       }
     >
       {/* Encabezado */}

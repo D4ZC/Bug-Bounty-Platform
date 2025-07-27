@@ -111,6 +111,19 @@ const Gulag: React.FC = () => {
   const [timer, setTimer] = useState(0);
   const [timerActive, setTimerActive] = useState(false);
 
+  // Efecto para controlar el scroll del body cuando la modal está abierta
+  useEffect(() => {
+    if (modalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [modalOpen]);
+
   // Timer effect
   useEffect(() => {
     if (timerActive && timer > 0) {
@@ -433,67 +446,73 @@ const Gulag: React.FC = () => {
 
       {/* Modal de desafío */}
       {modalOpen && modalCard && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div
-            className="relative flex flex-col"
-            style={{ width: 500, height: 580, background: 'rgba(20,20,20,0.6)', border: '4px solid #000', borderRadius: 18, boxShadow: '0 8px 32px 0 rgba(0,0,0,0.5)' }}
+            className="relative flex flex-col bg-white border-2 border-gray-300 rounded-xl shadow-2xl overflow-hidden"
+            style={{ width: 500, height: 580 }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-8 pt-8 pb-4">
-              <span className="text-3xl font-bold text-white">{modalCard.nombre}</span>
-              <button onClick={closeModal} className="text-white hover:text-red-500 text-2xl font-bold"><X size={32} /></button>
-            </div>
-            {/* Descripción */}
-            <div className="px-8 pb-2">
-              <span className="text-lg text-white font-semibold">DESCRIPCIÓN:</span>
-              <div className="text-base text-gray-200 mt-2 mb-6">{modalCard.descripcion}</div>
-            </div>
-            {/* Botón Comenzar y Cronómetro */}
-            <div className="flex flex-row items-center justify-between px-8 mb-6">
-              <button
-                className="px-6 py-2 bg-white text-black font-bold rounded shadow hover:bg-gray-200 transition"
-                style={{ borderRadius: 8 }}
-                onClick={() => { setTimer(600); setTimerActive(true); }}
-                disabled={timerActive && timer > 0 || completed[modalCard.id]}
-              >
-                Comenzar
+            <div className="flex items-center justify-between px-8 pt-8 pb-4 bg-gray-50 border-b border-gray-200">
+              <span className="text-3xl font-bold text-gray-800">{modalCard.nombre}</span>
+              <button onClick={closeModal} className="text-gray-600 hover:text-red-500 text-2xl font-bold transition-colors">
+                <X size={32} />
               </button>
-              {timer > 0 && !completed[modalCard.id] && (
-                <span className="text-2xl font-mono text-white bg-black px-6 py-2 rounded flex items-center gap-4" style={{ letterSpacing: 2 }}>
-                  {formatTime(timer)}
-                  <span
-                    className="ml-4 underline cursor-pointer text-base text-gray-300 hover:text-white select-none"
-                    onClick={() => { setTimer(600); setTimerActive(true); }}
-                  >
-                    Reiniciar
-                  </span>
-                </span>
-              )}
             </div>
-            {/* Área de respuesta */}
-            <div className="px-8 flex-1 flex flex-col">
-              <textarea
-                className="w-full flex-1 rounded p-4 text-black text-lg bg-white mb-4 resize-none"
-                style={{ minHeight: 120, maxHeight: 200 }}
-                placeholder="Describe cómo resolviste el desafío..."
-                value={answer}
-                onChange={e => setAnswer(e.target.value)}
-                disabled={completed[modalCard.id]}
-              />
-              {!completed[modalCard.id] && (
+            
+            {/* Contenido con scroll */}
+            <div className="flex-1 overflow-y-auto p-8">
+              {/* Descripción */}
+              <div className="mb-6">
+                <span className="text-lg text-gray-800 font-semibold">DESCRIPCIÓN:</span>
+                <div className="text-base text-gray-600 mt-2">{modalCard.descripcion}</div>
+              </div>
+              
+              {/* Botón Comenzar y Cronómetro */}
+              <div className="flex flex-row items-center justify-between mb-6">
                 <button
-                  className="w-full py-3 bg-white text-black font-bold rounded shadow hover:bg-gray-200 transition text-lg"
-                  style={{ borderRadius: 8 }}
-                  onClick={() => {
-                    markCompleted(modalCard.id);
-                    addSolve(modalCard.id);
-                    setTimerActive(false);
-                    setTimer(0);
-                  }}
+                  className="px-6 py-2 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition-colors"
+                  onClick={() => { setTimer(600); setTimerActive(true); }}
+                  disabled={timerActive && timer > 0 || completed[modalCard.id]}
                 >
-                  Enviar
+                  Comenzar
                 </button>
-              )}
+                {timer > 0 && !completed[modalCard.id] && (
+                  <span className="text-2xl font-mono text-white bg-gray-800 px-6 py-2 rounded-lg flex items-center gap-4" style={{ letterSpacing: 2 }}>
+                    {formatTime(timer)}
+                    <span
+                      className="ml-4 underline cursor-pointer text-base text-gray-300 hover:text-white select-none"
+                      onClick={() => { setTimer(600); setTimerActive(true); }}
+                    >
+                      Reiniciar
+                    </span>
+                  </span>
+                )}
+              </div>
+              
+              {/* Área de respuesta */}
+              <div className="flex-1 flex flex-col">
+                <textarea
+                  className="w-full flex-1 rounded-lg p-4 text-gray-800 text-lg bg-gray-50 border border-gray-300 mb-4 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  style={{ minHeight: 120, maxHeight: 200 }}
+                  placeholder="Describe cómo resolviste el desafío..."
+                  value={answer}
+                  onChange={e => setAnswer(e.target.value)}
+                  disabled={completed[modalCard.id]}
+                />
+                {!completed[modalCard.id] && (
+                  <button
+                    className="w-full py-3 bg-green-600 text-white font-bold rounded-lg shadow hover:bg-green-700 transition-colors text-lg"
+                    onClick={() => {
+                      markCompleted(modalCard.id);
+                      addSolve(modalCard.id);
+                      setTimerActive(false);
+                      setTimer(0);
+                    }}
+                  >
+                    Enviar
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

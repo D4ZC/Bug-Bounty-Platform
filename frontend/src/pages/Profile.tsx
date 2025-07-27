@@ -14,13 +14,13 @@ import insignia6 from '../assets/images/Insignias/Insignia6.png';
 import insignia7 from '../assets/images/Insignias/Insignia7.png';
 
 const ALL_BADGES = [
-  { img: insignia1, name: 'Insignia 1' },
-  { img: insignia2, name: 'Insignia 2' },
-  { img: insignia3, name: 'Insignia 3' },
-  { img: insignia4, name: 'Insignia 4' },
-  { img: insignia5, name: 'Insignia 5' },
-  { img: insignia6, name: 'Insignia 6' },
-  { img: insignia7, name: 'Insignia 7' },
+  { img: insignia1, name: '🏆 Campeón de Bugs' },
+  { img: insignia2, name: '⭐ MVP del Mes' },
+  { img: insignia3, name: '🔍 Cazador Elite' },
+  { img: insignia4, name: '🛡️ Defensor Digital' },
+  { img: insignia5, name: '⚡ Hacker Veloz' },
+  { img: insignia6, name: '💎 Maestro de la Seguridad' },
+  { img: insignia7, name: '🌟 Leyenda del Ciberespacio' },
 ];
 
 const pieData = [
@@ -672,9 +672,6 @@ const Profile: React.FC = () => {
               </label>
               <label className="font-bold text-gray-700">Correo
                 <input className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" value={email} onChange={e => setEmail(e.target.value)} />
-              </label>
-              <label className="font-bold text-gray-700">Foto de perfil
-                <input type="file" accept="image/*" className="w-full text-center font-gamer-body text-base bg-gray-100 border border-cyber-blue rounded px-2 py-1 outline-none" onChange={e => setProfilePic(e.target.files?.[0] ? URL.createObjectURL(e.target.files[0]) : null)} />
               </label>
             </div>
             <div className="flex gap-2 justify-center mt-6">

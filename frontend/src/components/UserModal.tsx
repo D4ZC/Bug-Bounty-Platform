@@ -23,13 +23,13 @@ interface UserModalProps {
 }
 
 const ALL_BADGES = [
-  { img: insignia1, name: 'Insignia 1' },
-  { img: insignia2, name: 'Insignia 2' },
-  { img: insignia3, name: 'Insignia 3' },
-  { img: insignia4, name: 'Insignia 4' },
-  { img: insignia5, name: 'Insignia 5' },
-  { img: insignia6, name: 'Insignia 6' },
-  { img: insignia7, name: 'Insignia 7' },
+  { img: insignia1, name: '🏆 Campeón de Bugs' },
+  { img: insignia2, name: '⭐ MVP del Mes' },
+  { img: insignia3, name: '🔍 Cazador Elite' },
+  { img: insignia4, name: '🛡️ Defensor Digital' },
+  { img: insignia5, name: '⚡ Hacker Veloz' },
+  { img: insignia6, name: '💎 Maestro de la Seguridad' },
+  { img: insignia7, name: '🌟 Leyenda del Ciberespacio' },
 ];
 
 const UserModal: React.FC<UserModalProps> = ({ user, isOpen, onClose }) => {

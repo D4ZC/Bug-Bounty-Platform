@@ -1,14 +1,23 @@
 import React, { useState, useRef } from 'react';
+// Importar las imágenes reales de la carpeta Ruleta
+import ruleta from '../assets/images/Ruleta/Ruleta.png';
+import ruleta1 from '../assets/images/Ruleta/Ruleta1.png';
+import ruleta2 from '../assets/images/Ruleta/Ruleta2.png';
+import ruleta3 from '../assets/images/Ruleta/Ruleta3.png';
+import ruleta4 from '../assets/images/Ruleta/Ruleta4.png';
+import ruleta5 from '../assets/images/Ruleta/Ruleta5.png';
+import ruleta6 from '../assets/images/Ruleta/Ruleta6.png';
+import ruleta7 from '../assets/images/Ruleta/Ruelta7.png';
 
-const FAKE_PRODUCTS = [
-  { id: 1, name: 'Producto 1', desc: 'Descripción del producto 1', img: 'https://via.placeholder.com/120' },
-  { id: 2, name: 'Producto 2', desc: 'Descripción del producto 2', img: 'https://via.placeholder.com/120' },
-  { id: 3, name: 'Producto 3', desc: 'Descripción del producto 3', img: 'https://via.placeholder.com/120' },
-  { id: 4, name: 'Producto 4', desc: 'Descripción del producto 4', img: 'https://via.placeholder.com/120' },
-  { id: 5, name: 'Producto 5', desc: 'Descripción del producto 5', img: 'https://via.placeholder.com/120' },
-  { id: 6, name: 'Producto 6', desc: 'Descripción del producto 6', img: 'https://via.placeholder.com/120' },
-  { id: 7, name: 'Producto 7', desc: 'Descripción del producto 7', img: 'https://via.placeholder.com/120' },
-  { id: 8, name: 'Producto 8', desc: 'Descripción del producto 8', img: 'https://via.placeholder.com/120' },
+const RUELTA_PRODUCTS = [
+  { id: 1, name: 'Producto Ruleta 1', desc: 'Producto especial de la ruleta', img: ruleta },
+  { id: 2, name: 'Producto Ruleta 2', desc: 'Producto especial de la ruleta', img: ruleta1 },
+  { id: 3, name: 'Producto Ruleta 3', desc: 'Producto especial de la ruleta', img: ruleta2 },
+  { id: 4, name: 'Producto Ruleta 4', desc: 'Producto especial de la ruleta', img: ruleta3 },
+  { id: 5, name: 'Producto Ruleta 5', desc: 'Producto especial de la ruleta', img: ruleta4 },
+  { id: 6, name: 'Producto Ruleta 6', desc: 'Producto especial de la ruleta', img: ruleta5 },
+  { id: 7, name: 'Producto Ruleta 7', desc: 'Producto especial de la ruleta', img: ruleta6 },
+  { id: 8, name: 'Producto Ruleta 8', desc: 'Producto especial de la ruleta', img: ruleta7 },
 ];
 
 const highlightColor = 'from-orange-400 to-red-500 border-orange-500';
@@ -22,15 +31,16 @@ const Ruleta: React.FC = () => {
   //        7   3
   //        6 5 4
   const grid = [
-    FAKE_PRODUCTS[0], FAKE_PRODUCTS[1], FAKE_PRODUCTS[2],
-    FAKE_PRODUCTS[7], null,                 FAKE_PRODUCTS[3],
-    FAKE_PRODUCTS[6], FAKE_PRODUCTS[5], FAKE_PRODUCTS[4],
+    RUELTA_PRODUCTS[0], RUELTA_PRODUCTS[1], RUELTA_PRODUCTS[2],
+    RUELTA_PRODUCTS[7], null,                 RUELTA_PRODUCTS[3],
+    RUELTA_PRODUCTS[6], RUELTA_PRODUCTS[5], RUELTA_PRODUCTS[4],
   ];
 
   const [activeIdx, setActiveIdx] = useState<number | null>(null);
   const [isRolling, setIsRolling] = useState(false);
   const [winnerIdx, setWinnerIdx] = useState<number | null>(null);
   const [showChest, setShowChest] = useState(false);
+  const [claimedProduct, setClaimedProduct] = useState<number | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const startRoll = () => {
@@ -56,8 +66,17 @@ const Ruleta: React.FC = () => {
     }, 100);
   };
 
+  const handleClaim = () => {
+    if (wonProduct) {
+      setClaimedProduct(wonProduct.id);
+      setShowChest(false);
+      // Aquí se podría agregar la lógica para guardar el producto en el inventario del usuario
+      console.log('Producto reclamado:', wonProduct.name);
+    }
+  };
+
   // Producto ganado
-  const wonProduct = winnerIdx !== null && showChest ? FAKE_PRODUCTS[CLOCKWISE_INDICES.indexOf(winnerIdx!)] : null;
+  const wonProduct = winnerIdx !== null && showChest ? RUELTA_PRODUCTS[CLOCKWISE_INDICES.indexOf(winnerIdx!)] : null;
 
   return (
     <div className="flex flex-col md:flex-row w-full max-w-6xl min-h-[400px] items-center justify-center gap-8 md:gap-12 animate-fade-in">
@@ -94,10 +113,15 @@ const Ruleta: React.FC = () => {
             <span className="text-xl font-bold text-orange-900 mb-2 text-center">{wonProduct.name}</span>
             <span className="text-gray-700 text-center mb-2">{wonProduct.desc}</span>
             <button
-              className={`px-8 py-3 rounded-xl font-bold shadow-lg text-lg tracking-wide transition bg-orange-400 text-white hover:bg-orange-500`}
-              onClick={() => setShowChest(false)}
+              className={`px-8 py-3 rounded-xl font-bold shadow-lg text-lg tracking-wide transition ${
+                claimedProduct === wonProduct.id 
+                  ? 'bg-green-500 text-white cursor-not-allowed' 
+                  : 'bg-orange-400 text-white hover:bg-orange-500'
+              }`}
+              onClick={handleClaim}
+              disabled={claimedProduct === wonProduct.id}
             >
-              RECLAMAR
+              {claimedProduct === wonProduct.id ? 'RECLAMADO' : 'RECLAMAR'}
             </button>
           </div>
         ) : (

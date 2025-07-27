@@ -78,7 +78,7 @@ const CrearVulnerabilidad: React.FC = () => {
     <div className="w-full flex flex-row min-h-screen">
       <div className="flex-1 p-8 ml-2">
         <form className="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-md flex flex-col gap-4" onSubmit={handleSubmit}>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Crear Vulnerabilidad</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Documentar Vulnerabilidad</h2>
           {error && <div className="text-red-500 font-semibold">{error}</div>}
           <label className="font-semibold text-gray-700">Nombre de la vulnerabilidad
             <input type="text" className="input mt-1" value={nombre} onChange={e => setNombre(e.target.value)} required />
@@ -92,9 +92,9 @@ const CrearVulnerabilidad: React.FC = () => {
               Email
               <input type="text" className="input mt-1 bg-gray-100" style={{ width: '242px' }} value={usuarioEmail} readOnly />
             </label>
-            <label className="font-semibold text-gray-700 flex-1 text-right ml-[50px]">
-              <span style={{ marginLeft: '-150px', display: 'inline-block' }}>ID</span>
-              <input type="text" className="input mt-1 bg-gray-100 w-32 text-right font-mono border-l-2 border-blue-400" value={usuarioId} readOnly />
+            <label className="font-semibold text-gray-700 flex-1 text-center">
+              <span>ID</span>
+              <input type="text" className="input mt-1 bg-gray-100 w-32 text-center font-mono border-l-2 border-blue-400" value={usuarioId} readOnly />
             </label>
           </div>
           <label className="font-semibold text-gray-700">Fecha

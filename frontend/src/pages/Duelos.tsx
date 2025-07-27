@@ -558,7 +558,7 @@ const Duelos: React.FC = () => {
     const esNuevaSala = salaActual.estado === 'esperando';
 
     return (
-      <div className="min-h-screen h-screen flex flex-col bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
         {/* Contador flotante */}
         {contadorActivo && (
           <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg">
@@ -601,23 +601,23 @@ const Duelos: React.FC = () => {
         </header>
 
         {/* Información de la sala */}
-        <div className="w-full bg-white rounded-lg shadow-lg mx-4 mt-4 p-6">
-          <div className="flex items-center gap-4 mb-4">
-            <img src={salaActual.imagen} alt="Sala" className="w-20 h-20 rounded-lg object-cover" />
-            <div>
-              <h2 className="text-2xl font-bold text-gray-800">Sala de {salaActual.usuario}</h2>
-              <p className="text-gray-600">ID: {salaActual.id}</p>
-              <p className="text-gray-600">Tipo: {tipoToLabel[salaActual.tipo as keyof typeof tipoToLabel] || salaActual.modo}</p>
-              <p className="text-gray-600">Estado: {salaActual.estado === 'esperando' ? 'Esperando jugadores' : salaActual.estado === 'en_progreso' ? 'En progreso' : 'Finalizada'}</p>
-              <p className="text-gray-600">Jugadores: {salaActual.participantes ? salaActual.participantes.length : 1}/{salaActual.maxJugadores}</p>
-            </div>
+        <div className="w-full bg-white rounded-lg shadow-lg mx-4 mt-2 p-4">
+                      <div className="flex items-center gap-4 mb-2">
+            <img src={salaActual.imagen} alt="Sala" className="w-16 h-16 rounded-lg object-cover" />
+                          <div>
+                <h2 className="text-xl font-bold text-gray-800">Sala de {salaActual.usuario}</h2>
+                <p className="text-sm text-gray-600">ID: {salaActual.id}</p>
+                <p className="text-sm text-gray-600">Tipo: {tipoToLabel[salaActual.tipo as keyof typeof tipoToLabel] || salaActual.modo}</p>
+                <p className="text-sm text-gray-600">Estado: {salaActual.estado === 'esperando' ? 'Esperando jugadores' : salaActual.estado === 'en_progreso' ? 'En progreso' : 'Finalizada'}</p>
+                <p className="text-sm text-gray-600">Jugadores: {salaActual.participantes ? salaActual.participantes.length : 1}/{salaActual.maxJugadores}</p>
+              </div>
           </div>
         </div>
 
         {/* Contenido principal - Dos columnas */}
-        <main className="flex-1 flex gap-8 p-4">
+        <main className="flex-1 flex gap-6 p-3 overflow-hidden">
           {/* Lado izquierdo */}
-          <div className="flex-1 bg-white rounded-lg shadow-lg p-6">
+          <div className="flex-1 bg-white rounded-lg shadow-lg p-4 overflow-y-auto">
             <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Lado A</h3>
             
                          {salaActual.tipo === '1v1' && (
@@ -670,7 +670,7 @@ const Duelos: React.FC = () => {
           </div>
 
                      {/* Lado derecho */}
-           <div className="flex-1 bg-white rounded-lg shadow-lg p-6">
+           <div className="flex-1 bg-white rounded-lg shadow-lg p-4 overflow-y-auto">
              <h3 className="text-xl font-bold text-gray-800 mb-4 text-center">Lado B</h3>
              
              {!haySegundoJugador ? (
@@ -730,7 +730,7 @@ const Duelos: React.FC = () => {
       {mostrarSalasActivas && (salaActiva || salaEnProgreso) ? (
         renderSalaActiva()
       ) : (
-        <div className="min-h-screen h-screen flex flex-col bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
+        <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-100 via-gray-50 to-gray-100">
              {/* Encabezado */}
        <header className="w-full flex justify-between items-center px-4 py-4 bg-white/10 flex-shrink-0 sticky top-0 z-10">
                    {/* Botón Salas Activas */}
@@ -778,13 +778,12 @@ const Duelos: React.FC = () => {
       {/* Modal de contraseña */}
       {passwordModalOpen && renderPasswordModal()}
       {/* Sección de salas (scrollable, alto fijo) */}
-      <main className="w-full flex justify-center flex-shrink-0" style={{ background: 'inherit' }}>
+      <main className="w-full flex justify-center flex-1 overflow-hidden" style={{ background: 'inherit' }}>
         <div
           className="flex flex-col gap-4 max-w-full w-full overflow-y-auto px-0 md:px-8 py-4"
           style={{
-            maxHeight: '400px', // desktop
+            maxHeight: 'calc(100vh - 200px)', // Ajuste dinámico
             minHeight: '120px',
-            height: '100%',
           }}
         >
           {salasFiltradas.length === 0 ? (
@@ -793,7 +792,7 @@ const Duelos: React.FC = () => {
                          salasFiltradas.map((sala) => (
                <div
                  key={sala.id}
-                 className="flex flex-row items-center w-full bg-gray-200 rounded-xl shadow-lg overflow-hidden h-[150px] min-h-[150px] relative"
+                 className="flex flex-row items-center w-full bg-gray-200 rounded-xl shadow-lg overflow-hidden h-[120px] min-h-[120px] relative"
                  style={{ minWidth: 0 }}
                >
                  {/* Candado para salas con contraseña */}
@@ -804,7 +803,7 @@ const Duelos: React.FC = () => {
                  )}
                  
                  {/* Imagen rectangular más grande y centrada */}
-                 <div className="flex-shrink-0 w-[220px] h-[130px] bg-gray-300 flex items-center justify-center m-4 rounded-lg overflow-hidden">
+                 <div className="flex-shrink-0 w-[180px] h-[100px] bg-gray-300 flex items-center justify-center m-3 rounded-lg overflow-hidden">
                    <img src={sala.imagen} alt="Sala" className="object-cover w-full h-full rounded-md" />
                  </div>
                  {/* Info usuario y sala */}
