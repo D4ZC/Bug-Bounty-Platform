@@ -35,6 +35,7 @@ const initialVulns = [
     vulnerabilidad: 'XSS',
     descripcion: 'Se encontró una vulnerabilidad Cross-Site Scripting en el campo de comentarios.',
     documento: 'xss-evidence.pdf',
+    fileData: null, // Los archivos se agregarán cuando se suban desde Contributions
     estado: 'Verificado',
     editable: false,
   },
@@ -44,6 +45,7 @@ const initialVulns = [
     vulnerabilidad: 'Enumeración de Usuarios por Mensajes de Error de Login',
     descripcion: 'El sistema permite enumerar usuarios válidos mediante mensajes de error específicos en el login.',
     documento: 'user-enumeration.txt',
+    fileData: null, // Los archivos se agregarán cuando se suban desde Contributions
     estado: 'Verificado',
     editable: false,
   },
@@ -53,6 +55,7 @@ const initialVulns = [
     vulnerabilidad: 'IDOR',
     descripcion: 'Se detectó una vulnerabilidad de Insecure Direct Object Reference que permite acceder a recursos de otros usuarios.',
     documento: 'idor-evidence.pdf',
+    fileData: null, // Los archivos se agregarán cuando se suban desde Contributions
     estado: 'Verificado',
     editable: false,
   },
@@ -77,16 +80,39 @@ const ResolvedVulnerabilities: React.FC = () => {
   // Cargar vulnerabilidades iniciales y del localStorage
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('resolvedVulns') || '[]');
-    // Combinar las vulnerabilidades iniciales con las del localStorage
-    const combinedVulns = [...initialVulns, ...stored];
+    
+    // Verificar si las vulnerabilidades iniciales ya están guardadas
+    const initialVulnsIds = initialVulns.map(v => v.vulnerabilidad);
+    const storedVulnsIds = stored.map((v: any) => v.vulnerabilidad);
+    
+    // Filtrar las vulnerabilidades iniciales que no están guardadas
+    const newInitialVulns = initialVulns.filter(v => !storedVulnsIds.includes(v.vulnerabilidad));
+    
+    // Combinar las vulnerabilidades iniciales nuevas con las del localStorage
+    const combinedVulns = [...stored, ...newInitialVulns];
+    
     // Ordenar: primero las no verificadas, luego las verificadas
     const sortedVulns = combinedVulns.sort((a, b) => {
       if (a.estado === 'Verificado' && b.estado !== 'Verificado') return 1;
       if (a.estado !== 'Verificado' && b.estado === 'Verificado') return -1;
       return 0;
     });
+    
+    // Guardar en localStorage si hay nuevas vulnerabilidades iniciales
+    if (newInitialVulns.length > 0) {
+      localStorage.setItem('resolvedVulns', JSON.stringify(sortedVulns));
+    }
+    
     setVulns(sortedVulns);
   }, []);
+
+  // Función para actualizar el estado de una vulnerabilidad
+  const updateVulnerabilityStatus = (idx: number, newStatus: string) => {
+    const updated = [...vulns];
+    updated[idx] = { ...updated[idx], estado: newStatus, editable: newStatus === 'Enviado a Revisión' };
+    setVulns(updated);
+    localStorage.setItem('resolvedVulns', JSON.stringify(updated));
+  };
 
   const handleChange = (e: any) => {
     const { name, value, files } = e.target;
