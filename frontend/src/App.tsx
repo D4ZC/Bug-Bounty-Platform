@@ -29,6 +29,7 @@ import Notifications from '@/pages/Notifications';
 
 import Eventos from '@/pages/Eventos';
 import Settings from '@/pages/Settings';
+import Feedback from '@/pages/Feedback';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -62,6 +63,7 @@ function App() {
         <Route path="mvp" element={<MVP />} />
         <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />
         <Route path="eventos" element={<Eventos />} />
+        <Route path="feedback" element={<Feedback />} />
         <Route path="settings" element={<Settings />} />
         <Route path="*" element={<NotFound />} />
       </Routes>

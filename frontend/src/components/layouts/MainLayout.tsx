@@ -94,6 +94,19 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                   </svg>
                 </span>
               </SideNavLink>
+              <SideNavLink href="/feedback">
+                <span className="group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 cursor-pointer bg-white hover:shadow-md">
+                  {/* Globo de texto (thought bubble) */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 32 32" fill="none" className="text-black group-hover:text-blue-600 transition-all duration-200 thought-bubble-anim">
+                    {/* Cuerpo principal del globo */}
+                    <path d="M8 12c0-2.21 3.58-4 8-4s8 1.79 8 4c0 2.21-3.58 4-8 4s-8-1.79-8-4z" stroke="currentColor" strokeWidth="2" fill="none" className="thought-bubble-body"/>
+                    {/* Cola del globo con 3 elipses */}
+                    <ellipse cx="12" cy="20" rx="2" ry="1.5" stroke="currentColor" strokeWidth="2" fill="none" className="thought-bubble-tail-1"/>
+                    <ellipse cx="10" cy="22" rx="1.5" ry="1" stroke="currentColor" strokeWidth="2" fill="none" className="thought-bubble-tail-2"/>
+                    <ellipse cx="8" cy="24" rx="1" ry="0.8" stroke="currentColor" strokeWidth="2" fill="none" className="thought-bubble-tail-3"/>
+                  </svg>
+                </span>
+              </SideNavLink>
               <SideNavLink href="/settings">
                 <span className="group flex items-center justify-center w-12 h-12 rounded-lg transition-all duration-200 cursor-pointer bg-white hover:shadow-md">
                   {/* Engranaje Carbon perfectamente centrado */}

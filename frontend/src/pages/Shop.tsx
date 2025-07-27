@@ -95,18 +95,30 @@ const sampleProducts = [
 const Shop: React.FC = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [isPulse, setIsPulse] = useState(false);
-  const [editMode, setEditMode] = useState(false);
+  const [editMode, setEditMode] = useState(() => {
+    const savedEditMode = localStorage.getItem('shopEditMode');
+    return savedEditMode ? JSON.parse(savedEditMode) : false;
+  });
   const [products, setProducts] = useState(sampleProducts);
 
-  const [editingIdx, setEditingIdx] = useState<number | null>(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    category: '',
-    description: '',
-    fileName: '',
-    price: 100,
-    discount: 0,
+  const [editingIdx, setEditingIdx] = useState<number | null>(() => {
+    const savedEditingIdx = localStorage.getItem('shopEditingIdx');
+    return savedEditingIdx ? JSON.parse(savedEditingIdx) : null;
+  });
+  const [showCreateModal, setShowCreateModal] = useState(() => {
+    const savedShowCreateModal = localStorage.getItem('shopShowCreateModal');
+    return savedShowCreateModal ? JSON.parse(savedShowCreateModal) : false;
+  });
+  const [newProduct, setNewProduct] = useState(() => {
+    const savedNewProduct = localStorage.getItem('shopNewProduct');
+    return savedNewProduct ? JSON.parse(savedNewProduct) : {
+      name: '',
+      category: '',
+      description: '',
+      fileName: '',
+      price: 100,
+      discount: 0,
+    };
   });
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
@@ -145,11 +157,17 @@ const Shop: React.FC = () => {
     return () => clearInterval(interval);
   }, [isPurchasing]);
 
-  // Leer productos de localStorage al cargar
+  // Leer productos de localStorage al cargar y restablecer BugCoins
   useEffect(() => {
     const stored = localStorage.getItem('shopProducts');
     if (stored) {
       setProducts(JSON.parse(stored));
+    }
+    
+    // Restablecer BugCoins a 1325 (solo una vez al cargar)
+    const currentBugCoins = localStorage.getItem('userBugCoins');
+    if (!currentBugCoins || parseInt(currentBugCoins) !== 1325) {
+      localStorage.setItem('userBugCoins', '1325');
     }
   }, []);
 
@@ -157,6 +175,26 @@ const Shop: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('shopProducts', JSON.stringify(products));
   }, [products]);
+
+  // Guardar modo de edición en localStorage
+  useEffect(() => {
+    localStorage.setItem('shopEditMode', JSON.stringify(editMode));
+  }, [editMode]);
+
+  // Guardar nuevo producto en localStorage
+  useEffect(() => {
+    localStorage.setItem('shopNewProduct', JSON.stringify(newProduct));
+  }, [newProduct]);
+
+  // Guardar índice de edición en localStorage
+  useEffect(() => {
+    localStorage.setItem('shopEditingIdx', JSON.stringify(editingIdx));
+  }, [editingIdx]);
+
+  // Guardar estado del modal de creación en localStorage
+  useEffect(() => {
+    localStorage.setItem('shopShowCreateModal', JSON.stringify(showCreateModal));
+  }, [showCreateModal]);
 
 
 
