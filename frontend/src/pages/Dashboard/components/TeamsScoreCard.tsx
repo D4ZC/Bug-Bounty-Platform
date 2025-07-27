@@ -10,7 +10,7 @@ interface Team {
 const TeamsScoreCard: React.FC<{ teams: Team[] }> = ({ teams }) => {
   const navigate = useNavigate();
   return (
-    <div className="col-span-1 flex flex-col gap-3 h-[240px] bg-white p-6 rounded-lg border-2 border-gray-200 shadow-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200" onClick={() => navigate('/team')}>
+    <div className="col-span-1 flex flex-col gap-3 h-[240px] bg-white p-6 rounded-lg border-2 border-gray-200 shadow-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200" onClick={() => navigate('/eventos')}>
       <h2 className="text-lg font-semibold text-gray-900 mb-1">Teams Score</h2>
       <ol className="mt-1 flex-1 overflow-y-auto">
         {teams.map((team, idx) => (

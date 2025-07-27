@@ -14,13 +14,13 @@ import Challenges from '@/pages/Challenges';
 import Shop from '@/pages/Shop';
 import Contributions from '@/pages/Contributions';
 import Profile from '@/pages/Profile';
-import Team from '@/pages/Team';
+
 import Gulag from '@/pages/Gulag';
 import MVP from '@/pages/MVP';
 import NotFound from '@/pages/NotFound';
 import ResolvedVulnerabilities from '@/pages/ResolvedVulnerabilities';
 import Notifications from '@/pages/Notifications';
-import Users from '@/pages/Users';
+
 import Eventos from '@/pages/Eventos';
 import Settings from '@/pages/Settings';
 
@@ -49,8 +49,7 @@ function App() {
         <Route path="contributions" element={<Contributions />} />
         <Route path="profile" element={<Profile />} />
         <Route path="notifications" element={<Notifications />} />
-        <Route path="team" element={<Team />} />
-        <Route path="users" element={<Users />} />
+
         <Route path="gulag" element={<Gulag />} />
         <Route path="mvp" element={<MVP />} />
         <Route path="resolved-vulnerabilities" element={<ResolvedVulnerabilities />} />

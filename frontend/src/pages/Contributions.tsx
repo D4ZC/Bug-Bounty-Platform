@@ -123,11 +123,22 @@ const Contributions: React.FC = () => {
     return isValid;
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // Validar antes de enviar
     if (!validateForm()) {
       return;
     }
+    
+    // Convertir archivo a base64 si existe
+    let fileData = null;
+    if (form.file && form.file instanceof File) {
+      fileData = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(form.file);
+      });
+    }
+    
     // Si no se selecciona criticidad, usar 'Low' por defecto
     const criticidadLabel = types.find(t => t.value === (form.type || 'low'))?.label || 'Low';
     const resolvedVuln = {
@@ -136,6 +147,9 @@ const Contributions: React.FC = () => {
       vulnerabilidad: form.title,
       descripcion: form.description,
       documento: form.file ? form.file.name : '',
+      fileData: fileData, // Guardar el archivo como base64
+      estado: 'Enviado a Revisión',
+      editable: true,
     };
     const prev = JSON.parse(localStorage.getItem('resolvedVulns') || '[]');
     if (editIdx !== null && editIdx >= 0 && editIdx < prev.length) {
@@ -260,19 +274,16 @@ const Contributions: React.FC = () => {
             )}
           </div>
           <div className="relative">
-            <div className="relative">
-              <span className="text-black">Descripción</span>
-              {descriptionError && (
-                <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
-                  <div className="flex items-start">
-                    <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-black text-sm font-medium">{descriptionError}</span>
-                  </div>
+            {descriptionError && (
+              <div className="absolute right-0 top-0 transform translate-x-full ml-2 bg-white border border-black rounded-lg p-3 shadow-lg max-w-xs z-10 animate-fade-in error-card" style={{ right: '150px' }}>
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-black mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-black text-sm font-medium">{descriptionError}</span>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
             <TextArea
               id="description"
               name="description"

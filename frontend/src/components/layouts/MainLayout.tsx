@@ -13,7 +13,8 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className="min-h-screen flex flex-col bg-white">
       {/* Navbar superior */}
       <Header aria-label="Bug Bounty Platform" className="bg-gray-900 h-20 min-h-0 flex items-center px-8">
-        <HeaderName href="/" prefix="" className="text-lg">
+        <HeaderName href="/dashboard" prefix="" className="text-lg flex items-center gap-3">
+          <img src="/icono-bug.png" alt="Bug Bounty Icon" className="w-8 h-8" />
           Bug Bounty Platform
         </HeaderName>
         <div className="flex-1" />

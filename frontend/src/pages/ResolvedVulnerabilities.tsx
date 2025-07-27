@@ -30,116 +30,31 @@ const initialForm = {
 
 const initialVulns = [
   {
-    criticidad: 'High',
-    fecha: '2024-06-01',
-    vulnerabilidad: 'SQL Injection en login',
-    descripcion: 'Se detectó una inyección SQL en el formulario de login que permitía el acceso no autorizado.',
-    documento: 'evidencia-sql.pdf',
-  },
-  {
     criticidad: 'Medium',
-    fecha: '2024-06-02',
-    vulnerabilidad: 'Cross-Site Scripting (XSS)',
-    descripcion: 'Se encontró una vulnerabilidad XSS en el campo de comentarios.',
-    documento: 'xss-demo.png',
+    fecha: '2024/12/26',
+    vulnerabilidad: 'XSS',
+    descripcion: 'Se encontró una vulnerabilidad Cross-Site Scripting en el campo de comentarios.',
+    documento: 'xss-evidence.pdf',
+    estado: 'Verificado',
+    editable: false,
   },
   {
-    criticidad: 'Low',
-    fecha: '2024-06-03',
-    vulnerabilidad: 'Información de versión expuesta',
-    descripcion: 'El servidor expone la versión de Apache en los headers.',
-    documento: '',
+    criticidad: 'High',
+    fecha: '2024/12/27',
+    vulnerabilidad: 'Enumeración de Usuarios por Mensajes de Error de Login',
+    descripcion: 'El sistema permite enumerar usuarios válidos mediante mensajes de error específicos en el login.',
+    documento: 'user-enumeration.txt',
+    estado: 'Verificado',
+    editable: false,
   },
   {
     criticidad: 'Critical',
-    fecha: '2024-06-04',
-    vulnerabilidad: 'Remote Code Execution',
-    descripcion: 'Se logró ejecutar código remoto a través de un endpoint vulnerable.',
-    documento: 'rce-evidence.pdf',
-  },
-  {
-    criticidad: 'Medium',
-    fecha: '2024-06-05',
-    vulnerabilidad: 'CSRF en cambio de contraseña',
-    descripcion: 'El endpoint de cambio de contraseña no valida el token CSRF.',
-    documento: '',
-  },
-  {
-    criticidad: 'High',
-    fecha: '2024-06-06',
-    vulnerabilidad: 'Directory Traversal',
-    descripcion: 'Se pudo acceder a archivos sensibles mediante ../ en la URL.',
-    documento: 'traversal.txt',
-  },
-  {
-    criticidad: 'Low',
-    fecha: '2024-06-07',
-    vulnerabilidad: 'Clickjacking',
-    descripcion: 'La aplicación es vulnerable a clickjacking por falta de X-Frame-Options.',
-    documento: '',
-  },
-  {
-    criticidad: 'Critical',
-    fecha: '2024-06-08',
-    vulnerabilidad: 'Deserialización insegura',
-    descripcion: 'Se explotó una deserialización insegura para ejecutar código.',
-    documento: 'deserialization.pdf',
-  },
-  {
-    criticidad: 'Medium',
-    fecha: '2024-06-09',
-    vulnerabilidad: 'Open Redirect',
-    descripcion: 'Redirección abierta permitía phishing.',
-    documento: '',
-  },
-  {
-    criticidad: 'High',
-    fecha: '2024-06-10',
-    vulnerabilidad: 'Exposición de datos sensibles',
-    descripcion: 'Datos personales expuestos en endpoint público.',
-    documento: 'datos-expuestos.txt',
-  },
-  {
-    criticidad: 'Low',
-    fecha: '2024-06-11',
-    vulnerabilidad: 'Falta de HTTPS',
-    descripcion: 'El sitio permitía conexiones HTTP inseguras.',
-    documento: '',
-  },
-  {
-    criticidad: 'Medium',
-    fecha: '2024-06-12',
-    vulnerabilidad: 'Inyección de comandos',
-    descripcion: 'Se logró ejecutar comandos del sistema a través de un parámetro.',
-    documento: 'cmd-injection.txt',
-  },
-  {
-    criticidad: 'Critical',
-    fecha: '2024-06-13',
-    vulnerabilidad: 'Bypass de autenticación',
-    descripcion: 'Se pudo acceder a cuentas de otros usuarios sin autenticación.',
-    documento: 'bypass-auth.pdf',
-  },
-  {
-    criticidad: 'High',
-    fecha: '2024-06-14',
-    vulnerabilidad: 'Fuga de tokens JWT',
-    descripcion: 'Tokens JWT expuestos en logs del servidor.',
-    documento: '',
-  },
-  {
-    criticidad: 'Medium',
-    fecha: '2024-06-15',
-    vulnerabilidad: 'Enumeración de usuarios',
-    descripcion: 'El sistema permitía enumerar usuarios por mensajes de error.',
-    documento: '',
-  },
-  {
-    criticidad: 'Low',
-    fecha: '2024-06-16',
-    vulnerabilidad: 'Falta de CSP',
-    descripcion: 'No se implementó Content Security Policy.',
-    documento: '',
+    fecha: '2024/12/28',
+    vulnerabilidad: 'IDOR',
+    descripcion: 'Se detectó una vulnerabilidad de Insecure Direct Object Reference que permite acceder a recursos de otros usuarios.',
+    documento: 'idor-evidence.pdf',
+    estado: 'Verificado',
+    editable: false,
   },
 ];
 
@@ -148,10 +63,7 @@ const criticidades = ['Todas', 'Critical', 'High', 'Medium', 'Low'];
 const ResolvedVulnerabilities: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
-  const [vulns, setVulns] = useState<any[]>(() => {
-    const stored = JSON.parse(localStorage.getItem('resolvedVulns') || 'null');
-    return stored && stored.length > 0 ? stored : initialVulns;
-  });
+  const [vulns, setVulns] = useState<any[]>(initialVulns);
   const navigate = useNavigate();
   const [showDetail, setShowDetail] = useState(false);
   const [detailVuln, setDetailVuln] = useState<any>(null);
@@ -159,11 +71,21 @@ const ResolvedVulnerabilities: React.FC = () => {
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
   const [deleteTimer, setDeleteTimer] = useState(5);
   const [selectedCriticidad, setSelectedCriticidad] = useState('Todas');
+  const [showFilePreview, setShowFilePreview] = useState(false);
+  const [previewFile, setPreviewFile] = useState<{name: string, data: string} | null>(null);
 
-  // Leer de localStorage al cargar
+  // Cargar vulnerabilidades iniciales y del localStorage
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('resolvedVulns') || '[]');
-    setVulns(stored);
+    // Combinar las vulnerabilidades iniciales con las del localStorage
+    const combinedVulns = [...initialVulns, ...stored];
+    // Ordenar: primero las no verificadas, luego las verificadas
+    const sortedVulns = combinedVulns.sort((a, b) => {
+      if (a.estado === 'Verificado' && b.estado !== 'Verificado') return 1;
+      if (a.estado !== 'Verificado' && b.estado === 'Verificado') return -1;
+      return 0;
+    });
+    setVulns(sortedVulns);
   }, []);
 
   const handleChange = (e: any) => {
@@ -202,9 +124,29 @@ const ResolvedVulnerabilities: React.FC = () => {
   };
 
   // Descargar documento
-  const handleDownload = (docName: string) => {
-    // No hay archivo real, solo nombre, así que muestra alerta
-    alert('Solo se almacena el nombre del archivo. No hay archivo real para descargar: ' + docName);
+  const handleDownload = (docName: string, fileData: string | null) => {
+    if (fileData) {
+      // Crear un enlace temporal para descargar el archivo
+      const link = document.createElement('a');
+      link.href = fileData;
+      link.download = docName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      // No hay archivo real, solo nombre, así que muestra alerta
+      alert('Solo se almacena el nombre del archivo. No hay archivo real para descargar: ' + docName);
+    }
+  };
+
+  // Previsualizar documento
+  const handleFilePreview = (docName: string, fileData: string | null) => {
+    if (fileData) {
+      setPreviewFile({ name: docName, data: fileData });
+      setShowFilePreview(true);
+    } else {
+      alert('No hay archivo para previsualizar: ' + docName);
+    }
   };
 
   // Iniciar proceso de eliminación
@@ -241,6 +183,8 @@ const ResolvedVulnerabilities: React.FC = () => {
     }
   };
 
+
+
   return (
     <MainLayout>
       <div className="flex items-center gap-4 mb-6">
@@ -252,6 +196,7 @@ const ResolvedVulnerabilities: React.FC = () => {
         >
           {criticidades.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
+
       </div>
       <div className="flex flex-wrap gap-4 pb-4 max-w-full">
         {vulns.filter(v => selectedCriticidad === 'Todas' || v.criticidad === selectedCriticidad).length === 0 ? (
@@ -260,7 +205,11 @@ const ResolvedVulnerabilities: React.FC = () => {
           vulns.filter(v => selectedCriticidad === 'Todas' || v.criticidad === selectedCriticidad).map((v, idx) => (
             <div
               key={idx}
-              className="w-full max-w-md bg-white rounded-lg shadow-md p-6 flex flex-col justify-between border border-gray-200 hover:shadow-lg transition-all duration-200 cursor-pointer"
+              className={`w-full max-w-md rounded-lg shadow-md p-6 flex flex-col justify-between border transition-all duration-200 cursor-pointer ${
+                v.estado === 'Verificado' 
+                  ? 'bg-green-50 border-green-200 hover:shadow-lg' 
+                  : 'bg-white border-gray-200 hover:shadow-lg'
+              }`}
               onClick={e => {
                 // Evitar abrir modal si se hace click en el botón Editar
                 if ((e.target as HTMLElement).closest('button')) return;
@@ -284,7 +233,11 @@ const ResolvedVulnerabilities: React.FC = () => {
                     {v.criticidad}
                   </span>
                   <span className="font-bold text-base text-black ml-8">{v.fecha}</span>
-                  <span className="text-xs text-gray-500 ml-20">Enviado a Revisión...</span>
+                  <span className={`text-xs ml-20 ${
+                    v.estado === 'Verificado' ? 'text-green-600 font-semibold' : 'text-gray-500'
+                  }`}>
+                    {v.estado}
+                  </span>
                 </>
               </div>
               {/* Visualización normal */}
@@ -294,26 +247,50 @@ const ResolvedVulnerabilities: React.FC = () => {
                 <div className="text-xs mt-2 text-black font-normal flex items-center">
                   {v.documento || 'Sin documentación adjunta'}
                   {v.documento && (
-                    <button
-                      type="button"
-                      className="ml-2 p-1 rounded hover:bg-blue-100 text-blue-700"
-                      onClick={() => handleDownload(v.documento)}
-                      title="Descargar documento"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
+                    <div className="flex gap-1 ml-2">
+                      <button
+                        type="button"
+                        className="p-1 rounded hover:bg-blue-100 text-blue-700"
+                        onClick={() => handleFilePreview(v.documento, v.fileData)}
+                        title="Previsualizar documento"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                      <button
+                        type="button"
+                        className="p-1 rounded hover:bg-blue-100 text-blue-700"
+                        onClick={() => handleDownload(v.documento, v.fileData)}
+                        title="Descargar documento"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </div>
                   )}
                 </div>
               </>
               <div className="flex gap-2 mt-4 justify-end">
                 <button
-                  className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-                  onClick={() => navigate('/contributions', { state: { editVuln: v, editIdx: idx } })}
-                >Editar</button>
+                  className={`px-3 py-1 rounded ${
+                    v.editable 
+                      ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
+                  onClick={v.editable ? () => navigate('/contributions', { state: { editVuln: v, editIdx: idx } }) : undefined}
+                  disabled={!v.editable}
+                >
+                  Editar
+                </button>
                 <button
-                  className="px-3 py-1 bg-black text-white rounded hover:bg-white hover:text-black border border-black transition-all duration-300 ease-in-out"
-                  onClick={() => startDeleteProcess(idx)}
-                >Borrar</button>
+                  className={`px-3 py-1 rounded transition-all duration-300 ease-in-out ${
+                    v.editable 
+                      ? 'bg-black text-white hover:bg-white hover:text-black border border-black' 
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
+                  onClick={v.editable ? () => startDeleteProcess(idx) : undefined}
+                  disabled={!v.editable}
+                >
+                  Borrar
+                </button>
               </div>
             </div>
           ))
@@ -349,25 +326,40 @@ const ResolvedVulnerabilities: React.FC = () => {
             <div className="text-xs mt-2 text-black font-normal flex items-center">
               {detailVuln.documento || 'Sin documentación adjunta'}
               {detailVuln.documento && (
-                <button
-                  type="button"
-                  className="ml-2 p-1 rounded hover:bg-blue-100 text-blue-700"
-                  onClick={() => {
-                    alert('Solo se almacena el nombre del archivo. No hay archivo real para descargar: ' + detailVuln.documento);
-                  }}
-                  title="Descargar documento"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                </button>
+                <div className="flex gap-1 ml-2">
+                  <button
+                    type="button"
+                    className="p-1 rounded hover:bg-blue-100 text-blue-700"
+                    onClick={() => handleFilePreview(detailVuln.documento, detailVuln.fileData)}
+                    title="Previsualizar documento"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  <button
+                    type="button"
+                    className="p-1 rounded hover:bg-blue-100 text-blue-700"
+                    onClick={() => handleDownload(detailVuln.documento, detailVuln.fileData)}
+                    title="Descargar documento"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24"><path d="M4 20h16M12 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                </div>
               )}
             </div>
             <div className="flex justify-end mt-4">
               <button
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 flex items-center"
+                className={`px-3 py-1 rounded flex items-center ${
+                  detailVuln.estado === 'Verificado'
+                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
                 onClick={() => {
-                  setShowDetail(false);
-                  navigate('/contributions', { state: { editVuln: detailVuln, editIdx: detailVuln.idx } });
+                  if (detailVuln.estado !== 'Verificado') {
+                    setShowDetail(false);
+                    navigate('/contributions', { state: { editVuln: detailVuln, editIdx: detailVuln.idx } });
+                  }
                 }}
+                disabled={detailVuln.estado === 'Verificado'}
               >
                 {/* Ícono lápiz */}
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" className="mr-1"><path d="M16.862 5.487a2.06 2.06 0 0 1 2.915 2.914l-9.193 9.193-3.06.34a.75.75 0 0 1-.83-.83l.34-3.06 9.193-9.193Zm0 0 2.651 2.651" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -481,6 +473,76 @@ const ResolvedVulnerabilities: React.FC = () => {
           }
         }
       `}</style>
+      
+      {/* Modal de previsualización de archivos */}
+      {showFilePreview && previewFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Fondo semitransparente */}
+          <div className="fixed inset-0 bg-black bg-opacity-40 z-40 animate-fade-in" onClick={() => setShowFilePreview(false)} />
+          {/* Modal de previsualización */}
+          <div className="relative z-50 w-full max-w-7xl h-[90vh] mx-auto bg-white rounded-lg shadow-lg animate-slide-fade-modal">
+            {/* Header del modal */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">Previsualización: {previewFile.name}</h3>
+              <button
+                className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                onClick={() => setShowFilePreview(false)}
+                title="Cerrar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            
+            {/* Contenido del archivo */}
+            <div className="flex-1 p-4 overflow-auto" style={{ height: 'calc(90vh - 80px)' }}>
+              {previewFile.name.toLowerCase().endsWith('.pdf') ? (
+                <iframe
+                  src={previewFile.data}
+                  className="w-full h-full border-0"
+                  title="PDF Preview"
+                />
+              ) : previewFile.name.toLowerCase().endsWith('.docx') ? (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 24 24" className="mx-auto mb-4 text-gray-400">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M14 2v6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M16 13H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M16 17H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M10 9H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <p className="text-gray-600 mb-4">Los archivos DOCX no se pueden previsualizar directamente</p>
+                    <button
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      onClick={() => handleDownload(previewFile.name, previewFile.data)}
+                    >
+                      Descargar archivo
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" viewBox="0 0 24 24" className="mx-auto mb-4 text-gray-400">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M14 2v6h6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <p className="text-gray-600 mb-4">Tipo de archivo no soportado para previsualización</p>
+                    <button
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                      onClick={() => handleDownload(previewFile.name, previewFile.data)}
+                    >
+                      Descargar archivo
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </MainLayout>
   );
 };

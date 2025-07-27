@@ -13,6 +13,8 @@ const Profile: React.FC = () => {
   const [bannerImage, setBannerImage] = useState<string>('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1000&q=80');
   const [profileBackground, setProfileBackground] = useState<string>('bg-gray-200');
   const [showFrameModal, setShowFrameModal] = useState<boolean>(false);
+  const [showBannerModal, setShowBannerModal] = useState<boolean>(false);
+  const [editMode, setEditMode] = useState<boolean>(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const frameInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
@@ -71,6 +73,11 @@ const Profile: React.FC = () => {
     setShowFrameModal(false);
   };
 
+  const handleBannerSelect = (bannerUrl: string) => {
+    setBannerImage(bannerUrl);
+    setShowBannerModal(false);
+  };
+
   return (
     <MainLayout>
       <div className="w-full min-h-screen bg-white flex flex-col items-center justify-center">
@@ -79,19 +86,38 @@ const Profile: React.FC = () => {
           <h1 className="text-3xl font-bold text-black mb-8">Perfil</h1>
         </div>
         <div className={`relative w-[1000px] h-[1100px] rounded-2xl shadow-2xl ${profileBackground} border border-gray-300 overflow-hidden flex flex-col`}>
+          {/* Botón de Modo Edición */}
+          <div className="absolute top-4 left-4 z-30">
+            <button
+              onClick={() => setEditMode(!editMode)}
+              className={`px-4 py-2 rounded-lg font-semibold transition-all duration-200 flex items-center gap-2 ${
+                editMode 
+                  ? 'bg-red-500 hover:bg-red-600 text-white shadow-lg' 
+                  : 'bg-black hover:bg-gray-800 text-white shadow-lg'
+              }`}
+              title={editMode ? "Desactivar modo edición" : "Activar modo edición"}
+            >
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" fill="currentColor"/>
+              </svg>
+              {editMode ? "Desactivar Edición" : "Editar Perfil"}
+            </button>
+          </div>
           {/* Banner superior */}
           <div className="relative h-56 w-full bg-cover bg-center" style={{ backgroundImage: `url(${bannerImage})` }}>
             {/* Botón para cambiar banner */}
-            <button
-              className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 flex items-center justify-center"
-              onClick={() => bannerInputRef.current?.click()}
-              title="Cambiar imagen de banner"
-            >
-              {/* Icono de imagen */}
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
-                <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" stroke="currentColor" strokeWidth="2"/>
-              </svg>
-            </button>
+            {editMode && (
+                            <button
+                className="absolute top-4 right-4 bg-black bg-opacity-50 hover:bg-opacity-70 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-white transition-all duration-200 flex items-center justify-center"
+                onClick={() => setShowBannerModal(true)}
+                title="Cambiar imagen de banner"
+              >
+                {/* Icono de imagen */}
+                <svg width="20" height="20" fill="none" viewBox="0 0 24 24">
+                  <path d="M21 19V5C21 3.9 20.1 3 19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19ZM8.5 13.5L11 16.51L14.5 12L19 18H5L8.5 13.5Z" stroke="currentColor" strokeWidth="2"/>
+                </svg>
+              </button>
+            )}
             <input
               type="file"
               accept="image/*"
@@ -119,28 +145,32 @@ const Profile: React.FC = () => {
                 </div>
               )}
               {/* Botón para cambiar avatar */}
+              {editMode && (
               <button
-                className="absolute bottom-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center justify-center z-20"
-                style={{ right: '-70px' }}
+                  className="absolute bottom-2 bg-blue-700 hover:bg-blue-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-400 flex items-center justify-center z-20"
+                  style={{ right: '-70px' }}
                 onClick={() => fileInputRef.current?.click()}
                 title="Cambiar foto de perfil"
               >
                 {/* Icono de persona tipo Carbon */}
                 <svg width="26" height="26" fill="none" viewBox="0 0 32 32"><circle cx="16" cy="12" r="6" fill="white"/><circle cx="16" cy="12" r="5" fill="#2563eb"/><rect x="6" y="22" width="20" height="6" rx="3" fill="white"/><rect x="8" y="23" width="16" height="4" rx="2" fill="#2563eb"/></svg>
               </button>
+            )}
               {/* Botón para cambiar marco */}
-              <button
-                className="absolute bottom-2 bg-purple-700 hover:bg-purple-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 flex items-center justify-center z-20"
-                style={{ right: '-130px' }}
-                onClick={() => setShowFrameModal(true)}
-                title="Cambiar marco de perfil"
-              >
+              {editMode && (
+                <button
+                  className="absolute bottom-2 bg-purple-700 hover:bg-purple-800 text-white rounded-full p-3 shadow-lg focus:outline-none focus:ring-2 focus:ring-purple-400 flex items-center justify-center z-20"
+                  style={{ right: '-130px' }}
+                  onClick={() => setShowFrameModal(true)}
+                  title="Cambiar marco de perfil"
+                >
                 {/* Icono de marco */}
                 <svg width="26" height="26" fill="none" viewBox="0 0 24 24">
                   <path d="M3 3h18v18H3V3zm2 2v14h14V5H5z" stroke="currentColor" strokeWidth="2"/>
                   <path d="M9 9h6v6H9V9zm2 2v2h2v-2h-2z" stroke="currentColor" strokeWidth="2"/>
                 </svg>
               </button>
+            )}
               <input
                 type="file"
                 accept="image/*"
@@ -193,11 +223,12 @@ const Profile: React.FC = () => {
               <div className="mt-40">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-lg font-semibold text-gray-900">Biografía</h3>
-                  <button 
-                    onClick={handleEditBio}
-                    className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors duration-200 shadow-lg"
-                    title={isEditingBio ? "Guardar cambios" : "Editar biografía"}
-                  >
+                  {editMode && (
+                    <button 
+                      onClick={handleEditBio}
+                      className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors duration-200 shadow-lg"
+                      title={isEditingBio ? "Guardar cambios" : "Editar biografía"}
+                    >
                     <svg 
                       width="20" 
                       height="20" 
@@ -208,6 +239,7 @@ const Profile: React.FC = () => {
                       <path d="M3 17.25V21H6.75L17.81 9.94L14.06 6.19L3 17.25ZM20.71 7.04C21.1 6.65 21.1 6.02 20.71 5.63L18.37 3.29C17.98 2.9 17.35 2.9 16.96 3.29L15.13 5.12L18.88 8.87L20.71 7.04Z" fill="currentColor"/>
                     </svg>
                   </button>
+                )}
                 </div>
                 
                 {isEditingBio ? (
@@ -349,7 +381,8 @@ const Profile: React.FC = () => {
         </div>
         
         {/* Botón para cambiar fondo del perfil */}
-        <div className="fixed bottom-8 right-8 z-50">
+        {editMode && (
+          <div className="fixed bottom-8 right-8 z-50">
           <div className="bg-white rounded-lg shadow-lg border border-gray-200 p-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Cambiar Fondo</h3>
             <div className="grid grid-cols-3 gap-2">
@@ -401,6 +434,7 @@ const Profile: React.FC = () => {
             </div>
           </div>
         </div>
+        )}
         
         {/* Tabla de vulnerabilidades resueltas y bugcoins */}
         <div className="w-full max-w-7xl mx-auto px-4 py-8 mt-8">
@@ -795,11 +829,16 @@ const Profile: React.FC = () => {
                 <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco1.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <img 
+                      src={avatar} 
+                      alt="Avatar preview" 
+                      className="absolute inset-0 w-20 h-20 rounded-full object-cover mx-auto my-auto z-10" 
+                      style={{ top: 'calc(50% + 10px)', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    />
+                    <img 
                       src="/marcos/marco1.png" 
                       alt="Marco Dorado" 
-                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                      className="absolute inset-0 w-32 h-32 rounded-full object-cover shadow-lg z-20"
                     />
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Dorado</p>
                 </div>
@@ -808,11 +847,16 @@ const Profile: React.FC = () => {
                 <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco2.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <img 
+                      src={avatar} 
+                      alt="Avatar preview" 
+                      className="absolute inset-0 w-20 h-20 rounded-full object-cover mx-auto my-auto z-10" 
+                      style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    />
+                    <img 
                       src="/marcos/marco2.png" 
                       alt="Marco Hacker" 
-                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                      className="absolute inset-0 w-32 h-32 rounded-full object-cover shadow-lg z-20"
                     />
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Hacker</p>
                 </div>
@@ -821,11 +865,16 @@ const Profile: React.FC = () => {
                 <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco3.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <img 
+                      src={avatar} 
+                      alt="Avatar preview" 
+                      className="absolute inset-0 w-20 h-20 rounded-full object-cover mx-auto my-auto z-10" 
+                      style={{ top: 'calc(50% + 5px)', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    />
+                    <img 
                       src="/marcos/marco3.png" 
                       alt="Marco Demoníaco" 
-                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                      className="absolute inset-0 w-32 h-32 rounded-full object-cover shadow-lg z-20"
                     />
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Demoníaco</p>
                 </div>
@@ -835,11 +884,16 @@ const Profile: React.FC = () => {
                 <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco4.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <img 
+                      src={avatar} 
+                      alt="Avatar preview" 
+                      className="absolute inset-0 w-20 h-20 rounded-full object-cover mx-auto my-auto z-10" 
+                      style={{ top: 'calc(50% + 10px)', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    />
+                    <img 
                       src="/marcos/marco4.png" 
                       alt="Marco Teal" 
-                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                      className="absolute inset-0 w-32 h-32 rounded-full object-cover shadow-lg z-20"
                     />
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Teal</p>
                 </div>
@@ -848,11 +902,16 @@ const Profile: React.FC = () => {
                 <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('/marcos/marco5.png')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <img 
+                      src={avatar} 
+                      alt="Avatar preview" 
+                      className="absolute inset-0 w-20 h-20 rounded-full object-cover mx-auto my-auto z-10" 
+                      style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
+                    />
+                    <img 
                       src="/marcos/marco5.png" 
                       alt="Marco Real" 
-                      className="w-32 h-32 rounded-full object-cover shadow-lg"
+                      className="absolute inset-0 w-32 h-32 rounded-full object-cover shadow-lg z-20"
                     />
-                    <div className="absolute inset-0 w-20 h-20 rounded-full bg-gray-300 mx-auto my-auto" style={{ top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}></div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Marco Real</p>
                 </div>
@@ -861,10 +920,41 @@ const Profile: React.FC = () => {
                 <div className="group cursor-pointer hover:scale-105 transition-transform" onClick={() => handleFrameSelect('')}>
                   <div className="relative w-32 h-32 mx-auto mb-2">
                     <div className="w-32 h-32 rounded-full bg-gray-200 border-4 border-gray-300 shadow-lg flex items-center justify-center">
-                      <div className="w-20 h-20 rounded-full bg-gray-300"></div>
+                      <img 
+                        src={avatar} 
+                        alt="Avatar preview" 
+                        className="w-20 h-20 rounded-full object-cover"
+                      />
                     </div>
                   </div>
                   <p className="text-sm font-medium text-gray-900 text-center">Sin Marco</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de selección de banners */}
+      {showBannerModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Seleccionar Banner</h2>
+                <button
+                  onClick={() => setShowBannerModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2"/>
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="text-center py-12">
+                <div className="text-gray-500 text-lg font-medium">
+                  Vaya... aun no tienes banners. ¡¡Participa en Eventos para ganar Bugpoins y Obtener Banners!!
                 </div>
               </div>
             </div>
