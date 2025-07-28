@@ -395,22 +395,26 @@ const DuelosPage: React.FC = () => {
                   return (
                     <div
                       key={reto.id}
-                    className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-6 shadow-[0_0_24px_#00fff7] flex flex-col gap-4 animate-fade-in-up hover:shadow-[0_0_32px_#00fff7] transition-all duration-300 relative"
+                    className="bg-[#181c2b] border-2 border-[#00fff7] rounded-2xl p-6 shadow-[0_0_24px_#00fff7] flex flex-col animate-fade-in-up hover:shadow-[0_0_32px_#00fff7] transition-all duration-300 relative"
                     style={{ 
                       height: '280px'
                     }}
-                      onClick={() => setRetoDetalle(detalle)}
+                      onClick={() => {
+                        // Usar el detalle si existe, sino usar el reto básico
+                        const retoParaMostrar = detalle || reto;
+                        setRetoDetalle(retoParaMostrar);
+                      }}
                       title={`Dificultad: ${reto.dificultad}\nPuntos: ${reto.puntos}\nIntentos: ${intentosReto}\nEstado: ${reto.resuelto ? 'Resuelto' : 'Pendiente'}`}
                     >
                     {/* Título */}
-                    <div className="mt-2">
+                    <div className="mb-3">
                       <h3 className="font-bold text-2xl text-[#39ff14] font-mono leading-tight">
                         {reto.nombre}
                       </h3>
-                      </div>
+                    </div>
                     
                     {/* Etiquetas de dificultad, intentos y estado */}
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 flex-wrap mb-3">
                       <span className="px-3 py-1 rounded-full text-sm font-bold bg-[#ff00ea] text-white shadow-[0_0_8px_#ff00ea]">
                         {dif.icon} {reto.dificultad}
                       </span>
@@ -425,27 +429,31 @@ const DuelosPage: React.FC = () => {
                     </div>
                     
                     {/* Descripción */}
-                    <div className="text-[#00fff7] text-sm font-mono flex-1">
+                    <div className="text-[#00fff7] text-sm font-mono flex-1 mb-3">
                       {reto.descripcion}
                     </div>
                     
                     {/* Puntos */}
-                    <div className="text-[#39ff14] font-bold text-lg font-mono">
+                    <div className="text-[#39ff14] font-bold text-lg font-mono mb-4">
                       Puntos: {reto.puntos}
                     </div>
                     
-                    {/* Botón funcional estilizado */}
-                    <button 
-                      className="w-full px-6 py-3 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_12px_#00fff7] transition-all duration-300 hover:bg-[#39ff14] hover:shadow-[0_0_20px_#39ff14] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#39ff14] text-base font-mono"
-                      style={{ height: '48px' }}
-                      onClick={e => {
-                        e.stopPropagation();
-                        setRetoParaIniciar(detalle);
-                        setShowConfirm(true);
-                      }}
-                    >
-                      Iniciar Reto
-                    </button>
+                    {/* Botón funcional estilizado - siempre al final */}
+                    <div className="mt-auto">
+                      <button 
+                        className="w-full px-6 py-3 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_12px_#00fff7] transition-all duration-300 hover:bg-[#39ff14] hover:shadow-[0_0_20px_#39ff14] hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#39ff14] text-base font-mono"
+                        style={{ height: '48px' }}
+                        onClick={e => {
+                          e.stopPropagation();
+                          // Usar el detalle si existe, sino usar el reto básico
+                          const retoParaMostrar = detalle || reto;
+                          setRetoParaIniciar(retoParaMostrar);
+                          setShowConfirm(true);
+                        }}
+                      >
+                        Iniciar Reto
+                      </button>
+                    </div>
                     </div>
                   );
                 })}
@@ -488,8 +496,10 @@ const DuelosPage: React.FC = () => {
                   <h3 className="text-2xl font-bold text-[#00fff7] mb-2">{retoDetalle.nombre}</h3>
                   <div className="mb-2 text-white">{retoDetalle.descripcion}</div>
                   <div className="mb-2 text-[#a259ff] text-xs">Intentos: {intentos[retoDetalle.id] || 0}</div>
-                  {retoDetalle.hint && <div className="mb-2 text-[#39ff14] font-mono"><b>Pista:</b> {retoDetalle.hint}</div>}
-                  {retoDetalle.pasos && (
+                  <div className="mb-2 text-[#39ff14] text-xs">Puntos: {retoDetalle.puntos}</div>
+                  <div className="mb-2 text-[#ffb300] text-xs">Dificultad: {retoDetalle.dificultad}</div>
+                  {'hint' in retoDetalle && retoDetalle.hint && <div className="mb-2 text-[#39ff14] font-mono"><b>Pista:</b> {retoDetalle.hint}</div>}
+                  {'pasos' in retoDetalle && retoDetalle.pasos && (
                     <div className="mb-2">
                       <div className="text-[#00fff7] font-bold mb-1">Pasos sugeridos:</div>
                       <ul className="list-disc ml-6 text-white text-sm">
@@ -497,7 +507,7 @@ const DuelosPage: React.FC = () => {
                       </ul>
                     </div>
                   )}
-                  {retoDetalle.herramientas && (
+                  {'herramientas' in retoDetalle && retoDetalle.herramientas && (
                     <div className="mb-2">
                       <div className="text-[#00fff7] font-bold mb-1">Herramientas recomendadas:</div>
                       <ul className="list-disc ml-6 text-white text-sm">
@@ -505,7 +515,7 @@ const DuelosPage: React.FC = () => {
                       </ul>
                     </div>
                   )}
-                  {retoDetalle.ejemploReporte && (
+                  {'ejemploReporte' in retoDetalle && retoDetalle.ejemploReporte && (
                     <div className="mb-2">
                       <div className="text-[#00fff7] font-bold mb-1">Ejemplo de reporte:</div>
                       <pre className="bg-[#232b36] text-white rounded p-3 text-xs whitespace-pre-wrap">{retoDetalle.ejemploReporte}</pre>
@@ -559,7 +569,7 @@ const DuelosPage: React.FC = () => {
             <div className="mb-2 text-white">{modalReto.descripcion}</div>
             <div className="mb-2 text-[#a259ff] text-xs">Puntos: {modalReto.puntos}</div>
             <div className="mb-2 text-[#00fff7] text-xs">Dificultad: {modalReto.dificultad}</div>
-            {modalReto.hint && <div className="mb-2 text-[#39ff14] font-mono"><b>Pista:</b> {modalReto.hint}</div>}
+            {'hint' in modalReto && modalReto.hint && <div className="mb-2 text-[#39ff14] font-mono"><b>Pista:</b> {modalReto.hint}</div>}
             <button className="mt-4 px-6 py-2 bg-[#00fff7] text-black font-bold rounded-xl shadow-[0_0_8px_#00fff7] transition hover:bg-[#39ff14] hover:shadow-[0_0_16px_#39ff14] focus:outline-none w-full" onClick={() => handleIniciarReto(modalReto)}>
               Iniciar Reto
             </button>

@@ -141,7 +141,7 @@ const getInventory = () => {
 };
 
 const Profile: React.FC = () => {
-  const { backgroundUrl, setBackgroundUrl } = useBackground();
+  const { profileBackgroundUrl, setProfileBackgroundUrl } = useBackground();
   // Lista de avatares disponibles (simulando inventario)
   const [inventory, setInventory] = useState<any[]>(getInventory());
 
@@ -201,11 +201,11 @@ const Profile: React.FC = () => {
 
   // Lógica para cambiar fondo en tiempo real
   const handleSelectBackground = (bg: { id: number; name: string; url: string }) => {
-    setBackgroundUrl(bg.url); // Actualiza el fondo global
+    setProfileBackgroundUrl(bg.url); // Actualiza solo el fondo del perfil
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col md:flex-row font-mono relative" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #1a0033, #2d003e, #0a183d)' }}>
+    <div className="min-h-screen w-full flex flex-col md:flex-row font-mono relative" style={{ background: profileBackgroundUrl ? `url(${profileBackgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #1a0033, #2d003e, #0a183d)' }}>
       {/* Fondo decorativo lateral */}
       <div className="hidden md:block fixed right-0 top-0 h-full w-1/3 z-0" style={{background: 'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80) center/cover', opacity: 0.18}} />
       {/* Main content */}

@@ -5,7 +5,7 @@ const ErrorFallback: React.FC<{ error: Error; resetErrorBoundary: () => void }> 
   const { backgroundUrl } = useBackground();
   
   return (
-    <div className="min-h-screen flex items-center justify-center font-mono px-4" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+    <div className="min-h-screen flex items-center justify-center font-mono px-4" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="bg-[#181c2bcc] border-2 border-[#ff3b3b] rounded-2xl p-8 text-center shadow-[0_0_32px_#ff3b3b] backdrop-blur-md animate-fade-in-up max-w-md">
         <h2 className="text-2xl font-extrabold text-[#ff3b3b] mb-4">¡Ups! Algo salió mal</h2>
         <p className="text-white mb-4 text-sm">{error.message}</p>

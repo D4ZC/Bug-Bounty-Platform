@@ -120,7 +120,7 @@ const Moderation: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full font-mono transition-colors duration-500" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+    <div className="min-h-screen w-full font-mono transition-colors duration-500" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       <div className="max-w-7xl mx-auto p-6">
         {/* Header */}
         <div className="text-center mb-8">

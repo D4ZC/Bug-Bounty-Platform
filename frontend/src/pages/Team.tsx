@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { FaUsers, FaPlus, FaSearch, FaBell, FaUserEdit, FaCrown, FaUserMinus, FaExchangeAlt, FaTrophy, FaCommentDots, FaCheck, FaTimes } from 'react-icons/fa';
 import { Team } from '../types';
-import { useBackground } from '../contexts/BackgroundContext';
 
 const mockEquipos: Team[] = [
   {
@@ -39,7 +38,6 @@ const mockUsuarios = [
 ];
 
 const TeamPage: React.FC = () => {
-  const { backgroundUrl } = useBackground();
   const [tab, setTab] = useState<'miEquipo' | 'buscar' | 'crear'>('miEquipo');
   const [busqueda, setBusqueda] = useState('');
   const [busquedaExplorar, setBusquedaExplorar] = useState('');
@@ -110,9 +108,7 @@ const TeamPage: React.FC = () => {
     <div
       className="min-h-screen w-full flex flex-col items-center py-12 font-mono"
       style={{
-        background: backgroundUrl
-          ? `url(${backgroundUrl}) center/cover no-repeat`
-          : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)',
+        background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)',
       }}
     >
       <div className="w-full max-w-6xl mx-auto bg-[#181c2b]/90 border-2 border-[#00fff7] rounded-3xl p-10 flex flex-col items-center animate-fade-in-up">

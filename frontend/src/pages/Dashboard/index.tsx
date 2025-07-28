@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
-import { Team, User, Vulnerability } from '@/types';
-import apiService from '@/services/api';
+import { useTheme } from '../../contexts/ThemeContext';
+import { Team, User, Vulnerability } from '../../types';
+import apiService from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, LabelList, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import Bar3DChart from './Bar3DChart';

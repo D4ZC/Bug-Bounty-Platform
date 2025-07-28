@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useBackground } from '../contexts/BackgroundContext';
 
 const AVATARS = [
   { id: 1, name: 'Avatar 1', url: '/avatars/avatar1.png', category: 'Avatar', price: 100, description: 'Avatar misterioso con aura azul.' },
@@ -47,7 +46,6 @@ const getInventory = () => {
 };
 
 const Store: React.FC = () => {
-  const { backgroundUrl } = useBackground();
   const [cart, setCart] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [inventory, setInventory] = useState<any[]>(getInventory());
@@ -93,7 +91,7 @@ const Store: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen font-mono text-[#00fff7]" style={{ background: backgroundUrl ? `url(${backgroundUrl}) center/cover no-repeat` : 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
+    <div className="min-h-screen font-mono text-[#00fff7]" style={{ background: 'linear-gradient(to bottom right, #0a183d, #1a0033, #2d003e)' }}>
       {/* Carrusel de inventario */}
       {inventory.length > 0 && (
         <div className="w-full overflow-x-auto py-6 px-2 mb-4 bg-[#181c2bcc] border-b-2 border-[#00fff7] shadow-[0_0_24px_#00fff7] flex gap-6 items-center animate-fade-in-up">
