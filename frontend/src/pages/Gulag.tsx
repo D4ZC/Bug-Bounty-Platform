@@ -110,8 +110,26 @@ const Gulag: React.FC = () => {
           </div>
         </div>
         {/* Panel Lateral/Inferior: Consecuencias */}
-        <div className="md:col-span-1">
+        <div className="md:col-span-1 flex flex-col gap-4">
           <GulagConsequences defeats={currentUser?.defeats || 0} />
+          {/* Nueva tarjeta: Reglas del Gulag */}
+          <div className="bg-gray-900 border border-red-700 rounded-xl p-4 text-white text-sm leading-relaxed shadow mt-2">
+            <h3 className="text-lg font-bold text-red-400 mb-2">REGLAS DEL GULAG</h3>
+            <ul className="list-disc pl-5 mb-2">
+              <li>El Gulag es una sanción temporal por bajo rendimiento o incumplimiento de reglas.</li>
+              <li>Los usuarios y equipos deben cumplir una sentencia resolviendo vulnerabilidades asignadas.</li>
+              <li>El tiempo de reclusión depende de la gravedad de la falta y el historial de derrotas.</li>
+              <li>Durante el Gulag, solo puedes acceder a retos de redención.</li>
+              <li>Si cumples el desafío, tu sentencia se reduce o eliminas penalizaciones futuras.</li>
+            </ul>
+            <h4 className="text-red-300 font-bold mt-2 mb-1">Penalizaciones Adicionales</h4>
+            <ul className="list-disc pl-5">
+              <li>Restricción de acceso a recompensas mientras dure la sentencia.</li>
+              <li>Acumulación de derrotas puede aumentar la duración de futuras sanciones.</li>
+              <li>El equipo con más miembros en el Gulag puede recibir penalización grupal.</li>
+            </ul>
+            <div className="mt-2 text-xs text-red-400">Consulta el reglamento completo para más detalles.</div>
+          </div>
         </div>
       </div>
     </div>

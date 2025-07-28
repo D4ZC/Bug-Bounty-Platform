@@ -18,8 +18,20 @@ export const duels = [
     type: 'Equipo',
     typeIcon: 'shield',
     opponents: [
-      { avatar: '', name: 'Team Alpha' },
-      { avatar: '', name: '' },
+      {
+        teamName: 'Team Alpha',
+        members: [
+          { avatar: '', name: 'Nicole' },
+          { avatar: '', name: 'Alice' },
+          { avatar: '', name: 'Bob' },
+          { avatar: '', name: 'Charlie' },
+          { avatar: '', name: 'Diana' },
+        ],
+      },
+      {
+        teamName: 'Team Beta',
+        members: [],
+      },
     ],
     objective: 'Mayor puntuación en 24h',
     points: 40,

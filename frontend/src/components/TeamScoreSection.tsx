@@ -1,5 +1,4 @@
 import React from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
 import RankingTable, { RankingRow } from './RankingTable';
 
 // Datos mock para las tablas de ranking (equipos)
@@ -59,6 +58,90 @@ const teamsRanking: RankingRow[] = [
     remaining: 60,
     remainingGoal: 150,
     lastUpdate: 'Hace 20 min',
+  },
+  {
+    position: 5,
+    name: 'PhantomHunters',
+    icon: '👻',
+    resolved: 85,
+    resolvedGoal: 150,
+    points: 2100,
+    weeklyChange: 8,
+    effectiveness: 82,
+    effectivenessIcon: '⚡',
+    remaining: 65,
+    remainingGoal: 150,
+    lastUpdate: 'Hace 25 min',
+  },
+  {
+    position: 6,
+    name: 'NeonKnights',
+    icon: '⚔️',
+    resolved: 80,
+    resolvedGoal: 150,
+    points: 1950,
+    weeklyChange: -3,
+    effectiveness: 78,
+    effectivenessIcon: '💎',
+    remaining: 70,
+    remainingGoal: 150,
+    lastUpdate: 'Hace 30 min',
+  },
+  {
+    position: 7,
+    name: 'ShadowStrikers',
+    icon: '🌑',
+    resolved: 75,
+    resolvedGoal: 150,
+    points: 1800,
+    weeklyChange: 12,
+    effectiveness: 75,
+    effectivenessIcon: '🎭',
+    remaining: 75,
+    remainingGoal: 150,
+    lastUpdate: 'Hace 35 min',
+  },
+  {
+    position: 8,
+    name: 'VoidRunners',
+    icon: '🌀',
+    resolved: 70,
+    resolvedGoal: 150,
+    points: 1650,
+    weeklyChange: -8,
+    effectiveness: 72,
+    effectivenessIcon: '🌪️',
+    remaining: 80,
+    remainingGoal: 150,
+    lastUpdate: 'Hace 40 min',
+  },
+  {
+    position: 9,
+    name: 'CrystalGuardians',
+    icon: '💎',
+    resolved: 65,
+    resolvedGoal: 150,
+    points: 1500,
+    weeklyChange: 5,
+    effectiveness: 68,
+    effectivenessIcon: '✨',
+    remaining: 85,
+    remainingGoal: 150,
+    lastUpdate: 'Hace 45 min',
+  },
+  {
+    position: 10,
+    name: 'ThunderBolt',
+    icon: '⚡',
+    resolved: 60,
+    resolvedGoal: 150,
+    points: 1350,
+    weeklyChange: -2,
+    effectiveness: 65,
+    effectivenessIcon: '🔥',
+    remaining: 90,
+    remainingGoal: 150,
+    lastUpdate: 'Hace 50 min',
   },
 ];
 
@@ -120,29 +203,163 @@ const usersRanking: RankingRow[] = [
     remainingGoal: 100,
     lastUpdate: 'Hace 11 min',
   },
+  {
+    position: 5,
+    name: 'ShadowNinja',
+    icon: '👤',
+    resolved: 60,
+    resolvedGoal: 100,
+    points: 1550,
+    weeklyChange: 12,
+    effectiveness: 85,
+    effectivenessIcon: '⚡',
+    remaining: 40,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 13 min',
+  },
+  {
+    position: 6,
+    name: 'PhantomCoder',
+    icon: '👻',
+    resolved: 55,
+    resolvedGoal: 100,
+    points: 1400,
+    weeklyChange: -5,
+    effectiveness: 82,
+    effectivenessIcon: '💎',
+    remaining: 45,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 15 min',
+  },
+  {
+    position: 7,
+    name: 'NeonHacker',
+    icon: '💻',
+    resolved: 50,
+    resolvedGoal: 100,
+    points: 1250,
+    weeklyChange: 8,
+    effectiveness: 78,
+    effectivenessIcon: '🎭',
+    remaining: 50,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 17 min',
+  },
+  {
+    position: 8,
+    name: 'VoidMaster',
+    icon: '🌀',
+    resolved: 45,
+    resolvedGoal: 100,
+    points: 1100,
+    weeklyChange: -3,
+    effectiveness: 75,
+    effectivenessIcon: '🌪️',
+    remaining: 55,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 19 min',
+  },
+  {
+    position: 9,
+    name: 'CrystalKnight',
+    icon: '💎',
+    resolved: 40,
+    resolvedGoal: 100,
+    points: 950,
+    weeklyChange: 6,
+    effectiveness: 72,
+    effectivenessIcon: '✨',
+    remaining: 60,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 21 min',
+  },
+  {
+    position: 10,
+    name: 'ThunderStrike',
+    icon: '⚡',
+    resolved: 35,
+    resolvedGoal: 100,
+    points: 800,
+    weeklyChange: -1,
+    effectiveness: 68,
+    effectivenessIcon: '🔥',
+    remaining: 65,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 23 min',
+  },
+  {
+    position: 11,
+    name: 'FirePhoenix',
+    icon: '🔥',
+    resolved: 30,
+    resolvedGoal: 100,
+    points: 650,
+    weeklyChange: 15,
+    effectiveness: 65,
+    effectivenessIcon: '🌟',
+    remaining: 70,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 25 min',
+  },
+  {
+    position: 12,
+    name: 'IceWarrior',
+    icon: '❄️',
+    resolved: 25,
+    resolvedGoal: 100,
+    points: 500,
+    weeklyChange: -7,
+    effectiveness: 62,
+    effectivenessIcon: '💎',
+    remaining: 75,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 27 min',
+  },
+  {
+    position: 13,
+    name: 'WindRider',
+    icon: '🌪️',
+    resolved: 20,
+    resolvedGoal: 100,
+    points: 350,
+    weeklyChange: 4,
+    effectiveness: 58,
+    effectivenessIcon: '⚡',
+    remaining: 80,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 29 min',
+  },
+  {
+    position: 14,
+    name: 'EarthGuardian',
+    icon: '🌍',
+    resolved: 15,
+    resolvedGoal: 100,
+    points: 200,
+    weeklyChange: -2,
+    effectiveness: 55,
+    effectivenessIcon: '🛡️',
+    remaining: 85,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 31 min',
+  },
+  {
+    position: 15,
+    name: 'LightningBolt',
+    icon: '⚡',
+    resolved: 10,
+    resolvedGoal: 100,
+    points: 100,
+    weeklyChange: 1,
+    effectiveness: 50,
+    effectivenessIcon: '💡',
+    remaining: 90,
+    remainingGoal: 100,
+    lastUpdate: 'Hace 33 min',
+  },
 ];
 
-// Adaptar los datos para las gráficas
-const teamsData = teamsRanking.map(team => ({ name: team.name, score: team.resolved }));
-const usersData = usersRanking.map(user => ({ name: user.name, score: user.resolved }));
 
-const chartColors = ["#38bdf8", "#22d3ee", "#4ade80", "#a78bfa", "#f472b6"];
-
-const CustomBar = (props: any) => {
-  const { fill, x, y, width, height, index } = props;
-  return (
-    <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={6}
-        fill={chartColors[index % chartColors.length]}
-      />
-    </g>
-  );
-};
 
 const TeamScoreSection = () => {
   return (
@@ -151,37 +368,9 @@ const TeamScoreSection = () => {
       <h1 className="text-4xl md:text-5xl font-bold text-center text-white mb-10 tracking-wide drop-shadow-lg">
         TABLAS DE CLASIFICACIÓN
       </h1>
-      {/* Contenedor de gráficas */}
-      <div className="w-full max-w-6xl bg-gray-900 rounded-2xl p-8 flex flex-col md:flex-row gap-8 shadow-lg">
-        {/* Gráfica de equipos */}
-        <div className="flex-1 bg-gray-800 rounded-xl p-6 flex flex-col items-center">
-          <h2 className="text-2xl font-semibold text-white mb-4">Gráfica de equipos</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={teamsData} margin={{ top: 20, right: 20, left: 20, bottom: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="name" tick={{ fill: '#cbd5e1', fontSize: 14 }} interval={0} angle={-15} dy={10} />
-              <YAxis domain={[0, Math.max(...teamsData.map(t => t.score), 20)]} tick={{ fill: '#cbd5e1', fontSize: 14 }} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: 'none', color: '#fff' }} />
-              <Bar dataKey="score" shape={<CustomBar />} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        {/* Gráfica de usuarios */}
-        <div className="flex-1 bg-gray-800 rounded-xl p-6 flex flex-col items-center">
-          <h2 className="text-2xl font-semibold text-white mb-4">Gráfica de Usuarios</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={usersData} margin={{ top: 20, right: 20, left: 20, bottom: 30 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis dataKey="name" tick={{ fill: '#cbd5e1', fontSize: 14 }} interval={0} angle={-15} dy={10} />
-              <YAxis domain={[0, Math.max(...usersData.map(u => u.score), 20)]} tick={{ fill: '#cbd5e1', fontSize: 14 }} />
-              <Tooltip contentStyle={{ background: '#1e293b', border: 'none', color: '#fff' }} />
-              <Bar dataKey="score" shape={<CustomBar />} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      {/* Tablas de ranking debajo de las gráficas */}
-      <div className="w-full flex flex-col gap-8 items-center mt-8">
+      
+      {/* Tablas de ranking */}
+      <div className="w-full flex flex-col gap-8 items-center">
         <RankingTable
           title="Ranking de Equipos"
           type="team"

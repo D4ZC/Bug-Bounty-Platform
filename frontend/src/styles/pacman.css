@@ -1,0 +1,83 @@
+/* Estilos para el fondo Pac-Man */
+
+@keyframes pacmanGlow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.6);
+  }
+}
+
+@keyframes ghostGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.6);
+  }
+}
+
+@keyframes particleFloat {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-10px) scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.pacman-canvas {
+  filter: blur(0.5px);
+  backdrop-filter: blur(1px);
+}
+
+/* Efecto de neón para el toggle */
+.neon-glow {
+  box-shadow: 
+    0 0 5px rgba(0, 212, 255, 0.5),
+    0 0 10px rgba(0, 212, 255, 0.3),
+    0 0 15px rgba(0, 212, 255, 0.1);
+}
+
+/* Animación para el toggle cuando está activo */
+.toggle-active {
+  animation: togglePulse 2s ease-in-out infinite;
+}
+
+@keyframes togglePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+/* Efecto de hover mejorado para el toggle */
+.toggle-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.toggle-hover:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 
+    0 0 20px rgba(0, 212, 255, 0.6),
+    0 0 40px rgba(0, 212, 255, 0.3);
+}
+
+/* Efecto de pulso para el botón de tema cuando Pac-Man está activo */
+.theme-button-active {
+  animation: themePulse 2s ease-in-out infinite;
+}
+
+@keyframes themePulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.8), 0 0 30px rgba(0, 212, 255, 0.3);
+  }
+} 

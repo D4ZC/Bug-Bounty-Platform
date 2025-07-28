@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { FaShoppingCart, FaUserCircle, FaSearch, FaCoins } from 'react-icons/fa';
+import { usePoints } from '../contexts/PointsContext';
+import { useInventory } from '../contexts/InventoryContext';
 
 interface Product {
   id: string;
@@ -35,162 +37,162 @@ const BADGES = ['Nuevo', 'Exclusivo', 'Limitado', 'Popular', 'Oferta', 'Recomend
 
 const mockProducts: Record<string, Product[]> = {
   backgrounds: [
-    { id: 'bg1', name: 'Galaxia', price: 3000, image: '/src/assets/Galaxia.png', description: 'Fondo espacial espectacular con estrellas brillantes.' },
-    { id: 'bg2', name: 'Ciudad', price: 2500, image: '/src/assets/Ciudad.png', description: 'Fondo urbano moderno con rascacielos.' },
-    { id: 'bg3', name: 'Montaña', price: 3200, image: '/src/assets/Montañas.png', description: 'Paisaje de montaña nevada majestuoso.' },
-    { id: 'bg4', name: 'Ciberespacio', price: 3500, image: '/src/assets/Ciberespacio.png', description: 'Fondo digital futurista con efectos neon.' },
-    { id: 'bg5', name: 'Bosque Mágico', price: 2800, image: 'https://via.placeholder.com/300x200/228B22/FFFFFF?text=Bosque', description: 'Bosque encantado con luces mágicas.' },
-    { id: 'bg6', name: 'Desierto Dorado', price: 2600, image: 'https://via.placeholder.com/300x200/FFD700/8B4513?text=Desierto', description: 'Desierto infinito con dunas doradas.' },
-    { id: 'bg7', name: 'Océano Profundo', price: 3100, image: 'https://via.placeholder.com/300x200/000080/00BFFF?text=Oceano', description: 'Fondos marinos con criaturas abisales.' },
-    { id: 'bg8', name: 'Aurora Boreal', price: 3800, image: 'https://via.placeholder.com/300x200/00FF7F/000080?text=Aurora', description: 'Aurora boreal en el cielo nocturno.' },
-    { id: 'bg9', name: 'Volcán Activo', price: 3600, image: 'https://via.placeholder.com/300x200/FF4500/8B0000?text=Volcan', description: 'Volcán en erupción con lava ardiente.' },
-    { id: 'bg10', name: 'Cascada Cristalina', price: 2900, image: 'https://via.placeholder.com/300x200/00CED1/006400?text=Cascada', description: 'Cascada de agua cristalina en la jungla.' },
-    { id: 'bg11', name: 'Castillo Gótico', price: 4000, image: 'https://via.placeholder.com/300x200/4B0082/FFFFFF?text=Castillo', description: 'Castillo gótico en la cima de una montaña.' },
-    { id: 'bg12', name: 'Estación Espacial', price: 4200, image: 'https://via.placeholder.com/300x200/696969/00BFFF?text=Estacion', description: 'Estación espacial orbitando la Tierra.' },
+    { id: 'bg1', name: 'Galaxia', price: 300, image: '/src/assets/Galaxia.png', description: 'Fondo espacial espectacular con estrellas brillantes.' },
+    { id: 'bg2', name: 'Ciudad', price: 250, image: '/src/assets/Ciudad.png', description: 'Fondo urbano moderno con rascacielos.' },
+    { id: 'bg3', name: 'Montaña', price: 320, image: '/src/assets/Montañas.png', description: 'Paisaje de montaña nevada majestuoso.' },
+    { id: 'bg4', name: 'Ciberespacio', price: 350, image: '/src/assets/Ciberespacio.png', description: 'Fondo digital futurista con efectos neon.' },
+    { id: 'bg5', name: 'Bosque Mágico', price: 280, image: 'https://via.placeholder.com/300x200/228B22/FFFFFF?text=Bosque', description: 'Bosque encantado con luces mágicas.' },
+    { id: 'bg6', name: 'Desierto Dorado', price: 260, image: 'https://via.placeholder.com/300x200/FFD700/8B4513?text=Desierto', description: 'Desierto infinito con dunas doradas.' },
+    { id: 'bg7', name: 'Océano Profundo', price: 310, image: 'https://via.placeholder.com/300x200/000080/00BFFF?text=Oceano', description: 'Fondos marinos con criaturas abisales.' },
+    { id: 'bg8', name: 'Aurora Boreal', price: 380, image: 'https://via.placeholder.com/300x200/00FF7F/000080?text=Aurora', description: 'Aurora boreal en el cielo nocturno.' },
+    { id: 'bg9', name: 'Volcán Activo', price: 360, image: 'https://via.placeholder.com/300x200/FF4500/8B0000?text=Volcan', description: 'Volcán en erupción con lava ardiente.' },
+    { id: 'bg10', name: 'Cascada Cristalina', price: 290, image: 'https://via.placeholder.com/300x200/00CED1/006400?text=Cascada', description: 'Cascada de agua cristalina en la jungla.' },
+    { id: 'bg11', name: 'Castillo Gótico', price: 400, image: 'https://via.placeholder.com/300x200/4B0082/FFFFFF?text=Castillo', description: 'Castillo gótico en la cima de una montaña.' },
+    { id: 'bg12', name: 'Estación Espacial', price: 420, image: 'https://via.placeholder.com/300x200/696969/00BFFF?text=Estacion', description: 'Estación espacial orbitando la Tierra.' },
   ],
   miniprofiles: [
-    { id: 'mp1', name: 'Mini Hacker', price: 4000, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Hacker', description: 'Miniperfil hacker con efectos de código.' },
-    { id: 'mp2', name: 'Mini Ninja', price: 4200, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Ninja', description: 'Miniperfil ninja veloz y sigiloso.' },
-    { id: 'mp3', name: 'Mini Cyborg', price: 4100, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Cyborg', description: 'Miniperfil mitad humano, mitad máquina.' },
-    { id: 'mp4', name: 'Mini Samurái', price: 4300, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Samurai', description: 'Miniperfil de guerrero samurái honorable.' },
-    { id: 'mp5', name: 'Mini Mago', price: 4400, image: 'https://via.placeholder.com/120x120/23263a/9932CC?text=Mago', description: 'Miniperfil de mago con poderes arcanos.' },
-    { id: 'mp6', name: 'Mini Pirata', price: 3900, image: 'https://via.placeholder.com/120x120/23263a/FF4500?text=Pirata', description: 'Miniperfil de pirata del Caribe.' },
-    { id: 'mp7', name: 'Mini Robot', price: 4500, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Robot', description: 'Miniperfil de robot futurista.' },
-    { id: 'mp8', name: 'Mini Dragón', price: 4800, image: 'https://via.placeholder.com/120x120/23263a/FF0000?text=Dragon', description: 'Miniperfil de dragón legendario.' },
-    { id: 'mp9', name: 'Mini Vampiro', price: 4600, image: 'https://via.placeholder.com/120x120/23263a/8B0000?text=Vampiro', description: 'Miniperfil de vampiro elegante.' },
-    { id: 'mp10', name: 'Mini Alien', price: 4700, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Alien', description: 'Miniperfil de extraterrestre misterioso.' },
-    { id: 'mp11', name: 'Mini Caballero', price: 4200, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Caballero', description: 'Miniperfil de caballero medieval.' },
-    { id: 'mp12', name: 'Mini Superhéroe', price: 4900, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Heroe', description: 'Miniperfil de superhéroe con poderes.' },
+    { id: 'mp1', name: 'Mini Hacker', price: 400, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Hacker', description: 'Miniperfil hacker con efectos de código.' },
+    { id: 'mp2', name: 'Mini Ninja', price: 420, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Ninja', description: 'Miniperfil ninja veloz y sigiloso.' },
+    { id: 'mp3', name: 'Mini Cyborg', price: 410, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Cyborg', description: 'Miniperfil mitad humano, mitad máquina.' },
+    { id: 'mp4', name: 'Mini Samurái', price: 430, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Samurai', description: 'Miniperfil de guerrero samurái honorable.' },
+    { id: 'mp5', name: 'Mini Mago', price: 440, image: 'https://via.placeholder.com/120x120/23263a/9932CC?text=Mago', description: 'Miniperfil de mago con poderes arcanos.' },
+    { id: 'mp6', name: 'Mini Pirata', price: 390, image: 'https://via.placeholder.com/120x120/23263a/FF4500?text=Pirata', description: 'Miniperfil de pirata del Caribe.' },
+    { id: 'mp7', name: 'Mini Robot', price: 450, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Robot', description: 'Miniperfil de robot futurista.' },
+    { id: 'mp8', name: 'Mini Dragón', price: 480, image: 'https://via.placeholder.com/120x120/23263a/FF0000?text=Dragon', description: 'Miniperfil de dragón legendario.' },
+    { id: 'mp9', name: 'Mini Vampiro', price: 460, image: 'https://via.placeholder.com/120x120/23263a/8B0000?text=Vampiro', description: 'Miniperfil de vampiro elegante.' },
+    { id: 'mp10', name: 'Mini Alien', price: 470, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Alien', description: 'Miniperfil de extraterrestre misterioso.' },
+    { id: 'mp11', name: 'Mini Caballero', price: 420, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Caballero', description: 'Miniperfil de caballero medieval.' },
+    { id: 'mp12', name: 'Mini Superhéroe', price: 490, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Heroe', description: 'Miniperfil de superhéroe con poderes.' },
   ],
   frames: [
-    { id: 'fr1', name: 'Marco Dorado', price: 2000, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Gold', description: 'Marco elegante dorado con detalles.' },
-    { id: 'fr2', name: 'Marco Azul', price: 1800, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Blue', description: 'Marco con acento azul eléctrico.' },
-    { id: 'fr3', name: 'Marco Pixel', price: 2100, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Pixel', description: 'Marco estilo pixel art retro.' },
-    { id: 'fr4', name: 'Marco Diamante', price: 2500, image: 'https://via.placeholder.com/120x120/B9F2FF/23263a?text=Diamond', description: 'Marco de diamante con brillos.' },
-    { id: 'fr5', name: 'Marco Fuego', price: 2200, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Fuego', description: 'Marco con efectos de fuego animado.' },
-    { id: 'fr6', name: 'Marco Hielo', price: 2300, image: 'https://via.placeholder.com/120x120/00CED1/23263a?text=Hielo', description: 'Marco de hielo cristalino.' },
-    { id: 'fr7', name: 'Marco Arcoíris', price: 2400, image: 'https://via.placeholder.com/120x120/FF69B4/23263a?text=Rainbow', description: 'Marco multicolor con arcoíris.' },
-    { id: 'fr8', name: 'Marco Neon', price: 2600, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Neon', description: 'Marco con efectos neon brillantes.' },
-    { id: 'fr9', name: 'Marco Gótico', price: 2700, image: 'https://via.placeholder.com/120x120/4B0082/23263a?text=Gotico', description: 'Marco gótico con detalles oscuros.' },
-    { id: 'fr10', name: 'Marco Cibernético', price: 2800, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Cyber', description: 'Marco con diseño cibernético.' },
-    { id: 'fr11', name: 'Marco Mágico', price: 2900, image: 'https://via.placeholder.com/120x120/9932CC/23263a?text=Magico', description: 'Marco con efectos mágicos.' },
-    { id: 'fr12', name: 'Marco Legendario', price: 3000, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Legend', description: 'Marco legendario exclusivo.' },
+    { id: 'fr1', name: 'Marco Dorado', price: 200, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Gold', description: 'Marco elegante dorado con detalles.' },
+    { id: 'fr2', name: 'Marco Azul', price: 180, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Blue', description: 'Marco con acento azul eléctrico.' },
+    { id: 'fr3', name: 'Marco Pixel', price: 210, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Pixel', description: 'Marco estilo pixel art retro.' },
+    { id: 'fr4', name: 'Marco Diamante', price: 250, image: 'https://via.placeholder.com/120x120/B9F2FF/23263a?text=Diamond', description: 'Marco de diamante con brillos.' },
+    { id: 'fr5', name: 'Marco Fuego', price: 220, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Fuego', description: 'Marco con efectos de fuego animado.' },
+    { id: 'fr6', name: 'Marco Hielo', price: 230, image: 'https://via.placeholder.com/120x120/00CED1/23263a?text=Hielo', description: 'Marco de hielo cristalino.' },
+    { id: 'fr7', name: 'Marco Arcoíris', price: 240, image: 'https://via.placeholder.com/120x120/FF69B4/23263a?text=Rainbow', description: 'Marco multicolor con arcoíris.' },
+    { id: 'fr8', name: 'Marco Neon', price: 260, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Neon', description: 'Marco con efectos neon brillantes.' },
+    { id: 'fr9', name: 'Marco Gótico', price: 270, image: 'https://via.placeholder.com/120x120/4B0082/23263a?text=Gotico', description: 'Marco gótico con detalles oscuros.' },
+    { id: 'fr10', name: 'Marco Cibernético', price: 280, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Cyber', description: 'Marco con diseño cibernético.' },
+    { id: 'fr11', name: 'Marco Mágico', price: 290, image: 'https://via.placeholder.com/120x120/9932CC/23263a?text=Magico', description: 'Marco con efectos mágicos.' },
+    { id: 'fr12', name: 'Marco Legendario', price: 300, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Legend', description: 'Marco legendario exclusivo.' },
   ],
   animated: [
-    { id: 'an1', name: 'Avatar Ninja', price: 5000, image: '/src/assets/Ninja2.png', description: 'Avatar animado ninja con movimientos fluidos.' },
-    { id: 'an2', name: 'Avatar Robot', price: 5200, image: '/src/assets/Robot2.png', description: 'Avatar animado robot con efectos mecánicos.' },
-    { id: 'an3', name: 'Avatar Dragón', price: 5400, image: '/src/assets/Dragon.png', description: 'Avatar animado dragón legendario.' },
-    { id: 'an4', name: 'Avatar Samurái', price: 5300, image: '/src/assets/Samurai.png', description: 'Avatar de samurái con katana.' },
-    { id: 'an5', name: 'Avatar Mago', price: 5500, image: '/src/assets/Mago.png', description: 'Avatar de mago con varita mágica.' },
-    { id: 'an6', name: 'Avatar Pirata', price: 5100, image: '/src/assets/Pirata.png', description: 'Avatar de pirata con parche.' },
-    { id: 'an7', name: 'Avatar Vampiro', price: 5600, image: '/src/assets/Vampiro.png', description: 'Avatar de vampiro elegante.' },
-    { id: 'an8', name: 'Avatar Alien', price: 5700, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Alien', description: 'Avatar de extraterrestre misterioso.' },
-    { id: 'an9', name: 'Avatar Caballero', price: 5400, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Caballero', description: 'Avatar de caballero medieval.' },
-    { id: 'an10', name: 'Avatar Superhéroe', price: 5800, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Heroe', description: 'Avatar de superhéroe con capa.' },
-    { id: 'an11', name: 'Avatar Zombie', price: 5200, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Zombie', description: 'Avatar de zombie espeluznante.' },
-    { id: 'an12', name: 'Avatar Fantasma', price: 5300, image: 'https://via.placeholder.com/120x120/23263a/FFFFFF?text=Fantasma', description: 'Avatar de fantasma transparente.' },
+    { id: 'an1', name: 'Avatar Ninja', price: 500, image: '/src/assets/Ninja2.png', description: 'Avatar animado ninja con movimientos fluidos.' },
+    { id: 'an2', name: 'Avatar Robot', price: 520, image: '/src/assets/Robot2.png', description: 'Avatar animado robot con efectos mecánicos.' },
+    { id: 'an3', name: 'Avatar Dragón', price: 540, image: '/src/assets/Dragon.png', description: 'Avatar animado dragón legendario.' },
+    { id: 'an4', name: 'Avatar Samurái', price: 530, image: '/src/assets/Samurai.png', description: 'Avatar de samurái con katana.' },
+    { id: 'an5', name: 'Avatar Mago', price: 550, image: '/src/assets/Mago.png', description: 'Avatar de mago con varita mágica.' },
+    { id: 'an6', name: 'Avatar Pirata', price: 510, image: '/src/assets/Pirata.png', description: 'Avatar de pirata con parche.' },
+    { id: 'an7', name: 'Avatar Vampiro', price: 560, image: '/src/assets/Vampiro.png', description: 'Avatar de vampiro elegante.' },
+    { id: 'an8', name: 'Avatar Alien', price: 570, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Alien', description: 'Avatar de extraterrestre misterioso.' },
+    { id: 'an9', name: 'Avatar Caballero', price: 540, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Caballero', description: 'Avatar de caballero medieval.' },
+    { id: 'an10', name: 'Avatar Superhéroe', price: 580, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Heroe', description: 'Avatar de superhéroe con capa.' },
+    { id: 'an11', name: 'Avatar Zombie', price: 520, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Zombie', description: 'Avatar de zombie espeluznante.' },
+    { id: 'an12', name: 'Avatar Fantasma', price: 530, image: 'https://via.placeholder.com/120x120/23263a/FFFFFF?text=Fantasma', description: 'Avatar de fantasma transparente.' },
   ],
   badges: [
-    { id: 'bd1', name: 'Insignia Hacker', price: 1500, image: 'https://via.placeholder.com/100x100/00BFFF/23263a?text=H', description: 'Insignia para expertos en seguridad.' },
-    { id: 'bd2', name: 'Insignia MVP', price: 1700, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=MVP', description: 'Insignia para jugadores destacados.' },
-    { id: 'bd3', name: 'Insignia Legendaria', price: 2000, image: 'https://via.placeholder.com/100x100/23263a/FFD700?text=Legend', description: 'Insignia de edición limitada.' },
-    { id: 'bd4', name: 'Insignia Pro', price: 1800, image: 'https://via.placeholder.com/100x100/00FF00/23263a?text=Pro', description: 'Insignia para profesionales.' },
-    { id: 'bd5', name: 'Insignia Elite', price: 2200, image: 'https://via.placeholder.com/100x100/FF4500/23263a?text=Elite', description: 'Insignia para la élite.' },
-    { id: 'bd6', name: 'Insignia Gamer', price: 1600, image: 'https://via.placeholder.com/100x100/9932CC/23263a?text=Gamer', description: 'Insignia para gamers hardcore.' },
-    { id: 'bd7', name: 'Insignia Creador', price: 1900, image: 'https://via.placeholder.com/100x100/FF69B4/23263a?text=Creador', description: 'Insignia para creadores de contenido.' },
-    { id: 'bd8', name: 'Insignia Mentor', price: 2100, image: 'https://via.placeholder.com/100x100/00CED1/23263a?text=Mentor', description: 'Insignia para mentores de la comunidad.' },
-    { id: 'bd9', name: 'Insignia Innovador', price: 2300, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=Innovador', description: 'Insignia para innovadores.' },
-    { id: 'bd10', name: 'Insignia Líder', price: 2400, image: 'https://via.placeholder.com/100x100/4B0082/23263a?text=Lider', description: 'Insignia para líderes de equipo.' },
-    { id: 'bd11', name: 'Insignia Campeón', price: 2500, image: 'https://via.placeholder.com/100x100/FF0000/23263a?text=Campeon', description: 'Insignia para campeones.' },
-    { id: 'bd12', name: 'Insignia Maestro', price: 2600, image: 'https://via.placeholder.com/100x100/FFFFFF/23263a?text=Maestro', description: 'Insignia para maestros del juego.' },
+    { id: 'bd1', name: 'Insignia Hacker', price: 150, image: 'https://via.placeholder.com/100x100/00BFFF/23263a?text=H', description: 'Insignia para expertos en seguridad.' },
+    { id: 'bd2', name: 'Insignia MVP', price: 170, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=MVP', description: 'Insignia para jugadores destacados.' },
+    { id: 'bd3', name: 'Insignia Legendaria', price: 200, image: 'https://via.placeholder.com/100x100/23263a/FFD700?text=Legend', description: 'Insignia de edición limitada.' },
+    { id: 'bd4', name: 'Insignia Pro', price: 180, image: 'https://via.placeholder.com/100x100/00FF00/23263a?text=Pro', description: 'Insignia para profesionales.' },
+    { id: 'bd5', name: 'Insignia Elite', price: 220, image: 'https://via.placeholder.com/100x100/FF4500/23263a?text=Elite', description: 'Insignia para la élite.' },
+    { id: 'bd6', name: 'Insignia Gamer', price: 160, image: 'https://via.placeholder.com/100x100/9932CC/23263a?text=Gamer', description: 'Insignia para gamers hardcore.' },
+    { id: 'bd7', name: 'Insignia Creador', price: 190, image: 'https://via.placeholder.com/100x100/FF69B4/23263a?text=Creador', description: 'Insignia para creadores de contenido.' },
+    { id: 'bd8', name: 'Insignia Mentor', price: 210, image: 'https://via.placeholder.com/100x100/00CED1/23263a?text=Mentor', description: 'Insignia para mentores de la comunidad.' },
+    { id: 'bd9', name: 'Insignia Innovador', price: 230, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=Innovador', description: 'Insignia para innovadores.' },
+    { id: 'bd10', name: 'Insignia Líder', price: 240, image: 'https://via.placeholder.com/100x100/4B0082/23263a?text=Lider', description: 'Insignia para líderes de equipo.' },
+    { id: 'bd11', name: 'Insignia Campeón', price: 250, image: 'https://via.placeholder.com/100x100/FF0000/23263a?text=Campeon', description: 'Insignia para campeones.' },
+    { id: 'bd12', name: 'Insignia Maestro', price: 260, image: 'https://via.placeholder.com/100x100/FFFFFF/23263a?text=Maestro', description: 'Insignia para maestros del juego.' },
   ],
   season: [
-    { id: 'ss1', name: 'Perfil Invierno', price: 3500, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Winter', description: 'Perfil de temporada invernal con nieve.' },
-    { id: 'ss2', name: 'Perfil Verano', price: 3400, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Summer', description: 'Perfil de temporada veraniega soleado.' },
-    { id: 'ss3', name: 'Perfil Halloween', price: 3700, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Halloween', description: 'Perfil de temporada de Halloween.' },
-    { id: 'ss4', name: 'Perfil Navidad', price: 3600, image: 'https://via.placeholder.com/120x120/FF0000/23263a?text=Navidad', description: 'Perfil festivo de Navidad.' },
-    { id: 'ss5', name: 'Perfil Primavera', price: 3300, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Primavera', description: 'Perfil de primavera con flores.' },
-    { id: 'ss6', name: 'Perfil Otoño', price: 3400, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Otono', description: 'Perfil de otoño con hojas doradas.' },
-    { id: 'ss7', name: 'Perfil San Valentín', price: 3800, image: 'https://via.placeholder.com/120x120/FF69B4/23263a?text=Valentin', description: 'Perfil romántico de San Valentín.' },
-    { id: 'ss8', name: 'Perfil Año Nuevo', price: 3900, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=2024', description: 'Perfil festivo de Año Nuevo.' },
-    { id: 'ss9', name: 'Perfil Pascua', price: 3500, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Pascua', description: 'Perfil de Pascua con huevos.' },
-    { id: 'ss10', name: 'Perfil Día de Muertos', price: 3700, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Muertos', description: 'Perfil del Día de Muertos.' },
-    { id: 'ss11', name: 'Perfil Independencia', price: 3600, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Independencia', description: 'Perfil patriótico de independencia.' },
-    { id: 'ss12', name: 'Perfil Carnaval', price: 4000, image: 'https://via.placeholder.com/120x120/FF69B4/23263a?text=Carnaval', description: 'Perfil colorido de carnaval.' },
+    { id: 'ss1', name: 'Perfil Invierno', price: 350, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Winter', description: 'Perfil de temporada invernal con nieve.' },
+    { id: 'ss2', name: 'Perfil Verano', price: 340, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Summer', description: 'Perfil de temporada veraniega soleado.' },
+    { id: 'ss3', name: 'Perfil Halloween', price: 370, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Halloween', description: 'Perfil de temporada de Halloween.' },
+    { id: 'ss4', name: 'Perfil Navidad', price: 360, image: 'https://via.placeholder.com/120x120/FF0000/23263a?text=Navidad', description: 'Perfil festivo de Navidad.' },
+    { id: 'ss5', name: 'Perfil Primavera', price: 330, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Primavera', description: 'Perfil de primavera con flores.' },
+    { id: 'ss6', name: 'Perfil Otoño', price: 340, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Otono', description: 'Perfil de otoño con hojas doradas.' },
+    { id: 'ss7', name: 'Perfil San Valentín', price: 380, image: 'https://via.placeholder.com/120x120/FF69B4/23263a?text=Valentin', description: 'Perfil romántico de San Valentín.' },
+    { id: 'ss8', name: 'Perfil Año Nuevo', price: 390, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=2024', description: 'Perfil festivo de Año Nuevo.' },
+    { id: 'ss9', name: 'Perfil Pascua', price: 350, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Pascua', description: 'Perfil de Pascua con huevos.' },
+    { id: 'ss10', name: 'Perfil Día de Muertos', price: 370, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Muertos', description: 'Perfil del Día de Muertos.' },
+    { id: 'ss11', name: 'Perfil Independencia', price: 360, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Independencia', description: 'Perfil patriótico de independencia.' },
+    { id: 'ss12', name: 'Perfil Carnaval', price: 400, image: 'https://via.placeholder.com/120x120/FF69B4/23263a?text=Carnaval', description: 'Perfil colorido de carnaval.' },
   ],
   plates: [
-    { id: 'pl1', name: 'Placa Pro', price: 1000, image: 'https://via.placeholder.com/120x60/00BFFF/23263a?text=Pro', description: 'Placa de nombre profesional.' },
-    { id: 'pl2', name: 'Placa Elite', price: 1200, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Elite', description: 'Placa de nombre para élite.' },
-    { id: 'pl3', name: 'Placa Gamer', price: 1100, image: 'https://via.placeholder.com/120x60/23263a/00BFFF?text=Gamer', description: 'Placa de nombre para gamers.' },
-    { id: 'pl4', name: 'Placa Hacker', price: 1300, image: 'https://via.placeholder.com/120x60/00FF00/23263a?text=Hacker', description: 'Placa de nombre para hackers.' },
-    { id: 'pl5', name: 'Placa Legend', price: 1500, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Legend', description: 'Placa de nombre legendaria.' },
-    { id: 'pl6', name: 'Placa Master', price: 1400, image: 'https://via.placeholder.com/120x60/9932CC/23263a?text=Master', description: 'Placa de nombre para maestros.' },
-    { id: 'pl7', name: 'Placa Champion', price: 1600, image: 'https://via.placeholder.com/120x60/FF4500/23263a?text=Champion', description: 'Placa de nombre para campeones.' },
-    { id: 'pl8', name: 'Placa VIP', price: 1700, image: 'https://via.placeholder.com/120x60/FF69B4/23263a?text=VIP', description: 'Placa de nombre VIP exclusiva.' },
-    { id: 'pl9', name: 'Placa Boss', price: 1800, image: 'https://via.placeholder.com/120x60/4B0082/23263a?text=Boss', description: 'Placa de nombre para jefes.' },
-    { id: 'pl10', name: 'Placa Hero', price: 1900, image: 'https://via.placeholder.com/120x60/00CED1/23263a?text=Hero', description: 'Placa de nombre para héroes.' },
-    { id: 'pl11', name: 'Placa Warrior', price: 2000, image: 'https://via.placeholder.com/120x60/FF0000/23263a?text=Warrior', description: 'Placa de nombre para guerreros.' },
-    { id: 'pl12', name: 'Placa King', price: 2500, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=King', description: 'Placa de nombre real.' },
+    { id: 'pl1', name: 'Placa Pro', price: 100, image: 'https://via.placeholder.com/120x60/00BFFF/23263a?text=Pro', description: 'Placa de nombre profesional.' },
+    { id: 'pl2', name: 'Placa Elite', price: 120, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Elite', description: 'Placa de nombre para élite.' },
+    { id: 'pl3', name: 'Placa Gamer', price: 110, image: 'https://via.placeholder.com/120x60/23263a/00BFFF?text=Gamer', description: 'Placa de nombre para gamers.' },
+    { id: 'pl4', name: 'Placa Hacker', price: 130, image: 'https://via.placeholder.com/120x60/00FF00/23263a?text=Hacker', description: 'Placa de nombre para hackers.' },
+    { id: 'pl5', name: 'Placa Legend', price: 150, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Legend', description: 'Placa de nombre legendaria.' },
+    { id: 'pl6', name: 'Placa Master', price: 140, image: 'https://via.placeholder.com/120x60/9932CC/23263a?text=Master', description: 'Placa de nombre para maestros.' },
+    { id: 'pl7', name: 'Placa Champion', price: 160, image: 'https://via.placeholder.com/120x60/FF4500/23263a?text=Champion', description: 'Placa de nombre para campeones.' },
+    { id: 'pl8', name: 'Placa VIP', price: 170, image: 'https://via.placeholder.com/120x60/FF69B4/23263a?text=VIP', description: 'Placa de nombre VIP exclusiva.' },
+    { id: 'pl9', name: 'Placa Boss', price: 180, image: 'https://via.placeholder.com/120x60/4B0082/23263a?text=Boss', description: 'Placa de nombre para jefes.' },
+    { id: 'pl10', name: 'Placa Hero', price: 190, image: 'https://via.placeholder.com/120x60/00CED1/23263a?text=Hero', description: 'Placa de nombre para héroes.' },
+    { id: 'pl11', name: 'Placa Warrior', price: 200, image: 'https://via.placeholder.com/120x60/FF0000/23263a?text=Warrior', description: 'Placa de nombre para guerreros.' },
+    { id: 'pl12', name: 'Placa King', price: 250, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=King', description: 'Placa de nombre real.' },
   ],
 };
 
 // Productos específicos para Teams
 const teamProducts: Record<string, Product[]> = {
   backgrounds: [
-    { id: 'tbg1', name: 'Fondo Team Elite', price: 5000, image: 'https://via.placeholder.com/300x200/FFD700/23263a?text=Team+Elite', description: 'Fondo exclusivo para equipos de élite.' },
-    { id: 'tbg2', name: 'Fondo Team Pro', price: 4500, image: 'https://via.placeholder.com/300x200/00BFFF/23263a?text=Team+Pro', description: 'Fondo profesional para equipos pro.' },
-    { id: 'tbg3', name: 'Fondo Team Champions', price: 6000, image: 'https://via.placeholder.com/300x200/FF4500/23263a?text=Champions', description: 'Fondo para campeones de equipos.' },
-    { id: 'tbg4', name: 'Fondo Team Legends', price: 7000, image: 'https://via.placeholder.com/300x200/9932CC/23263a?text=Legends', description: 'Fondo legendario para equipos míticos.' },
-    { id: 'tbg5', name: 'Fondo Team Warriors', price: 5500, image: 'https://via.placeholder.com/300x200/00FF00/23263a?text=Warriors', description: 'Fondo para guerreros de equipo.' },
-    { id: 'tbg6', name: 'Fondo Team Masters', price: 6500, image: 'https://via.placeholder.com/300x200/FF69B4/23263a?text=Masters', description: 'Fondo para maestros de equipo.' },
+    { id: 'tbg1', name: 'Fondo Team Elite', price: 500, image: 'https://via.placeholder.com/300x200/FFD700/23263a?text=Team+Elite', description: 'Fondo exclusivo para equipos de élite.' },
+    { id: 'tbg2', name: 'Fondo Team Pro', price: 450, image: 'https://via.placeholder.com/300x200/00BFFF/23263a?text=Team+Pro', description: 'Fondo profesional para equipos pro.' },
+    { id: 'tbg3', name: 'Fondo Team Champions', price: 600, image: 'https://via.placeholder.com/300x200/FF4500/23263a?text=Champions', description: 'Fondo para campeones de equipos.' },
+    { id: 'tbg4', name: 'Fondo Team Legends', price: 700, image: 'https://via.placeholder.com/300x200/9932CC/23263a?text=Legends', description: 'Fondo legendario para equipos míticos.' },
+    { id: 'tbg5', name: 'Fondo Team Warriors', price: 550, image: 'https://via.placeholder.com/300x200/00FF00/23263a?text=Warriors', description: 'Fondo para guerreros de equipo.' },
+    { id: 'tbg6', name: 'Fondo Team Masters', price: 650, image: 'https://via.placeholder.com/300x200/FF69B4/23263a?text=Masters', description: 'Fondo para maestros de equipo.' },
   ],
   miniprofiles: [
-    { id: 'tmp1', name: 'Mini Team Leader', price: 6000, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Leader', description: 'Miniperfil para líderes de equipo.' },
-    { id: 'tmp2', name: 'Mini Team Captain', price: 5800, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Captain', description: 'Miniperfil para capitanes de equipo.' },
-    { id: 'tmp3', name: 'Mini Team Strategist', price: 6200, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Strategy', description: 'Miniperfil para estrategas de equipo.' },
-    { id: 'tmp4', name: 'Mini Team Defender', price: 5700, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Defender', description: 'Miniperfil para defensores de equipo.' },
-    { id: 'tmp5', name: 'Mini Team Attacker', price: 5900, image: 'https://via.placeholder.com/120x120/FF0000/23263a?text=Attacker', description: 'Miniperfil para atacantes de equipo.' },
-    { id: 'tmp6', name: 'Mini Team Support', price: 5600, image: 'https://via.placeholder.com/120x120/00CED1/23263a?text=Support', description: 'Miniperfil para soporte de equipo.' },
+    { id: 'tmp1', name: 'Mini Team Leader', price: 600, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Leader', description: 'Miniperfil para líderes de equipo.' },
+    { id: 'tmp2', name: 'Mini Team Captain', price: 580, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Captain', description: 'Miniperfil para capitanes de equipo.' },
+    { id: 'tmp3', name: 'Mini Team Strategist', price: 620, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Strategy', description: 'Miniperfil para estrategas de equipo.' },
+    { id: 'tmp4', name: 'Mini Team Defender', price: 570, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Defender', description: 'Miniperfil para defensores de equipo.' },
+    { id: 'tmp5', name: 'Mini Team Attacker', price: 590, image: 'https://via.placeholder.com/120x120/FF0000/23263a?text=Attacker', description: 'Miniperfil para atacantes de equipo.' },
+    { id: 'tmp6', name: 'Mini Team Support', price: 560, image: 'https://via.placeholder.com/120x120/00CED1/23263a?text=Support', description: 'Miniperfil para soporte de equipo.' },
   ],
   frames: [
-    { id: 'tfr1', name: 'Marco Team Gold', price: 3500, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Gold', description: 'Marco dorado para equipos.' },
-    { id: 'tfr2', name: 'Marco Team Silver', price: 3200, image: 'https://via.placeholder.com/120x120/C0C0C0/23263a?text=Team+Silver', description: 'Marco plateado para equipos.' },
-    { id: 'tfr3', name: 'Marco Team Bronze', price: 3000, image: 'https://via.placeholder.com/120x120/CD7F32/23263a?text=Team+Bronze', description: 'Marco bronce para equipos.' },
-    { id: 'tfr4', name: 'Marco Team Diamond', price: 4000, image: 'https://via.placeholder.com/120x120/B9F2FF/23263a?text=Team+Diamond', description: 'Marco diamante para equipos.' },
-    { id: 'tfr5', name: 'Marco Team Platinum', price: 4500, image: 'https://via.placeholder.com/120x120/E5E4E2/23263a?text=Team+Platinum', description: 'Marco platino para equipos.' },
-    { id: 'tfr6', name: 'Marco Team Elite', price: 5000, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Elite', description: 'Marco élite para equipos.' },
+    { id: 'tfr1', name: 'Marco Team Gold', price: 350, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Gold', description: 'Marco dorado para equipos.' },
+    { id: 'tfr2', name: 'Marco Team Silver', price: 320, image: 'https://via.placeholder.com/120x120/C0C0C0/23263a?text=Team+Silver', description: 'Marco plateado para equipos.' },
+    { id: 'tfr3', name: 'Marco Team Bronze', price: 300, image: 'https://via.placeholder.com/120x120/CD7F32/23263a?text=Team+Bronze', description: 'Marco bronce para equipos.' },
+    { id: 'tfr4', name: 'Marco Team Diamond', price: 400, image: 'https://via.placeholder.com/120x120/B9F2FF/23263a?text=Team+Diamond', description: 'Marco diamante para equipos.' },
+    { id: 'tfr5', name: 'Marco Team Platinum', price: 450, image: 'https://via.placeholder.com/120x120/E5E4E2/23263a?text=Team+Platinum', description: 'Marco platino para equipos.' },
+    { id: 'tfr6', name: 'Marco Team Elite', price: 500, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Elite', description: 'Marco élite para equipos.' },
   ],
   animated: [
-    { id: 'tan1', name: 'Avatar Team Leader', price: 7000, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Leader', description: 'Avatar animado para líderes de equipo.' },
-    { id: 'tan2', name: 'Avatar Team Captain', price: 6800, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Team+Captain', description: 'Avatar animado para capitanes.' },
-    { id: 'tan3', name: 'Avatar Team Warrior', price: 7200, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Team+Warrior', description: 'Avatar animado para guerreros de equipo.' },
-    { id: 'tan4', name: 'Avatar Team Mage', price: 7500, image: 'https://via.placeholder.com/120x120/9932CC/23263a?text=Team+Mage', description: 'Avatar animado para magos de equipo.' },
-    { id: 'tan5', name: 'Avatar Team Archer', price: 7300, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Team+Archer', description: 'Avatar animado para arqueros de equipo.' },
-    { id: 'tan6', name: 'Avatar Team Knight', price: 7100, image: 'https://via.placeholder.com/120x120/C0C0C0/23263a?text=Team+Knight', description: 'Avatar animado para caballeros de equipo.' },
+    { id: 'tan1', name: 'Avatar Team Leader', price: 700, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Leader', description: 'Avatar animado para líderes de equipo.' },
+    { id: 'tan2', name: 'Avatar Team Captain', price: 680, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Team+Captain', description: 'Avatar animado para capitanes.' },
+    { id: 'tan3', name: 'Avatar Team Warrior', price: 720, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Team+Warrior', description: 'Avatar animado para guerreros de equipo.' },
+    { id: 'tan4', name: 'Avatar Team Mage', price: 750, image: 'https://via.placeholder.com/120x120/9932CC/23263a?text=Team+Mage', description: 'Avatar animado para magos de equipo.' },
+    { id: 'tan5', name: 'Avatar Team Archer', price: 730, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Team+Archer', description: 'Avatar animado para arqueros de equipo.' },
+    { id: 'tan6', name: 'Avatar Team Knight', price: 710, image: 'https://via.placeholder.com/120x120/C0C0C0/23263a?text=Team+Knight', description: 'Avatar animado para caballeros de equipo.' },
   ],
   badges: [
-    { id: 'tbd1', name: 'Insignia Team Leader', price: 2500, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TL', description: 'Insignia para líderes de equipo.' },
-    { id: 'tbd2', name: 'Insignia Team Captain', price: 2300, image: 'https://via.placeholder.com/100x100/00BFFF/23263a?text=TC', description: 'Insignia para capitanes de equipo.' },
-    { id: 'tbd3', name: 'Insignia Team MVP', price: 2800, image: 'https://via.placeholder.com/100x100/FF4500/23263a?text=TMVP', description: 'Insignia MVP para equipos.' },
-    { id: 'tbd4', name: 'Insignia Team Champion', price: 3000, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TChamp', description: 'Insignia para campeones de equipo.' },
-    { id: 'tbd5', name: 'Insignia Team Elite', price: 3200, image: 'https://via.placeholder.com/100x100/9932CC/23263a?text=TElite', description: 'Insignia para élite de equipos.' },
-    { id: 'tbd6', name: 'Insignia Team Legend', price: 3500, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TLegend', description: 'Insignia legendaria para equipos.' },
+    { id: 'tbd1', name: 'Insignia Team Leader', price: 250, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TL', description: 'Insignia para líderes de equipo.' },
+    { id: 'tbd2', name: 'Insignia Team Captain', price: 230, image: 'https://via.placeholder.com/100x100/00BFFF/23263a?text=TC', description: 'Insignia para capitanes de equipo.' },
+    { id: 'tbd3', name: 'Insignia Team MVP', price: 280, image: 'https://via.placeholder.com/100x100/FF4500/23263a?text=TMVP', description: 'Insignia MVP para equipos.' },
+    { id: 'tbd4', name: 'Insignia Team Champion', price: 300, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TChamp', description: 'Insignia para campeones de equipo.' },
+    { id: 'tbd5', name: 'Insignia Team Elite', price: 320, image: 'https://via.placeholder.com/100x100/9932CC/23263a?text=TElite', description: 'Insignia para élite de equipos.' },
+    { id: 'tbd6', name: 'Insignia Team Legend', price: 350, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TLegend', description: 'Insignia legendaria para equipos.' },
   ],
   season: [
-    { id: 'tss1', name: 'Perfil Team Winter', price: 4500, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Team+Winter', description: 'Perfil de invierno para equipos.' },
-    { id: 'tss2', name: 'Perfil Team Summer', price: 4400, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Summer', description: 'Perfil de verano para equipos.' },
-    { id: 'tss3', name: 'Perfil Team Spring', price: 4300, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Team+Spring', description: 'Perfil de primavera para equipos.' },
-    { id: 'tss4', name: 'Perfil Team Autumn', price: 4400, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Team+Autumn', description: 'Perfil de otoño para equipos.' },
-    { id: 'tss5', name: 'Perfil Team Championship', price: 5000, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Champ', description: 'Perfil de campeonato para equipos.' },
-    { id: 'tss6', name: 'Perfil Team Tournament', price: 4800, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Team+Tourney', description: 'Perfil de torneo para equipos.' },
+    { id: 'tss1', name: 'Perfil Team Winter', price: 450, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Team+Winter', description: 'Perfil de invierno para equipos.' },
+    { id: 'tss2', name: 'Perfil Team Summer', price: 440, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Summer', description: 'Perfil de verano para equipos.' },
+    { id: 'tss3', name: 'Perfil Team Spring', price: 430, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Team+Spring', description: 'Perfil de primavera para equipos.' },
+    { id: 'tss4', name: 'Perfil Team Autumn', price: 440, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Team+Autumn', description: 'Perfil de otoño para equipos.' },
+    { id: 'tss5', name: 'Perfil Team Championship', price: 500, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Champ', description: 'Perfil de campeonato para equipos.' },
+    { id: 'tss6', name: 'Perfil Team Tournament', price: 480, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Team+Tourney', description: 'Perfil de torneo para equipos.' },
   ],
   plates: [
-    { id: 'tpl1', name: 'Placa Team Elite', price: 2000, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Team+Elite', description: 'Placa para equipos de élite.' },
-    { id: 'tpl2', name: 'Placa Team Pro', price: 1800, image: 'https://via.placeholder.com/120x60/00BFFF/23263a?text=Team+Pro', description: 'Placa para equipos profesionales.' },
-    { id: 'tpl3', name: 'Placa Team Champion', price: 2500, image: 'https://via.placeholder.com/120x60/FF4500/23263a?text=Team+Champ', description: 'Placa para equipos campeones.' },
-    { id: 'tpl4', name: 'Placa Team Legend', price: 3000, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Team+Legend', description: 'Placa legendaria para equipos.' },
-    { id: 'tpl5', name: 'Placa Team Master', price: 2200, image: 'https://via.placeholder.com/120x60/9932CC/23263a?text=Team+Master', description: 'Placa para maestros de equipo.' },
-    { id: 'tpl6', name: 'Placa Team Warrior', price: 2400, image: 'https://via.placeholder.com/120x60/00FF00/23263a?text=Team+Warrior', description: 'Placa para guerreros de equipo.' },
+    { id: 'tpl1', name: 'Placa Team Elite', price: 200, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Team+Elite', description: 'Placa para equipos de élite.' },
+    { id: 'tpl2', name: 'Placa Team Pro', price: 180, image: 'https://via.placeholder.com/120x60/00BFFF/23263a?text=Team+Pro', description: 'Placa para equipos profesionales.' },
+    { id: 'tpl3', name: 'Placa Team Champion', price: 250, image: 'https://via.placeholder.com/120x60/FF4500/23263a?text=Team+Champ', description: 'Placa para equipos campeones.' },
+    { id: 'tpl4', name: 'Placa Team Legend', price: 300, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Team+Legend', description: 'Placa legendaria para equipos.' },
+    { id: 'tpl5', name: 'Placa Team Master', price: 220, image: 'https://via.placeholder.com/120x60/9932CC/23263a?text=Team+Master', description: 'Placa para maestros de equipo.' },
+    { id: 'tpl6', name: 'Placa Team Warrior', price: 240, image: 'https://via.placeholder.com/120x60/00FF00/23263a?text=Team+Warrior', description: 'Placa para guerreros de equipo.' },
   ],
 };
 
@@ -221,19 +223,15 @@ function Shop() {
   const [search, setSearch] = useState('');
   const [order, setOrder] = useState('default');
   const [cart, setCart] = useState<Product[]>([]);
-  const [userPoints, setUserPoints] = useState(getUserPoints());
+  const { userPoints, subtractPoints } = usePoints();
+  const { addToInventory } = useInventory();
   const [userBluePoints] = useState(userMock.bluePoints);
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showTeamProducts, setShowTeamProducts] = useState(false);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setUserPoints(getUserPoints());
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
+
 
   // Cerrar modal con Escape
   useEffect(() => {
@@ -269,10 +267,21 @@ function Shop() {
   // Comprar desde modal
   const handleBuy = (product: Product) => {
     if (userPoints >= product.price) {
-      setUserPoints((pts) => pts - product.price);
+      subtractPoints(product.price);
+      
+      // Agregar al inventario
+      addToInventory({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image,
+        description: product.description,
+        category: selectedCategory,
+      });
+      
       setSuccessMessage(`¡${product.name} adquirido!`);
       setTimeout(() => setSuccessMessage(null), 2500);
-    setModalProduct(null);
+      setModalProduct(null);
     } else {
       setErrorMessage('No tienes suficientes puntos');
       setTimeout(() => setErrorMessage(null), 2500);
@@ -575,15 +584,7 @@ function Shop() {
               })}
             </div>
             
-            {/* Botón para ver más productos de equipo */}
-            <div className="text-center mt-8">
-              <button
-                onClick={() => setShowTeamProducts(true)}
-                className="px-8 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold rounded-xl hover:from-yellow-400 hover:to-orange-400 transition-all duration-300 shadow-lg hover:shadow-xl"
-              >
-                Ver todos los productos para equipos
-              </button>
-            </div>
+
           </div>
         )}
       </main>

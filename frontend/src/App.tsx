@@ -2,6 +2,11 @@ import React from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from './components/Navbar';
+import { BackgroundProvider, useBackground } from './contexts/BackgroundContext';
+import { AuthProvider } from './contexts/AuthContext';
+import { NotificationProvider } from './contexts/NotificationContext';
+import { PointsProvider } from './contexts/PointsContext';
+import { InventoryProvider } from './contexts/InventoryContext';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
@@ -30,6 +35,9 @@ import TeamScore from '@/pages/TeamScore';
 import MVPUser from '@/pages/MVPUser';
 import Notifications from '@/pages/Notifications';
 import Duels from '@/pages/Duels';
+import Settings from '@/pages/Settings';
+import Help from '@/pages/Help';
+import Teams from '@/pages/Teams';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -41,11 +49,16 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import LanguageSelector from './components/LanguageSelector';
 import { useTranslation } from './utils/useTranslation';
 
-function App() {
+function AppContent() {
+  const { backgroundEnabled, setBackgroundEnabled } = useBackground();
+  
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-[#F9FAFB] text-[#1F2937]">
-        <Navbar />
+        <Navbar 
+          backgroundEnabled={backgroundEnabled}
+          onBackgroundToggle={setBackgroundEnabled}
+        />
         <Helmet>
           <title>Bug Bounty Platform</title>
           <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
@@ -64,6 +77,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="profile/team" element={<ProfileTeam />} />
             <Route path="team" element={<Team />} />
+            <Route path="teams" element={<Teams />} />
             <Route path="gulag" element={<Gulag />} />
             <Route path="gulag/:id" element={<GulagDetail />} />
             <Route path="duelos" element={<Duels />} />
@@ -73,11 +87,29 @@ function App() {
             <Route path="submit-explanation" element={<SubmitExplanation />} />
             <Route path="moderate-explanations" element={<ModerateExplanations />} />
             <Route path="notifications" element={<Notifications />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="help" element={<Help />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
       </div>
     </LanguageProvider>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <NotificationProvider>
+        <PointsProvider>
+          <InventoryProvider>
+            <BackgroundProvider>
+              <AppContent />
+            </BackgroundProvider>
+          </InventoryProvider>
+        </PointsProvider>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }
 

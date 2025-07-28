@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { FaCheckCircle, FaExclamationCircle, FaInfoCircle, FaBullhorn, FaFlag, FaEnvelope, FaTrash, FaCircle } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationCircle, FaInfoCircle, FaBullhorn, FaFlag, FaEnvelope, FaTrash, FaCircle, FaFileAlt } from 'react-icons/fa';
 import type { IconType } from 'react-icons';
+import { useNotifications } from '../contexts/NotificationContext';
 
 // Tipos de notificación
 const NOTIF_TYPES: Record<string, { icon: JSX.Element; label: string }> = {
@@ -10,6 +11,7 @@ const NOTIF_TYPES: Record<string, { icon: JSX.Element; label: string }> = {
   announcement: { icon: <FaBullhorn style={{ color: '#facc15' }} />, label: 'Anuncio' },
   challenge: { icon: <FaFlag style={{ color: '#a78bfa' }} />, label: 'Desafío' },
   message: { icon: <FaEnvelope style={{ color: '#f472b6' }} />, label: 'Mensaje' },
+  documentation: { icon: <FaFileAlt style={{ color: '#f59e0b' }} />, label: 'Documentación' },
 };
 
 // Datos mock de notificaciones
@@ -77,7 +79,7 @@ function timeAgo(date: Date) {
 }
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState(mockNotifications);
+  const { notifications, markAsRead, deleteNotification, markAllAsRead, unreadCount } = useNotifications();
   const [expanded, setExpanded] = useState<number | null>(null);
   const [typeFilters, setTypeFilters] = useState(Object.keys(NOTIF_TYPES));
   const [statusFilter, setStatusFilter] = useState('all'); // all, read, unread
@@ -89,15 +91,8 @@ const Notifications = () => {
     doNotDisturb: false,
   });
 
-  const markAsRead = (id: number) => {
-    setNotifications((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
-  };
   const deleteNotif = (id: number) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  };
-
-  const markAllAsRead = () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    deleteNotification(id);
   };
 
   // Filtrado

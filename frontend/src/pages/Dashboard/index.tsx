@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
-import { FaUsers, FaUser, FaStore, FaSkull } from 'react-icons/fa';
+import { FaUsers, FaUser, FaStore, FaSkull, FaTrophy, FaFire, FaRocket } from 'react-icons/fa';
+import { GiCrossedSwords, GiArena, GiCrown } from 'react-icons/gi';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 // @ts-ignore
@@ -10,125 +11,159 @@ import img1 from '../../assets/imagen1.png';
 import img2 from '../../assets/imagen2.png';
 // @ts-ignore
 import img3 from '../../assets/imagen3.png';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import PacmanBackground from '../../components/ui/PacmanBackground';
+import { useBackground } from '../../contexts/BackgroundContext';
+import '../../styles/pacman.css';
 
-const ACCENT = '#00BFFF';
-const DARK_BG = '#181A20';
-const CARD_BG = '#23263a';
+// Paleta de colores gamer/futurista
+const COLORS = {
+  primary: '#00D4FF',      // Cyan brillante
+  secondary: '#FF0080',     // Magenta
+  accent: '#FFD700',        // Dorado
+  success: '#00FF88',       // Verde neón
+  warning: '#FF6B35',       // Naranja
+  danger: '#FF0040',        // Rojo neón
+  dark: '#0A0A0F',          // Negro profundo
+  darker: '#1A1A2E',        // Azul oscuro
+  card: '#16213E',          // Azul card
+  cardHover: '#1E3A8A',     // Azul hover
+  text: '#E2E8F0',          // Texto claro
+  textMuted: '#94A3B8',     // Texto muted
+};
 
-// Carrusel principal (slides de ejemplo)
+// Carrusel principal mejorado
 const carouselSlides = [
   {
     image: img1,
-    title: '¡Compite y Gana!',
-    desc: 'Participa en duelos y demuestra tus habilidades en ciberseguridad.',
-    button: 'Ver Duelos',
+    title: 'ARENA DE BATALLA',
+    subtitle: '¡Demuestra tu dominio!',
+    desc: 'Enfréntate a los mejores hackers en duelos épicos de ciberseguridad.',
+    button: 'ENTRAR A LA ARENA',
     action: '/gulag',
+    icon: <GiCrossedSwords className="text-4xl" />,
+    gradient: 'from-cyan-500 via-blue-500 to-purple-600',
   },
   {
     image: img2,
-    title: 'Ranking en Tiempo Real',
-    desc: 'Consulta el leaderboard y escala posiciones con tu equipo.',
-    button: 'Ver Ranking',
+    title: 'HALL OF FAME',
+    subtitle: 'Los legendarios',
+    desc: 'Consulta el ranking de los guerreros más poderosos del ciberespacio.',
+    button: 'VER RANKING',
     action: '/team-score',
+    icon: <GiCrown className="text-4xl" />,
+    gradient: 'from-yellow-400 via-orange-500 to-red-500',
   },
   {
     image: img3,
-    title: 'Personaliza tu Perfil',
-    desc: 'Desbloquea avatares, fondos y más en la tienda.',
-    button: 'Ir a la Tienda',
+    title: 'ARSENAL DIGITAL',
+    subtitle: 'Personaliza tu poder',
+    desc: 'Desbloquea avatares épicos, skins legendarias y equipamiento único.',
+    button: 'EXPLORAR TIENDA',
     action: '/shop',
+    icon: <FaStore className="text-4xl" />,
+    gradient: 'from-green-400 via-emerald-500 to-teal-600',
   },
 ];
 
-// Datos mock para MVP TEAM y MVP USER
+// Datos mock mejorados para MVP
 const mvpTeams = [
   {
     avatar: img1,
-    name: 'Equipo Alpha',
-    stats: { criticas: 5, medias: 2, bajas: 8 },
+    name: 'PHANTOM HUNTERS',
+    title: 'Guardianes del Ciberespacio',
+    stats: { criticas: 15, medias: 8, bajas: 23 },
+    rank: 1,
+    points: 2840,
+    effectiveness: 96,
   },
   {
     avatar: img2,
-    name: 'Equipo Beta',
-    stats: { criticas: 2, medias: 4, bajas: 6 },
+    name: 'CYBER WOLVES',
+    title: 'Cazadores Nocturnos',
+    stats: { criticas: 12, medias: 11, bajas: 19 },
+    rank: 2,
+    points: 2650,
+    effectiveness: 94,
   },
   {
     avatar: '',
-    name: 'Equipo Gamma',
-    stats: { criticas: 1, medias: null, bajas: 3 },
+    name: 'NEON STRIKERS',
+    title: 'Especialistas Elite',
+    stats: { criticas: 9, medias: 14, bajas: 17 },
+    rank: 3,
+    points: 2480,
+    effectiveness: 92,
   },
 ];
 
 const mvpUsers = [
   {
     avatar: img3,
-    name: 'UsuarioX',
-    stats: { criticas: 3, medias: 7, bajas: 10 },
+    name: 'CYBERPHANTOM',
+    title: 'Maestro del Código',
+    stats: { criticas: 8, medias: 12, bajas: 15 },
+    rank: 1,
+    points: 1890,
+    effectiveness: 98,
   },
   {
     avatar: '',
-    name: 'H4ck3r',
-    stats: { criticas: 4, medias: 2, bajas: null },
+    name: 'NEONSTRIKE',
+    title: 'Hacker Elite',
+    stats: { criticas: 7, medias: 9, bajas: 13 },
+    rank: 2,
+    points: 1720,
+    effectiveness: 95,
   },
   {
     avatar: img2,
-    name: 'CyberQueen',
-    stats: { criticas: null, medias: 5, bajas: 2 },
+    name: 'QUANTUMHACK',
+    title: 'Especialista Táctico',
+    stats: { criticas: 6, medias: 11, bajas: 12 },
+    rank: 3,
+    points: 1650,
+    effectiveness: 93,
   },
 ];
 
-const cards = [
+// Cards de navegación mejoradas
+const navigationCards = [
   {
-    title: 'Ranking',
-    icon: <FaUsers size={32} />, 
-    color: 'from-blue-500 to-blue-700',
-    action: '/team-score',
-  },
-  {
-    title: 'STORE',
-    icon: <FaStore size={32} />, 
-    color: 'from-green-500 to-green-700',
-    action: '/shop',
-  },
-  {
-    title: 'Gulag',
-    icon: <FaSkull size={32} />, 
-    color: 'from-red-500 to-red-700',
+    title: 'GULAG',
+    subtitle: 'Sona de Castigos',
+    icon: <FaSkull className="text-3xl" />,
+    gradient: 'from-red-500 via-pink-500 to-purple-600',
     action: '/gulag',
+    description: 'Enfréntate en batallas de ciberseguridad',
   },
   {
-    title: 'Perfil',
-    icon: <FaUser size={32} />, 
-    color: 'from-cyan-500 to-cyan-700',
+    title: 'RANKING',
+    subtitle: 'Hall of Fame',
+    icon: <FaTrophy className="text-3xl" />,
+    gradient: 'from-yellow-400 via-orange-500 to-red-500',
+    action: '/team-score',
+    description: 'Los mejores guerreros del ciberespacio',
+  },
+  {
+    title: 'ARSENAL',
+    subtitle: 'Tienda Digital',
+    icon: <FaStore className="text-3xl" />,
+    gradient: 'from-green-400 via-emerald-500 to-teal-600',
+    action: '/shop',
+    description: 'Personaliza tu identidad digital',
+  },
+  {
+    title: 'PERFIL',
+    subtitle: 'Tu Legado',
+    icon: <FaUser className="text-3xl" />,
+    gradient: 'from-blue-500 via-cyan-500 to-indigo-600',
     action: '/profile',
+    description: 'Gestiona tu identidad de hacker',
   },
 ];
 
-const mvpCardStyle = {
-  background: CARD_BG,
-  borderRadius: 32,
-  boxShadow: '0 4px 32px rgba(0,191,255,0.10)',
-  minHeight: 520,
-  minWidth: 220,
-  maxWidth: 260,
-  margin: '0 auto',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-};
-
-const avatarStyle = {
-  width: 100,
-  height: 100,
-  borderRadius: '50%',
-  objectFit: 'cover' as const,
-  border: `4px solid ${ACCENT}`,
-  background: '#222',
-  margin: '0 auto 24px auto',
-  display: 'block',
-};
-
+// Configuración de sliders
 const sliderSettings = {
   dots: true,
   infinite: true,
@@ -136,6 +171,8 @@ const sliderSettings = {
   slidesToShow: 1,
   slidesToScroll: 1,
   arrows: true,
+  autoplay: true,
+  autoplaySpeed: 4000,
 };
 
 const mainSliderSettings = {
@@ -146,35 +183,125 @@ const mainSliderSettings = {
   slidesToScroll: 1,
   arrows: true,
   autoplay: true,
-  autoplaySpeed: 3500,
+  autoplaySpeed: 5000,
 };
+
+// Componente Modal mejorado
+const Modal = ({ open, onClose, children }: { open: boolean, onClose: () => void, children: React.ReactNode }) => {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 rounded-2xl p-8 min-w-[400px] max-w-[90vw] max-h-[90vh] overflow-y-auto border border-cyan-500/30 shadow-2xl">
+        <button 
+          onClick={onClose} 
+          className="absolute top-4 right-6 text-2xl text-gray-400 hover:text-white transition-colors"
+        >
+          ×
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// Estilos para avatares con efectos gamer
+const avatar3DStyle = {
+  width: 120,
+  height: 120,
+  borderRadius: '50%',
+  objectFit: 'cover' as const,
+  border: '4px solid #00D4FF',
+  background: '#16213E',
+  margin: '0 auto 20px auto',
+  display: 'block',
+  animation: 'spin3d 3s linear infinite',
+  boxShadow: '0 0 30px 0 #00D4FF55, inset 0 0 20px 0 #00D4FF22',
+};
+
+const keyframes = `
+@keyframes spin3d {
+  0% { transform: rotateY(0deg) rotateX(0deg); }
+  50% { transform: rotateY(180deg) rotateX(10deg); }
+  100% { transform: rotateY(360deg) rotateX(0deg); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px 0 #00D4FF55; }
+  50% { box-shadow: 0 0 40px 0 #00D4FF88; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+`;
+
+// Mock de logros
+const mockAchievements = [
+  { id: 'a1', name: 'Campeón del Mes', icon: '🏆', color: '#FFD700' },
+  { id: 'a2', name: 'Cazador de Críticas', icon: '🔥', color: '#FF6B35' },
+  { id: 'a3', name: 'Participación Élite', icon: '⭐', color: '#00D4FF' },
+];
+
+// Función para generar datos de gráfica
+const getBarChartData = (stats: any) => [
+  { tipo: 'Críticas', cantidad: stats.criticas ?? 0, color: '#FF0040' },
+  { tipo: 'Medias', cantidad: stats.medias ?? 0, color: '#FF6B35' },
+  { tipo: 'Bajas', cantidad: stats.bajas ?? 0, color: '#00FF88' },
+];
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalData, setModalData] = useState<any>(null);
+  const [modalType, setModalType] = useState<'user' | 'team' | null>(null);
+  const { backgroundEnabled } = useBackground();
 
   return (
-    <div style={{ background: DARK_BG, minHeight: '100vh' }} className="w-full px-0 py-0">
-      {/* Carrusel principal */}
-      <div className="w-full flex justify-center items-center py-6">
-        <div className="relative w-full max-w-4xl h-64 rounded-3xl overflow-hidden shadow-2xl" style={{ background: '#23263a' }}>
-          <Slider {...mainSliderSettings} className="w-full h-full">
-            {carouselSlides.map((slide, _) => (
-              <div key={slide.title} className="w-full h-64 relative flex items-stretch" style={{ borderRadius: 24 }}>
-                {/* Imagen de fondo */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black relative">
+      {/* Fondo interactivo Pac-Man */}
+      {backgroundEnabled && <PacmanBackground />}
+      
+
+      
+      {/* Estilos globales */}
+      <style>{keyframes}</style>
+      
+
+
+      {/* Carrusel principal mejorado */}
+      <div className="max-w-6xl mx-auto px-4 mb-12">
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-cyan-500/30">
+          <Slider {...mainSliderSettings}>
+            {carouselSlides.map((slide, index) => (
+              <div key={index} className="relative h-80">
                 <img
                   src={slide.image}
                   alt={slide.title}
                   className="absolute inset-0 w-full h-full object-cover"
-                  style={{ borderRadius: 24, zIndex: 1 }}
                 />
-                {/* Overlay oscuro */}
-                <div className="absolute inset-0 bg-black bg-opacity-60" style={{ borderRadius: 24, zIndex: 2 }} />
-                {/* Contenido */}
-                <div className="relative z-10 w-full h-full flex flex-col justify-center items-start px-12" style={{ borderRadius: 24 }}>
-                  <h2 className="text-3xl md:text-4xl font-extrabold mb-2 text-white drop-shadow-lg">{slide.title}</h2>
-                  <p className="text-lg md:text-xl text-blue-200 mb-4 drop-shadow">{slide.desc}</p>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/40 to-transparent"></div>
+                
+                <div className="relative z-10 h-full flex flex-col justify-center items-start p-12">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className={`p-3 rounded-full bg-gradient-to-r ${slide.gradient} shadow-lg`}>
+                      {slide.icon}
+                    </div>
+                    <div>
+                      <h2 className="text-4xl md:text-5xl font-black text-white mb-2">
+                        {slide.title}
+                      </h2>
+                      <p className="text-xl text-cyan-300 font-semibold">
+                        {slide.subtitle}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-lg text-gray-200 mb-6 max-w-md">
+                    {slide.desc}
+                  </p>
                   <button
-                    className="px-6 py-2 rounded-full font-bold text-white bg-blue-500 hover:bg-blue-400 shadow-lg transition-all duration-200 text-lg"
+                    className={`px-8 py-4 rounded-full font-bold text-lg bg-gradient-to-r ${slide.gradient} text-white shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 border-white/20`}
                     onClick={() => navigate(slide.action)}
                   >
                     {slide.button}
@@ -185,90 +312,256 @@ const Dashboard: React.FC = () => {
           </Slider>
         </div>
       </div>
-      {/* Grid de cards y carruseles MVP */}
-      <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row gap-12 py-10 px-4">
-        {/* Grid de cards 2x2 */}
-        <div className="flex flex-col items-center justify-center flex-1">
-          <div className="grid grid-cols-2 gap-6" style={{width: 'max-content'}}>
-            {cards.map((card) => (
-              <div
-                key={card.title}
-                onClick={() => navigate(card.action)}
-                className={`cursor-pointer flex flex-col items-center justify-center rounded-2xl shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl bg-gradient-to-br ${card.color} group`}
-                style={{ minHeight: 240, minWidth: 240, maxWidth: 320, maxHeight: 320, aspectRatio: '1/1', fontSize: '1.5rem' }}
-              >
-                <div className="mb-2 text-white drop-shadow-lg group-hover:scale-110 transition-transform duration-200">{card.icon}</div>
-                <div className="text-3xl font-bold text-white mb-1 drop-shadow-lg">{card.title}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Columna derecha: Carruseles MVP en fila */}
-        <div className="flex flex-col w-full flex-[2] mt-8 lg:mt-0">
-          <div className="flex flex-row gap-4 w-full justify-center items-start">
-            {/* Carrusel MVP TEAM */}
-            <div style={{...mvpCardStyle, width: '100%', maxWidth: 260}} className="p-8 flex flex-col items-center justify-center flex-1">
-              <h2 className="text-2xl font-bold text-yellow-400 mb-4 text-center">MVP TEAM</h2>
-              <Slider {...sliderSettings} className="w-full">
-                {mvpTeams.map((team, _) => (
-                  <div key={team.name} className="flex flex-col items-center justify-center text-center h-full">
-                    <img
-                      src={team.avatar || 'https://via.placeholder.com/100x100/23263a/00BFFF?text=TEAM'}
-                      alt={team.name}
-                      style={avatarStyle}
-                    />
-                    <div className="text-xl font-bold text-white mb-2 mt-2 w-full">{team.name}</div>
-                    <div className="flex gap-6 justify-center text-center text-base w-full">
-                      <div>
-                        <div className="text-gray-400">Críticas</div>
-                        <div className="text-blue-400 font-bold">{team.stats.criticas ?? 'N/A'}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-400">Medias</div>
-                        <div className="text-blue-400 font-bold">{team.stats.medias ?? 'N/A'}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-400">Bajas</div>
-                        <div className="text-blue-400 font-bold">{team.stats.bajas ?? 'N/A'}</div>
-                      </div>
-                    </div>
+
+      {/* Grid principal */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid lg:grid-cols-3 gap-8">
+          
+          {/* Columna izquierda: Cards de navegación */}
+          <div className="lg:col-span-1">
+            <h2 className="text-3xl font-black text-white mb-6 text-center">
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-600 bg-clip-text text-transparent">
+                NAVEGACIÓN
+              </span>
+            </h2>
+            <div className="grid grid-cols-2 gap-4">
+              {navigationCards.map((card, index) => (
+                <div
+                  key={card.title}
+                  onClick={() => navigate(card.action)}
+                  className={`group cursor-pointer rounded-2xl p-6 bg-gradient-to-br ${card.gradient} shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 border border-white/20`}
+                >
+                  <div className="text-white mb-3 group-hover:scale-110 transition-transform duration-300">
+                    {card.icon}
                   </div>
-                ))}
-              </Slider>
+                  <h3 className="text-xl font-black text-white mb-1">{card.title}</h3>
+                  <p className="text-sm text-white/80 font-medium">{card.subtitle}</p>
+                  <p className="text-xs text-white/60 mt-2">{card.description}</p>
+                </div>
+              ))}
             </div>
-            {/* Carrusel MVP USER */}
-            <div style={{...mvpCardStyle, width: '100%', maxWidth: 260}} className="p-8 flex flex-col items-center justify-center flex-1">
-              <h2 className="text-2xl font-bold text-pink-400 mb-4 text-center">MVP USER</h2>
-              <Slider {...sliderSettings} className="w-full">
-                {mvpUsers.map((user, _) => (
-                  <div key={user.name} className="flex flex-col items-center justify-center text-center h-full">
-                    <img
-                      src={user.avatar || 'https://via.placeholder.com/100x100/23263a/00BFFF?text=USER'}
-                      alt={user.name}
-                      style={avatarStyle}
-                    />
-                    <div className="text-xl font-bold text-white mb-2 mt-2 w-full">{user.name}</div>
-                    <div className="flex gap-6 justify-center text-center text-base w-full">
-                      <div>
-                        <div className="text-gray-400">Críticas</div>
-                        <div className="text-blue-400 font-bold">{user.stats.criticas ?? 'N/A'}</div>
+          </div>
+
+          {/* Columna derecha: Carruseles MVP */}
+          <div className="lg:col-span-2">
+            <h2 className="text-3xl font-black text-white mb-6 text-center">
+              <span className="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                LEGENDARIOS
+              </span>
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              
+              {/* MVP TEAM */}
+              <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 rounded-2xl p-6 border border-cyan-500/30 shadow-xl">
+                <div className="text-center mb-4">
+                  <h3 className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent mb-2">
+                    MVP TEAM
+                  </h3>
+                  <div className="w-16 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 mx-auto rounded-full"></div>
+                </div>
+                
+                <Slider {...sliderSettings} className="mvp-slider">
+                  {mvpTeams.map((team, index) => (
+                    <div key={team.name} className="text-center">
+                      <div className="relative mb-4">
+                        <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                        <img
+                          src={team.avatar || 'https://via.placeholder.com/120x120/16213E/00D4FF?text=TEAM'}
+                          alt={team.name}
+                          style={avatar3DStyle}
+                          onClick={() => { setModalData(team); setModalType('team'); setModalOpen(true); }}
+                          className="cursor-pointer relative z-10"
+                        />
                       </div>
-                      <div>
-                        <div className="text-gray-400">Medias</div>
-                        <div className="text-blue-400 font-bold">{user.stats.medias ?? 'N/A'}</div>
+                      
+                      <h4 className="text-xl font-black text-white mb-1">{team.name}</h4>
+                      <p className="text-sm text-cyan-300 font-medium mb-4">{team.title}</p>
+                      
+                      <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="text-center">
+                          <div className="text-xs text-gray-400 font-medium">CRÍTICAS</div>
+                          <div className="text-lg font-black text-red-400">{team.stats.criticas}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-gray-400 font-medium">MEDIAS</div>
+                          <div className="text-lg font-black text-orange-400">{team.stats.medias}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-gray-400 font-medium">BAJAS</div>
+                          <div className="text-lg font-black text-green-400">{team.stats.bajas}</div>
+                        </div>
                       </div>
-                      <div>
-                        <div className="text-gray-400">Bajas</div>
-                        <div className="text-blue-400 font-bold">{user.stats.bajas ?? 'N/A'}</div>
+                      
+                      <div className="flex justify-center gap-4 text-xs">
+                        <div className="flex items-center gap-1">
+                          <FaTrophy className="text-yellow-400" />
+                          <span className="text-white">#{team.rank}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <FaFire className="text-orange-400" />
+                          <span className="text-white">{team.points}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <FaRocket className="text-cyan-400" />
+                          <span className="text-white">{team.effectiveness}%</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </Slider>
+                  ))}
+                </Slider>
+              </div>
+
+              {/* MVP USER */}
+              <div className="bg-gradient-to-br from-gray-800 via-gray-700 to-gray-800 rounded-2xl p-6 border border-purple-500/30 shadow-xl">
+                <div className="text-center mb-4">
+                  <h3 className="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent mb-2">
+                    MVP USER
+                  </h3>
+                  <div className="w-16 h-1 bg-gradient-to-r from-purple-400 to-pink-500 mx-auto rounded-full"></div>
+                </div>
+                
+                <Slider {...sliderSettings} className="mvp-slider">
+                  {mvpUsers.map((user, index) => (
+                    <div key={user.name} className="text-center">
+                      <div className="relative mb-4">
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                        <img
+                          src={user.avatar || 'https://via.placeholder.com/120x120/16213E/00D4FF?text=USER'}
+                          alt={user.name}
+                          style={avatar3DStyle}
+                          onClick={() => { setModalData(user); setModalType('user'); setModalOpen(true); }}
+                          className="cursor-pointer relative z-10"
+                        />
+                      </div>
+                      
+                      <h4 className="text-xl font-black text-white mb-1">{user.name}</h4>
+                      <p className="text-sm text-purple-300 font-medium mb-4">{user.title}</p>
+                      
+                      <div className="grid grid-cols-3 gap-4 mb-4">
+                        <div className="text-center">
+                          <div className="text-xs text-gray-400 font-medium">CRÍTICAS</div>
+                          <div className="text-lg font-black text-red-400">{user.stats.criticas}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-gray-400 font-medium">MEDIAS</div>
+                          <div className="text-lg font-black text-orange-400">{user.stats.medias}</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-gray-400 font-medium">BAJAS</div>
+                          <div className="text-lg font-black text-green-400">{user.stats.bajas}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-center gap-4 text-xs">
+                        <div className="flex items-center gap-1">
+                          <FaTrophy className="text-yellow-400" />
+                          <span className="text-white">#{user.rank}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <FaFire className="text-orange-400" />
+                          <span className="text-white">{user.points}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <FaRocket className="text-cyan-400" />
+                          <span className="text-white">{user.effectiveness}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </Slider>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modal de información MVP mejorado */}
+      <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
+        {modalData && (
+          <div className="text-center">
+            <div className="relative mb-6">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-500 rounded-full blur-2xl opacity-30 animate-pulse"></div>
+              <img
+                src={modalData.avatar || (modalType === 'team' ? 'https://via.placeholder.com/120x120/16213E/00D4FF?text=TEAM' : 'https://via.placeholder.com/120x120/16213E/00D4FF?text=USER')}
+                alt={modalData.name}
+                style={{ ...avatar3DStyle, width: 140, height: 140, marginBottom: 0 }}
+                className="relative z-10"
+              />
+            </div>
+            
+            <h2 className="text-3xl font-black text-white mb-2">{modalData.name}</h2>
+            <p className="text-lg text-cyan-300 font-medium mb-6">{modalData.title}</p>
+            
+            {/* Estadísticas principales */}
+            <div className="grid grid-cols-3 gap-6 mb-6">
+              <div className="text-center">
+                <div className="text-sm text-gray-400 font-medium">RANKING</div>
+                <div className="text-2xl font-black text-yellow-400">#{modalData.rank}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-gray-400 font-medium">PUNTOS</div>
+                <div className="text-2xl font-black text-cyan-400">{modalData.points}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-gray-400 font-medium">EFECTIVIDAD</div>
+                <div className="text-2xl font-black text-green-400">{modalData.effectiveness}%</div>
+              </div>
+            </div>
+            
+            {/* Gráfica de barras */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-white mb-3">Estadísticas de Vulnerabilidades</h3>
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height={180}>
+                  <BarChart data={getBarChartData(modalData.stats)}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="tipo" tick={{ fill: '#E2E8F0', fontSize: 12 }} />
+                    <YAxis allowDecimals={false} tick={{ fill: '#E2E8F0', fontSize: 12 }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        background: '#1A1A2E', 
+                        border: '1px solid #00D4FF',
+                        borderRadius: '8px',
+                        color: '#E2E8F0'
+                      }} 
+                    />
+                    <Bar dataKey="cantidad" fill="#00D4FF" radius={[4,4,0,0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+            
+            {/* Logros */}
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-white mb-3">Logros del Mes</h3>
+              <div className="flex justify-center gap-4">
+                {mockAchievements.map(ach => (
+                  <div key={ach.id} className="bg-gradient-to-br from-gray-800 to-gray-700 rounded-xl p-3 border border-cyan-500/30 shadow-lg">
+                    <div className="text-2xl mb-1">{ach.icon}</div>
+                    <div className="text-xs font-bold text-white">{ach.name}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            {/* Estadísticas detalladas */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-sm text-gray-400 font-medium">CRÍTICAS</div>
+                <div className="text-xl font-black text-red-400">{modalData.stats.criticas}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-gray-400 font-medium">MEDIAS</div>
+                <div className="text-xl font-black text-orange-400">{modalData.stats.medias}</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-gray-400 font-medium">BAJAS</div>
+                <div className="text-xl font-black text-green-400">{modalData.stats.bajas}</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

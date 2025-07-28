@@ -17,13 +17,29 @@ const DuelCreateForm: React.FC<DuelCreateFormProps> = ({ onCreate }) => {
   const [points, setPoints] = useState(10);
   const [opponent, setOpponent] = useState('');
   const [openDuel, setOpenDuel] = useState(false);
+  const [team1Members, setTeam1Members] = useState(['', '', '', '', '']);
+  const [myTeamName, setMyTeamName] = useState('');
+  const [opponentTeamName, setOpponentTeamName] = useState('');
 
   return (
     <form
       className="bg-black/60 border border-neon-green rounded-xl p-4 flex flex-col gap-3"
       onSubmit={e => {
         e.preventDefault();
-        onCreate({ type, objective, points, opponent: openDuel ? null : opponent, openDuel });
+        if (type === 'EQUIPO') {
+          onCreate({
+            type: 'EQUIPO',
+            objective,
+            points,
+            openDuel,
+            opponents: [
+              { teamName: myTeamName || 'Mi equipo', members: team1Members.map(name => ({ avatar: '', name })) },
+              { teamName: opponentTeamName || 'Por definir', members: [] },
+            ],
+          });
+        } else {
+          onCreate({ type, objective, points, opponent: openDuel ? null : opponent, openDuel });
+        }
       }}
     >
       <div>
@@ -37,6 +53,41 @@ const DuelCreateForm: React.FC<DuelCreateFormProps> = ({ onCreate }) => {
           </button>
         </div>
       </div>
+      {type === 'EQUIPO' && (
+        <div className="mb-4">
+          <label className="block text-neon-green font-bold mb-1">Nombre de tu equipo</label>
+          <input
+            type="text"
+            className="w-full mb-2 px-2 py-1 rounded bg-gray-800 text-white border border-neon-green/30"
+            placeholder="Nombre de tu equipo"
+            value={myTeamName}
+            onChange={e => setMyTeamName(e.target.value)}
+          />
+          <label className="block text-neon-green font-bold mb-1">Integrantes de tu equipo</label>
+          {team1Members.map((name, idx) => (
+            <input
+              key={idx}
+              type="text"
+              className="w-full mb-1 px-2 py-1 rounded bg-gray-800 text-white border border-neon-green/30"
+              placeholder={`Miembro ${idx + 1}`}
+              value={name}
+              onChange={e => {
+                const newMembers = [...team1Members];
+                newMembers[idx] = e.target.value;
+                setTeam1Members(newMembers);
+              }}
+            />
+          ))}
+          <label className="block text-neon-green font-bold mt-2 mb-1">Nombre del equipo oponente (opcional)</label>
+          <input
+            type="text"
+            className="w-full mb-2 px-2 py-1 rounded bg-gray-800 text-white border border-neon-green/30"
+            placeholder="Nombre del equipo oponente"
+            value={opponentTeamName}
+            onChange={e => setOpponentTeamName(e.target.value)}
+          />
+        </div>
+      )}
       <div>
         <label className="block text-neon-green font-bold mb-1">Objetivo del Duelo</label>
         <select value={objective} onChange={e => setObjective(e.target.value)} className="w-full rounded-lg border border-neon-green bg-black/60 text-neon-green px-3 py-2">

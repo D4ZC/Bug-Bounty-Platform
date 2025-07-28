@@ -29,11 +29,29 @@ interface AuthContextType extends AuthState {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+// Usuario de prueba para desarrollo - basado en el perfil
+const mockUser: User = {
+  _id: '1',
+  email: 'nicole@example.com',
+  username: 'NicoleHunt',
+  firstName: 'Nicole',
+  lastName: 'Hunt',
+  role: 'member',
+  points: 1420,
+  rank: 1,
+  isMVP: false,
+  isGulagParticipant: false,
+  achievements: [],
+  badges: [],
+  createdAt: new Date(),
+  updatedAt: new Date()
+};
+
 const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: false,
-  isLoading: true,
+  user: mockUser, // Usuario de prueba por defecto
+  token: localStorage.getItem('token') || 'mock-token',
+  isAuthenticated: true, // Autenticado por defecto para desarrollo
+  isLoading: false,
   error: null,
 };
 

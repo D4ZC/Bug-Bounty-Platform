@@ -116,13 +116,17 @@ const Duels: React.FC = () => {
           <h2 className="text-xl font-bold text-neon-green mb-2">FORJA UN NUEVO DESAFÍO</h2>
           <DuelCreateForm onCreate={handleCreateDuel} />
         </div>
-        {/* Panel Inferior: Clasificación de Campeones */}
+        {/* Panel Inferior: Reglas de Duelos */}
         <div className="md:col-span-1 flex flex-col">
-          <h2 className="text-xl font-bold text-neon-green mb-2">CAMPEONES DE LA ARENA</h2>
-          <ChampionsTable champions={champions.map(champ => ({
-            ...champ,
-            avatar: champ.avatar || `data:image/svg+xml;utf8,${encodeURIComponent(new DiceBear.default(Identicon.default).create(champ.name))}`,
-          }))} />
+          <h2 className="text-xl font-bold text-neon-green mb-2">REGLAS DE LOS DUELOS</h2>
+          <div className="bg-gray-900 rounded-xl p-4 text-white text-sm leading-relaxed border border-neon-green/40 shadow">
+            <b>DUELOS:</b><br/>
+            Enfrentamientos de usuarios y equipos: Los duelos consisten en un enfrentamiento amistoso entre usuarios o equipos, al entrar un duelo sería necesario pagar con puntos de la misma web, el costo depende de la sección aceptada, donde se dará un tiempo límite para resolver la mayor cantidad de vulnerabilidades de la categoría aceptada, el usuario o equipo que resuelva más vulnerabilidades ganaría el enfrentamiento. Los enfrentamientos son opcionales y deben de ser aceptados por ambas partes (si un integrante no está en el evento grupal aún se le considerará al momento de perder o ganar). En caso de los equipos, el representante debe de aceptar el enfrentamiento en nombre de todo el equipo.<br/><br/>
+            <b>¿QUÉ PODRÍAS GANAR?</b><br/>
+            Los ganadores de los enfrentamientos obtendrán los puntos del perdedor a proporción de la categoría entrada y se les devolverá el costo de entrada. En caso del modo por equipo se dará una porción equitativa a todos los miembros del equipo ganador y se ganará puntos para el equipo.<br/><br/>
+            <b>¿QUÉ PUEDES PERDER?</b><br/>
+            Los puntos perdidos serán a proporción de la categoría aceptada.
+          </div>
         </div>
       </div>
     </div>
