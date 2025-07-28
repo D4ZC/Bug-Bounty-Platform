@@ -95,6 +95,7 @@
     "deploymentName": "Nome do deploy",
     "tooltipEdit": "Editar este projeto",
     "tooltipDelete": "Excluir este projeto",
+    "projectDescription": "Descrição do projeto",
     "help": {
       "projectName": "Digite o nome do projeto.",
       "type": "Digite o tipo de vulnerabilidade (ex: SQL Injection).",
@@ -114,6 +115,14 @@
     "deleteFinalTitle": "Confirme a exclusão do projeto {{name}}",
     "deleteFinalConfirm": "Confirmar",
     "deleteFinalCancel": "Cancelar",
-    "searchVuln": "Pesquisar"
+    "searchVuln": "Pesquisar",
+    "filter": "Filtrar",
+    "dateFilter": "Data:",
+    "yearFilter": "Ano:",
+    "typeFilter": "Tipo:",
+    "statusFilter": "Status:",
+    "orderFilter": "Ordem:",
+    "projectTitle": "Título do projeto",
+    "projectDesc": "Descrição do projeto"
   }
 } 

@@ -26,6 +26,7 @@ interface Vulnerability {
 interface Project {
   id: string;
   name: string;
+  projectDescription?: string;
   vulnerabilities: Vulnerability[];
 }
 
@@ -106,6 +107,18 @@ const Home: React.FC = () => {
   const [modalProject, setModalProject] = useState<Project | null>(null);
   const [modalDifficulty, setModalDifficulty] = useState<string | null>(null);
   const [modalVulnType, setModalVulnType] = useState<string | null>(null);
+  const [projectModalOpen, setProjectModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('low');
+  const [projectSearch, setProjectSearch] = useState<string>('');
+  
+  // Nuevos estados para filtros del modal del proyecto
+  const [modalDateFilter, setModalDateFilter] = useState<string>('all');
+  const [modalYearFilter, setModalYearFilter] = useState<string>('all');
+  const [modalTypeFilter, setModalTypeFilter] = useState<string>('all');
+  const [modalStatusFilter, setModalStatusFilter] = useState<string>('all');
+  const [modalOrderFilter, setModalOrderFilter] = useState<string>('default');
+  
   const [showForm, setShowForm] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   // Form state
@@ -216,6 +229,20 @@ const Home: React.FC = () => {
     setModalVulnType(null);
   };
 
+  const openProjectModal = (project: Project) => {
+    setSelectedProject(project);
+    setSelectedDifficulty('low');
+    setProjectSearch('');
+    setProjectModalOpen(true);
+  };
+
+  const closeProjectModal = () => {
+    setProjectModalOpen(false);
+    setSelectedProject(null);
+    setSelectedDifficulty('low');
+    setProjectSearch('');
+  };
+
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-6 py-6">
       {/* Header de equipo y stats */}
@@ -240,6 +267,13 @@ const Home: React.FC = () => {
                 placeholder={t('home.help.projectName')}
                 className={`w-full border rounded p-2 mt-1 placeholder-gray-400 ${form.name ? 'text-black font-bold' : 'text-gray-400'}`}
                 required
+              />
+              <TextareaAutosize
+                minRows={2}
+                placeholder={t('home.projectDescription', { defaultValue: 'Descripción del proyecto' })}
+                value={form.projectDescription || ''}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setForm({ ...form, projectDescription: e.target.value })}
+                className={`w-full border rounded p-2 mt-2 placeholder-gray-400 resize-none ${form.projectDescription ? 'text-black font-bold' : 'text-gray-400'}`}
               />
             </div>
             <div>
@@ -327,11 +361,12 @@ const Home: React.FC = () => {
                       />
                     )}
                   </div>
-                  <input
+                  <TextareaAutosize
+                    minRows={2}
                     placeholder={t('home.help.generalDescription')}
                     value={vuln.generalDescription}
-                    onChange={e => handleVulnChange(vIdx, 'generalDescription', e.target.value)}
-                    className={`border rounded p-1 w-full mt-1 placeholder-gray-400 ${vuln.generalDescription ? 'text-black font-bold' : 'text-gray-400'}`}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleVulnChange(vIdx, 'generalDescription', e.target.value)}
+                    className={`border rounded p-1 w-full mt-1 placeholder-gray-400 resize-none ${vuln.generalDescription ? 'text-black font-bold' : 'text-gray-400'}`}
                     required
                   />
                   <input
@@ -403,18 +438,9 @@ const Home: React.FC = () => {
                 </div>
               ))}
             </div>
-            <div className="flex gap-2 justify-end">
-              <button 
-                type="button" 
-                className="px-4 py-2 bg-gray-500 text-white rounded font-bold hover:bg-gray-600"
-                onClick={() => setShowForm(false)}
-              >
-                {t('home.cancel')}
-              </button>
-              <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">
-                {editIndex !== null ? t('home.save') : t('home.create')}
-              </button>
-            </div>
+            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">
+              {editIndex !== null ? t('home.save') : t('home.create')}
+            </button>
           </form>
         )}
       </div>
@@ -462,7 +488,11 @@ const Home: React.FC = () => {
             project.vulnerabilities.reduce((acc, v) => acc + ((v.difficulties[diff] || []).length), 0)
           );
           return (
-            <div key={project.id} className="project-card bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 min-w-[320px] border-4 border-blue-600">
+            <div 
+              key={project.id} 
+              className="project-card bg-white dark:bg-gray-900 rounded-xl shadow p-6 flex flex-col gap-4 min-w-[320px] border-4 border-blue-600 cursor-pointer hover:shadow-lg transition-shadow"
+              onClick={() => openProjectModal(project)}
+            >
               <div className="flex items-center mb-2">
                 <button
                   className="flex items-center justify-center px-2 py-1 bg-blue-600 text-white rounded font-bold hover:bg-blue-700"
@@ -537,88 +567,425 @@ const Home: React.FC = () => {
       {modalProject && modalDifficulty && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
           <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] flex relative">
-            {/* Sidebar de tipos de vulnerabilidad */}
+            {/* Sidebar de vulnerabilidades que tienen ítems en la dificultad seleccionada */}
             <div className="w-64 bg-gray-100 dark:bg-gray-800 rounded-l-2xl p-4 overflow-y-auto">
               <div className="font-bold mb-4">{t('dashboard.vulnerabilityTypes')}</div>
               <ul className="space-y-2">
-                {modalProject.vulnerabilities.filter((v: Vulnerability) => (v.difficulties[modalDifficulty] || []).length > 0).map((v: Vulnerability, idx) => (
-                  <li key={v.types && v.types.length > 0 ? v.types.join('-') : idx}>
-                    <button
-                      className={`w-full text-left px-3 py-2 rounded-lg font-semibold transition ${modalVulnType === (v.types && v.types[0]) ? 'bg-blue-200 dark:bg-blue-700' : 'hover:bg-blue-100 dark:hover:bg-blue-700'}`}
-                      onClick={() => setModalVulnType(v.types && v.types[0])}
-                    >
-                      {Array.isArray(v.types) && v.types.length > 0
-                        ? v.types.map(type => t(`home.${type}`, { defaultValue: type }).toUpperCase()).join(', ')
-                        : ''}
-                    </button>
-                  </li>
-                ))}
+                {modalProject.vulnerabilities
+                  .filter((v: Vulnerability) => (v.difficulties[modalDifficulty] || []).length > 0)
+                  .map((v: Vulnerability, idx) => (
+                    <li key={v.types && v.types.length > 0 ? v.types.join('-') : idx}>
+                      <button
+                        className={`w-full text-left px-3 py-2 rounded-lg font-semibold transition ${modalVulnType === (v.types && v.types[0]) ? 'bg-blue-200 dark:bg-blue-700' : 'hover:bg-blue-100 dark:hover:bg-blue-700'}`}
+                        onClick={() => setModalVulnType(v.types && v.types[0])}
+                      >
+                        {Array.isArray(v.types) && v.types.length > 0
+                          ? v.types.map(type =>
+                              type === 'other' && v.otherType
+                                ? v.otherType.toUpperCase()
+                                : t(`home.${type}`, { defaultValue: type }).toUpperCase()
+                            ).join(', ')
+                          : ''}
+                      </button>
+                    </li>
+                  ))}
               </ul>
             </div>
-            {/* Panel de detalles */}
-            <div className="flex-1 p-0 overflow-y-auto relative flex flex-col">
-              {/* Header del modal con botón de cerrar */}
-              <div className="flex items-center justify-end px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                <button
-                  className="rounded-full bg-gray-100 dark:bg-gray-800 text-2xl font-bold text-gray-500 hover:text-red-600 hover:bg-gray-200 dark:hover:bg-gray-700 w-10 h-10 flex items-center justify-center focus:outline-none"
-                  onClick={closeVulnModal}
-                  aria-label={t('dashboard.close')}
-                >
-                  &times;
-                </button>
+
+            {/* Contenido principal de la modal de vulnerabilidad */}
+            <div className="flex-1 flex flex-col">
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                  {t(`home.${modalVulnType}`, { defaultValue: modalVulnType })}
+                </h2>
+                <p className="text-gray-600 dark:text-gray-400">
+                  {modalProject.projectDescription || t('home.projectDesc')}
+                </p>
               </div>
-              <div className="flex-1 p-6 overflow-y-auto">
-                {!modalVulnType && (
-                  <div className="text-gray-500 dark:text-gray-400 flex items-center justify-center h-full">{t('dashboard.selectVulnType')}</div>
-                )}
-                {modalVulnType && (() => {
-                  const vuln = modalProject.vulnerabilities.find((v) => Array.isArray(v.types) && v.types[0] === modalVulnType);
-                  const vulnList = vuln ? (vuln.difficulties[modalDifficulty] || []) : [];
-                  return (
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="text-xl font-bold">
-                          {Array.isArray(vuln?.types) && vuln.types.length > 0
+
+              {/* Pestañas de dificultad */}
+              <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
+                  {DIFFICULTY_LABELS.map((diff) => {
+                    const itemCount = modalProject.vulnerabilities.reduce((acc, vuln) => {
+                      return acc + ((vuln.difficulties[diff] || []).length);
+                    }, 0);
+                    return (
+                      <button
+                        key={diff}
+                        className={`px-4 py-2 font-semibold border-b-2 transition-colors ${
+                          modalDifficulty === diff
+                            ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                        }`}
+                        onClick={() => setModalDifficulty(diff)}
+                      >
+                        {t(`dashboard.difficulty.${diff}`, { defaultValue: diff })} ({itemCount})
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Contenido de la pestaña seleccionada */}
+              <div className="flex-1 px-6 py-4 overflow-y-auto">
+                <div className="space-y-4">
+                  {(() => {
+                    // Obtener todos los ítems de la dificultad seleccionada
+                    const allItems: Array<{
+                      vulnType: string;
+                      vulnDescription: string;
+                      vulnDiscoveredBy: string;
+                      item: VulnerabilityItem;
+                    }> = [];
+                    
+                    modalProject.vulnerabilities.forEach(vuln => {
+                      const items = vuln.difficulties[modalDifficulty] || [];
+                      items.forEach(item => {
+                        allItems.push({
+                          vulnType: Array.isArray(vuln.types) && vuln.types.length > 0
                             ? vuln.types.map(type =>
                                 type === 'other' && vuln.otherType
                                   ? vuln.otherType.toUpperCase()
                                   : t(`home.${type}`, { defaultValue: type }).toUpperCase()
                               ).join(', ')
-                            : ''}
-                        </div>
-                        {/* Contador de vulnerabilidades por dificultad */}
-                        <div className="flex gap-2">
-                          {DIFFICULTY_LABELS.map((diff) => (
-                            <span key={diff} className={`px-2 py-1 rounded text-xs font-semibold ${diff === modalDifficulty ? 'bg-blue-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200'}`}>
-                              {diff}: {vuln ? (vuln.difficulties[diff] || []).length : 0}
-                            </span>
-                          ))}
-                        </div>
+                            : '',
+                          vulnDescription: t(`home.${vuln.generalDescription}`, { defaultValue: vuln.generalDescription }),
+                          vulnDiscoveredBy: t(`home.${vuln.discoveredBy}`, { defaultValue: vuln.discoveredBy }),
+                          item
+                        });
+                      });
+                    });
+
+                    // Filtrar por búsqueda
+                    const filteredItems = allItems.filter(item => {
+                      const searchText = projectSearch.toLowerCase();
+                      return (
+                        item.vulnType.toLowerCase().includes(searchText) ||
+                        item.vulnDescription.toLowerCase().includes(searchText) ||
+                        item.vulnDiscoveredBy.toLowerCase().includes(searchText) ||
+                        t(`home.${item.item.name}`, { defaultValue: item.item.name }).toLowerCase().includes(searchText) ||
+                        t(`home.${item.item.description}`, { defaultValue: item.item.description }).toLowerCase().includes(searchText) ||
+                        t(`home.${item.item.problem}`, { defaultValue: item.item.problem }).toLowerCase().includes(searchText) ||
+                        t(`home.${item.item.howDetected}`, { defaultValue: item.item.howDetected }).toLowerCase().includes(searchText)
+                      );
+                    });
+
+                    return filteredItems.length === 0 ? (
+                      <div className="text-gray-500 dark:text-gray-400 text-center py-8">
+                        {projectSearch ? t('dashboard.noVulns') : t('dashboard.noVulns')}
                       </div>
-                      <div className="mb-2 text-gray-700 dark:text-gray-200">{t(`home.${vuln?.generalDescription}`, { defaultValue: vuln?.generalDescription })}</div>
-                      <div className="mb-2 text-gray-500 dark:text-gray-400 text-sm">{t('dashboard.discoveredBy')}: {t(`home.${vuln?.discoveredBy}`, { defaultValue: vuln?.discoveredBy })}</div>
-                      <div className="mb-4">
-                        <div className="font-semibold mb-1">{t('dashboard.vulnerabilities', { difficulty: modalDifficulty })}</div>
-                        <ul className="space-y-3">
-                          {vulnList.length === 0 && <li className="text-gray-400">{t('dashboard.noVulns')}</li>}
-                          {vulnList.map((vulnItem: VulnerabilityItem, idx: number) => (
-                            <li key={idx} className="border rounded-lg p-3 bg-gray-50 dark:bg-gray-800">
-                              <div className="font-bold text-base mb-1">{t(`home.${vulnItem.name}`, { defaultValue: vulnItem.name })}</div>
-                              <div className="mb-1"><span className="font-semibold">{t('dashboard.description')}</span> {t(`home.${vulnItem.description}`, { defaultValue: vulnItem.description })}</div>
-                              <div className="mb-1"><span className="font-semibold">{t('dashboard.problem')}</span> {t(`home.${vulnItem.problem}`, { defaultValue: vulnItem.problem })}</div>
-                              <div className="mb-1"><span className="font-semibold">{t('dashboard.howDetected')}</span> {t(`home.${vulnItem.howDetected}`, { defaultValue: vulnItem.howDetected })}</div>
-                              {vulnItem.images && vulnItem.images.length > 0 && (
-                                <div className="mt-2 flex gap-2 flex-wrap">
-                                  {vulnItem.images.map((img, i) => (
+                    ) : (
+                      filteredItems.map((itemData, idx) => (
+                        <div key={idx} className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                          <div className="mb-3">
+                            <div className="font-bold text-lg text-blue-600 dark:text-blue-400 mb-1">
+                              {itemData.vulnType}
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                              {itemData.vulnDescription}
+                            </div>
+                            <div className="text-xs text-gray-500 dark:text-gray-500">
+                              {t('dashboard.discoveredBy')}: {itemData.vulnDiscoveredBy}
+                            </div>
+                          </div>
+                          
+                          <div className="border-t pt-3">
+                            <div className="font-bold text-base mb-2">
+                              {t(`home.${itemData.item.name}`, { defaultValue: itemData.item.name })}
+                            </div>
+                            <div className="space-y-2 text-sm">
+                              <div>
+                                <span className="font-semibold">{t('dashboard.description')}:</span> 
+                                {t(`home.${itemData.item.description}`, { defaultValue: itemData.item.description })}
+                              </div>
+                              <div>
+                                <span className="font-semibold">{t('dashboard.problem')}:</span> 
+                                {t(`home.${itemData.item.problem}`, { defaultValue: itemData.item.problem })}
+                              </div>
+                              <div>
+                                <span className="font-semibold">{t('dashboard.howDetected')}:</span> 
+                                {t(`home.${itemData.item.howDetected}`, { defaultValue: itemData.item.howDetected })}
+                              </div>
+                            </div>
+                            
+                            {itemData.item.images && itemData.item.images.length > 0 && (
+                              <div className="mt-3 pt-3 border-t">
+                                <div className="font-semibold mb-2">{t('home.images')}:</div>
+                                <div className="flex gap-2 flex-wrap">
+                                  {itemData.item.images.map((img, i) => (
                                     <img key={i} src={img} alt="evidence" className="w-24 h-24 object-cover rounded border" />
                                   ))}
                                 </div>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal del proyecto con pestañas de dificultad */}
+      {projectModalOpen && selectedProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-6xl h-[85vh] flex flex-col">
+            {/* Header del modal con buscador */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-4 flex-1">
+                <div className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {t('home.acmeWebPlatform', selectedProject.name)}
+                </div>
+                <div className="relative flex-1 max-w-md">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Search size={20} className="text-gray-800" />
+                  </div>
+                  <input
+                    type="text"
+                    value={projectSearch}
+                    onChange={e => setProjectSearch(e.target.value)}
+                    placeholder={t('home.searchVuln')}
+                    className={`w-full border rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600 ${projectSearch ? 'text-black' : 'text-gray-600'}`}
+                  />
+                </div>
+              </div>
+              <button
+                className="rounded-full bg-gray-100 dark:bg-gray-800 text-2xl font-bold text-gray-500 hover:text-red-600 hover:bg-gray-200 dark:hover:bg-gray-700 w-10 h-10 flex items-center justify-center focus:outline-none"
+                onClick={closeProjectModal}
+                aria-label={t('dashboard.close')}
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Filtros */}
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex gap-4 items-center">
+                {/* Filtro de fecha */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {t('home.dateFilter')}
+                  </label>
+                  <select
+                    value={modalDateFilter}
+                    onChange={e => setModalDateFilter(e.target.value)}
+                    className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  >
+                    <option value="all">{t('home.all')}</option>
+                    <option value="creation">{t('home.creation')}</option>
+                    <option value="delivery">{t('home.delivery')}</option>
+                    <option value="detection">{t('home.detection')}</option>
+                  </select>
+                </div>
+
+                {/* Filtro de año */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {t('home.yearFilter')}
+                  </label>
+                  <select
+                    value={modalYearFilter}
+                    onChange={e => setModalYearFilter(e.target.value)}
+                    className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  >
+                    <option value="all">{t('home.all')}</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                  </select>
+                </div>
+
+                {/* Filtro de tipo */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {t('home.typeFilter')}
+                  </label>
+                  <select
+                    value={modalTypeFilter}
+                    onChange={e => setModalTypeFilter(e.target.value)}
+                    className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  >
+                    <option value="all">{t('home.all')}</option>
+                    <option value="sqlInjection">{t('home.sqlInjection')}</option>
+                    <option value="xss">{t('home.xss')}</option>
+                    <option value="csrf">{t('home.csrf')}</option>
+                    <option value="other">{t('home.other')}</option>
+                  </select>
+                </div>
+
+                {/* Filtro de estado */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {t('home.statusFilter')}
+                  </label>
+                  <select
+                    value={modalStatusFilter}
+                    onChange={e => setModalStatusFilter(e.target.value)}
+                    className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  >
+                    <option value="all">{t('home.all')}</option>
+                    <option value="open">Abierto</option>
+                    <option value="closed">Cerrado</option>
+                    <option value="pending">Pendiente</option>
+                  </select>
+                </div>
+
+                {/* Filtro de orden */}
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                    {t('home.orderFilter')}
+                  </label>
+                  <select
+                    value={modalOrderFilter}
+                    onChange={e => setModalOrderFilter(e.target.value)}
+                    className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  >
+                    <option value="default">{t('home.default')}</option>
+                    <option value="name">Por nombre</option>
+                    <option value="date">Por fecha</option>
+                    <option value="type">Por tipo</option>
+                  </select>
+                </div>
+
+                {/* Botón de filtrar */}
+                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold">
+                  <Search size={16} />
+                  {t('home.filter')}
+                </button>
+              </div>
+            </div>
+
+            {/* Descripción del proyecto */}
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <p className="text-gray-600 dark:text-gray-400">
+                {selectedProject.projectDescription || t('home.projectDesc')}
+              </p>
+            </div>
+            
+            {/* Pestañas de dificultad */}
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex border-b border-gray-200 dark:border-gray-700">
+                {DIFFICULTY_LABELS.map((diff) => {
+                  const itemCount = selectedProject.vulnerabilities.reduce((acc, vuln) => {
+                    return acc + ((vuln.difficulties[diff] || []).length);
+                  }, 0);
+                  return (
+                    <button
+                      key={diff}
+                      className={`px-4 py-2 font-semibold border-b-2 transition-colors ${
+                        selectedDifficulty === diff
+                          ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                          : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                      }`}
+                      onClick={() => setSelectedDifficulty(diff)}
+                    >
+                      {t(`dashboard.difficulty.${diff}`, { defaultValue: diff })} ({itemCount})
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Contenido de la pestaña seleccionada */}
+            <div className="flex-1 px-6 py-4 overflow-y-auto">
+              <div className="space-y-4">
+                {(() => {
+                  // Obtener todos los ítems de la dificultad seleccionada
+                  const allItems: Array<{
+                    vulnType: string;
+                    vulnDescription: string;
+                    vulnDiscoveredBy: string;
+                    item: VulnerabilityItem;
+                  }> = [];
+                  
+                  selectedProject.vulnerabilities.forEach(vuln => {
+                    const items = vuln.difficulties[selectedDifficulty] || [];
+                    items.forEach(item => {
+                      allItems.push({
+                        vulnType: Array.isArray(vuln.types) && vuln.types.length > 0
+                          ? vuln.types.map(type =>
+                              type === 'other' && vuln.otherType
+                                ? vuln.otherType.toUpperCase()
+                                : t(`home.${type}`, { defaultValue: type }).toUpperCase()
+                            ).join(', ')
+                          : '',
+                        vulnDescription: t(`home.${vuln.generalDescription}`, { defaultValue: vuln.generalDescription }),
+                        vulnDiscoveredBy: t(`home.${vuln.discoveredBy}`, { defaultValue: vuln.discoveredBy }),
+                        item
+                      });
+                    });
+                  });
+
+                  // Filtrar por búsqueda
+                  const filteredItems = allItems.filter(item => {
+                    const searchText = projectSearch.toLowerCase();
+                    return (
+                      item.vulnType.toLowerCase().includes(searchText) ||
+                      item.vulnDescription.toLowerCase().includes(searchText) ||
+                      item.vulnDiscoveredBy.toLowerCase().includes(searchText) ||
+                      t(`home.${item.item.name}`, { defaultValue: item.item.name }).toLowerCase().includes(searchText) ||
+                      t(`home.${item.item.description}`, { defaultValue: item.item.description }).toLowerCase().includes(searchText) ||
+                      t(`home.${item.item.problem}`, { defaultValue: item.item.problem }).toLowerCase().includes(searchText) ||
+                      t(`home.${item.item.howDetected}`, { defaultValue: item.item.howDetected }).toLowerCase().includes(searchText)
+                    );
+                  });
+
+                  return filteredItems.length === 0 ? (
+                    <div className="text-gray-500 dark:text-gray-400 text-center py-8">
+                      {projectSearch ? t('dashboard.noVulns') : t('dashboard.noVulns')}
                     </div>
+                  ) : (
+                    filteredItems.map((itemData, idx) => (
+                      <div key={idx} className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
+                        <div className="mb-3">
+                          <div className="font-bold text-lg text-blue-600 dark:text-blue-400 mb-1">
+                            {itemData.vulnType}
+                          </div>
+                          <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
+                            {itemData.vulnDescription}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-500">
+                            {t('dashboard.discoveredBy')}: {itemData.vulnDiscoveredBy}
+                          </div>
+                        </div>
+                        
+                        <div className="border-t pt-3">
+                          <div className="font-bold text-base mb-2">
+                            {t(`home.${itemData.item.name}`, { defaultValue: itemData.item.name })}
+                          </div>
+                          <div className="space-y-2 text-sm">
+                            <div>
+                              <span className="font-semibold">{t('dashboard.description')}:</span> 
+                              {t(`home.${itemData.item.description}`, { defaultValue: itemData.item.description })}
+                            </div>
+                            <div>
+                              <span className="font-semibold">{t('dashboard.problem')}:</span> 
+                              {t(`home.${itemData.item.problem}`, { defaultValue: itemData.item.problem })}
+                            </div>
+                            <div>
+                              <span className="font-semibold">{t('dashboard.howDetected')}:</span> 
+                              {t(`home.${itemData.item.howDetected}`, { defaultValue: itemData.item.howDetected })}
+                            </div>
+                          </div>
+                          
+                          {itemData.item.images && itemData.item.images.length > 0 && (
+                            <div className="mt-3 pt-3 border-t">
+                              <div className="font-semibold mb-2">{t('home.images')}:</div>
+                              <div className="flex gap-2 flex-wrap">
+                                {itemData.item.images.map((img, i) => (
+                                  <img key={i} src={img} alt="evidence" className="w-24 h-24 object-cover rounded border" />
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))
                   );
                 })()}
               </div>
@@ -626,56 +993,17 @@ const Home: React.FC = () => {
           </div>
         </div>
       )}
-      {/* Banner de confirmación de borrado */}
-      {deleteIndex !== null && deleteStep === 1 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-md w-full">
-            <div className="text-lg font-bold mb-2">{t('home.deleteConfirmTitle', { defaultValue: '¿Estas seguro de que quieres borrar este proyecto?' })}</div>
-            <div className="flex gap-4">
-              <button className="px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700" onClick={() => setDeleteStep(2)}>{t('home.deleteConfirmYes', { defaultValue: 'Sí' })}</button>
-              <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded font-bold hover:bg-gray-400" onClick={() => { setDeleteIndex(null); setDeleteStep(null); }}>{t('home.deleteConfirmNo', { defaultValue: 'No' })}</button>
-            </div>
-          </div>
-        </div>
-      )}
-      {/* Banner de confirmación final */}
-      {deleteIndex !== null && deleteStep === 2 && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 flex flex-col items-center gap-4 max-w-md w-full">
-            <div className="text-lg font-bold mb-2">{t('home.deleteFinalTitle', { name: projects[deleteIndex]?.name, defaultValue: 'Confirma la eliminación del proyecto {{name}}' })}</div>
-            <div className="flex gap-4">
-              <button className="px-4 py-2 bg-red-600 text-white rounded font-bold hover:bg-red-700" onClick={() => handleDeleteProject(deleteIndex)}>{t('home.deleteFinalConfirm', { defaultValue: 'Confirmar' })}</button>
-              <button className="px-4 py-2 bg-gray-300 text-gray-800 rounded font-bold hover:bg-gray-400" onClick={() => { setDeleteIndex(null); setDeleteStep(null); }}>{t('home.deleteFinalCancel', { defaultValue: 'Cancelar' })}</button>
-            </div>
-          </div>
-        </div>
-      )}
       {/* Botón flotante Add Project en esquina inferior derecha */}
       <button
-        className={`fixed bottom-6 right-6 w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center z-50 ${
-          showForm 
-            ? 'bg-red-600 hover:bg-red-700 text-white' 
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
-        }`}
-        onClick={() => { 
-          if (showForm) {
-            setShowForm(false);
-          } else {
-            setShowForm(true); 
-            resetForm();
-          }
-        }}
-        title={showForm ? t('home.cancel') : t('home.addProject')}
-        aria-label={showForm ? t('home.cancel') : t('home.addProject')}
+        className="fixed bottom-20 right-6 md:right-10 z-40 bg-blue-600 text-white rounded-full p-3 shadow-lg hover:bg-blue-700 transition-colors"
+        onClick={() => setShowForm(true)}
+        aria-label={t('home.addProject')}
+        title={t('home.addProject')}
       >
-        {showForm ? (
-          <span className="text-2xl font-bold">&times;</span>
-        ) : (
-          <Add size={24} />
-        )}
+        <Add size={30} />
       </button>
     </div>
   );
 };
 
-export default Home; 
+export default Home;
