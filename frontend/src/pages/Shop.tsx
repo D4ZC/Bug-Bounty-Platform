@@ -109,17 +109,19 @@ const Shop: React.FC = () => {
     const savedShowCreateModal = localStorage.getItem('shopShowCreateModal');
     return savedShowCreateModal ? JSON.parse(savedShowCreateModal) : false;
   });
-  const [newProduct, setNewProduct] = useState(() => {
+    const [newProduct, setNewProduct] = useState(() => {
     const savedNewProduct = localStorage.getItem('shopNewProduct');
     return savedNewProduct ? JSON.parse(savedNewProduct) : {
       name: '',
       category: '',
       description: '',
       fileName: '',
+      imagePreview: '',
       price: 100,
       discount: 0,
     };
   });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
   const [deleteTimer, setDeleteTimer] = useState(0);
@@ -201,9 +203,27 @@ const Shop: React.FC = () => {
   const handlePressStart = () => setIsPressed(true);
   const handlePressEnd = () => setIsPressed(false);
 
-  const closeCreateModal = () => setShowCreateModal(false);
+  const closeCreateModal = () => {
+    // Limpiar URL temporal si existe
+    if (newProduct.imagePreview && newProduct.imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(newProduct.imagePreview);
+    }
+    setSelectedFile(null);
+    setShowCreateModal(false);
+    setEditingIdx(null);
+  };
   const openCreateModal = () => {
-    setNewProduct({ name: '', category: '', description: '', fileName: '', price: 100, discount: 0 });
+    // Limpiar URL temporal si existe
+    if (newProduct.imagePreview && newProduct.imagePreview.startsWith('blob:')) {
+      URL.revokeObjectURL(newProduct.imagePreview);
+    }
+    setSelectedFile(null);
+    setNewProduct({ name: '', category: '', description: '', fileName: '', imagePreview: '', price: 100, discount: 0 });
+    setShowCreateModal(true);
+  };
+  const openEditModal = (product: any, idx: number) => {
+    setNewProduct({...product});
+    setEditingIdx(idx);
     setShowCreateModal(true);
   };
 
@@ -304,109 +324,14 @@ const Shop: React.FC = () => {
                 className="max-w-full h-auto rounded-lg shadow-lg"
                 style={{ maxHeight: '700px', maxWidth: '100%' }}
               />
-            </div>
           </div>
         </div>
+      </div>
         
         
       {/* Catálogo de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-20 px-0">
         {products.map((product, idx) => (
-          editMode && editingIdx === idx ? (
-            <div
-            key={idx}
-            className="w-full max-w-xs bg-white rounded-lg shadow-md p-5 flex flex-col border border-gray-200 hover:shadow-lg transition-all duration-200 relative"
-          >
-                <Tag type="blue" className="mb-2">
-                  <TextInput
-                    id={`category-${idx}`}
-                    labelText="Categoría"
-                    hideLabel
-                    value={product.category}
-                    onChange={e => {
-                      const newProducts = [...products];
-                      newProducts[idx].category = e.target.value;
-                      setProducts(newProducts);
-                    }}
-                    className="w-full"
-                  />
-                </Tag>
-                <TextInput
-                  id={`name-${idx}`}
-                  labelText="Nombre"
-                  value={product.name}
-                  onChange={e => {
-                    const newProducts = [...products];
-                    newProducts[idx].name = e.target.value;
-                    setProducts(newProducts);
-                  }}
-                  className="font-bold text-lg mb-1"
-                />
-                <TextArea
-                  id={`desc-${idx}`}
-                  labelText="Descripción"
-                  value={product.description}
-                  onChange={e => {
-                    const newProducts = [...products];
-                    newProducts[idx].description = e.target.value;
-                    setProducts(newProducts);
-                  }}
-                  className="text-sm mb-2"
-                />
-              <TextInput
-                id={`price-${idx}`}
-                labelText="Precio (BugCoins)"
-                type="number"
-                min={0}
-                value={product.price}
-                onChange={e => {
-                  const newProducts = [...products];
-                  newProducts[idx].price = Number(e.target.value);
-                  setProducts(newProducts);
-                }}
-                className="mb-2"
-              />
-              <TextInput
-                id={`discount-${idx}`}
-                labelText="Descuento (%)"
-                type="number"
-                min={0}
-                max={100}
-                value={product.discount}
-                onChange={e => {
-                  const newProducts = [...products];
-                  newProducts[idx].discount = Number(e.target.value);
-                  setProducts(newProducts);
-                }}
-                className="mb-2"
-              />
-                <FileUploader
-                  labelTitle="Imagen"
-                  labelDescription="Sube una imagen para el producto"
-                  buttonLabel="Seleccionar archivo"
-                  accept={[".jpg", ".png"]}
-                  filenameStatus="edit"
-                  onChange={e => {
-                    const file = e.target.files && e.target.files[0];
-                    if (file) {
-                      const newProducts = [...products];
-                      newProducts[idx].fileName = file.name;
-                      setProducts(newProducts);
-                    }
-                  }}
-                  className="mt-2"
-                />
-                <div className="text-xs text-gray-500 mt-2">{product.fileName}</div>
-        <Button
-          kind="primary"
-                  size="sm"
-                  className="mt-2"
-                  onClick={() => setEditingIdx(null)}
-        >
-                  Guardar
-        </Button>
-      </div>
-        ) : (
             <div
               key={idx}
               className="w-full max-w-xs bg-white rounded-xl shadow-md flex flex-col border border-gray-200 hover:shadow-lg transition-all duration-200 relative overflow-hidden cursor-pointer"
@@ -431,8 +356,8 @@ const Shop: React.FC = () => {
                     size="sm"
                     hasIconOnly
                     renderIcon={Edit}
-                    onClick={() => setEditingIdx(idx)}
-                    className="!p-0"
+                    onClick={() => openEditModal(product, idx)}
+                    className="!p-0 !text-black hover:!bg-gray-100"
                   />
                   <Button
                     kind="ghost"
@@ -440,7 +365,7 @@ const Shop: React.FC = () => {
                     hasIconOnly
                     renderIcon={TrashCan}
                     onClick={() => startDeleteProcess(idx)}
-                    className="!p-0"
+                    className="!p-0 !text-black hover:!bg-gray-100"
                   />
                 </div>
               )}
@@ -458,7 +383,6 @@ const Shop: React.FC = () => {
                 </div>
               </div>
             </div>
-          )
         ))}
       </div>
       {/* Botones flotantes: editar y agregar */}
@@ -489,87 +413,143 @@ const Shop: React.FC = () => {
           </svg>
         </button>
       </div>
-      {/* Modal overlay personalizado para crear producto */}
+      {/* Modal overlay personalizado para crear/editar producto */}
       {showCreateModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center">
           {/* Fondo semitransparente (sin onClick) */}
           <div className="fixed inset-0 bg-black bg-opacity-40 z-40 animate-fade-in" />
           {/* Cuadro modal */}
           <div className="relative z-50 w-full max-w-md mx-auto bg-white rounded-lg shadow-lg p-8 animate-slide-fade-modal">
-            <h2 className="text-2xl font-bold mb-6">Agregar producto</h2>
-            <form onSubmit={e => {e.preventDefault(); setProducts([...products, {...newProduct}]); closeCreateModal();}}>
+            <h2 className="text-2xl font-bold mb-6 text-black">{editingIdx !== null ? 'Editar producto' : 'Agregar producto'}</h2>
+            <form onSubmit={e => {
+              e.preventDefault(); 
+              if (editingIdx !== null) {
+                // Editar producto existente
+                const updatedProducts = [...products];
+                updatedProducts[editingIdx] = {...newProduct};
+                setProducts(updatedProducts);
+                setEditingIdx(null);
+              } else {
+                // Crear nuevo producto
+                setProducts([...products, {...newProduct}]);
+              }
+              closeCreateModal();
+            }}>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Categoría</label>
+                <label className="block text-sm font-medium mb-1 text-black">Categoría</label>
                 <select
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500 text-black"
                   value={newProduct.category}
                   onChange={e => setNewProduct(np => ({ ...np, category: e.target.value }))}
           required
         >
                   <option value="">Selecciona una categoría</option>
+                  <option value="Marco">Marco</option>
+                  <option value="Fondo">Fondo</option>
+                  <option value="Avatar">Avatar</option>
                   <option value="Hardware">Hardware</option>
                   <option value="Software">Software</option>
                   <option value="Swag">Swag</option>
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Nombre</label>
+                <label className="block text-sm font-medium mb-1 text-black">Nombre</label>
                 <input
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500 text-black"
                   value={newProduct.name}
                   onChange={e => setNewProduct(np => ({ ...np, name: e.target.value }))}
           required
         />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Descripción</label>
+                <label className="block text-sm font-medium mb-1 text-black">Descripción</label>
                 <textarea
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500 text-black"
                   value={newProduct.description}
                   onChange={e => setNewProduct(np => ({ ...np, description: e.target.value }))}
           required
         />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Precio (BugCoins)</label>
+                <label className="block text-sm font-medium mb-1 text-black">Precio (BugCoins)</label>
                 <input
                   type="number"
                   min={0}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500 text-black"
                   value={newProduct.price}
                   onChange={e => setNewProduct(np => ({ ...np, price: Number(e.target.value) }))}
           required
         />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Descuento (%)</label>
+                <label className="block text-sm font-medium mb-1 text-black">Descuento (%)</label>
                 <input
                   type="number"
                   min={0}
                   max={100}
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-blue-500 text-black"
                   value={newProduct.discount}
                   onChange={e => setNewProduct(np => ({ ...np, discount: Number(e.target.value) }))}
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm font-medium mb-1">Imagen</label>
+                <label className="block text-sm font-medium mb-1 text-black">Imagen</label>
+                <div className="relative">
                 <input
                   type="file"
                   accept="image/*"
-                  className="w-full"
-                  onChange={e => {
-                    const file = e.target.files && e.target.files[0];
-                    if (file) setNewProduct(np => ({ ...np, fileName: file.name }));
-                  }}
-                />
-                {newProduct.fileName && <div className="text-xs text-gray-500 mt-1">{newProduct.fileName}</div>}
+                    id="file-input"
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                      onChange={e => {
+                      const file = e.target.files && e.target.files[0];
+                      if (file) {
+                        console.log('Archivo seleccionado:', file.name);
+                        setSelectedFile(file);
+                        // Crear URL temporal para la vista previa
+                        const imageUrl = URL.createObjectURL(file);
+                        setNewProduct(np => ({ 
+                          ...np, 
+                          fileName: `/${file.name}`, // Agregar / para que sea consistente con las rutas existentes
+                          imagePreview: imageUrl
+                        }));
+                      }
+                    }}
+                  />
+                  <div className="flex items-center justify-center w-full px-4 py-2 border border-gray-300 rounded text-black bg-white hover:bg-gray-50 cursor-pointer">
+                    <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <span className="text-blue-600 font-medium">Seleccionar imagen</span>
+              </div>
+                </div>
+                {/* Vista previa de la imagen seleccionada */}
+                {(selectedFile || newProduct.fileName) && (
+                  <div className="mt-3">
+                    <div className="text-xs text-gray-600 mb-2">Vista previa:</div>
+                    <div className="flex items-center gap-3">
+                      <img 
+                        src={selectedFile ? URL.createObjectURL(selectedFile) : newProduct.fileName} 
+                        alt="Vista previa" 
+                        className="w-16 h-16 object-cover rounded border"
+                        onError={e => {
+                          console.log('Error cargando imagen:', e.currentTarget.src);
+                          e.currentTarget.src = '/bp-logo.png';
+                        }}
+                      />
+                      <div className="flex-1">
+                        <div className="text-xs text-black font-medium">{selectedFile ? selectedFile.name : newProduct.fileName}</div>
+                        <div className="text-xs text-gray-500">Imagen seleccionada</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div className="text-xs text-gray-500 mt-1">Selecciona una imagen para el producto</div>
               </div>
 
               
               <div className="flex justify-end gap-3 mt-6">
-                <button type="button" className="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300" onClick={closeCreateModal}>Cancelar</button>
-                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Crear</button>
+                <button type="button" className="px-4 py-2 bg-gray-200 text-black rounded hover:bg-gray-300" onClick={closeCreateModal}>Cancelar</button>
+                <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">{editingIdx !== null ? 'Guardar' : 'Crear'}</button>
               </div>
             </form>
             <style>{`
@@ -1127,6 +1107,25 @@ const Shop: React.FC = () => {
         @keyframes slideFadeInModal {
           from { opacity: 0; transform: translateY(-30px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        /* Ocultar texto por defecto del input file */
+        input[type="file"] {
+          color: transparent !important;
+        }
+        input[type="file"]::file-selector-button {
+          margin-right: 8px;
+          color: #1d4ed8 !important;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+          margin-right: 8px;
+          color: #1d4ed8 !important;
+        }
+        /* Ocultar el texto "No se ha seleccionado ningún archivo" */
+        input[type="file"]::before {
+          content: none !important;
+        }
+        input[type="file"]::-webkit-file-upload-button {
+          content: none !important;
         }
       `}</style>
       </div>

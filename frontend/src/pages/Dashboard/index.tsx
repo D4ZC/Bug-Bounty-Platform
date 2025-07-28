@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TeamsScoreCard from './components/TeamsScoreCard';
 import MVPTeamCard from './components/MVPTeamCard';
 import GulagCard from './components/GulagCard';
@@ -67,57 +67,26 @@ const Dashboard: React.FC = () => {
 
   const [mvpTeam] = useState('Piteritos I');
   const [mvpUser] = useState({ name: 'D4ZC', img: '', stats: { criticas: 10, altas: 20, medianas: 30, bajas: 9, total: 69 } });
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false);
+  const [userName, setUserName] = useState('JuanAM'); // Nombre del usuario de Ajustes
   const navigate = useNavigate();
 
-  const sortedUsers = [...users].sort((a, b) => b.score - a.score);
-  const sortedTeams = [...teams].sort((a, b) => b.score - a.score);
-
-  const starRow = (rank: number) => {
-    if (rank === 1) return <><span className="text-yellow-400 text-xl mr-1">★</span><span className="text-yellow-400 text-xl mr-1">★</span><span className="text-yellow-400 text-xl">★</span></>;
-    if (rank === 2) return <><span className="text-yellow-400 text-xl mr-1">★</span><span className="text-yellow-400 text-xl">★</span><span className="text-gray-300 text-xl">★</span></>;
-    if (rank === 3) return <><span className="text-yellow-400 text-xl">★</span><span className="text-gray-300 text-xl mr-1">★</span><span className="text-gray-300 text-xl">★</span></>;
-    return <><span className="text-gray-300 text-xl">★</span><span className="text-gray-300 text-xl">★</span><span className="text-gray-300 text-xl">★</span></>;
-  };
-
-  const Leaderboard = ({ title, data, isTeam }: { title: string, data: any[], isTeam?: boolean }) => (
-    <div className="flex flex-col w-full bg-white rounded-xl shadow-md p-6 mb-8 max-h-[420px] overflow-y-auto">
-      <h3 className="text-2xl font-bold text-blue-700 mb-6">{title}</h3>
-      <div className="flex flex-row w-full gap-8">
-        {/* Destacado primer lugar */}
-        <div className="flex flex-col items-center bg-blue-50 rounded-xl p-6 shadow-md w-1/3 min-w-[220px]">
-          <div className="bg-white rounded-full border-4 border-blue-400 w-24 h-24 flex items-center justify-center mb-4">
-            <svg width="60" height="60" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#e5e7eb"/><rect x="4" y="16" width="16" height="6" rx="3" fill="#e5e7eb"/></svg>
-          </div>
-          <div className="text-blue-600 font-bold text-lg mb-1">1st Rank</div>
-          <div className="flex items-center mb-2">{starRow(1)}</div>
-          <div className="font-bold text-black text-lg mb-1">{data[0]?.name}</div>
-          <div className="text-blue-700 text-2xl font-extrabold mb-1">{data[0]?.score}</div>
-          <div className="text-gray-500">Points</div>
-        </div>
-        {/* Lista de los siguientes lugares */}
-        <div className="flex-1 flex flex-col gap-4 max-h-[320px] overflow-y-auto bg-gray-50 rounded-xl p-4">
-          {data.slice(1).map((item, idx) => (
-            <div key={item.name} className="flex items-center justify-between bg-white rounded-lg p-3 shadow-sm">
-              <div className="flex items-center gap-4">
-                <div className="bg-gray-100 rounded-full w-10 h-10 flex items-center justify-center">
-                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" fill="#e5e7eb"/><rect x="4" y="16" width="16" height="6" rx="3" fill="#e5e7eb"/></svg>
-                </div>
-                <div>
-                  <div className="font-bold text-black">{item.name}</div>
-                  <div className="text-xs text-gray-500">{isTeam ? `Equipo` : `${item.rank}º`}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-blue-700 font-bold text-lg">{item.score}</span>
-                <span className="text-gray-400 text-xs">Score</span>
-                <span className="ml-2">{starRow(isTeam ? 0 : item.rank)}</span>
-              </div>
-      </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+  // Mostrar modal de bienvenida al cargar el dashboard
+  useEffect(() => {
+    // Verificar si viene del login (puedes usar localStorage o una prop)
+    const fromLogin = localStorage.getItem('fromLogin');
+    console.log('Dashboard - fromLogin:', fromLogin);
+    if (fromLogin === 'true') {
+      console.log('Dashboard - Mostrando modal de bienvenida');
+      setShowWelcomeModal(true);
+      localStorage.removeItem('fromLogin'); // Limpiar la bandera
+      
+      // Ocultar el modal después de 3 segundos
+      setTimeout(() => {
+        setShowWelcomeModal(false);
+      }, 3000);
+    }
+  }, []);
 
   return (
     <div className="w-full max-w-7xl mx-auto px-2 md:px-4 py-8 min-h-screen bg-white">
@@ -131,9 +100,21 @@ const Dashboard: React.FC = () => {
         <MVPUserCard user={mvpUser} />
         <UserProfileCard user={mvpUser} />
       </div>
-      {/* Leaderboards */}
-      <Leaderboard title="Leaderboard de Usuarios" data={sortedUsers} />
-      <Leaderboard title="Leaderboard de Equipos" data={sortedTeams} isTeam />
+
+      {/* Modal de bienvenida */}
+      {showWelcomeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-green-500 rounded-lg shadow-xl p-8 text-center text-white">
+            <div className="mb-4">
+              <svg className="w-16 h-16 mx-auto text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h3 className="text-2xl font-bold mb-2">¡Credenciales Verificadas!</h3>
+            <p className="text-xl">Bienvenido {userName}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
