@@ -135,6 +135,13 @@
     "delivery": "Entrega",
     "detection": "Detección",
     "projectTitle": "Título del proyecto",
-    "projectDesc": "Descripción del proyecto"
+    "projectDesc": "Descripción del proyecto",
+    "open": "Abierto",
+    "closed": "Cerrado",
+    "pending": "Pendiente",
+    "notFound": "No se encontraron resultados",
+    "byName": "Por nombre",
+    "byDate": "Por fecha",
+    "byType": "Por tipo"
   }
 } 

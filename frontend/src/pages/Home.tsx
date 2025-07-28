@@ -11,6 +11,10 @@ interface VulnerabilityItem {
   problem: string;
   howDetected: string;
   images: string[];
+  creationDate?: string;
+  deliveryDate?: string;
+  detectionDate?: string;
+  status?: 'open' | 'closed' | 'pending';
 }
 
 interface Vulnerability {
@@ -18,6 +22,10 @@ interface Vulnerability {
   otherType?: string;
   generalDescription: string;
   discoveredBy: string;
+  creationDate?: string;
+  deliveryDate?: string;
+  detectionDate?: string;
+  status?: 'open' | 'closed' | 'pending';
   difficulties: {
     [key: string]: VulnerabilityItem[];
   };
@@ -30,16 +38,45 @@ interface Project {
   vulnerabilities: Vulnerability[];
 }
 
+const INITIAL_FORM = {
+  id: '',
+  name: '',
+  projectDescription: '',
+  vulnerabilities: [
+    {
+      types: [],
+      otherType: '',
+      generalDescription: '',
+      discoveredBy: '',
+      creationDate: '',
+      deliveryDate: '',
+      detectionDate: '',
+      status: 'open' as const,
+      difficulties: {
+        low: [],
+        medium: [],
+        high: [],
+        critical: []
+      }
+    }
+  ]
+};
+
 const INITIAL_PROJECTS: Project[] = [
   {
     id: 'project-1',
     name: 'acmeWebPlatform', // clave para traducción
+    projectDescription: 'Plataforma web de comercio electrónico con múltiples vulnerabilidades identificadas',
     vulnerabilities: [
       {
         types: ['sqlInjection'],
         otherType: '',
         generalDescription: 'sqlInjectionDesc',
         discoveredBy: 'automatedPentestOwaspZap',
+        creationDate: '2024-01-15',
+        deliveryDate: '2024-02-01',
+        detectionDate: '2024-01-20',
+        status: 'open',
         difficulties: {
           low: [
             {
@@ -48,6 +85,10 @@ const INITIAL_PROJECTS: Project[] = [
               problem: 'basicSQLiProblem',
               howDetected: 'basicSQLiHowDetected',
               images: [],
+              creationDate: '2024-01-15',
+              deliveryDate: '2024-02-01',
+              detectionDate: '2024-01-20',
+              status: 'open',
             },
           ],
           high: [
@@ -57,6 +98,10 @@ const INITIAL_PROJECTS: Project[] = [
               problem: 'advancedSQLiProblem',
               howDetected: 'advancedSQLiHowDetected',
               images: [],
+              creationDate: '2024-01-18',
+              deliveryDate: '2024-02-05',
+              detectionDate: '2024-01-22',
+              status: 'pending',
             },
           ],
         },
@@ -66,6 +111,10 @@ const INITIAL_PROJECTS: Project[] = [
         otherType: '',
         generalDescription: 'xssDesc',
         discoveredBy: 'manualCodeReview',
+        creationDate: '2024-01-10',
+        deliveryDate: '2024-01-25',
+        detectionDate: '2024-01-12',
+        status: 'closed',
         difficulties: {
           medium: [
             {
@@ -74,6 +123,10 @@ const INITIAL_PROJECTS: Project[] = [
               problem: 'reflectedXssProblem',
               howDetected: 'reflectedXssHowDetected',
               images: [],
+              creationDate: '2024-01-10',
+              deliveryDate: '2024-01-25',
+              detectionDate: '2024-01-12',
+              status: 'closed',
             },
           ],
         },
@@ -83,6 +136,10 @@ const INITIAL_PROJECTS: Project[] = [
         otherType: '',
         generalDescription: 'csrfDesc',
         discoveredBy: 'burpSuiteTool',
+        creationDate: '2024-01-05',
+        deliveryDate: '2024-01-20',
+        detectionDate: '2024-01-08',
+        status: 'open',
         difficulties: {
           critical: [
             {
@@ -91,6 +148,10 @@ const INITIAL_PROJECTS: Project[] = [
               problem: 'csrfTransfersProblem',
               howDetected: 'csrfTransfersHowDetected',
               images: [],
+              creationDate: '2024-01-05',
+              deliveryDate: '2024-01-20',
+              detectionDate: '2024-01-08',
+              status: 'open',
             },
           ],
         },
@@ -438,9 +499,24 @@ const Home: React.FC = () => {
                 </div>
               ))}
             </div>
-            <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">
-              {editIndex !== null ? t('home.save') : t('home.create')}
-            </button>
+            <div className="flex gap-4 mt-4">
+              <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">
+                {editIndex !== null ? t('home.save') : t('home.create')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditIndex(null);
+                  setShowForm(false);
+                  setForm(INITIAL_FORM);
+                  setDeleteIndex(null);
+                  setDeleteStep(1);
+                }}
+                className="px-4 py-2 bg-gray-500 text-white rounded font-bold hover:bg-gray-600"
+              >
+                {t('home.cancel')}
+              </button>
+            </div>
           </form>
         )}
       </div>
@@ -829,9 +905,9 @@ const Home: React.FC = () => {
                     className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                   >
                     <option value="all">{t('home.all')}</option>
-                    <option value="open">Abierto</option>
-                    <option value="closed">Cerrado</option>
-                    <option value="pending">Pendiente</option>
+                    <option value="open">{t('home.open')}</option>
+                    <option value="closed">{t('home.closed')}</option>
+                    <option value="pending">{t('home.pending')}</option>
                   </select>
                 </div>
 
@@ -846,14 +922,20 @@ const Home: React.FC = () => {
                     className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300"
                   >
                     <option value="default">{t('home.default')}</option>
-                    <option value="name">Por nombre</option>
-                    <option value="date">Por fecha</option>
-                    <option value="type">Por tipo</option>
+                    <option value="name">{t('home.byName')}</option>
+                    <option value="date">{t('home.byDate')}</option>
+                    <option value="type">{t('home.byType')}</option>
                   </select>
                 </div>
 
                 {/* Botón de filtrar */}
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold">
+                <button 
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-semibold"
+                  onClick={() => {
+                    // Los filtros se aplican automáticamente al cambiar los estados
+                    // Este botón puede usarse para futuras funcionalidades adicionales
+                  }}
+                >
                   <Search size={16} />
                   {t('home.filter')}
                 </button>
@@ -921,10 +1003,11 @@ const Home: React.FC = () => {
                     });
                   });
 
-                  // Filtrar por búsqueda
+                  // Aplicar filtros
                   const filteredItems = allItems.filter(item => {
+                    // Filtro de búsqueda
                     const searchText = projectSearch.toLowerCase();
-                    return (
+                    const matchesSearch = (
                       item.vulnType.toLowerCase().includes(searchText) ||
                       item.vulnDescription.toLowerCase().includes(searchText) ||
                       item.vulnDiscoveredBy.toLowerCase().includes(searchText) ||
@@ -933,14 +1016,60 @@ const Home: React.FC = () => {
                       t(`home.${item.item.problem}`, { defaultValue: item.item.problem }).toLowerCase().includes(searchText) ||
                       t(`home.${item.item.howDetected}`, { defaultValue: item.item.howDetected }).toLowerCase().includes(searchText)
                     );
+
+                    // Filtro de fecha
+                    let matchesDate = true;
+                    if (modalDateFilter !== 'all') {
+                      const itemDate = item.item[`${modalDateFilter}Date` as keyof VulnerabilityItem] as string;
+                      if (itemDate) {
+                        const itemYear = new Date(itemDate).getFullYear().toString();
+                        matchesDate = modalYearFilter === 'all' || itemYear === modalYearFilter;
+                      } else {
+                        matchesDate = false;
+                      }
+                    }
+
+                    // Filtro de tipo
+                    let matchesType = true;
+                    if (modalTypeFilter !== 'all') {
+                      matchesType = item.vulnType.toLowerCase().includes(modalTypeFilter.toLowerCase());
+                    }
+
+                    // Filtro de estado
+                    let matchesStatus = true;
+                    if (modalStatusFilter !== 'all') {
+                      matchesStatus = item.item.status === modalStatusFilter;
+                    }
+
+                    return matchesSearch && matchesDate && matchesType && matchesStatus;
                   });
 
-                  return filteredItems.length === 0 ? (
+                  // Aplicar ordenamiento
+                  let sortedItems = [...filteredItems];
+                  if (modalOrderFilter !== 'default') {
+                    sortedItems.sort((a, b) => {
+                      switch (modalOrderFilter) {
+                        case 'name':
+                          return t(`home.${a.item.name}`, { defaultValue: a.item.name })
+                            .localeCompare(t(`home.${b.item.name}`, { defaultValue: b.item.name }));
+                        case 'date':
+                          const dateA = new Date(a.item.creationDate || '');
+                          const dateB = new Date(b.item.creationDate || '');
+                          return dateA.getTime() - dateB.getTime();
+                        case 'type':
+                          return a.vulnType.localeCompare(b.vulnType);
+                        default:
+                          return 0;
+                      }
+                    });
+                  }
+
+                  return sortedItems.length === 0 ? (
                     <div className="text-gray-500 dark:text-gray-400 text-center py-8">
-                      {projectSearch ? t('dashboard.noVulns') : t('dashboard.noVulns')}
+                      {t('home.notFound')}
                     </div>
                   ) : (
-                    filteredItems.map((itemData, idx) => (
+                    sortedItems.map((itemData, idx) => (
                       <div key={idx} className="border rounded-lg p-4 bg-gray-50 dark:bg-gray-800">
                         <div className="mb-3">
                           <div className="font-bold text-lg text-blue-600 dark:text-blue-400 mb-1">
@@ -951,6 +1080,12 @@ const Home: React.FC = () => {
                           </div>
                           <div className="text-xs text-gray-500 dark:text-gray-500">
                             {t('dashboard.discoveredBy')}: {itemData.vulnDiscoveredBy}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-500">
+                            {t('home.creation')}: {itemData.item.creationDate} | {t('home.delivery')}: {itemData.item.deliveryDate} | {t('home.detection')}: {itemData.item.detectionDate}
+                          </div>
+                          <div className="text-xs text-gray-500 dark:text-gray-500">
+                            {t('home.statusFilter')}: {t(`home.${itemData.item.status}`, { defaultValue: itemData.item.status })}
                           </div>
                         </div>
                         
@@ -995,12 +1130,32 @@ const Home: React.FC = () => {
       )}
       {/* Botón flotante Add Project en esquina inferior derecha */}
       <button
-        className="fixed bottom-20 right-6 md:right-10 z-40 bg-blue-600 text-white rounded-full p-3 shadow-lg hover:bg-blue-700 transition-colors"
-        onClick={() => setShowForm(true)}
-        aria-label={t('home.addProject')}
-        title={t('home.addProject')}
+        className={`fixed bottom-20 right-6 md:right-10 z-40 rounded-full p-3 shadow-lg transition-colors ${
+          showForm 
+            ? 'bg-red-600 hover:bg-red-700 text-white' 
+            : 'bg-blue-600 hover:bg-blue-700 text-white'
+        }`}
+        onClick={() => {
+          if (showForm) {
+            // Cancelar: limpiar formulario y cerrarlo
+            setShowForm(false);
+            setEditIndex(null);
+            setForm(INITIAL_FORM);
+            setDeleteIndex(null);
+            setDeleteStep(1);
+          } else {
+            // Abrir formulario
+            setShowForm(true);
+          }
+        }}
+        aria-label={showForm ? t('home.cancel') : t('home.addProject')}
+        title={showForm ? t('home.cancel') : t('home.addProject')}
       >
-        <Add size={30} />
+        {showForm ? (
+          <span className="text-2xl font-bold">×</span>
+        ) : (
+          <Add size={30} />
+        )}
       </button>
     </div>
   );

@@ -126,6 +126,13 @@
     "delivery": "Delivery",
     "detection": "Detection",
     "projectTitle": "Project title",
-    "projectDesc": "Project description"
+    "projectDesc": "Project description",
+    "open": "Open",
+    "closed": "Closed",
+    "pending": "Pending",
+    "notFound": "No results found",
+    "byName": "By name",
+    "byDate": "By date",
+    "byType": "By type"
   }
 } 

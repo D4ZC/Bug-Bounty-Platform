@@ -123,6 +123,13 @@
     "statusFilter": "Status:",
     "orderFilter": "Ordem:",
     "projectTitle": "Título do projeto",
-    "projectDesc": "Descrição do projeto"
+    "projectDesc": "Descrição do projeto",
+    "open": "Aberto",
+    "closed": "Fechado",
+    "pending": "Pendente",
+    "notFound": "Nenhum resultado encontrado",
+    "byName": "Por nome",
+    "byDate": "Por data",
+    "byType": "Por tipo"
   }
 } 
