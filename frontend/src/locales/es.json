@@ -142,6 +142,12 @@
     "notFound": "No se encontraron resultados",
     "byName": "Por nombre",
     "byDate": "Por fecha",
-    "byType": "Por tipo"
+    "byType": "Por tipo",
+    "creationDate": "Fecha de creación",
+    "deliveryDate": "Fecha de entrega",
+    "detectionDate": "Fecha de detección",
+    "projectCreationDate": "Fecha de creación del proyecto",
+    "projectDeliveryDate": "Fecha de entrega del proyecto",
+    "projectDetectionDate": "Fecha de detección del proyecto"
   }
 } 

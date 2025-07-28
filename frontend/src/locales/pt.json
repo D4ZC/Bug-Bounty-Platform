@@ -22,6 +22,9 @@
     "addLanguage": "Adicionar idioma",
     "cancel": "Cancelar",
     "add": "Adicionar",
+    "white": "Branco",
+    "black": "Preto",
+    "grey": "Cinza",
     "sidebarTopbarDark": "Barra lateral/superior escura, conteúdo claro",
     "sidebarTopbarLight": "Barra lateral/superior clara, conteúdo escuro",
     "searchLanguage": "Buscar idioma...",
@@ -130,6 +133,12 @@
     "notFound": "Nenhum resultado encontrado",
     "byName": "Por nome",
     "byDate": "Por data",
-    "byType": "Por tipo"
+    "byType": "Por tipo",
+    "creationDate": "Data de criação",
+    "deliveryDate": "Data de entrega",
+    "detectionDate": "Data de detecção",
+    "projectCreationDate": "Data de criação do projeto",
+    "projectDeliveryDate": "Data de entrega do projeto",
+    "projectDetectionDate": "Data de detecção do projeto"
   }
 } 

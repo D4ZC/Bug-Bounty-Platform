@@ -35,6 +35,9 @@ interface Project {
   id: string;
   name: string;
   projectDescription?: string;
+  creationDate?: string;
+  deliveryDate?: string;
+  detectionDate?: string;
   vulnerabilities: Vulnerability[];
 }
 
@@ -42,6 +45,9 @@ const INITIAL_FORM = {
   id: '',
   name: '',
   projectDescription: '',
+  creationDate: '',
+  deliveryDate: '',
+  detectionDate: '',
   vulnerabilities: [
     {
       types: [],
@@ -183,8 +189,33 @@ const Home: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   // Form state
-  const emptyVulnItem = { name: '', description: '', problem: '', howDetected: '', images: [] };
-  const emptyVuln = { type: '', generalDescription: '', discoveredBy: '', difficulties: { Low: [], Medium: [], High: [], Critical: [] } };
+  const emptyVulnItem = { 
+  name: '', 
+  description: '', 
+  problem: '', 
+  howDetected: '', 
+  images: [],
+  creationDate: '',
+  deliveryDate: '',
+  detectionDate: '',
+  status: 'open' as const
+};
+const emptyVuln = { 
+  types: [], 
+  otherType: '', 
+  generalDescription: '', 
+  discoveredBy: '', 
+  creationDate: new Date().toISOString().split('T')[0], // Se llena automáticamente
+  deliveryDate: '',
+  detectionDate: '',
+  status: 'open' as const,
+  difficulties: { 
+    low: [], 
+    medium: [], 
+    high: [], 
+    critical: [] 
+  } 
+};
   const [form, setForm] = useState<Project>({ id: '', name: '', vulnerabilities: [] });
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -221,7 +252,12 @@ const Home: React.FC = () => {
   };
   const addVulnItem = (vulnIdx: number, diff: string) => {
     const items = form.vulnerabilities[vulnIdx].difficulties[diff] || [];
-    handleDifficultiesChange(vulnIdx, diff, [...items, { ...emptyVulnItem }]);
+    const currentDate = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+    const newItem = { 
+      ...emptyVulnItem, 
+      creationDate: currentDate // Se llena automáticamente
+    };
+    handleDifficultiesChange(vulnIdx, diff, [...items, newItem]);
   };
   const removeVulnItem = (vulnIdx: number, diff: string, itemIdx: number) => {
     const items = form.vulnerabilities[vulnIdx].difficulties[diff] || [];
@@ -234,7 +270,15 @@ const Home: React.FC = () => {
     handleDifficultiesChange(vulnIdx, diff, [...items]);
   };
   const resetForm = () => {
-    setForm({ id: '', name: '', vulnerabilities: [] });
+    setForm({ 
+      id: '', 
+      name: '', 
+      projectDescription: '',
+      creationDate: '',
+      deliveryDate: '',
+      detectionDate: '',
+      vulnerabilities: [] 
+    });
     setEditIndex(null);
   };
   const handleSubmit = (e: React.FormEvent) => {
@@ -247,12 +291,20 @@ const Home: React.FC = () => {
       setFormError(t('home.errorNoVulnType', { defaultValue: 'Debes seleccionar al menos un tipo de vulnerabilidad en cada vulnerabilidad.' }));
       return;
     }
+    
+    // Llenar automáticamente la fecha de creación del proyecto si no está definida
+    const currentDate = new Date().toISOString().split('T')[0];
+    const projectData = {
+      ...form,
+      creationDate: form.creationDate || currentDate
+    };
+    
     if (editIndex !== null) {
       const updated = [...projects];
-      updated[editIndex] = { ...form, id: form.id || `project-${Date.now()}` };
+      updated[editIndex] = { ...projectData, id: form.id || `project-${Date.now()}` };
       setProjects(updated);
     } else {
-      setProjects([...projects, { ...form, id: `project-${Date.now()}` }]);
+      setProjects([...projects, { ...projectData, id: `project-${Date.now()}` }]);
     }
     setShowForm(false);
     resetForm();
@@ -309,8 +361,8 @@ const Home: React.FC = () => {
       {/* Header de equipo y stats */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 gap-2">
         <div>
-          <div className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">{teamName}</div>
-          <div className="text-gray-600 dark:text-gray-300 text-base">Projects: <span className="font-semibold">{projectCount}</span></div>
+          <div className="text-2xl font-bold text-black dark:text-gray-100 mb-1">{teamName}</div>
+          <div className="text-gray-900 dark:text-gray-300 text-base">Projects: <span className="font-semibold">{projectCount}</span></div>
         </div>
         <div className="text-lg font-semibold text-blue-700 dark:text-blue-300 mt-2 md:mt-0">Vulnerabilities: <span className="font-bold">{totalVulns}</span></div>
       </div>
@@ -336,6 +388,49 @@ const Home: React.FC = () => {
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setForm({ ...form, projectDescription: e.target.value })}
                 className={`w-full border rounded p-2 mt-2 placeholder-gray-400 resize-none ${form.projectDescription ? 'text-black font-bold' : 'text-gray-400'}`}
               />
+              
+              {/* Campos de fecha del proyecto */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('home.projectCreationDate')}
+                  </label>
+                  <input
+                    type="date"
+                    name="creationDate"
+                    value={form.creationDate || ''}
+                    onChange={(e) => setForm({ ...form, creationDate: e.target.value })}
+                    className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${form.creationDate ? 'text-black' : 'text-gray-400'}`}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('home.projectDeliveryDate')}
+                  </label>
+                  <input
+                    type="date"
+                    name="deliveryDate"
+                    value={form.deliveryDate || ''}
+                    onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
+                    className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${form.deliveryDate ? 'text-black' : 'text-gray-400'}`}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    {t('home.projectDetectionDate')}
+                  </label>
+                  <input
+                    type="date"
+                    name="detectionDate"
+                    value={form.detectionDate || ''}
+                    onChange={(e) => setForm({ ...form, detectionDate: e.target.value })}
+                    className={`border rounded p-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 ${form.detectionDate ? 'text-black' : 'text-gray-400'}`}
+                    required
+                  />
+                </div>
+              </div>
             </div>
             <div>
               <label className="font-bold">{t('home.vulnerabilities')}</label>
@@ -437,6 +532,46 @@ const Home: React.FC = () => {
                     className={`border rounded p-1 w-full mt-1 placeholder-gray-400 ${vuln.discoveredBy ? 'text-black font-bold' : 'text-gray-400'}`}
                     required
                   />
+                  
+                  {/* Campos de fecha de la vulnerabilidad */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {t('home.creationDate')}
+                      </label>
+                      <input
+                        type="date"
+                        value={vuln.creationDate || ''}
+                        onChange={e => handleVulnChange(vIdx, 'creationDate', e.target.value)}
+                        className={`border rounded p-1 w-full text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 ${vuln.creationDate ? 'text-black' : 'text-gray-400'}`}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {t('home.deliveryDate')}
+                      </label>
+                      <input
+                        type="date"
+                        value={vuln.deliveryDate || ''}
+                        onChange={e => handleVulnChange(vIdx, 'deliveryDate', e.target.value)}
+                        className={`border rounded p-1 w-full text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 ${vuln.deliveryDate ? 'text-black' : 'text-gray-400'}`}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {t('home.detectionDate')}
+                      </label>
+                      <input
+                        type="date"
+                        value={vuln.detectionDate || ''}
+                        onChange={e => handleVulnChange(vIdx, 'detectionDate', e.target.value)}
+                        className={`border rounded p-1 w-full text-xs focus:outline-none focus:ring-1 focus:ring-blue-500 ${vuln.detectionDate ? 'text-black' : 'text-gray-400'}`}
+                        required
+                      />
+                    </div>
+                  </div>
                   <div className="mt-2">
                     {DIFFICULTY_LABELS.map(diff => (
                       <div key={diff} className="mb-2">

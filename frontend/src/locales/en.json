@@ -133,6 +133,12 @@
     "notFound": "No results found",
     "byName": "By name",
     "byDate": "By date",
-    "byType": "By type"
+    "byType": "By type",
+    "creationDate": "Creation date",
+    "deliveryDate": "Delivery date",
+    "detectionDate": "Detection date",
+    "projectCreationDate": "Project creation date",
+    "projectDeliveryDate": "Project delivery date",
+    "projectDetectionDate": "Project detection date"
   }
 } 

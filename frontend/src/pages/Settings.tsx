@@ -1,14 +1,5 @@
-import { t } from 'i18next';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-
-
-
-const APP_COLORS = [
-  { label: t('settings.white'), value: 'white'},
-  { label: t('settings.black'), value: 'black' },
-  { label: t('settings.grey'), value: 'grey' },
-];
 
 const GREY_VARIANTS = [
   { label: 'Sidebar/Topbar Dark, Content Light', value: 'grey-darkbar' },
@@ -100,6 +91,12 @@ const ALL_LANGUAGES = [
 
 const Settings: React.FC = () => {
   const { t } = useTranslation();
+
+  const APP_COLORS = [
+    { label: t('settings.white'), value: 'white'},
+    { label: t('settings.black'), value: 'black' },
+    { label: t('settings.grey'), value: 'grey' },
+  ];
 
   const getUserId = () => localStorage.getItem('userId') || 'default';
   const getSettingsKey = () => `settings_${getUserId()}`;
@@ -242,10 +239,10 @@ const Settings: React.FC = () => {
               {APP_COLORS.map(opt => (
                 <button
                   key={opt.value}
-                  className={`w-full text-left px-4 py-2 rounded flex items-center gap-2 ${pending.appColor === opt.value ? 'bg-blue-500 text-white' : 'hover:bg-gray-300 dark:hover:bg-gray-700'}`}
+                  className={`w-full text-left px-4 py-2 rounded flex items-center gap-2 ${pending.appColor === opt.value ? 'bg-blue-500 text-white' : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
                   onClick={() => setPending((p: typeof pending) => ({ ...p, appColor: opt.value }))}
                 >
-                  <span className={`w-1 h-4 rounded-full ${pending.appColor === opt.value ? 'bg-white' : 'bg-transparent'}`}></span>
+                  <span className={`w-1 h-4 rounded-full ${pending.appColor === opt.value ? 'bg-white' : 'bg-gray-400'}`}></span>
                   {opt.label}
                 </button>
               ))}
