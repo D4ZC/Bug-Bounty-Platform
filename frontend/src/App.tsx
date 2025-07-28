@@ -24,6 +24,10 @@ import GulagDesafio from '@/pages/GulagDesafio';
 import Duelos from '@/pages/Duelos';
 import Equipos from '@/pages/Equipos';
 import Reglas from '@/pages/Reglas';
+import Auth from '@/pages/auth/Auth';
+
+// Components
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
 
 // Contexts
 import { ShopProvider } from '@/contexts/ShopContext';
@@ -37,7 +41,15 @@ function App() {
       </Helmet>
 
       <Routes>
-        <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
+        {/* Ruta pública de autenticación */}
+        <Route path="/auth" element={<Auth />} />
+        
+        {/* Rutas protegidas */}
+        <Route path="/" element={
+          <ProtectedRoute>
+            <MainLayout><Outlet /></MainLayout>
+          </ProtectedRoute>
+        }>
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vulnerabilities" element={<Vulnerabilities />} />

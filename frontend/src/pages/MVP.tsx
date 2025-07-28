@@ -99,6 +99,25 @@ const ALL_USERS = [...CONSULTING_USERS, ...CYBERWOLVES_USERS, ...APPS_USERS, ...
 // Obtener el MVP (primer lugar en el ranking)
 const mvpUser = ALL_USERS[0];
 
+// Descripciones personalizadas para cada MVP
+const MVP_DESCRIPTIONS = {
+  'Liam Smith': '🔍 Especialista en análisis de vulnerabilidades web con más de 5 años de experiencia. Su enfoque meticuloso y capacidad para encontrar bugs críticos lo han convertido en una leyenda en la plataforma. Siempre comparte sus conocimientos con la comunidad. 💡',
+  'Alex Turner': '⚡ Líder nato del equipo Consulting, combina experiencia técnica con habilidades de mentoría excepcionales. Su estrategia de caza de bugs es impecable y ha ayudado a formar a decenas de nuevos investigadores. 🎯',
+  'Sarah Chen': '🛡️ Experta en seguridad de aplicaciones móviles y APIs. Su metodología sistemática y atención al detalle la han llevado a descubrir vulnerabilidades críticas en sistemas empresariales. Siempre innovando en técnicas de testing. 🚀',
+  'Michael Rodriguez': '💎 Maestro del reverse engineering y análisis de malware. Su capacidad para entender sistemas complejos y encontrar vectores de ataque únicos es simplemente extraordinaria. Comparte generosamente sus hallazgos. 🔬',
+  'Emily Watson': '🌟 Investigadora de seguridad con enfoque en criptografía y blockchain. Su trabajo en auditorías de smart contracts ha establecido nuevos estándares en la industria. Siempre a la vanguardia de las nuevas tecnologías. ⚙️',
+  'David Kim': '🎯 Especialista en pentesting de infraestructura y redes. Su metodología de testing de caja negra es legendaria. Ha descubierto múltiples vulnerabilidades críticas en sistemas de alta seguridad. Un verdadero maestro del oficio. 🔥',
+  'Lisa Park': '⚡ Investigadora de seguridad con expertise en análisis forense digital. Su capacidad para reconstruir ataques y encontrar evidencia oculta es simplemente asombrosa. Siempre dispuesta a ayudar a otros investigadores. 🕵️',
+  'James Wilson': '💎 Experto en seguridad de aplicaciones web y móviles. Su enfoque en la automatización de procesos de testing ha revolucionado la forma en que se realizan las auditorías. Un innovador nato en el campo. 🚀',
+  'Carlos Mendoza': '🛡️ Líder del equipo CyberWolves, especialista en seguridad de redes y sistemas distribuidos. Su visión estratégica y capacidad de coordinación han llevado a su equipo a múltiples victorias. Un verdadero estratega. 🎖️',
+  'Diego Ramirez': '🔍 Investigador de seguridad con enfoque en análisis de malware y threat hunting. Su capacidad para identificar patrones de ataque y desarrollar contramedidas es excepcional. Siempre compartiendo conocimiento. 🧠',
+  'Sofia Castro': '🌟 Especialista en seguridad de aplicaciones cloud y DevOps. Su expertise en contenedores y orquestación la ha convertido en una autoridad en seguridad de infraestructura moderna. Innovadora y visionaria. ☁️',
+  'Andres Vargas': '⚡ Investigador de seguridad con especialización en IoT y dispositivos embebidos. Su trabajo en hardening de dispositivos conectados ha establecido nuevos benchmarks en la industria. Siempre explorando nuevas fronteras. 🔌',
+  'Mateo Silva': '💎 Experto en análisis de vulnerabilidades de día cero y exploits. Su capacidad para entender y reproducir ataques complejos es simplemente extraordinaria. Un verdadero maestro del exploit development. 🎯',
+  'Fernando Ruiz': '🛡️ Especialista en seguridad de aplicaciones empresariales y sistemas legacy. Su metodología de testing de caja gris ha sido adoptada por múltiples organizaciones. Un investigador meticuloso y confiable. 🏢',
+  'Oscar Herrera': '🚀 Investigador de seguridad con enfoque en automatización y machine learning aplicado a la detección de amenazas. Su trabajo en herramientas de análisis automatizado ha revolucionado el campo. Un visionario tecnológico. 🤖'
+};
+
 const ALL_BADGES = [
   { img: insignia1, name: '🏆 Campeón de Bugs' },
   { img: insignia2, name: '⭐ MVP del Mes' },
@@ -202,7 +221,45 @@ const MVP: React.FC = () => {
                 
                 {/* Nombre y Equipo */}
                 <h2 className="text-3xl font-bold text-gray-800 mb-2">{mvpUser.name}</h2>
-                <p className="text-xl text-blue-600 font-semibold">{mvpUser.team}</p>
+                <p className="text-xl text-blue-600 font-semibold mb-4">{mvpUser.team}</p>
+                
+                {/* Descripción personalizada del MVP */}
+                <div className="max-w-3xl mx-auto mb-8">
+                  <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]">
+                    {/* Decoración de esquina */}
+                    <div className="absolute top-0 left-0 w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-br-2xl"></div>
+                    <div className="absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-tl-2xl"></div>
+                    
+                    {/* Icono decorativo */}
+                    <div className="absolute top-4 right-4 w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg">
+                      <span className="text-white text-xl">⭐</span>
+                    </div>
+                    
+                    {/* Contenido principal */}
+                    <div className="relative z-10">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-purple-600 rounded-full"></div>
+                        <h3 className="text-lg font-bold text-gray-800">Perfil del MVP</h3>
+                      </div>
+                      
+                      <p className="text-gray-700 text-base leading-relaxed font-medium">
+                        {MVP_DESCRIPTIONS[mvpUser.name as keyof typeof MVP_DESCRIPTIONS] || 
+                         '🔍 Investigador de seguridad excepcional con un historial impresionante de descubrimientos. Su dedicación y expertise lo han convertido en un referente en la comunidad de bug bounty. 💎'}
+                      </p>
+                      
+                      {/* Línea decorativa inferior */}
+                      <div className="mt-4 pt-3 border-t border-blue-200">
+                        <div className="flex items-center justify-between text-sm text-gray-500">
+                          <span>🏆 MVP del Mes</span>
+                          <span>•</span>
+                          <span>🎯 Especialista</span>
+                          <span>•</span>
+                          <span>💎 Elite</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Stats Grid */}

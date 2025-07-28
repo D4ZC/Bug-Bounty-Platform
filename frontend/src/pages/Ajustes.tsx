@@ -37,7 +37,7 @@ const Ajustes: React.FC = () => {
           <input
             type="text"
             placeholder="Buscar en ajustes..."
-            className="w-full pl-12 pr-4 py-2 rounded-lg border border-gray-200 dark:border-carbon-blue bg-gray-50 dark:bg-carbon-gray text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition"
+            className="w-full pl-12 pr-4 py-2 rounded-lg border border-gray-200 dark:border-carbon-blue bg-gray-50 dark:bg-carbon-gray text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition"
           />
         </div>
         {/* Toggle modo oscuro */}

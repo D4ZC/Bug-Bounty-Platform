@@ -224,7 +224,7 @@ const Equipos: React.FC = () => {
 
         {/* Nombre de equipo con efectos */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2 tracking-wider">
+          <h1 className="text-3xl font-black text-gray-800 mb-2 tracking-wider">
             CONSULTING
           </h1>
           <div className="w-16 h-1 bg-gradient-to-r from-cyan-400 to-blue-500 mx-auto rounded-full"></div>

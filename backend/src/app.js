@@ -10,8 +10,9 @@ const path = require('path');
 // Cargar variables de entorno
 dotenv.config();
 
-// Importar rutas
-const authRoutes = require('./routes/auth');
+// Importar base de datos y rutas
+const { initDatabase } = require('./database');
+const { router: authRoutes } = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const teamRoutes = require('./routes/teams');
 const vulnerabilityRoutes = require('./routes/vulnerabilities');
@@ -110,11 +111,16 @@ app.use('*', (req, res) => {
 // Función para iniciar el servidor
 const startServer = async () => {
   try {
+    // Inicializar base de datos
+    console.log('🔄 Inicializando base de datos...');
+    await initDatabase();
+    console.log('✅ Base de datos inicializada correctamente');
+
     // Iniciar servidor HTTP
     const server = app.listen(PORT, () => {
-      console.log(`Servidor corriendo en puerto ${PORT}`);
-      console.log(`Ambiente: ${process.env.NODE_ENV}`);
-      console.log(`API disponible en: http://localhost:${PORT}/api`);
+      console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+      console.log(`🌍 Ambiente: ${process.env.NODE_ENV}`);
+      console.log(`📡 API disponible en: http://localhost:${PORT}/api`);
     });
     
     // Manejo de señales para cierre graceful

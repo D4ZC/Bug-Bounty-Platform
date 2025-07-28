@@ -5,7 +5,8 @@ import ChatModal from '../ChatModal';
 import NotificationModal from '../NotificationModal';
 import SidebarOverlay from './SidebarOverlay';
 import { Header } from '@carbon/react';
-import { Mail, User, AlignJustify, Bell } from 'lucide-react';
+import { Mail, User, AlignJustify, Bell, LogOut } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showMsgModal, setShowMsgModal] = useState(false);
@@ -15,6 +16,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(3);
   const navigate = useNavigate();
+  const { logout, user } = useAuth();
   // Mock de mensajes
   const mensajes = [
     { title: 'HOLA', content: '¡Bienvenido a la plataforma! Aquí recibirás tus notificaciones importantes.' },
@@ -57,6 +59,17 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <LanguageSelector />
           <button aria-label="Perfil" className="text-white hover:text-cyber-blue transition-colors" onClick={() => navigate('/profile')}>
             <User size={28} />
+          </button>
+          <button 
+            aria-label="Cerrar sesión" 
+            className="text-white hover:text-red-400 transition-colors" 
+            onClick={() => {
+              logout();
+              navigate('/auth');
+            }}
+            title={`Cerrar sesión (${user?.email})`}
+          >
+            <LogOut size={28} />
           </button>
         </div>
         {/* Modal de mensajes */}

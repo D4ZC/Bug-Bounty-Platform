@@ -489,7 +489,7 @@ const Profile: React.FC = () => {
                 avatarsComprados.map(avatar => (
                   <div key={avatar.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={avatar.img} alt={avatar.name} className="w-28 h-28 object-cover rounded-full mb-2" />
-                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{avatar.name}</span>
+                    <span className="font-semibold text-gray-700 mb-2 text-center">{avatar.name}</span>
                     <button
                       className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedAvatar === avatar.img ? 'bg-green-500 text-white' : 'bg-yellow-400 text-white hover:bg-yellow-500'}`}
                       onClick={() => handleSelectAvatar(avatar.img)}
@@ -522,7 +522,7 @@ const Profile: React.FC = () => {
                 fondosComprados.map(fondo => (
                   <div key={fondo.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={fondo.img} alt={fondo.name} className="w-28 h-20 object-cover rounded mb-2" />
-                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{fondo.name}</span>
+                    <span className="font-semibold text-gray-700 mb-2 text-center">{fondo.name}</span>
                     <button
                       className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedBg === fondo.img ? 'bg-green-500 text-white' : 'bg-cyber-blue text-white hover:bg-blue-700'}`}
                       onClick={() => handleSelectBg(fondo.img)}
@@ -558,7 +558,7 @@ const Profile: React.FC = () => {
                 marcosComprados.map(marco => (
                   <div key={marco.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={marco.img} alt={marco.name} className="w-28 h-20 object-cover rounded mb-2" />
-                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{marco.name}</span>
+                    <span className="font-semibold text-gray-700 mb-2 text-center">{marco.name}</span>
                     <button
                       className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedFrame === marco.img ? 'bg-green-500 text-white' : 'bg-cyber-blue text-white hover:bg-blue-700'}`}
                       onClick={() => handleSelectFrame(marco.img)}
@@ -597,7 +597,7 @@ const Profile: React.FC = () => {
                     onClick={() => toggleBadge(badge.img)}
                   >
                     <img src={badge.img} alt={badge.name} className="w-20 h-20 object-cover rounded mb-2" />
-                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{badge.name}</span>
+                    <span className="font-semibold text-gray-700 mb-2 text-center">{badge.name}</span>
                     {selected && (
                       <span className="absolute top-2 right-2 bg-green-500 text-white rounded-full p-1 shadow-lg">
                         <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -631,7 +631,7 @@ const Profile: React.FC = () => {
                 portadasCompradas.map(portada => (
                   <div key={portada.id} className="flex flex-col items-center bg-gray-100 dark:bg-carbon-gray rounded-lg p-3 shadow-md min-w-[140px]">
                     <img src={portada.img} alt={portada.name} className="w-28 h-20 object-cover rounded mb-2" />
-                    <span className="font-semibold text-gray-700 dark:text-gray-100 mb-2 text-center">{portada.name}</span>
+                    <span className="font-semibold text-gray-700 mb-2 text-center">{portada.name}</span>
                     <button
                       className={`px-3 py-1 rounded font-bold flex items-center gap-2 transition-colors ${selectedPortada === portada.img ? 'bg-green-500 text-white' : 'bg-cyan-600 text-white hover:bg-cyan-700'}`}
                       onClick={() => handleSelectPortada(portada.img)}
