@@ -8,7 +8,7 @@ import lowlight from 'lowlight/lib/core';
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import dayjs from 'dayjs';
 import SubmissionSuccess from '../components/ui/SubmissionSuccess';
-import { useAuth } from '../contexts/AuthContext';
+
 import { useNotifications } from '../contexts/NotificationContext';
 import { usePoints } from '../contexts/PointsContext';
 
@@ -372,7 +372,6 @@ const VULN_TYPES = [
 
 const Documentation: React.FC = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const { addNotification } = useNotifications();
   const { userPoints, addPoints } = usePoints();
   const [search, setSearch] = useState('');
@@ -416,25 +415,12 @@ const Documentation: React.FC = () => {
   const [toast, setToast] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-  // Pre-llenar el autor con el nombre del usuario autenticado
+  // Pre-llenar el autor con el nombre del usuario
   const getAuthorName = () => {
-    console.log('Usuario en getAuthorName:', user); // Debug temporal
-    if (user) {
-      const fullName = `${user.firstName} ${user.lastName}`.trim();
-      const authorName = fullName || user.username || 'Nicole Hunt';
-      console.log('Nombre del autor:', authorName); // Debug temporal
-      return authorName;
-    }
-    console.log('No hay usuario, usando fallback'); // Debug temporal
-    return 'Nicole Hunt'; // Fallback con el nombre del perfil
+    return 'Nicole Hunt'; // Usuario por defecto
   };
 
   const [author, setAuthor] = useState(getAuthorName());
-  
-  // Actualizar el autor cuando cambie el usuario
-  useEffect(() => {
-    setAuthor(getAuthorName());
-  }, [user]);
   const [date, setDate] = useState(dayjs().format('YYYY-MM-DD'));
   const [vulnType, setVulnType] = useState('');
   const [vulnSpecific, setVulnSpecific] = useState('');
@@ -783,11 +769,7 @@ const Documentation: React.FC = () => {
                   value={author}
                   onChange={e => setAuthor(e.target.value)}
                 />
-                {user && (
-                  <div className="text-xs text-cyan-400 mt-1">
-                    👤 Pre-llenado con: {user.firstName} {user.lastName} ({user.username})
-                  </div>
-                )}
+
               </div>
               <input
                 type="date"

@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
-import { useAuth } from './AuthContext';
 import socketService from '@/services/socket';
 import { Notification } from '@/types';
 
@@ -17,12 +16,11 @@ interface SocketProviderProps {
 }
 
 export function SocketProvider({ children }: SocketProviderProps) {
-  const { isAuthenticated, token } = useAuth();
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
 
   useEffect(() => {
-    if (isAuthenticated && token) {
-      socketService.connect(token);
+    // Conectar socket sin autenticación
+    socketService.connect();
 
       // Escuchar notificaciones
       socketService.onNotification((notification) => {
@@ -68,8 +66,7 @@ export function SocketProvider({ children }: SocketProviderProps) {
         socketService.removeAllListeners();
         socketService.disconnect();
       };
-    }
-  }, [isAuthenticated, token]);
+  }, []);
 
   const clearNotifications = () => {
     setNotifications([]);

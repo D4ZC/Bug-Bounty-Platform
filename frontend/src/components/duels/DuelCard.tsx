@@ -12,6 +12,12 @@ interface DuelCardProps {
   points: number;
   isWaiting: boolean;
   status?: 'waiting' | 'active' | 'finished';
+  vulnerabilityLevel?: 'crítica' | 'media' | 'baja';
+  onAcceptDuel?: () => void;
+  onLeaveDuel?: () => void;
+  onCompleteDuel?: () => void;
+  canAccept?: boolean;
+  isUserActiveDuel?: boolean;
 }
 
 // Type guard para equipos
@@ -28,7 +34,13 @@ const DuelCard: React.FC<DuelCardProps> = ({
   objective,
   points,
   isWaiting,
-  status = 'waiting'
+  status = 'waiting',
+  vulnerabilityLevel,
+  onAcceptDuel,
+  onLeaveDuel,
+  onCompleteDuel,
+  canAccept = true,
+  isUserActiveDuel = false
 }) => {
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -70,7 +82,18 @@ const DuelCard: React.FC<DuelCardProps> = ({
             <span className="text-neon-green text-2xl">{typeIcon}</span>
             <span className="font-bold text-lg text-white">{type}</span>
           </div>
-          {/* Removed isCreator and onDelete props as they are not directly used in this component's new structure */}
+          {/* Indicador de nivel de vulnerabilidad */}
+          {vulnerabilityLevel && (
+            <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+              vulnerabilityLevel === 'crítica' 
+                ? 'bg-red-600 text-white' 
+                : vulnerabilityLevel === 'media' 
+                ? 'bg-yellow-600 text-white' 
+                : 'bg-green-600 text-white'
+            }`}>
+              {vulnerabilityLevel.toUpperCase()}
+            </div>
+          )}
         </div>
 
         {/* Renderizado de equipos */}
@@ -151,15 +174,75 @@ const DuelCard: React.FC<DuelCardProps> = ({
           <span className="text-neon-green text-xl font-bold">{points}</span>
           <span className="text-neon-green">★</span>
         </div>
-        <button
-          className={`mt-3 bg-gradient-to-r from-neon-green to-blue-500 text-black font-extrabold text-lg py-2 rounded-lg w-full transition-all shadow-lg border-4 drop-shadow-lg tracking-wide
-            ${isDisabled ? 'opacity-50 cursor-not-allowed border-gray-500 bg-gray-700 text-gray-300' : 'hover:scale-105 hover:from-blue-500 hover:to-neon-green hover:text-white border-blue-400'}
-          `}
-          style={{ textShadow: '0 2px 8px #fff', color: '#111' }}
-          disabled={isDisabled}
-        >
-          {buttonText}
-        </button>
+        {/* Botones de acción */}
+        <div className="mt-3 space-y-2">
+          {status === 'waiting' && canAccept && onAcceptDuel && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onAcceptDuel();
+              }}
+              className="w-full bg-gradient-to-r from-neon-green to-blue-500 text-black font-extrabold text-lg py-2 rounded-lg transition-all shadow-lg border-4 border-blue-400 drop-shadow-lg tracking-wide hover:scale-105 hover:from-blue-500 hover:to-neon-green hover:text-white"
+              style={{ textShadow: '0 2px 8px #fff', color: '#111' }}
+            >
+              🎯 ACEPTAR DUELO
+            </button>
+          )}
+          
+          {status === 'waiting' && !canAccept && (
+            <button
+              disabled
+              className="w-full bg-gray-700 text-gray-400 font-extrabold text-lg py-2 rounded-lg border-4 border-gray-500 cursor-not-allowed"
+            >
+              {!canAccept ? 'DUELO ACTIVO' : 'PUNTOS INSUFICIENTES'}
+            </button>
+          )}
+          
+          {status === 'active' && isUserActiveDuel && (
+            <div className="flex gap-2">
+              {onLeaveDuel && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onLeaveDuel();
+                  }}
+                  className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white font-extrabold text-sm py-2 rounded-lg transition-all shadow-lg border-2 border-red-400 drop-shadow-lg tracking-wide hover:scale-105 hover:from-red-600 hover:to-red-500"
+                >
+                  🚪 ABANDONAR
+                </button>
+              )}
+              {onCompleteDuel && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onCompleteDuel();
+                  }}
+                  className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white font-extrabold text-sm py-2 rounded-lg transition-all shadow-lg border-2 border-green-400 drop-shadow-lg tracking-wide hover:scale-105 hover:from-green-600 hover:to-green-500"
+                >
+                  ✅ COMPLETAR
+                </button>
+              )}
+            </div>
+          )}
+          
+          {status === 'active' && !isUserActiveDuel && (
+            <button
+              disabled
+              className="w-full bg-gray-700 text-gray-400 font-extrabold text-lg py-2 rounded-lg border-4 border-gray-500 cursor-not-allowed"
+            >
+              DUELO EN CURSO
+            </button>
+          )}
+          
+          {status === 'finished' && (
+            <button
+              disabled
+              className="w-full bg-gray-700 text-gray-400 font-extrabold text-lg py-2 rounded-lg border-4 border-gray-500 cursor-not-allowed"
+            >
+              DUELO FINALIZADO
+            </button>
+          )}
+        </div>
       </motion.div>
 
       {/* Modal de detalles del duelo */}

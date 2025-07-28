@@ -433,19 +433,7 @@ const Help: React.FC = () => {
           ))}
         </div>
 
-        {/* Contacto de Soporte */}
-        <div className="mt-12 bg-gradient-to-r from-purple-900 to-blue-900 rounded-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">¿No encuentras lo que buscas?</h2>
-          <p className="text-gray-300 mb-6">Nuestro equipo de soporte está aquí para ayudarte</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-              Contactar Soporte
-            </button>
-            <button className="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
-              Reportar Problema
-            </button>
-          </div>
-        </div>
+
       </div>
     </div>
   );

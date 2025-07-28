@@ -69,7 +69,7 @@ const carouselSlides = [
 // Datos mock mejorados para MVP
 const mvpTeams = [
   {
-    avatar: img1,
+    avatar: '/src/assets/avatar1.png',
     name: 'PHANTOM HUNTERS',
     title: 'Guardianes del Ciberespacio',
     stats: { criticas: 15, medias: 8, bajas: 23 },
@@ -78,7 +78,7 @@ const mvpTeams = [
     effectiveness: 96,
   },
   {
-    avatar: img2,
+    avatar: '/src/assets/avatar4.png',
     name: 'CYBER WOLVES',
     title: 'Cazadores Nocturnos',
     stats: { criticas: 12, medias: 11, bajas: 19 },
@@ -87,7 +87,7 @@ const mvpTeams = [
     effectiveness: 94,
   },
   {
-    avatar: '',
+    avatar: '/src/assets/avatar6.png',
     name: 'NEON STRIKERS',
     title: 'Especialistas Elite',
     stats: { criticas: 9, medias: 14, bajas: 17 },
@@ -99,7 +99,7 @@ const mvpTeams = [
 
 const mvpUsers = [
   {
-    avatar: img3,
+    avatar: '/src/assets/avatar7.png',
     name: 'CYBERPHANTOM',
     title: 'Maestro del Código',
     stats: { criticas: 8, medias: 12, bajas: 15 },
@@ -108,7 +108,7 @@ const mvpUsers = [
     effectiveness: 98,
   },
   {
-    avatar: '',
+    avatar: '/src/assets/avatar8.png',
     name: 'NEONSTRIKE',
     title: 'Hacker Elite',
     stats: { criticas: 7, medias: 9, bajas: 13 },
@@ -117,7 +117,7 @@ const mvpUsers = [
     effectiveness: 95,
   },
   {
-    avatar: img2,
+    avatar: '/src/assets/avatar9.png',
     name: 'QUANTUMHACK',
     title: 'Especialista Táctico',
     stats: { criticas: 6, medias: 11, bajas: 12 },

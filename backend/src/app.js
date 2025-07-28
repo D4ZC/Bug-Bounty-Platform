@@ -11,7 +11,6 @@ const path = require('path');
 dotenv.config();
 
 // Importar rutas
-const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const teamRoutes = require('./routes/teams');
 const vulnerabilityRoutes = require('./routes/vulnerabilities');
@@ -56,7 +55,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Rutas de la API
-app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/vulnerabilities', vulnerabilityRoutes);
@@ -83,7 +81,6 @@ app.get('/api', (req, res) => {
     version: '1.0.0',
     description: 'API para la gestión de vulnerabilidades y competencias',
     endpoints: {
-      auth: '/api/auth',
       users: '/api/users',
       teams: '/api/teams',
       vulnerabilities: '/api/vulnerabilities',

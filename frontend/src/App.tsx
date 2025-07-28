@@ -1,16 +1,14 @@
-import React from 'react';
 import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Navbar from './components/Navbar';
 import { BackgroundProvider, useBackground } from './contexts/BackgroundContext';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { PointsProvider } from './contexts/PointsContext';
 import { InventoryProvider } from './contexts/InventoryContext';
 
 // Layouts
 import MainLayout from '@/components/layouts/MainLayout';
-import AuthLayout from '@/components/layouts/AuthLayout';
 
 // Pages
 import Dashboard from '@/pages/Dashboard';
@@ -40,33 +38,52 @@ import Help from '@/pages/Help';
 import Teams from '@/pages/Teams';
 
 // Components
-import ProtectedRoute from '@/components/auth/ProtectedRoute';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
-// Hooks
-import { useAuth } from '@/contexts/AuthContext';
+
 import { LanguageProvider } from './contexts/LanguageContext';
-import LanguageSelector from './components/LanguageSelector';
-import { useTranslation } from './utils/useTranslation';
 
 function AppContent() {
   const { backgroundEnabled, setBackgroundEnabled } = useBackground();
-  
+  const { isAuthenticated, isLoading } = useAuth();
+
+  // Mostrar loading mientras se verifica la autenticación
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
   return (
     <LanguageProvider>
       <div className="min-h-screen bg-[#F9FAFB] text-[#1F2937]">
-        <Navbar 
-          backgroundEnabled={backgroundEnabled}
-          onBackgroundToggle={setBackgroundEnabled}
-        />
+        {isAuthenticated && (
+          <Navbar 
+            backgroundEnabled={backgroundEnabled}
+            onBackgroundToggle={setBackgroundEnabled}
+          />
+        )}
         <Helmet>
           <title>Bug Bounty Platform</title>
           <meta name="description" content="Plataforma de Bug Bounty - Encuentra vulnerabilidades, gana recompensas" />
         </Helmet>
 
         <Routes>
-          <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
-            <Route index element={<Dashboard />} />
+          {/* Rutas públicas de autenticación */}
+          <Route path="/login" element={
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+          } />
+          <Route path="/register" element={
+            isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />
+          } />
+
+          {/* Rutas protegidas */}
+          <Route path="/" element={
+            isAuthenticated ? <MainLayout><Outlet /></MainLayout> : <Navigate to="/login" replace />
+          }>
+            <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="team-score" element={<TeamScore />} />
             <Route path="vulnerabilities" element={<Vulnerabilities />} />
@@ -91,6 +108,8 @@ function AppContent() {
             <Route path="help" element={<Help />} />
             <Route path="*" element={<NotFound />} />
           </Route>
+
+
         </Routes>
       </div>
     </LanguageProvider>

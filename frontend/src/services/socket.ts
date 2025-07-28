@@ -8,15 +8,13 @@ class SocketService {
   private maxReconnectAttempts = 5;
   private reconnectDelay = 1000;
 
-  connect(token: string) {
+  connect(token?: string) {
     if (this.socket?.connected) {
       return;
     }
 
-    this.socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
-      auth: {
-        token,
-      },
+    this.socket = io('http://localhost:3001', {
+      auth: token ? { token } : undefined,
       transports: ['websocket', 'polling'],
       timeout: 20000,
     });

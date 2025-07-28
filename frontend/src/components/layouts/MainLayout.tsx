@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useTranslation } from '../../utils/useTranslation';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaHome, FaBook, FaTrophy, FaStore, FaUser, FaGavel, FaUsers } from 'react-icons/fa';
+import { FaHome, FaBook, FaTrophy, FaStore, FaUser, FaGavel, FaUsers, FaSignOutAlt } from 'react-icons/fa';
+import { useAuth } from '../../contexts/AuthContext';
 
 const sidebarLinks = [
   { label: 'Home', path: '/dashboard', icon: <FaHome /> },
   { label: 'Documentación', path: '/documentation', icon: <FaBook /> },
   { label: 'Duelos', path: '/duelos', icon: <FaTrophy /> },
-  { label: 'Gulag', path: '/gulag', icon: <FaGavel /> },
   { label: 'Equipos', path: '/teams', icon: <FaUsers /> },
   { label: 'Tienda', path: '/shop', icon: <FaStore /> },
 ];
@@ -17,6 +17,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [expanded, setExpanded] = useState(false);
+  const { logout } = useAuth();
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
@@ -40,6 +41,23 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 {expanded && <span className="whitespace-nowrap">{link.label}</span>}
               </button>
             ))}
+            
+            {/* Separador */}
+            <div className="border-t border-gray-700 my-4"></div>
+            
+            {/* Botón de cerrar sesión */}
+            <button
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="flex items-center gap-3 px-3 py-2 rounded hover:bg-red-900 transition-colors text-base font-medium text-red-400 hover:text-red-300"
+              tabIndex={0}
+              aria-label="Cerrar sesión"
+            >
+              <span className="text-xl"><FaSignOutAlt /></span>
+              {expanded && <span className="whitespace-nowrap">Cerrar sesión</span>}
+            </button>
           </nav>
         </aside>
         {/* Contenido principal ajustado */}

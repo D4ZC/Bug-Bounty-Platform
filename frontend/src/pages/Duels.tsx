@@ -25,6 +25,7 @@ const duelTypeIcons: Record<string, React.ReactNode> = {
 const Duels: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState('Todos');
   const [duelList, setDuelList] = useState(duels);
+  const [userActiveDuel, setUserActiveDuel] = useState<number | null>(null);
 
   // Filtro simulado
   const filteredDuels = selectedFilter === 'Todos'
@@ -34,6 +35,9 @@ const Duels: React.FC = () => {
         if (selectedFilter === 'Equipo') return d.type.toLowerCase() === 'equipo';
         if (selectedFilter === 'Tiempo') return d.objective.toLowerCase().includes('tiempo');
         if (selectedFilter === 'Puntos') return d.objective.toLowerCase().includes('puntuación') || d.objective.toLowerCase().includes('puntos');
+        if (selectedFilter === 'Críticas') return d.vulnerabilityLevel === 'crítica';
+        if (selectedFilter === 'Medias') return d.vulnerabilityLevel === 'media';
+        if (selectedFilter === 'Bajas') return d.vulnerabilityLevel === 'baja';
         return true;
       });
 
@@ -41,6 +45,18 @@ const Duels: React.FC = () => {
     // Determinar el status correcto
     let status: 'active' | 'waiting' | 'finished' = 'active';
     if (data.openDuel) status = 'waiting';
+    
+    // Usar el nivel de vulnerabilidad seleccionado o determinar basado en el objetivo
+    let vulnerabilityLevel: 'crítica' | 'media' | 'baja' = data.vulnerabilityLevel || 'media';
+    if (!data.vulnerabilityLevel) {
+      // Fallback: determinar basado en el objetivo
+      if (data.objective.toLowerCase().includes('crítica') || data.objective.toLowerCase().includes('critica')) {
+        vulnerabilityLevel = 'crítica';
+      } else if (data.objective.toLowerCase().includes('baja')) {
+        vulnerabilityLevel = 'baja';
+      }
+    }
+    
     // Simulación de creación de duelo
     setDuelList([
       ...duelList,
@@ -48,6 +64,7 @@ const Duels: React.FC = () => {
         id: duelList.length + 1,
         type: data.type === 'INDIVIDUAL' ? '1v1' : 'Equipo',
         typeIcon: data.type === 'INDIVIDUAL' ? 'swords' : 'shield',
+        vulnerabilityLevel,
         opponents: [
           { avatar: user.avatar, name: user.name },
           { avatar: '', name: data.opponent || '' },
@@ -63,10 +80,95 @@ const Duels: React.FC = () => {
     if (data.type === 'EQUIPO' && selectedFilter !== 'Equipo' && selectedFilter !== 'Todos') setSelectedFilter('Equipo');
     if (data.objective.toLowerCase().includes('tiempo') && selectedFilter !== 'Tiempo' && selectedFilter !== 'Todos') setSelectedFilter('Tiempo');
     if ((data.objective.toLowerCase().includes('puntuación') || data.objective.toLowerCase().includes('puntos')) && selectedFilter !== 'Puntos' && selectedFilter !== 'Todos') setSelectedFilter('Puntos');
+    if (vulnerabilityLevel === 'crítica' && selectedFilter !== 'Críticas' && selectedFilter !== 'Todos') setSelectedFilter('Críticas');
+    if (vulnerabilityLevel === 'media' && selectedFilter !== 'Medias' && selectedFilter !== 'Todos') setSelectedFilter('Medias');
+    if (vulnerabilityLevel === 'baja' && selectedFilter !== 'Bajas' && selectedFilter !== 'Todos') setSelectedFilter('Bajas');
   };
 
   const handleDeleteDuel = (id: number) => {
     setDuelList(duelList.filter(d => d.id !== id));
+  };
+
+  const handleAcceptDuel = (duelId: number) => {
+    // Verificar si el usuario ya tiene un duelo activo
+    if (userActiveDuel !== null) {
+      alert('Ya tienes un duelo activo. Debes completarlo antes de aceptar otro.');
+      return;
+    }
+
+    // Verificar si el duelo está disponible
+    const duel = duelList.find(d => d.id === duelId);
+    if (!duel) {
+      alert('Duelo no encontrado.');
+      return;
+    }
+
+    if (duel.status !== 'waiting') {
+      alert('Este duelo no está disponible para aceptar.');
+      return;
+    }
+
+    // Verificar si el usuario tiene suficientes puntos
+    if (user.points < duel.points) {
+      alert(`No tienes suficientes puntos. Necesitas ${duel.points} puntos para aceptar este duelo.`);
+      return;
+    }
+
+    // Aceptar el duelo
+    setUserActiveDuel(duelId);
+    
+    // Actualizar el duelo en la lista
+    setDuelList(duelList.map(d => 
+      d.id === duelId 
+        ? { ...d, status: 'active' as const, isWaiting: false }
+        : d
+    ));
+
+    alert(`¡Duelo aceptado! Has entrado al duelo "${duel.objective}"`);
+  };
+
+  const handleLeaveDuel = (duelId: number) => {
+    if (userActiveDuel !== duelId) {
+      alert('Solo puedes abandonar tu duelo activo.');
+      return;
+    }
+
+    const confirmed = window.confirm('¿Estás seguro de que quieres abandonar este duelo? Perderás los puntos apostados.');
+    if (!confirmed) return;
+
+    // Abandonar el duelo
+    setUserActiveDuel(null);
+    
+    // Actualizar el duelo en la lista
+    setDuelList(duelList.map(d => 
+      d.id === duelId 
+        ? { ...d, status: 'finished' as const, isWaiting: false }
+        : d
+    ));
+
+    alert('Has abandonado el duelo.');
+  };
+
+  const handleCompleteDuel = (duelId: number) => {
+    if (userActiveDuel !== duelId) {
+      alert('Solo puedes completar tu duelo activo.');
+      return;
+    }
+
+    const confirmed = window.confirm('¿Quieres marcar este duelo como completado?');
+    if (!confirmed) return;
+
+    // Completar el duelo
+    setUserActiveDuel(null);
+    
+    // Actualizar el duelo en la lista
+    setDuelList(duelList.map(d => 
+      d.id === duelId 
+        ? { ...d, status: 'finished' as const, isWaiting: false }
+        : d
+    ));
+
+    alert('¡Duelo completado! Has ganado experiencia.');
   };
 
   return (
@@ -81,6 +183,11 @@ const Duels: React.FC = () => {
             <span className="flex items-center gap-1 text-neon-green font-mono animate-pulse">
               <FaCoins /> {user.points} Puntos
             </span>
+            {userActiveDuel && (
+              <span className="flex items-center gap-1 text-red-400 text-sm font-semibold">
+                ⚔️ Duelo Activo
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -93,20 +200,37 @@ const Duels: React.FC = () => {
             {filteredDuels.map((duel) => (
               <DuelCard
                 key={duel.id}
-                typeIcon={duelTypeIcons[duel.typeIcon]}
-                duelType={duel.type}
-                opponents={duel.opponents.map(op => ({
-                  ...op,
-                  avatar: op.avatar || `data:image/svg+xml;utf8,${encodeURIComponent(new DiceBear.default(Identicon.default).create(op.name || 'anon'))}`,
-                }))}
+                id={duel.id}
+                type={duel.type}
+                typeIcon={duel.typeIcon}
+                opponents={duel.opponents.map(op => {
+                  if ('teamName' in op) {
+                    // Es un equipo
+                    return {
+                      teamName: op.teamName,
+                      members: op.members.map(member => ({
+                        ...member,
+                        avatar: member.avatar || `data:image/svg+xml;utf8,${encodeURIComponent(new DiceBear.default(Identicon.default).create(member.name || 'anon'))}`,
+                      }))
+                    };
+                  } else {
+                    // Es un individuo
+                    return {
+                      ...op,
+                      avatar: op.avatar || `data:image/svg+xml;utf8,${encodeURIComponent(new DiceBear.default(Identicon.default).create(op.name || 'anon'))}`,
+                    };
+                  }
+                })}
                 objective={duel.objective}
                 points={duel.points}
                 isWaiting={duel.isWaiting}
-                onEnterArena={() => alert('Entrar a la arena (simulado)')}
-                details={duel.isWaiting ? `Vulnerabilidades a resolver: 3\nPuntos apostados: ${duel.points}\nOponentes: ${duel.opponents.map(o => o.name || 'Por definir').join(', ')}` : undefined}
-                isCreator={duel.opponents[0]?.name === user.name}
-                onDelete={() => handleDeleteDuel(duel.id)}
                 status={duel.status as 'active' | 'waiting' | 'finished'}
+                vulnerabilityLevel={duel.vulnerabilityLevel as 'crítica' | 'media' | 'baja'}
+                onAcceptDuel={() => handleAcceptDuel(duel.id)}
+                onLeaveDuel={() => handleLeaveDuel(duel.id)}
+                onCompleteDuel={() => handleCompleteDuel(duel.id)}
+                canAccept={userActiveDuel === null && duel.status === 'waiting' && user.points >= duel.points}
+                isUserActiveDuel={userActiveDuel === duel.id}
               />
             ))}
           </div>

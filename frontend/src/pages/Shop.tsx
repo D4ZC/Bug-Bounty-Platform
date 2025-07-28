@@ -7,6 +7,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
+  originalPrice?: number;
   image: string;
   description: string;
 }
@@ -31,38 +32,44 @@ const categories = [
   { id: 'badges', name: 'Insignias especiales' },
   { id: 'season', name: 'Perfiles de temporada/juego' },
   { id: 'plates', name: 'Placas de nombre' },
+  { id: 'bluepoints', name: 'Blue Points' },
 ];
 
-const BADGES = ['Nuevo', 'Exclusivo', 'Limitado', 'Popular', 'Oferta', 'Recomendado', null];
+const BADGES = ['Nuevo', 'Exclusivo', 'Limitado', 'Popular', 'Oferta', 'Recomendado', 'En Promoción', null];
 
 const mockProducts: Record<string, Product[]> = {
   backgrounds: [
     { id: 'bg1', name: 'Galaxia', price: 300, image: '/src/assets/Galaxia.png', description: 'Fondo espacial espectacular con estrellas brillantes.' },
     { id: 'bg2', name: 'Ciudad', price: 250, image: '/src/assets/Ciudad.png', description: 'Fondo urbano moderno con rascacielos.' },
-    { id: 'bg3', name: 'Montaña', price: 320, image: '/src/assets/Montañas.png', description: 'Paisaje de montaña nevada majestuoso.' },
+    { id: 'bg3', name: 'Montañas', price: 320, image: '/src/assets/Montañas.png', description: 'Paisaje de montaña nevada majestuoso.' },
     { id: 'bg4', name: 'Ciberespacio', price: 350, image: '/src/assets/Ciberespacio.png', description: 'Fondo digital futurista con efectos neon.' },
-    { id: 'bg5', name: 'Bosque Mágico', price: 280, image: 'https://via.placeholder.com/300x200/228B22/FFFFFF?text=Bosque', description: 'Bosque encantado con luces mágicas.' },
-    { id: 'bg6', name: 'Desierto Dorado', price: 260, image: 'https://via.placeholder.com/300x200/FFD700/8B4513?text=Desierto', description: 'Desierto infinito con dunas doradas.' },
-    { id: 'bg7', name: 'Océano Profundo', price: 310, image: 'https://via.placeholder.com/300x200/000080/00BFFF?text=Oceano', description: 'Fondos marinos con criaturas abisales.' },
-    { id: 'bg8', name: 'Aurora Boreal', price: 380, image: 'https://via.placeholder.com/300x200/00FF7F/000080?text=Aurora', description: 'Aurora boreal en el cielo nocturno.' },
-    { id: 'bg9', name: 'Volcán Activo', price: 360, image: 'https://via.placeholder.com/300x200/FF4500/8B0000?text=Volcan', description: 'Volcán en erupción con lava ardiente.' },
-    { id: 'bg10', name: 'Cascada Cristalina', price: 290, image: 'https://via.placeholder.com/300x200/00CED1/006400?text=Cascada', description: 'Cascada de agua cristalina en la jungla.' },
-    { id: 'bg11', name: 'Castillo Gótico', price: 400, image: 'https://via.placeholder.com/300x200/4B0082/FFFFFF?text=Castillo', description: 'Castillo gótico en la cima de una montaña.' },
-    { id: 'bg12', name: 'Estación Espacial', price: 420, image: 'https://via.placeholder.com/300x200/696969/00BFFF?text=Estacion', description: 'Estación espacial orbitando la Tierra.' },
+    { id: 'bg5', name: 'Fondo 1', price: 280, image: '/src/assets/bg1.png', description: 'Fondo exclusivo con efectos especiales.' },
+    { id: 'bg6', name: 'Fondo 2', price: 260, image: '/src/assets/bg2.png', description: 'Fondo premium con diseño único.' },
+    { id: 'bg7', name: 'Fondo 3', price: 310, image: '/src/assets/bg3.png', description: 'Fondo de alta calidad con efectos visuales.' },
+    { id: 'bg8', name: 'Fondo 4', price: 380, image: '/src/assets/bg4.png', description: 'Fondo especial con animaciones.' },
+    { id: 'bg9', name: 'Fondo 5', price: 360, image: '/src/assets/bg5.png', description: 'Fondo exclusivo con efectos neon.' },
+    { id: 'bg10', name: 'Fondo 6', price: 290, image: '/src/assets/bg6.jpg', description: 'Fondo premium con diseño futurista.' },
+    { id: 'bg11', name: 'Fondo 7', price: 400, image: '/src/assets/bg7.jpg', description: 'Fondo de edición limitada.' },
+    { id: 'bg12', name: 'Fondo 8', price: 420, image: '/src/assets/bg8.jpg', description: 'Fondo legendario exclusivo.' },
+    { id: 'bg13', name: 'Fondo 9', price: 450, image: '/src/assets/bg9.jpg', description: 'Fondo épico con efectos especiales.' },
+    { id: 'bg14', name: 'Fondo 10', price: 470, image: '/src/assets/bg10.jpg', description: 'Fondo mítico con animaciones.' },
+    { id: 'bg15', name: 'Fondo 11', price: 490, image: '/src/assets/bg11.jpg', description: 'Fondo de colección exclusiva.' },
+    { id: 'bg16', name: 'Fondo 12', price: 520, image: '/src/assets/bg12.jpg', description: 'Fondo premium con efectos únicos.' },
+    { id: 'bg17', name: 'Fondo 13', price: 550, image: '/src/assets/bg13.jpg', description: 'Fondo legendario de edición limitada.' },
   ],
   miniprofiles: [
-    { id: 'mp1', name: 'Mini Hacker', price: 400, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Hacker', description: 'Miniperfil hacker con efectos de código.' },
-    { id: 'mp2', name: 'Mini Ninja', price: 420, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Ninja', description: 'Miniperfil ninja veloz y sigiloso.' },
-    { id: 'mp3', name: 'Mini Cyborg', price: 410, image: 'https://via.placeholder.com/120x120/23263a/00BFFF?text=Cyborg', description: 'Miniperfil mitad humano, mitad máquina.' },
-    { id: 'mp4', name: 'Mini Samurái', price: 430, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Samurai', description: 'Miniperfil de guerrero samurái honorable.' },
-    { id: 'mp5', name: 'Mini Mago', price: 440, image: 'https://via.placeholder.com/120x120/23263a/9932CC?text=Mago', description: 'Miniperfil de mago con poderes arcanos.' },
-    { id: 'mp6', name: 'Mini Pirata', price: 390, image: 'https://via.placeholder.com/120x120/23263a/FF4500?text=Pirata', description: 'Miniperfil de pirata del Caribe.' },
-    { id: 'mp7', name: 'Mini Robot', price: 450, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Robot', description: 'Miniperfil de robot futurista.' },
-    { id: 'mp8', name: 'Mini Dragón', price: 480, image: 'https://via.placeholder.com/120x120/23263a/FF0000?text=Dragon', description: 'Miniperfil de dragón legendario.' },
-    { id: 'mp9', name: 'Mini Vampiro', price: 460, image: 'https://via.placeholder.com/120x120/23263a/8B0000?text=Vampiro', description: 'Miniperfil de vampiro elegante.' },
-    { id: 'mp10', name: 'Mini Alien', price: 470, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Alien', description: 'Miniperfil de extraterrestre misterioso.' },
-    { id: 'mp11', name: 'Mini Caballero', price: 420, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Caballero', description: 'Miniperfil de caballero medieval.' },
-    { id: 'mp12', name: 'Mini Superhéroe', price: 490, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Heroe', description: 'Miniperfil de superhéroe con poderes.' },
+    { id: 'mp1', name: 'Avatar 1', price: 400, image: '/src/assets/avatar1.png', description: 'Avatar exclusivo con diseño único.' },
+    { id: 'mp2', name: 'Avatar 4', price: 420, image: '/src/assets/avatar4.png', description: 'Avatar premium con efectos especiales.' },
+    { id: 'mp3', name: 'Avatar 6', price: 410, image: '/src/assets/avatar6.png', description: 'Avatar de alta calidad con animaciones.' },
+    { id: 'mp4', name: 'Avatar 7', price: 430, image: '/src/assets/avatar7.png', description: 'Avatar exclusivo con efectos neon.' },
+    { id: 'mp5', name: 'Avatar 8', price: 440, image: '/src/assets/avatar8.png', description: 'Avatar premium con diseño futurista.' },
+    { id: 'mp6', name: 'Avatar 9', price: 390, image: '/src/assets/avatar9.png', description: 'Avatar de edición limitada.' },
+    { id: 'mp7', name: 'Avatar 10', price: 450, image: '/src/assets/avatar10.png', description: 'Avatar legendario exclusivo.' },
+    { id: 'mp8', name: 'Avatar 11', price: 480, image: '/src/assets/avatar11.png', description: 'Avatar épico con efectos especiales.' },
+    { id: 'mp9', name: 'Avatar 12', price: 460, image: '/src/assets/avatar12.png', description: 'Avatar mítico con animaciones.' },
+    { id: 'mp10', name: 'Avatar 13', price: 470, image: '/src/assets/avatar13.png', description: 'Avatar de colección exclusiva.' },
+    { id: 'mp11', name: 'Avatar 14', price: 420, image: '/src/assets/avatar14.png', description: 'Avatar premium con efectos únicos.' },
+    { id: 'mp12', name: 'Ninja', price: 490, image: '/src/assets/Ninja2.png', description: 'Avatar ninja con movimientos fluidos.' },
   ],
   frames: [
     { id: 'fr1', name: 'Marco Dorado', price: 200, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Gold', description: 'Marco elegante dorado con detalles.' },
@@ -79,18 +86,18 @@ const mockProducts: Record<string, Product[]> = {
     { id: 'fr12', name: 'Marco Legendario', price: 300, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Legend', description: 'Marco legendario exclusivo.' },
   ],
   animated: [
-    { id: 'an1', name: 'Avatar Ninja', price: 500, image: '/src/assets/Ninja2.png', description: 'Avatar animado ninja con movimientos fluidos.' },
-    { id: 'an2', name: 'Avatar Robot', price: 520, image: '/src/assets/Robot2.png', description: 'Avatar animado robot con efectos mecánicos.' },
-    { id: 'an3', name: 'Avatar Dragón', price: 540, image: '/src/assets/Dragon.png', description: 'Avatar animado dragón legendario.' },
-    { id: 'an4', name: 'Avatar Samurái', price: 530, image: '/src/assets/Samurai.png', description: 'Avatar de samurái con katana.' },
-    { id: 'an5', name: 'Avatar Mago', price: 550, image: '/src/assets/Mago.png', description: 'Avatar de mago con varita mágica.' },
-    { id: 'an6', name: 'Avatar Pirata', price: 510, image: '/src/assets/Pirata.png', description: 'Avatar de pirata con parche.' },
-    { id: 'an7', name: 'Avatar Vampiro', price: 560, image: '/src/assets/Vampiro.png', description: 'Avatar de vampiro elegante.' },
-    { id: 'an8', name: 'Avatar Alien', price: 570, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Alien', description: 'Avatar de extraterrestre misterioso.' },
-    { id: 'an9', name: 'Avatar Caballero', price: 540, image: 'https://via.placeholder.com/120x120/23263a/C0C0C0?text=Caballero', description: 'Avatar de caballero medieval.' },
-    { id: 'an10', name: 'Avatar Superhéroe', price: 580, image: 'https://via.placeholder.com/120x120/23263a/FFD700?text=Heroe', description: 'Avatar de superhéroe con capa.' },
-    { id: 'an11', name: 'Avatar Zombie', price: 520, image: 'https://via.placeholder.com/120x120/23263a/00FF00?text=Zombie', description: 'Avatar de zombie espeluznante.' },
-    { id: 'an12', name: 'Avatar Fantasma', price: 530, image: 'https://via.placeholder.com/120x120/23263a/FFFFFF?text=Fantasma', description: 'Avatar de fantasma transparente.' },
+    { id: 'an1', name: 'Ninja', price: 500, image: '/src/assets/Ninja2.png', description: 'Avatar animado ninja con movimientos fluidos.' },
+    { id: 'an2', name: 'Robot', price: 520, image: '/src/assets/Robot2.png', description: 'Avatar animado robot con efectos mecánicos.' },
+    { id: 'an3', name: 'Dragón', price: 540, image: '/src/assets/Dragon.png', description: 'Avatar animado dragón legendario.' },
+    { id: 'an4', name: 'Samurái', price: 530, image: '/src/assets/Samurai.png', description: 'Avatar de samurái con katana.' },
+    { id: 'an5', name: 'Mago', price: 550, image: '/src/assets/Mago.png', description: 'Avatar de mago con varita mágica.' },
+    { id: 'an6', name: 'Pirata', price: 510, image: '/src/assets/Pirata.png', description: 'Avatar de pirata con parche.' },
+    { id: 'an7', name: 'Vampiro', price: 560, image: '/src/assets/Vampiro.png', description: 'Avatar de vampiro elegante.' },
+    { id: 'an8', name: 'Avatar 1', price: 570, image: '/src/assets/avatar1.png', description: 'Avatar exclusivo con diseño único.' },
+    { id: 'an9', name: 'Avatar 4', price: 540, image: '/src/assets/avatar4.png', description: 'Avatar premium con efectos especiales.' },
+    { id: 'an10', name: 'Avatar 6', price: 580, image: '/src/assets/avatar6.png', description: 'Avatar de alta calidad con animaciones.' },
+    { id: 'an11', name: 'Avatar 7', price: 520, image: '/src/assets/avatar7.png', description: 'Avatar exclusivo con efectos neon.' },
+    { id: 'an12', name: 'Avatar 8', price: 530, image: '/src/assets/avatar8.png', description: 'Avatar premium con diseño futurista.' },
   ],
   badges: [
     { id: 'bd1', name: 'Insignia Hacker', price: 150, image: 'https://via.placeholder.com/100x100/00BFFF/23263a?text=H', description: 'Insignia para expertos en seguridad.' },
@@ -134,70 +141,95 @@ const mockProducts: Record<string, Product[]> = {
     { id: 'pl11', name: 'Placa Warrior', price: 200, image: 'https://via.placeholder.com/120x60/FF0000/23263a?text=Warrior', description: 'Placa de nombre para guerreros.' },
     { id: 'pl12', name: 'Placa King', price: 250, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=King', description: 'Placa de nombre real.' },
   ],
+  bluepoints: [
+    { id: 'bp1', name: '10 Blue Points', price: 1000, originalPrice: 1500, image: '💎', description: 'Paquete básico de 10 Blue Points.' },
+    { id: 'bp2', name: '25 Blue Points', price: 2200, image: '💎', description: 'Paquete estándar de 25 Blue Points.' },
+    { id: 'bp3', name: '50 Blue Points', price: 4000, originalPrice: 5500, image: '💎', description: 'Paquete premium de 50 Blue Points.' },
+    { id: 'bp4', name: '100 Blue Points', price: 7500, image: '💎', description: 'Paquete profesional de 100 Blue Points.' },
+    { id: 'bp5', name: '200 Blue Points', price: 14000, originalPrice: 18000, image: '💎', description: 'Paquete elite de 200 Blue Points.' },
+    { id: 'bp6', name: '500 Blue Points', price: 32000, image: '💎', description: 'Paquete legendario de 500 Blue Points.' },
+    { id: 'bp7', name: '1000 Blue Points', price: 60000, image: '💎', description: 'Paquete mítico de 1000 Blue Points.' },
+  ],
 };
 
 // Productos específicos para Teams
 const teamProducts: Record<string, Product[]> = {
   backgrounds: [
-    { id: 'tbg1', name: 'Fondo Team Elite', price: 500, image: 'https://via.placeholder.com/300x200/FFD700/23263a?text=Team+Elite', description: 'Fondo exclusivo para equipos de élite.' },
-    { id: 'tbg2', name: 'Fondo Team Pro', price: 450, image: 'https://via.placeholder.com/300x200/00BFFF/23263a?text=Team+Pro', description: 'Fondo profesional para equipos pro.' },
-    { id: 'tbg3', name: 'Fondo Team Champions', price: 600, image: 'https://via.placeholder.com/300x200/FF4500/23263a?text=Champions', description: 'Fondo para campeones de equipos.' },
-    { id: 'tbg4', name: 'Fondo Team Legends', price: 700, image: 'https://via.placeholder.com/300x200/9932CC/23263a?text=Legends', description: 'Fondo legendario para equipos míticos.' },
-    { id: 'tbg5', name: 'Fondo Team Warriors', price: 550, image: 'https://via.placeholder.com/300x200/00FF00/23263a?text=Warriors', description: 'Fondo para guerreros de equipo.' },
-    { id: 'tbg6', name: 'Fondo Team Masters', price: 650, image: 'https://via.placeholder.com/300x200/FF69B4/23263a?text=Masters', description: 'Fondo para maestros de equipo.' },
+    { id: 'tbg1', name: 'Fondo Team Elite', price: 500, image: '/src/assets/Galaxia.png', description: 'Fondo exclusivo para equipos de élite.' },
+    { id: 'tbg2', name: 'Fondo Team Pro', price: 450, image: '/src/assets/Ciudad.png', description: 'Fondo profesional para equipos pro.' },
+    { id: 'tbg3', name: 'Fondo Team Champions', price: 600, image: '/src/assets/Montañas.png', description: 'Fondo para campeones de equipos.' },
+    { id: 'tbg4', name: 'Fondo Team Legends', price: 700, image: '/src/assets/Ciberespacio.png', description: 'Fondo legendario para equipos míticos.' },
+    { id: 'tbg5', name: 'Fondo Team Warriors', price: 550, image: '/src/assets/bg1.png', description: 'Fondo para guerreros de equipo.' },
+    { id: 'tbg6', name: 'Fondo Team Masters', price: 650, image: '/src/assets/bg2.png', description: 'Fondo para maestros de equipo.' },
   ],
   miniprofiles: [
-    { id: 'tmp1', name: 'Mini Team Leader', price: 600, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Leader', description: 'Miniperfil para líderes de equipo.' },
-    { id: 'tmp2', name: 'Mini Team Captain', price: 580, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Captain', description: 'Miniperfil para capitanes de equipo.' },
-    { id: 'tmp3', name: 'Mini Team Strategist', price: 620, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Strategy', description: 'Miniperfil para estrategas de equipo.' },
-    { id: 'tmp4', name: 'Mini Team Defender', price: 570, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Defender', description: 'Miniperfil para defensores de equipo.' },
-    { id: 'tmp5', name: 'Mini Team Attacker', price: 590, image: 'https://via.placeholder.com/120x120/FF0000/23263a?text=Attacker', description: 'Miniperfil para atacantes de equipo.' },
-    { id: 'tmp6', name: 'Mini Team Support', price: 560, image: 'https://via.placeholder.com/120x120/00CED1/23263a?text=Support', description: 'Miniperfil para soporte de equipo.' },
+    { id: 'tmp1', name: 'Mini Team Leader', price: 600, image: '/src/assets/avatar1.png', description: 'Miniperfil para líderes de equipo.' },
+    { id: 'tmp2', name: 'Mini Team Captain', price: 580, image: '/src/assets/avatar4.png', description: 'Miniperfil para capitanes de equipo.' },
+    { id: 'tmp3', name: 'Mini Team Strategist', price: 620, image: '/src/assets/avatar6.png', description: 'Miniperfil para estrategas de equipo.' },
+    { id: 'tmp4', name: 'Mini Team Defender', price: 570, image: '/src/assets/avatar7.png', description: 'Miniperfil para defensores de equipo.' },
+    { id: 'tmp5', name: 'Mini Team Attacker', price: 590, image: '/src/assets/avatar8.png', description: 'Miniperfil para atacantes de equipo.' },
+    { id: 'tmp6', name: 'Mini Team Support', price: 560, image: '/src/assets/avatar9.png', description: 'Miniperfil para soporte de equipo.' },
   ],
   frames: [
-    { id: 'tfr1', name: 'Marco Team Gold', price: 350, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Gold', description: 'Marco dorado para equipos.' },
-    { id: 'tfr2', name: 'Marco Team Silver', price: 320, image: 'https://via.placeholder.com/120x120/C0C0C0/23263a?text=Team+Silver', description: 'Marco plateado para equipos.' },
-    { id: 'tfr3', name: 'Marco Team Bronze', price: 300, image: 'https://via.placeholder.com/120x120/CD7F32/23263a?text=Team+Bronze', description: 'Marco bronce para equipos.' },
-    { id: 'tfr4', name: 'Marco Team Diamond', price: 400, image: 'https://via.placeholder.com/120x120/B9F2FF/23263a?text=Team+Diamond', description: 'Marco diamante para equipos.' },
-    { id: 'tfr5', name: 'Marco Team Platinum', price: 450, image: 'https://via.placeholder.com/120x120/E5E4E2/23263a?text=Team+Platinum', description: 'Marco platino para equipos.' },
-    { id: 'tfr6', name: 'Marco Team Elite', price: 500, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Elite', description: 'Marco élite para equipos.' },
+    { id: 'tfr1', name: 'Marco Team Gold', price: 350, image: '/src/assets/avatar10.png', description: 'Marco dorado para equipos.' },
+    { id: 'tfr2', name: 'Marco Team Silver', price: 320, image: '/src/assets/avatar11.png', description: 'Marco plateado para equipos.' },
+    { id: 'tfr3', name: 'Marco Team Bronze', price: 300, image: '/src/assets/avatar12.png', description: 'Marco bronce para equipos.' },
+    { id: 'tfr4', name: 'Marco Team Diamond', price: 400, image: '/src/assets/avatar13.png', description: 'Marco diamante para equipos.' },
+    { id: 'tfr5', name: 'Marco Team Platinum', price: 450, image: '/src/assets/avatar14.png', description: 'Marco platino para equipos.' },
+    { id: 'tfr6', name: 'Marco Team Elite', price: 500, image: '/src/assets/Ninja2.png', description: 'Marco élite para equipos.' },
   ],
   animated: [
-    { id: 'tan1', name: 'Avatar Team Leader', price: 700, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Leader', description: 'Avatar animado para líderes de equipo.' },
-    { id: 'tan2', name: 'Avatar Team Captain', price: 680, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Team+Captain', description: 'Avatar animado para capitanes.' },
-    { id: 'tan3', name: 'Avatar Team Warrior', price: 720, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Team+Warrior', description: 'Avatar animado para guerreros de equipo.' },
-    { id: 'tan4', name: 'Avatar Team Mage', price: 750, image: 'https://via.placeholder.com/120x120/9932CC/23263a?text=Team+Mage', description: 'Avatar animado para magos de equipo.' },
-    { id: 'tan5', name: 'Avatar Team Archer', price: 730, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Team+Archer', description: 'Avatar animado para arqueros de equipo.' },
-    { id: 'tan6', name: 'Avatar Team Knight', price: 710, image: 'https://via.placeholder.com/120x120/C0C0C0/23263a?text=Team+Knight', description: 'Avatar animado para caballeros de equipo.' },
+    { id: 'tan1', name: 'Avatar Team Leader', price: 700, image: '/src/assets/Robot2.png', description: 'Avatar animado para líderes de equipo.' },
+    { id: 'tan2', name: 'Avatar Team Captain', price: 680, image: '/src/assets/Dragon.png', description: 'Avatar animado para capitanes.' },
+    { id: 'tan3', name: 'Avatar Team Warrior', price: 720, image: '/src/assets/Samurai.png', description: 'Avatar animado para guerreros de equipo.' },
+    { id: 'tan4', name: 'Avatar Team Mage', price: 750, image: '/src/assets/Mago.png', description: 'Avatar animado para magos de equipo.' },
+    { id: 'tan5', name: 'Avatar Team Archer', price: 730, image: '/src/assets/Pirata.png', description: 'Avatar animado para arqueros de equipo.' },
+    { id: 'tan6', name: 'Avatar Team Knight', price: 710, image: '/src/assets/Vampiro.png', description: 'Avatar animado para caballeros de equipo.' },
   ],
   badges: [
-    { id: 'tbd1', name: 'Insignia Team Leader', price: 250, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TL', description: 'Insignia para líderes de equipo.' },
-    { id: 'tbd2', name: 'Insignia Team Captain', price: 230, image: 'https://via.placeholder.com/100x100/00BFFF/23263a?text=TC', description: 'Insignia para capitanes de equipo.' },
-    { id: 'tbd3', name: 'Insignia Team MVP', price: 280, image: 'https://via.placeholder.com/100x100/FF4500/23263a?text=TMVP', description: 'Insignia MVP para equipos.' },
-    { id: 'tbd4', name: 'Insignia Team Champion', price: 300, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TChamp', description: 'Insignia para campeones de equipo.' },
-    { id: 'tbd5', name: 'Insignia Team Elite', price: 320, image: 'https://via.placeholder.com/100x100/9932CC/23263a?text=TElite', description: 'Insignia para élite de equipos.' },
-    { id: 'tbd6', name: 'Insignia Team Legend', price: 350, image: 'https://via.placeholder.com/100x100/FFD700/23263a?text=TLegend', description: 'Insignia legendaria para equipos.' },
+    { id: 'tbd1', name: 'Insignia Team Leader', price: 250, image: '/src/assets/avatar1.png', description: 'Insignia para líderes de equipo.' },
+    { id: 'tbd2', name: 'Insignia Team Captain', price: 230, image: '/src/assets/avatar4.png', description: 'Insignia para capitanes de equipo.' },
+    { id: 'tbd3', name: 'Insignia Team MVP', price: 280, image: '/src/assets/avatar6.png', description: 'Insignia MVP para equipos.' },
+    { id: 'tbd4', name: 'Insignia Team Champion', price: 300, image: '/src/assets/avatar7.png', description: 'Insignia para campeones de equipo.' },
+    { id: 'tbd5', name: 'Insignia Team Elite', price: 320, image: '/src/assets/avatar8.png', description: 'Insignia para élite de equipos.' },
+    { id: 'tbd6', name: 'Insignia Team Legend', price: 350, image: '/src/assets/avatar9.png', description: 'Insignia legendaria para equipos.' },
   ],
   season: [
-    { id: 'tss1', name: 'Perfil Team Winter', price: 450, image: 'https://via.placeholder.com/120x120/00BFFF/23263a?text=Team+Winter', description: 'Perfil de invierno para equipos.' },
-    { id: 'tss2', name: 'Perfil Team Summer', price: 440, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Summer', description: 'Perfil de verano para equipos.' },
-    { id: 'tss3', name: 'Perfil Team Spring', price: 430, image: 'https://via.placeholder.com/120x120/00FF00/23263a?text=Team+Spring', description: 'Perfil de primavera para equipos.' },
-    { id: 'tss4', name: 'Perfil Team Autumn', price: 440, image: 'https://via.placeholder.com/120x120/FFA500/23263a?text=Team+Autumn', description: 'Perfil de otoño para equipos.' },
-    { id: 'tss5', name: 'Perfil Team Championship', price: 500, image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Team+Champ', description: 'Perfil de campeonato para equipos.' },
-    { id: 'tss6', name: 'Perfil Team Tournament', price: 480, image: 'https://via.placeholder.com/120x120/FF4500/23263a?text=Team+Tourney', description: 'Perfil de torneo para equipos.' },
+    { id: 'tss1', name: 'Perfil Team Winter', price: 450, image: '/src/assets/avatar10.png', description: 'Perfil de invierno para equipos.' },
+    { id: 'tss2', name: 'Perfil Team Summer', price: 440, image: '/src/assets/avatar11.png', description: 'Perfil de verano para equipos.' },
+    { id: 'tss3', name: 'Perfil Team Spring', price: 430, image: '/src/assets/avatar12.png', description: 'Perfil de primavera para equipos.' },
+    { id: 'tss4', name: 'Perfil Team Autumn', price: 440, image: '/src/assets/avatar13.png', description: 'Perfil de otoño para equipos.' },
+    { id: 'tss5', name: 'Perfil Team Championship', price: 500, image: '/src/assets/avatar14.png', description: 'Perfil de campeonato para equipos.' },
+    { id: 'tss6', name: 'Perfil Team Tournament', price: 480, image: '/src/assets/Ninja2.png', description: 'Perfil de torneo para equipos.' },
   ],
   plates: [
-    { id: 'tpl1', name: 'Placa Team Elite', price: 200, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Team+Elite', description: 'Placa para equipos de élite.' },
-    { id: 'tpl2', name: 'Placa Team Pro', price: 180, image: 'https://via.placeholder.com/120x60/00BFFF/23263a?text=Team+Pro', description: 'Placa para equipos profesionales.' },
-    { id: 'tpl3', name: 'Placa Team Champion', price: 250, image: 'https://via.placeholder.com/120x60/FF4500/23263a?text=Team+Champ', description: 'Placa para equipos campeones.' },
-    { id: 'tpl4', name: 'Placa Team Legend', price: 300, image: 'https://via.placeholder.com/120x60/FFD700/23263a?text=Team+Legend', description: 'Placa legendaria para equipos.' },
-    { id: 'tpl5', name: 'Placa Team Master', price: 220, image: 'https://via.placeholder.com/120x60/9932CC/23263a?text=Team+Master', description: 'Placa para maestros de equipo.' },
-    { id: 'tpl6', name: 'Placa Team Warrior', price: 240, image: 'https://via.placeholder.com/120x60/00FF00/23263a?text=Team+Warrior', description: 'Placa para guerreros de equipo.' },
+    { id: 'tpl1', name: 'Placa Team Elite', price: 200, image: '/src/assets/avatar1.png', description: 'Placa para equipos de élite.' },
+    { id: 'tpl2', name: 'Placa Team Pro', price: 180, image: '/src/assets/avatar4.png', description: 'Placa para equipos profesionales.' },
+    { id: 'tpl3', name: 'Placa Team Champion', price: 250, image: '/src/assets/avatar6.png', description: 'Placa para equipos campeones.' },
+    { id: 'tpl4', name: 'Placa Team Legend', price: 300, image: '/src/assets/avatar7.png', description: 'Placa legendaria para equipos.' },
+    { id: 'tpl5', name: 'Placa Team Master', price: 220, image: '/src/assets/avatar8.png', description: 'Placa para maestros de equipo.' },
+    { id: 'tpl6', name: 'Placa Team Warrior', price: 240, image: '/src/assets/avatar9.png', description: 'Placa para guerreros de equipo.' },
+  ],
+  bluepoints: [
+    { id: 'tbp1', name: 'Team Blue Points 10', price: 800, originalPrice: 1200, image: '💎', description: 'Paquete básico de 10 Blue Points para equipos.' },
+    { id: 'tbp2', name: 'Team Blue Points 25', price: 1800, image: '💎', description: 'Paquete estándar de 25 Blue Points para equipos.' },
+    { id: 'tbp3', name: 'Team Blue Points 50', price: 3200, originalPrice: 4500, image: '💎', description: 'Paquete premium de 50 Blue Points para equipos.' },
+    { id: 'tbp4', name: 'Team Blue Points 100', price: 6000, image: '💎', description: 'Paquete profesional de 100 Blue Points para equipos.' },
+    { id: 'tbp5', name: 'Team Blue Points 200', price: 11000, originalPrice: 14000, image: '💎', description: 'Paquete elite de 200 Blue Points para equipos.' },
+    { id: 'tbp6', name: 'Team Blue Points 500', price: 25000, image: '💎', description: 'Paquete legendario de 500 Blue Points para equipos.' },
   ],
 };
 
 const getBadge = (id: string) => {
-  // Deterministic badge for demo
+  // Badges especiales para Blue Points (solo algunos)
+  if (id.startsWith('bp') || id.startsWith('tbp')) {
+    if (id.endsWith('1')) return 'Oferta';
+    if (id.endsWith('3')) return 'En Promoción';
+    if (id.endsWith('5')) return 'Oferta';
+    return null; // Sin badge para la mayoría de Blue Points
+  }
+  
+  // Deterministic badge for demo para otros productos
   if (id.endsWith('1')) return 'Nuevo';
   if (id.endsWith('2')) return 'Exclusivo';
   if (id.endsWith('3')) return 'Limitado';
@@ -218,6 +250,11 @@ const getUserPoints = () => {
   return points ? parseInt(points, 10) : 0;
 };
 
+const getUserBluePoints = () => {
+  const bluePoints = localStorage.getItem('userBluePoints');
+  return bluePoints ? parseInt(bluePoints, 10) : 0;
+};
+
 function Shop() {
   const [selectedCategory, setSelectedCategory] = useState('backgrounds');
   const [search, setSearch] = useState('');
@@ -225,8 +262,20 @@ function Shop() {
   const [cart, setCart] = useState<Product[]>([]);
   const { userPoints, subtractPoints } = usePoints();
   const { addToInventory } = useInventory();
-  const [userBluePoints] = useState(userMock.bluePoints);
+  const [userBluePoints, setUserBluePoints] = useState(() => {
+    const saved = localStorage.getItem('userBluePoints');
+    return saved ? parseInt(saved, 10) : userMock.bluePoints;
+  });
   const [modalProduct, setModalProduct] = useState<Product | null>(null);
+  
+  // Función para agregar Blue Points
+  const addBluePoints = (amount: number) => {
+    setUserBluePoints(prev => {
+      const newAmount = prev + amount;
+      localStorage.setItem('userBluePoints', newAmount.toString());
+      return newAmount;
+    });
+  };
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showTeamProducts, setShowTeamProducts] = useState(false);
@@ -279,7 +328,14 @@ function Shop() {
         category: selectedCategory,
       });
       
-      setSuccessMessage(`¡${product.name} adquirido!`);
+      // Mensaje especial para Blue Points
+      if (product.id.startsWith('bp') || product.id.startsWith('tbp')) {
+        const bluePointsAmount = parseInt(product.name.match(/\d+/)?.[0] || '0', 10);
+        addBluePoints(bluePointsAmount);
+        setSuccessMessage(`¡${product.name} adquirido! Has obtenido ${bluePointsAmount} Blue Points.`);
+      } else {
+        setSuccessMessage(`¡${product.name} adquirido!`);
+      }
       setTimeout(() => setSuccessMessage(null), 2500);
       setModalProduct(null);
     } else {
@@ -428,20 +484,38 @@ function Shop() {
                   badge === 'Limitado' ? 'bg-yellow-500 text-black' :
                   badge === 'Popular' ? 'bg-green-500 text-white' :
                   badge === 'Oferta' ? 'bg-red-500 text-white' :
+                  badge === 'Recomendado' ? 'bg-cyan-500 text-white' :
+                  badge === 'En Promoción' ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white' :
                   'bg-cyan-500 text-white'
                 }`}>
                   {badge}
                 </span>
               )}
               
+              {/* Indicador de Blue Points */}
+              {product.id.startsWith('bp') || product.id.startsWith('tbp') && (
+                <span className="absolute top-3 right-3 px-3 py-1 rounded-full text-xs font-bold tracking-wide z-10 bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                  💎 Blue Points
+                </span>
+              )}
+              
               {/* Imagen con overlay */}
               <div className="relative mb-4 group-hover:scale-105 transition-transform duration-300">
-                <img 
-                  src={product.image} 
-                  alt={product.name} 
-                  className="w-44 h-28 object-cover rounded-xl border-2 border-[#181A20]" 
-                  style={{ boxShadow: '0 4px 16px rgba(0,191,255,0.15)' }} 
-                />
+                {product.id.startsWith('bp') || product.id.startsWith('tbp') ? (
+                  // Icono grande para Blue Points
+                  <div className="w-44 h-28 flex items-center justify-center rounded-xl border-2 border-[#181A20] bg-gradient-to-br from-blue-500 to-purple-600 relative overflow-hidden" style={{ boxShadow: '0 4px 16px rgba(0,191,255,0.15)' }}>
+                    <span className="text-6xl z-10 relative">{product.image}</span>
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-400/20 to-purple-400/20"></div>
+                  </div>
+                ) : (
+                  // Imagen normal para otros productos
+                  <img 
+                    src={product.image} 
+                    alt={product.name} 
+                    className="w-44 h-28 object-cover rounded-xl border-2 border-[#181A20]" 
+                    style={{ boxShadow: '0 4px 16px rgba(0,191,255,0.15)' }} 
+                  />
+                )}
                 {/* Overlay hover */}
                 <div className="absolute inset-0 bg-blue-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                   <div className="bg-black/50 rounded-full p-2">
@@ -453,6 +527,11 @@ function Shop() {
               {/* Nombre */}
               <div className="font-bold text-lg text-white mb-2 text-center group-hover:text-blue-400 transition-colors duration-300" style={{ letterSpacing: 0.5 }}>
                 {product.name}
+                {(product.id.startsWith('bp') || product.id.startsWith('tbp')) && (
+                  <div className="text-sm text-blue-400 mt-1">
+                    {product.name.match(/\d+/)?.[0] || '0'} Blue Points
+                  </div>
+                )}
               </div>
               
               {/* Descripción */}
@@ -461,10 +540,40 @@ function Shop() {
               </div>
               
               {/* Precio */}
-              <div className="flex items-center gap-2 mb-4 bg-[#181A20] px-3 py-2 rounded-lg">
-                <FaCoins color={ACCENT} size={18} />
-                <span className="font-semibold text-blue-400 text-base">{product.price}</span>
-                <span className="text-xs text-gray-400">Puntos</span>
+              <div className="flex flex-col items-center gap-1 mb-4 bg-[#181A20] px-3 py-2 rounded-lg">
+                {product.id.startsWith('bp') || product.id.startsWith('tbp') ? (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">💎</span>
+                      <span className="font-semibold text-blue-400 text-base">{product.price}</span>
+                      <span className="text-xs text-gray-400">Puntos</span>
+                    </div>
+                    {product.originalPrice && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-gray-500 line-through">{product.originalPrice}</span>
+                        <span className="text-xs text-green-400 font-semibold">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-2">
+                      <FaCoins color={ACCENT} size={18} />
+                      <span className="font-semibold text-blue-400 text-base">{product.price}</span>
+                      <span className="text-xs text-gray-400">Puntos</span>
+                    </div>
+                    {product.originalPrice && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-gray-500 line-through">{product.originalPrice}</span>
+                        <span className="text-xs text-green-400 font-semibold">
+                          -{Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
               
               {/* Botón Comprar */}
@@ -622,7 +731,11 @@ function Shop() {
                 </span>
               )}
               {/* Badge de tipo de producto */}
-              {modalProduct.id.startsWith('t') ? (
+              {(modalProduct.id.startsWith('bp') || modalProduct.id.startsWith('tbp')) ? (
+                <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-gradient-to-r from-blue-500 to-purple-600 text-white">
+                  💎 Blue Points
+                </span>
+              ) : modalProduct.id.startsWith('t') ? (
                 <span className="px-3 py-1 rounded-full text-xs font-bold tracking-wide bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
                   🏆 Equipo
                 </span>
@@ -634,16 +747,27 @@ function Shop() {
             </div>
             
             {/* Imagen del producto */}
-            <div className="relative mb-6">
-              <img 
-                src={modalProduct.image} 
-                alt={modalProduct.name} 
-                className="w-full h-64 object-contain rounded-2xl border-2 border-[#181A20] shadow-lg" 
-                style={{ boxShadow: '0 8px 32px rgba(0,191,255,0.2)' }}
-              />
-              {/* Overlay de gradiente */}
-              <div className="absolute inset-0 bg-gradient-to-t from-[#23263a]/50 to-transparent rounded-2xl"></div>
-            </div>
+            {!(modalProduct.id.startsWith('bp') || modalProduct.id.startsWith('tbp')) && (
+              <div className="relative mb-6">
+                <img 
+                  src={modalProduct.image} 
+                  alt={modalProduct.name} 
+                  className="w-full h-64 object-contain rounded-2xl border-2 border-[#181A20] shadow-lg" 
+                  style={{ boxShadow: '0 8px 32px rgba(0,191,255,0.2)' }}
+                />
+                {/* Overlay de gradiente */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#23263a]/50 to-transparent rounded-2xl"></div>
+              </div>
+            )}
+            
+            {/* Icono grande para Blue Points */}
+            {(modalProduct.id.startsWith('bp') || modalProduct.id.startsWith('tbp')) && (
+              <div className="relative mb-6 flex justify-center">
+                <div className="w-32 h-32 flex items-center justify-center rounded-2xl border-2 border-[#181A20] bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg" style={{ boxShadow: '0 8px 32px rgba(0,191,255,0.2)' }}>
+                  <span className="text-8xl">{modalProduct.image}</span>
+                </div>
+              </div>
+            )}
             
             {/* Información del producto */}
             <div className="space-y-4">
@@ -656,10 +780,40 @@ function Shop() {
               </div>
               
               {/* Precio */}
-              <div className="flex items-center justify-center gap-3 bg-[#181A20] rounded-xl p-4">
-                <FaCoins color={ACCENT} size={24} />
-                <span className="font-bold text-2xl text-blue-400">{modalProduct.price}</span>
-                <span className="text-sm text-gray-400 font-medium">Puntos</span>
+              <div className="flex flex-col items-center gap-2 bg-[#181A20] rounded-xl p-4">
+                {(modalProduct.id.startsWith('bp') || modalProduct.id.startsWith('tbp')) ? (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">💎</span>
+                      <span className="font-bold text-2xl text-blue-400">{modalProduct.price}</span>
+                      <span className="text-sm text-gray-400 font-medium">Puntos</span>
+                    </div>
+                    {modalProduct.originalPrice && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500 line-through">{modalProduct.originalPrice}</span>
+                        <span className="text-sm text-green-400 font-semibold">
+                          -{Math.round(((modalProduct.originalPrice - modalProduct.price) / modalProduct.originalPrice) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3">
+                      <FaCoins color={ACCENT} size={24} />
+                      <span className="font-bold text-2xl text-blue-400">{modalProduct.price}</span>
+                      <span className="text-sm text-gray-400 font-medium">Puntos</span>
+                    </div>
+                    {modalProduct.originalPrice && (
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500 line-through">{modalProduct.originalPrice}</span>
+                        <span className="text-sm text-green-400 font-semibold">
+                          -{Math.round(((modalProduct.originalPrice - modalProduct.price) / modalProduct.originalPrice) * 100)}%
+                        </span>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
               
               {/* Descripción */}

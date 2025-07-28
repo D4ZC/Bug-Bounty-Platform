@@ -1,11 +1,18 @@
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { User, LoginForm, RegisterForm } from '@/types';
-import apiService from '@/services/api';
-import socketService from '@/services/socket';
+
+interface User {
+  id: string;
+  email: string;
+  name: string;
+}
+
+interface LoginForm {
+  email: string;
+  password: string;
+}
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   error: string | null;
@@ -13,47 +20,19 @@ interface AuthState {
 
 type AuthAction =
   | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
+  | { type: 'AUTH_SUCCESS'; payload: User }
   | { type: 'AUTH_FAILURE'; payload: string }
   | { type: 'AUTH_LOGOUT' }
-  | { type: 'CLEAR_ERROR' }
-  | { type: 'UPDATE_USER'; payload: User };
+  | { type: 'CLEAR_ERROR' };
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginForm) => Promise<void>;
-  register: (userData: RegisterForm) => Promise<void>;
+  register: (credentials: LoginForm) => Promise<void>;
   logout: () => void;
-  updateUser: (user: User) => void;
   clearError: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Usuario de prueba para desarrollo - basado en el perfil
-const mockUser: User = {
-  _id: '1',
-  email: 'nicole@example.com',
-  username: 'NicoleHunt',
-  firstName: 'Nicole',
-  lastName: 'Hunt',
-  role: 'member',
-  points: 1420,
-  rank: 1,
-  isMVP: false,
-  isGulagParticipant: false,
-  achievements: [],
-  badges: [],
-  createdAt: new Date(),
-  updatedAt: new Date()
-};
-
-const initialState: AuthState = {
-  user: mockUser, // Usuario de prueba por defecto
-  token: localStorage.getItem('token') || 'mock-token',
-  isAuthenticated: true, // Autenticado por defecto para desarrollo
-  isLoading: false,
-  error: null,
-};
 
 function authReducer(state: AuthState, action: AuthAction): AuthState {
   switch (action.type) {
@@ -66,8 +45,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
     case 'AUTH_SUCCESS':
       return {
         ...state,
-        user: action.payload.user,
-        token: action.payload.token,
+        user: action.payload,
         isAuthenticated: true,
         isLoading: false,
         error: null,
@@ -76,7 +54,6 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return {
         ...state,
         user: null,
-        token: null,
         isAuthenticated: false,
         isLoading: false,
         error: action.payload,
@@ -85,7 +62,6 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return {
         ...state,
         user: null,
-        token: null,
         isAuthenticated: false,
         isLoading: false,
         error: null,
@@ -94,11 +70,6 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
       return {
         ...state,
         error: null,
-      };
-    case 'UPDATE_USER':
-      return {
-        ...state,
-        user: action.payload,
       };
     default:
       return state;
@@ -110,104 +81,71 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+  const [state, dispatch] = useReducer(authReducer, {
+    user: null,
+    isAuthenticated: false,
+    isLoading: true,
+    error: null,
+  });
 
-  // Verificar token al cargar la aplicación
+  // Verificar si hay sesión guardada al cargar
   useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        dispatch({ type: 'AUTH_FAILURE', payload: '' });
-        return;
-      }
-
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
       try {
-        const response = await apiService.get<User>('/auth/me');
-        if (response.success && response.data) {
-          dispatch({
-            type: 'AUTH_SUCCESS',
-            payload: { user: response.data, token },
-          });
-          socketService.connect(token);
-        } else {
-          throw new Error('Token inválido');
-        }
+        const user = JSON.parse(savedUser);
+        dispatch({ type: 'AUTH_SUCCESS', payload: user });
       } catch (error) {
-        localStorage.removeItem('token');
         localStorage.removeItem('user');
-        dispatch({ type: 'AUTH_FAILURE', payload: 'Token inválido' });
+        dispatch({ type: 'AUTH_FAILURE', payload: 'Error al cargar sesión' });
       }
-    };
-
-    verifyToken();
+    } else {
+      dispatch({ type: 'AUTH_FAILURE', payload: '' });
+    }
   }, []);
 
   const login = async (credentials: LoginForm) => {
     dispatch({ type: 'AUTH_START' });
 
-    try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/login', credentials);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el login');
-      }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el login';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
-      throw error;
+    // Verificar credenciales simuladas
+    if (credentials.email === 'nicole@email.com' && credentials.password === '1234') {
+      const user: User = {
+        id: '1',
+        email: 'nicole@email.com',
+        name: 'Nicole Hunt'
+      };
+      
+      localStorage.setItem('user', JSON.stringify(user));
+      dispatch({ type: 'AUTH_SUCCESS', payload: user });
+    } else {
+      dispatch({ type: 'AUTH_FAILURE', payload: 'Credenciales incorrectas' });
+      throw new Error('Credenciales incorrectas');
     }
   };
 
-  const register = async (userData: RegisterForm) => {
+  const register = async (credentials: LoginForm) => {
     dispatch({ type: 'AUTH_START' });
 
-    try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/register', userData);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
+    // Simular delay de red
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el registro');
-      }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
-      throw error;
-    }
+    // Simular registro exitoso (cualquier email/contraseña funciona)
+    const user: User = {
+      id: Date.now().toString(),
+      email: credentials.email,
+      name: credentials.email.split('@')[0] // Usar la parte del email como nombre
+    };
+    
+    localStorage.setItem('user', JSON.stringify(user));
+    dispatch({ type: 'AUTH_SUCCESS', payload: user });
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
     localStorage.removeItem('user');
-    socketService.disconnect();
     dispatch({ type: 'AUTH_LOGOUT' });
-  };
-
-  const updateUser = (user: User) => {
-    localStorage.setItem('user', JSON.stringify(user));
-    dispatch({ type: 'UPDATE_USER', payload: user });
   };
 
   const clearError = () => {
@@ -219,7 +157,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     register,
     logout,
-    updateUser,
     clearError,
   };
 

@@ -6,7 +6,7 @@ import { useInventory } from '../contexts/InventoryContext';
 // Datos mock del usuario
 const mockUser = {
   name: 'D4ZC',
-  avatar: 'https://via.placeholder.com/40x40/8B5CF6/FFFFFF?text=D',
+  avatar: '/src/assets/avatar1.png',
   points: 50000
 };
 

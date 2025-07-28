@@ -45,13 +45,13 @@ const Teams: React.FC = () => {
       description: 'Equipo especializado en vulnerabilidades críticas y formación de nuevos talentos. Buscamos hackers apasionados por la ciberseguridad.',
       leader: {
         name: 'NinjaSec',
-        avatar: 'https://via.placeholder.com/100x100/8B5CF6/ffffff?text=N'
+        avatar: '/src/assets/avatar1.png'
       },
       members: [
-        { id: '1', name: 'NinjaSec', avatar: 'https://via.placeholder.com/100x100/8B5CF6/ffffff?text=N', role: 'Líder', joinDate: 'Enero 2024', points: 1280, resolved: 48 },
-        { id: '2', name: 'DragonGirl', avatar: 'https://via.placeholder.com/100x100/EC4899/ffffff?text=D', role: 'Cazador Senior', joinDate: 'Febrero 2024', points: 960, resolved: 36 },
-        { id: '3', name: 'CyberSamurai', avatar: 'https://via.placeholder.com/100x100/10B981/ffffff?text=C', role: 'Analista', joinDate: 'Marzo 2024', points: 640, resolved: 24 },
-        { id: '4', name: 'RocketMan', avatar: 'https://via.placeholder.com/100x100/F59E0B/ffffff?text=R', role: 'Resolvedor', joinDate: 'Abril 2024', points: 320, resolved: 12 }
+        { id: '1', name: 'NinjaSec', avatar: '/src/assets/avatar1.png', role: 'Líder', joinDate: 'Enero 2024', points: 1280, resolved: 48 },
+        { id: '2', name: 'DragonGirl', avatar: '/src/assets/avatar4.png', role: 'Cazador Senior', joinDate: 'Febrero 2024', points: 960, resolved: 36 },
+        { id: '3', name: 'CyberSamurai', avatar: '/src/assets/avatar6.png', role: 'Analista', joinDate: 'Marzo 2024', points: 640, resolved: 24 },
+        { id: '4', name: 'RocketMan', avatar: '/src/assets/avatar7.png', role: 'Resolvedor', joinDate: 'Abril 2024', points: 320, resolved: 12 }
       ],
       totalMembers: 4,
       maxMembers: 5,
@@ -70,13 +70,13 @@ const Teams: React.FC = () => {
       description: 'Equipo de élite enfocado en investigación avanzada y desarrollo de herramientas de seguridad.',
       leader: {
         name: 'RocketMan',
-        avatar: 'https://via.placeholder.com/100x100/F59E0B/ffffff?text=R'
+        avatar: '/src/assets/avatar8.png'
       },
       members: [
-        { id: '1', name: 'RocketMan', avatar: 'https://via.placeholder.com/100x100/F59E0B/ffffff?text=R', role: 'Líder', joinDate: 'Diciembre 2023', points: 1180, resolved: 44 },
-        { id: '2', name: 'ShadowNinja', avatar: 'https://via.placeholder.com/100x100/6366F1/ffffff?text=S', role: 'Investigador', joinDate: 'Enero 2024', points: 885, resolved: 33 },
-        { id: '3', name: 'PhantomCoder', avatar: 'https://via.placeholder.com/100x100/7C3AED/ffffff?text=P', role: 'Desarrollador', joinDate: 'Febrero 2024', points: 590, resolved: 22 },
-        { id: '4', name: 'NeonHacker', avatar: 'https://via.placeholder.com/100x100/DC2626/ffffff?text=N', role: 'Analista', joinDate: 'Marzo 2024', points: 295, resolved: 11 }
+        { id: '1', name: 'RocketMan', avatar: '/src/assets/avatar8.png', role: 'Líder', joinDate: 'Diciembre 2023', points: 1180, resolved: 44 },
+        { id: '2', name: 'ShadowNinja', avatar: '/src/assets/avatar9.png', role: 'Investigador', joinDate: 'Enero 2024', points: 885, resolved: 33 },
+        { id: '3', name: 'PhantomCoder', avatar: '/src/assets/avatar10.png', role: 'Desarrollador', joinDate: 'Febrero 2024', points: 590, resolved: 22 },
+        { id: '4', name: 'NeonHacker', avatar: '/src/assets/avatar11.png', role: 'Analista', joinDate: 'Marzo 2024', points: 295, resolved: 11 }
       ],
       totalMembers: 4,
       maxMembers: 4,
@@ -95,13 +95,13 @@ const Teams: React.FC = () => {
       description: 'Equipo especializado en protección de infraestructura crítica y análisis forense.',
       leader: {
         name: 'GuardMaster',
-        avatar: 'https://via.placeholder.com/100x100/059669/ffffff?text=G'
+        avatar: '/src/assets/avatar12.png'
       },
       members: [
-        { id: '1', name: 'GuardMaster', avatar: 'https://via.placeholder.com/100x100/059669/ffffff?text=G', role: 'Líder', joinDate: 'Noviembre 2023', points: 1080, resolved: 40 },
-        { id: '2', name: 'PhantomCoder', avatar: 'https://via.placeholder.com/100x100/7C3AED/ffffff?text=P', role: 'Analista Forense', joinDate: 'Diciembre 2023', points: 810, resolved: 30 },
-        { id: '3', name: 'NeonHacker', avatar: 'https://via.placeholder.com/100x100/DC2626/ffffff?text=N', role: 'Especialista en Redes', joinDate: 'Enero 2024', points: 540, resolved: 20 },
-        { id: '4', name: 'VoidMaster', avatar: 'https://via.placeholder.com/100x100/1F2937/ffffff?text=V', role: 'Investigador', joinDate: 'Febrero 2024', points: 270, resolved: 10 }
+        { id: '1', name: 'GuardMaster', avatar: '/src/assets/avatar12.png', role: 'Líder', joinDate: 'Noviembre 2023', points: 1080, resolved: 40 },
+        { id: '2', name: 'PhantomCoder', avatar: '/src/assets/avatar13.png', role: 'Analista Forense', joinDate: 'Diciembre 2023', points: 810, resolved: 30 },
+        { id: '3', name: 'NeonHacker', avatar: '/src/assets/avatar14.png', role: 'Especialista en Redes', joinDate: 'Enero 2024', points: 540, resolved: 20 },
+        { id: '4', name: 'VoidMaster', avatar: '/src/assets/Ninja2.png', role: 'Investigador', joinDate: 'Febrero 2024', points: 270, resolved: 10 }
       ],
       totalMembers: 4,
       maxMembers: 6,
@@ -120,13 +120,13 @@ const Teams: React.FC = () => {
       description: 'Equipo defensivo especializado en protección contra ataques y respuesta a incidentes.',
       leader: {
         name: 'ShieldLeader',
-        avatar: 'https://via.placeholder.com/100x100/0891B2/ffffff?text=S'
+        avatar: '/src/assets/Robot2.png'
       },
       members: [
-        { id: '1', name: 'ShieldLeader', avatar: 'https://via.placeholder.com/100x100/0891B2/ffffff?text=S', role: 'Líder', joinDate: 'Octubre 2023', points: 880, resolved: 36 },
-        { id: '2', name: 'CrystalKnight', avatar: 'https://via.placeholder.com/100x100/7C2D12/ffffff?text=C', role: 'Defensor', joinDate: 'Noviembre 2023', points: 660, resolved: 27 },
-        { id: '3', name: 'ThunderStrike', avatar: 'https://via.placeholder.com/100x100/B45309/ffffff?text=T', role: 'Analista', joinDate: 'Diciembre 2023', points: 440, resolved: 18 },
-        { id: '4', name: 'FirePhoenix', avatar: 'https://via.placeholder.com/100x100/DC2626/ffffff?text=F', role: 'Resolvedor', joinDate: 'Enero 2024', points: 220, resolved: 9 }
+        { id: '1', name: 'ShieldLeader', avatar: '/src/assets/Robot2.png', role: 'Líder', joinDate: 'Octubre 2023', points: 880, resolved: 36 },
+        { id: '2', name: 'CrystalKnight', avatar: '/src/assets/Dragon.png', role: 'Defensor', joinDate: 'Noviembre 2023', points: 660, resolved: 27 },
+        { id: '3', name: 'ThunderStrike', avatar: '/src/assets/Samurai.png', role: 'Analista', joinDate: 'Diciembre 2023', points: 440, resolved: 18 },
+        { id: '4', name: 'FirePhoenix', avatar: '/src/assets/Mago.png', role: 'Resolvedor', joinDate: 'Enero 2024', points: 220, resolved: 9 }
       ],
       totalMembers: 4,
       maxMembers: 4,
@@ -145,13 +145,13 @@ const Teams: React.FC = () => {
       description: 'Equipo sigiloso especializado en investigación encubierta y análisis de malware.',
       leader: {
         name: 'PhantomLord',
-        avatar: 'https://via.placeholder.com/100x100/581C87/ffffff?text=P'
+        avatar: '/src/assets/Pirata.png'
       },
       members: [
-        { id: '1', name: 'PhantomLord', avatar: 'https://via.placeholder.com/100x100/581C87/ffffff?text=P', role: 'Líder', joinDate: 'Septiembre 2023', points: 840, resolved: 34 },
-        { id: '2', name: 'ThunderStrike', avatar: 'https://via.placeholder.com/100x100/B45309/ffffff?text=T', role: 'Analista de Malware', joinDate: 'Octubre 2023', points: 630, resolved: 25 },
-        { id: '3', name: 'FirePhoenix', avatar: 'https://via.placeholder.com/100x100/DC2626/ffffff?text=F', role: 'Investigador', joinDate: 'Noviembre 2023', points: 420, resolved: 17 },
-        { id: '4', name: 'ShadowNinja', avatar: 'https://via.placeholder.com/100x100/6366F1/ffffff?text=S', role: 'Analista', joinDate: 'Diciembre 2023', points: 210, resolved: 9 }
+        { id: '1', name: 'PhantomLord', avatar: '/src/assets/Pirata.png', role: 'Líder', joinDate: 'Septiembre 2023', points: 840, resolved: 34 },
+        { id: '2', name: 'ThunderStrike', avatar: '/src/assets/Vampiro.png', role: 'Analista de Malware', joinDate: 'Octubre 2023', points: 630, resolved: 25 },
+        { id: '3', name: 'FirePhoenix', avatar: '/src/assets/Ciberespacio.png', role: 'Investigador', joinDate: 'Noviembre 2023', points: 420, resolved: 17 },
+        { id: '4', name: 'ShadowNinja', avatar: '/src/assets/Ciudad.png', role: 'Analista', joinDate: 'Diciembre 2023', points: 210, resolved: 9 }
       ],
       totalMembers: 4,
       maxMembers: 5,

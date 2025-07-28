@@ -35,7 +35,14 @@ const UserProfileCard: React.FC<{ user: UserProfile }> = ({ user }) => {
     >
       {/* Datos a la izquierda */}
       <div className="flex-1 flex flex-col justify-center p-6">
-        <h2 className="text-3xl font-bold text-white mb-2">{user.name}</h2>
+        <div className="flex items-center gap-4 mb-4">
+          <img 
+            src="/src/assets/avatar7.png" 
+            alt={user.name} 
+            className="w-16 h-16 rounded-full border-2 border-purple-400 shadow-lg"
+          />
+          <h2 className="text-3xl font-bold text-white">{user.name}</h2>
+        </div>
         <div className="text-base text-gray-200 mb-2">
           Vulnerabilidades solucionadas: <span className="text-yellow-400 font-bold">{user.stats.total}</span><br />
           <span className="block">- Críticas: <span className="text-red-400 font-semibold">{user.stats.criticas}</span></span>

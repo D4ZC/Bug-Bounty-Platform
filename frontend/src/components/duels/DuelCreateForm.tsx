@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUser, FaUsers } from 'react-icons/fa';
 
-const duelObjectives = [
-  'Resolver X vulnerabilidades',
-  'Mejor puntuación en Y tiempo',
-  'Primero en 5 Vulnerabilidades',
+const getDuelObjectives = (vulnerabilityLevel: string) => [
+  `Resolver X vulnerabilidades ${vulnerabilityLevel === 'crítica' ? 'críticas' : vulnerabilityLevel === 'media' ? 'medias' : 'bajas'}`,
+  `Mejor puntuación en Y tiempo (${vulnerabilityLevel})`,
+  `Primero en 5 Vulnerabilidades ${vulnerabilityLevel === 'crítica' ? 'críticas' : vulnerabilityLevel === 'media' ? 'medias' : 'bajas'}`,
+];
+
+const vulnerabilityLevels = [
+  { value: 'crítica', label: 'Crítica', color: 'text-red-400', bgColor: 'bg-red-600' },
+  { value: 'media', label: 'Media', color: 'text-yellow-400', bgColor: 'bg-yellow-600' },
+  { value: 'baja', label: 'Baja', color: 'text-green-400', bgColor: 'bg-green-600' },
 ];
 
 interface DuelCreateFormProps {
@@ -13,13 +19,20 @@ interface DuelCreateFormProps {
 
 const DuelCreateForm: React.FC<DuelCreateFormProps> = ({ onCreate }) => {
   const [type, setType] = useState<'INDIVIDUAL' | 'EQUIPO'>('INDIVIDUAL');
-  const [objective, setObjective] = useState(duelObjectives[0]);
+  const [objective, setObjective] = useState('');
   const [points, setPoints] = useState(10);
   const [opponent, setOpponent] = useState('');
   const [openDuel, setOpenDuel] = useState(false);
   const [team1Members, setTeam1Members] = useState(['', '', '', '', '']);
   const [myTeamName, setMyTeamName] = useState('');
   const [opponentTeamName, setOpponentTeamName] = useState('');
+  const [vulnerabilityLevel, setVulnerabilityLevel] = useState<'crítica' | 'media' | 'baja'>('media');
+
+  // Actualizar objetivo cuando cambie el nivel de vulnerabilidad
+  useEffect(() => {
+    const objectives = getDuelObjectives(vulnerabilityLevel);
+    setObjective(objectives[0]);
+  }, [vulnerabilityLevel]);
 
   return (
     <form
@@ -32,13 +45,14 @@ const DuelCreateForm: React.FC<DuelCreateFormProps> = ({ onCreate }) => {
             objective,
             points,
             openDuel,
+            vulnerabilityLevel,
             opponents: [
               { teamName: myTeamName || 'Mi equipo', members: team1Members.map(name => ({ avatar: '', name })) },
               { teamName: opponentTeamName || 'Por definir', members: [] },
             ],
           });
         } else {
-          onCreate({ type, objective, points, opponent: openDuel ? null : opponent, openDuel });
+          onCreate({ type, objective, points, opponent: openDuel ? null : opponent, openDuel, vulnerabilityLevel });
         }
       }}
     >
@@ -86,14 +100,68 @@ const DuelCreateForm: React.FC<DuelCreateFormProps> = ({ onCreate }) => {
             value={opponentTeamName}
             onChange={e => setOpponentTeamName(e.target.value)}
           />
+          
+          {/* Selector de nivel de vulnerabilidad */}
+          <div className="mt-4 p-3 bg-gray-900/50 rounded-lg border border-neon-green/30">
+            <label className="block text-neon-green font-bold mb-3 text-center">🎯 TIPO DE VULNERABILIDAD</label>
+            <div className="flex gap-2 mb-3">
+              {vulnerabilityLevels.map((level) => (
+                <button
+                  key={level.value}
+                  type="button"
+                  onClick={() => setVulnerabilityLevel(level.value as 'crítica' | 'media' | 'baja')}
+                  className={`flex-1 px-3 py-3 rounded-lg border-2 font-bold text-sm transition-all duration-200 ${
+                    vulnerabilityLevel === level.value
+                      ? `${level.bgColor} text-white border-white scale-105 shadow-lg`
+                      : 'bg-black/60 text-gray-300 border-gray-600 hover:border-neon-green hover:text-neon-green'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className="text-lg mb-1">
+                      {level.value === 'crítica' ? '🔥' : level.value === 'media' ? '⚡' : '🛡️'}
+                    </span>
+                    <span>{level.label}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <div className="text-xs text-gray-300 text-center p-2 bg-black/30 rounded">
+              {vulnerabilityLevel === 'crítica' && '🔥 Vulnerabilidades críticas - Mayor puntuación y riesgo'}
+              {vulnerabilityLevel === 'media' && '⚡ Vulnerabilidades medias - Puntuación moderada'}
+              {vulnerabilityLevel === 'baja' && '🛡️ Vulnerabilidades bajas - Puntuación menor, menor riesgo'}
+            </div>
+          </div>
         </div>
       )}
       <div>
         <label className="block text-neon-green font-bold mb-1">Objetivo del Duelo</label>
         <select value={objective} onChange={e => setObjective(e.target.value)} className="w-full rounded-lg border border-neon-green bg-black/60 text-neon-green px-3 py-2">
-          {duelObjectives.map(obj => <option key={obj} value={obj}>{obj}</option>)}
+          {getDuelObjectives(vulnerabilityLevel).map(obj => <option key={obj} value={obj}>{obj}</option>)}
         </select>
       </div>
+      
+      {/* Selector de vulnerabilidad para duelos individuales */}
+      {type === 'INDIVIDUAL' && (
+        <div>
+          <label className="block text-neon-green font-bold mb-1">Nivel de Vulnerabilidad</label>
+          <div className="flex gap-2">
+            {vulnerabilityLevels.map((level) => (
+              <button
+                key={level.value}
+                type="button"
+                onClick={() => setVulnerabilityLevel(level.value as 'crítica' | 'media' | 'baja')}
+                className={`flex-1 px-2 py-1 rounded border font-bold text-xs transition-all duration-200 ${
+                  vulnerabilityLevel === level.value
+                    ? `${level.bgColor} text-white border-white`
+                    : 'bg-black/60 text-gray-300 border-gray-600 hover:border-neon-green hover:text-neon-green'
+                }`}
+              >
+                {level.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
       <div>
         <label className="block text-neon-green font-bold mb-1">Puntos de Apuesta</label>
         <input type="range" min={5} max={100} value={points} onChange={e => setPoints(Number(e.target.value))} className="w-full accent-neon-green" />

@@ -19,13 +19,13 @@ const initialUser = {
 
 // Simulación de inventario del usuario
 const userInventory = [
-  { id: 'bg1', name: 'Galaxia', type: 'backgrounds', image: 'https://via.placeholder.com/240x140/23263a/a259f7?text=Galaxy' },
-  { id: 'mp1', name: 'Mini Hacker', type: 'miniprofiles', image: 'https://via.placeholder.com/120x120/23263a/a259f7?text=Mini' },
-  { id: 'fr1', name: 'Marco Dorado', type: 'frames', image: 'https://via.placeholder.com/120x120/FFD700/23263a?text=Gold' },
-  { id: 'an1', name: 'Avatar Ninja', type: 'animated', image: 'https://via.placeholder.com/120x120/a259f7/23263a?text=Ninja' },
-  { id: 'bd1', name: 'Insignia Hacker', type: 'badges', image: 'https://via.placeholder.com/100x100/a259f7/23263a?text=H' },
-  { id: 'ss1', name: 'Perfil Invierno', type: 'season', image: 'https://via.placeholder.com/120x120/a259f7/23263a?text=Winter' },
-  { id: 'pl1', name: 'Placa Pro', type: 'plates', image: 'https://via.placeholder.com/120x60/a259f7/23263a?text=Pro' },
+  { id: 'bg1', name: 'Galaxia', type: 'backgrounds', image: '/src/assets/Galaxia.png' },
+  { id: 'mp1', name: 'Avatar 1', type: 'miniprofiles', image: '/src/assets/avatar1.png' },
+  { id: 'fr1', name: 'Marco Dorado', type: 'frames', image: '/src/assets/avatar4.png' },
+  { id: 'an1', name: 'Ninja', type: 'animated', image: '/src/assets/Ninja2.png' },
+  { id: 'bd1', name: 'Insignia Hacker', type: 'badges', image: '/src/assets/avatar6.png' },
+  { id: 'ss1', name: 'Perfil Invierno', type: 'season', image: '/src/assets/avatar7.png' },
+  { id: 'pl1', name: 'Placa Pro', type: 'plates', image: '/src/assets/avatar8.png' },
 ];
 
 // Simulación de vulnerabilidades resueltas
@@ -48,10 +48,18 @@ const avatarOptions = [
   '/src/assets/Vampiro.png',
   '/src/assets/Mago.png',
   '/src/assets/Pirata.png',
-  '/src/assets/Ciberespacio.png',
-  '/src/assets/Ciudad.png',
-  '/src/assets/Galaxia.png',
-  '/src/assets/Monta1as.png',
+  '/src/assets/Dragon.png',
+  '/src/assets/avatar1.png',
+  '/src/assets/avatar4.png',
+  '/src/assets/avatar6.png',
+  '/src/assets/avatar7.png',
+  '/src/assets/avatar8.png',
+  '/src/assets/avatar9.png',
+  '/src/assets/avatar10.png',
+  '/src/assets/avatar11.png',
+  '/src/assets/avatar12.png',
+  '/src/assets/avatar13.png',
+  '/src/assets/avatar14.png',
 ];
 
 const getUserPoints = () => {
@@ -91,6 +99,9 @@ const userTeam = {
     { name: 'NicoleHunt', avatar: '/src/assets/Ninja2.png' },
     { name: 'CyberQueen', avatar: '/src/assets/Robot2.png' },
     { name: 'H4ck3r', avatar: '/src/assets/Samurai.png' },
+    { name: 'DragonSlayer', avatar: '/src/assets/Dragon.png' },
+    { name: 'MageMaster', avatar: '/src/assets/Mago.png' },
+    { name: 'PirateKing', avatar: '/src/assets/Pirata.png' },
   ],
 };
 
@@ -419,18 +430,7 @@ const Profile: React.FC = () => {
                 </div>
               </div>
 
-              {/* Actividad Reciente */}
-              <div>
-                <h3 className="text-cyan-200 font-bold mb-3">Actividad Reciente</h3>
-                <ul className="space-y-2">
-                  {activityFeed.slice(0, 3).map(item => (
-                    <li key={item.id} className="flex items-center gap-2 text-cyan-100 bg-[#23263a] rounded-lg px-3 py-2 shadow border-l-4 border-cyan-400">
-                      <span className="text-xs text-cyan-400 font-bold w-16">{item.date}</span>
-                      <span className="text-sm">{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+
             </div>
           </section>
 

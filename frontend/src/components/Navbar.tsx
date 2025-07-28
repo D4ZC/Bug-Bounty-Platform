@@ -51,6 +51,8 @@ const Navbar: React.FC<NavbarProps> = ({ backgroundEnabled = false, onBackground
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+
+
   return (
     <nav className="flex items-center justify-between px-8 py-3 bg-black border-b border-gray-800 h-[60px] w-full relative">
       <div className="flex items-center gap-4">
@@ -100,25 +102,25 @@ const Navbar: React.FC<NavbarProps> = ({ backgroundEnabled = false, onBackground
                   <li className="p-4 text-gray-400">No hay notificaciones pendientes.</li>
                 ) : (
                   notifications.slice(0, 5).map((notif) => (
-                                          <li key={notif.id} className="px-4 py-2 border-b last:border-b-0 hover:bg-gray-800 cursor-pointer text-white">
-                        <div className="flex items-start gap-2">
-                          <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
-                            notif.read ? 'bg-gray-500' : 'bg-blue-500'
-                          }`} />
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium text-white">{notif.title}</div>
-                            <div className="text-sm text-gray-400 truncate">{notif.detail}</div>
-                            <div className="text-xs text-gray-500 mt-1">
-                              {new Date(notif.timestamp).toLocaleTimeString('es-ES', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </div>
+                    <li key={notif.id} className="px-4 py-2 border-b last:border-b-0 hover:bg-gray-800 cursor-pointer text-white">
+                      <div className="flex items-start gap-2">
+                        <div className={`w-2 h-2 rounded-full mt-2 flex-shrink-0 ${
+                          notif.read ? 'bg-gray-500' : 'bg-blue-500'
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-white">{notif.title}</div>
+                          <div className="text-sm text-gray-400 truncate">{notif.detail}</div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            {new Date(notif.timestamp).toLocaleTimeString('es-ES', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
                           </div>
                         </div>
-                      </li>
-                    ))
-                  )}
+                      </div>
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
           )}
@@ -161,8 +163,6 @@ const Navbar: React.FC<NavbarProps> = ({ backgroundEnabled = false, onBackground
                 >
                   Ayuda
                 </li>
-                <li className="border-t my-2 border-gray-700" />
-                <li className="px-4 py-2 hover:bg-red-900 cursor-pointer text-red-400 font-semibold">Cerrar sesión</li>
               </ul>
             </div>
           )}
