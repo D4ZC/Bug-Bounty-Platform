@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Home, List, Chat, UserAvatar, Edit, ShoppingCart } from '@carbon/icons-react';
+import { Home, List, Chat, UserAvatar, Edit, ShoppingCart, Logout } from '@carbon/icons-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -28,7 +28,7 @@ const SidebarIcon = ({ to, children, className }: { to: string; children: React.
 
 const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isDark } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   // Eliminar const { backgroundUrl } = useBackground();
 
@@ -48,10 +48,31 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         >
           BUG BOUNTY PLATFORM
         </h1>
-        <div className="flex-1 flex justify-end items-end">
-          <SidebarIcon to="/profile" className="hover:scale-125 transition-transform duration-200 mb-2">
+        <div className="flex-1 flex justify-end items-center gap-4">
+          {/* Información del usuario */}
+          {user && (
+            <div className="text-right mr-4">
+              <div className="text-[#00fff7] text-sm font-bold">{user.username}</div>
+              <div className="text-[#6f7a8a] text-xs">{user.role}</div>
+            </div>
+          )}
+          
+          {/* Botón de perfil */}
+          <SidebarIcon to="/profile" className="hover:scale-125 transition-transform duration-200">
             <UserAvatar size={36} className={neonIcon} />
           </SidebarIcon>
+          
+          {/* Botón de logout */}
+          <button
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            className="hover:scale-125 transition-transform duration-200 hover:drop-shadow-[0_0_16px_#ff4fa3]"
+            title="Cerrar sesión"
+          >
+            <Logout size={36} className="text-[#ff4fa3] drop-shadow-[0_0_8px_#ff4fa3]" />
+          </button>
         </div>
       </header>
       <div className="flex flex-1">

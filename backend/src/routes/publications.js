@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/auth');
-const admin = require('../middleware/admin');
+const { protect } = require('../middleware/auth');
+const { adminAuth } = require('../middleware/admin');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -114,7 +114,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/publications/pending - Obtener publicaciones pendientes (solo admin/moderador)
-router.get('/pending', [auth, admin], async (req, res) => {
+router.get('/pending', [protect, adminAuth], async (req, res) => {
   try {
     const pendingPublications = publications.filter(pub => pub.status === 'pending_review');
     
@@ -262,7 +262,7 @@ router.post('/', upload.array('attachments', 5), async (req, res) => {
 });
 
 // PUT /api/publications/:id - Actualizar una publicación
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', protect, async (req, res) => {
   try {
     const publication = publications.find(pub => pub._id === req.params.id);
     
@@ -310,7 +310,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // POST /api/publications/:id/review - Revisar una publicación (solo admin/moderador)
-router.post('/:id/review', [auth, admin], async (req, res) => {
+router.post('/:id/review', [protect, adminAuth], async (req, res) => {
   try {
     const { status, feedback, pointsAwarded } = req.body;
     
@@ -384,7 +384,7 @@ router.post('/:id/review', [auth, admin], async (req, res) => {
 });
 
 // POST /api/publications/:id/like - Dar like a una publicación
-router.post('/:id/like', auth, async (req, res) => {
+router.post('/:id/like', protect, async (req, res) => {
   try {
     const publication = publications.find(pub => pub._id === req.params.id);
     
@@ -436,7 +436,7 @@ router.post('/:id/like', auth, async (req, res) => {
 });
 
 // GET /api/publications/history/:userId - Obtener historial de publicaciones de un usuario
-router.get('/history/:userId', auth, async (req, res) => {
+router.get('/history/:userId', protect, async (req, res) => {
   try {
     const userHistory = publicationHistory.filter(h => h.userId === req.params.userId);
     
@@ -453,7 +453,7 @@ router.get('/history/:userId', auth, async (req, res) => {
 });
 
 // GET /api/notifications - Obtener notificaciones del usuario
-router.get('/notifications', auth, async (req, res) => {
+router.get('/notifications', protect, async (req, res) => {
   try {
     let userNotifications = notifications.filter(n => 
       n.userId === req.user.id || n.userId === 'moderators'
@@ -475,7 +475,7 @@ router.get('/notifications', auth, async (req, res) => {
 });
 
 // PUT /api/notifications/:id/read - Marcar notificación como leída
-router.put('/notifications/:id/read', auth, async (req, res) => {
+router.put('/notifications/:id/read', protect, async (req, res) => {
   try {
     const notification = notifications.find(n => n._id === req.params.id);
     
@@ -501,7 +501,7 @@ router.put('/notifications/:id/read', auth, async (req, res) => {
 });
 
 // DELETE /api/publications/:id - Eliminar una publicación (solo autor o admin)
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
   try {
     const publication = publications.find(pub => pub._id === req.params.id);
     

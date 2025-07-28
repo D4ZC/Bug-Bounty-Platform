@@ -1,217 +1,201 @@
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
-import { User, LoginForm, RegisterForm } from '@/types';
-import apiService from '@/services/api';
-import socketService from '@/services/socket';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import API_ENDPOINTS from '../config/api';
 
-interface AuthState {
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  role: 'member' | 'admin' | 'moderator';
+  points: number;
+  rank: number;
+  isMVP: boolean;
+  isGulagParticipant: boolean;
+  avatar: string;
+  background: string | null;
+  isActive: boolean;
+  lastLogin: string;
+  emailVerified: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface AuthContextType {
   user: User | null;
   token: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; message?: string }>;
+  register: (userData: RegisterData) => Promise<{ success: boolean; message?: string }>;
+  logout: () => void;
+  updateUser: (userData: Partial<User>) => void;
+  checkAuth: () => Promise<void>;
 }
 
-type AuthAction =
-  | { type: 'AUTH_START' }
-  | { type: 'AUTH_SUCCESS'; payload: { user: User; token: string } }
-  | { type: 'AUTH_FAILURE'; payload: string }
-  | { type: 'AUTH_LOGOUT' }
-  | { type: 'CLEAR_ERROR' }
-  | { type: 'UPDATE_USER'; payload: User };
-
-interface AuthContextType extends AuthState {
-  login: (credentials: LoginForm) => Promise<void>;
-  register: (userData: RegisterForm) => Promise<void>;
-  logout: () => void;
-  updateUser: (user: User) => void;
-  clearError: () => void;
+interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  username: string;
+  password: string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const initialState: AuthState = {
-  user: null,
-  token: localStorage.getItem('token'),
-  isAuthenticated: false,
-  isLoading: true,
-  error: null,
-};
-
-function authReducer(state: AuthState, action: AuthAction): AuthState {
-  switch (action.type) {
-    case 'AUTH_START':
-      return {
-        ...state,
-        isLoading: true,
-        error: null,
-      };
-    case 'AUTH_SUCCESS':
-      return {
-        ...state,
-        user: action.payload.user,
-        token: action.payload.token,
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-      };
-    case 'AUTH_FAILURE':
-      return {
-        ...state,
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: action.payload,
-      };
-    case 'AUTH_LOGOUT':
-      return {
-        ...state,
-        user: null,
-        token: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-      };
-    case 'CLEAR_ERROR':
-      return {
-        ...state,
-        error: null,
-      };
-    case 'UPDATE_USER':
-      return {
-        ...state,
-        user: action.payload,
-      };
-    default:
-      return state;
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-}
+  return context;
+};
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export function AuthProvider({ children }: AuthProviderProps) {
-  const [state, dispatch] = useReducer(authReducer, initialState);
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Verificar token al cargar la aplicación
+  // Verificar autenticación al cargar la aplicación
   useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        dispatch({ type: 'AUTH_FAILURE', payload: '' });
-        return;
-      }
-
-      try {
-        const response = await apiService.get<User>('/auth/me');
-        if (response.success && response.data) {
-          dispatch({
-            type: 'AUTH_SUCCESS',
-            payload: { user: response.data, token },
-          });
-          socketService.connect(token);
-        } else {
-          throw new Error('Token inválido');
-        }
-      } catch (error) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        dispatch({ type: 'AUTH_FAILURE', payload: 'Token inválido' });
-      }
-    };
-
-    verifyToken();
+    checkAuth();
   }, []);
 
-  const login = async (credentials: LoginForm) => {
-    dispatch({ type: 'AUTH_START' });
-
+  const checkAuth = async () => {
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/login', credentials);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+
+      if (storedToken && storedUser) {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+
+        // Verificar si el token sigue siendo válido
+        const response = await fetch(API_ENDPOINTS.ME, {
+          headers: {
+            'Authorization': `Bearer ${storedToken}`,
+          },
+          credentials: 'include',
         });
 
-        socketService.connect(token);
-      } else {
-        throw new Error(response.message || 'Error en el login');
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.data.user);
+          localStorage.setItem('user', JSON.stringify(data.data.user));
+        } else {
+          // Token inválido, limpiar datos
+          logout();
+        }
       }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el login';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
-      throw error;
+    } catch (error) {
+      console.error('Error verificando autenticación:', error);
+      logout();
+    } finally {
+      setLoading(false);
     }
   };
 
-  const register = async (userData: RegisterForm) => {
-    dispatch({ type: 'AUTH_START' });
-
+  const login = async (email: string, password: string) => {
     try {
-      const response = await apiService.post<{ user: User; token: string }>('/auth/register', userData);
-      
-      if (response.success && response.data) {
-        const { user, token } = response.data;
-        
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        
-        dispatch({
-          type: 'AUTH_SUCCESS',
-          payload: { user, token },
-        });
+      const response = await fetch(API_ENDPOINTS.LOGIN, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
 
-        socketService.connect(token);
+      const data = await response.json();
+
+      if (data.success) {
+        setUser(data.data.user);
+        setToken(data.data.token);
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        return { success: true };
       } else {
-        throw new Error(response.message || 'Error en el registro');
+        return { success: false, message: data.message };
       }
-    } catch (error: any) {
-      const errorMessage = error.response?.data?.message || error.message || 'Error en el registro';
-      dispatch({ type: 'AUTH_FAILURE', payload: errorMessage });
-      throw error;
+    } catch (error) {
+      console.error('Error en login:', error);
+      return { success: false, message: 'Error de conexión' };
+    }
+  };
+
+  const register = async (userData: RegisterData) => {
+    try {
+      const response = await fetch(API_ENDPOINTS.REGISTER, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(userData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setUser(data.data.user);
+        setToken(data.data.token);
+        localStorage.setItem('token', data.data.token);
+        localStorage.setItem('user', JSON.stringify(data.data.user));
+        return { success: true };
+      } else {
+        if (data.errors && data.errors.length > 0) {
+          return { success: false, message: data.errors[0].msg };
+        }
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Error en registro:', error);
+      return { success: false, message: 'Error de conexión' };
     }
   };
 
   const logout = () => {
+    setUser(null);
+    setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    socketService.disconnect();
-    dispatch({ type: 'AUTH_LOGOUT' });
+
+    // Llamar al endpoint de logout
+    fetch(API_ENDPOINTS.LOGOUT, {
+      method: 'POST',
+      credentials: 'include',
+    }).catch(error => {
+      console.error('Error en logout:', error);
+    });
   };
 
-  const updateUser = (user: User) => {
-    localStorage.setItem('user', JSON.stringify(user));
-    dispatch({ type: 'UPDATE_USER', payload: user });
-  };
-
-  const clearError = () => {
-    dispatch({ type: 'CLEAR_ERROR' });
+  const updateUser = (userData: Partial<User>) => {
+    if (user) {
+      const updatedUser = { ...user, ...userData };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
   };
 
   const value: AuthContextType = {
-    ...state,
+    user,
+    token,
+    isAuthenticated: !!user && !!token,
+    loading,
     login,
     register,
     logout,
     updateUser,
-    clearError,
+    checkAuth,
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
-  }
-  return context;
-} 
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
+}; 

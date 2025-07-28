@@ -4,8 +4,12 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
 const path = require('path');
+
+// Importar configuración de base de datos
+const { connectDB } = require('./config/database');
 
 // Cargar variables de entorno
 dotenv.config();
@@ -52,6 +56,7 @@ app.use(limiter);
 app.use(morgan('combined'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cookieParser());
 
 // Servir archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -113,6 +118,9 @@ app.use('*', (req, res) => {
 // Función para iniciar el servidor
 const startServer = async () => {
   try {
+    // Conectar a la base de datos
+    await connectDB();
+    
     // Iniciar servidor HTTP
     const server = app.listen(PORT, () => {
       console.log(`Servidor corriendo en puerto ${PORT}`);

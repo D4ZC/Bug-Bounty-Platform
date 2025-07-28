@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Outlet } from 'react-router-dom';
 import MainLayout from './components/layouts/MainLayout';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 import Dashboard from './pages/Dashboard';
 import Vulnerabilities from './pages/Vulnerabilities';
 import Challenges from './pages/Challenges';
@@ -19,11 +20,22 @@ import RankingUsuarios from './pages/RankingUsuarios';
 import Store from './pages/Store';
 import DuelosPage from './pages/DuelosPage';
 import ArenaDuelos from './pages/ArenaDuelos';
+import Login from './pages/auth/Login';
+import Register from './pages/auth/Register';
 
 const App: React.FC = () => {
   return (
     <Routes>
-      <Route path="/" element={<MainLayout><Outlet /></MainLayout>}>
+      {/* Rutas públicas de autenticación */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      
+      {/* Rutas protegidas */}
+      <Route path="/" element={
+        <ProtectedRoute>
+          <MainLayout><Outlet /></MainLayout>
+        </ProtectedRoute>
+      }>
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="vulnerabilities" element={<Vulnerabilities />} />
