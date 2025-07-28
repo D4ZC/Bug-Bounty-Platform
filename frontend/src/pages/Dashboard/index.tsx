@@ -5,24 +5,34 @@ import GulagCard from './components/GulagCard';
 import UserScoreCard from './components/UserScoreCard';
 import MVPUserCard from './components/MVPUserCard';
 import UserProfileCard from './components/UserProfileCard';
-import { Image, BorderFull, PaintBrush } from '@carbon/icons-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { Image, BorderFull, PaintBrush, ShoppingCart, Star, ChartLine } from '@carbon/icons-react';
 import { useNavigate } from 'react-router-dom';
 
-const rewardsPreview = [
+const storePreview = [
   {
-    icon: <Image size={32} className="text-blue-400" />,
-    title: 'Banner',
-    bg: 'bg-blue-100',
+    icon: <Image size={24} className="text-blue-400" />,
+    title: 'Tema Cyberpunk',
+    price: 180,
+    category: 'Temas',
+    description: 'Colores neón y estilo futurista',
+    popular: true
   },
   {
-    icon: <BorderFull size={32} className="text-green-400" />,
-    title: 'Marco',
-    bg: 'bg-green-100',
+    icon: <BorderFull size={24} className="text-green-400" />,
+    title: 'Marco Challenger',
+    price: 200,
+    category: 'Marcos',
+    description: 'Marco dorado con estilo de campeón',
+    popular: false
   },
   {
-    icon: <PaintBrush size={32} className="text-purple-400" />,
-    title: 'Fondo',
-    bg: 'bg-purple-100',
+    icon: <PaintBrush size={24} className="text-purple-400" />,
+    title: 'Dark Souls',
+    price: 160,
+    category: 'Temas',
+    description: 'Inspirado en la saga de caballeros',
+    popular: true
   },
 ];
 
@@ -34,7 +44,7 @@ const teams = [
   { name: 'Blue Sentinels', score: 1300 },
   { name: 'Aldrich Faithful', score: 1200 },
   { name: 'Watchdogs of Farron', score: 1100 },
-  { name: 'Rosaria’s Fingers', score: 1000 },
+  { name: 'Rosaria\'s Fingers', score: 1000 },
 ];
 const users = [
   { name: 'Solaire of Astora', score: 2100 },
@@ -49,7 +59,7 @@ const users = [
   { name: 'Shiva of the East', score: 1100 },
   { name: 'Domhnall of Zena', score: 1050 },
   { name: 'Laurentius', score: 1000 },
-  { name: 'Quelaag’s Sister', score: 950 },
+  { name: 'Quelaag\'s Sister', score: 950 },
   { name: 'Havel the Rock', score: 900 },
   { name: 'Chester', score: 850 },
   { name: 'Crestfallen Warrior', score: 800 },
@@ -65,16 +75,17 @@ const gulag = [
 ];
 
 const Dashboard: React.FC = () => {
-  const [showRewards, setShowRewards] = useState(false);
+  const { user } = useAuth();
+  const [showStorePreview, setShowStorePreview] = useState(false);
   const timerRef = useRef<number | null>(null);
   const navigate = useNavigate();
 
   const handleEnter = () => {
-    timerRef.current = window.setTimeout(() => setShowRewards(true), 500);
+    timerRef.current = window.setTimeout(() => setShowStorePreview(true), 300);
   };
   const handleLeave = () => {
     if (timerRef.current) window.clearTimeout(timerRef.current);
-    setShowRewards(false);
+    setShowStorePreview(false);
   };
 
   return (
@@ -87,12 +98,30 @@ const Dashboard: React.FC = () => {
         {/* Segunda fila */}
         <UserScoreCard users={users.slice(0, 5)} />
         <MVPUserCard user={mvpUser} />
-        <UserProfileCard user={mvpUser} />
+        {user ? (
+          <UserProfileCard
+            user={{
+              name: user.username,
+              img: user.avatar || '',
+              stats: {
+                criticas: 12,
+                altas: 22,
+                medianas: 35,
+                bajas: 10,
+                total: 79,
+              },
+            }}
+            darkSoulsStyle
+            showRadarChart={false}
+          />
+        ) : (
+          <UserProfileCard user={mvpUser} darkSoulsStyle showRadarChart={false} />
+        )}
       </div>
-      {/* Botón de tienda con popover de recompensas, igual a la imagen */}
+      {/* Botón de tienda con preview mejorado */}
       <div className="flex justify-center items-center mt-10">
         <div
-          className="w-full md:w-2/3 lg:w-1/2 bg-gray-50 border border-gray-200 rounded-xl shadow-sm flex justify-center py-12 relative cursor-pointer hover:bg-gray-100 transition"
+          className="w-full md:w-2/3 lg:w-1/2 bg-gradient-to-br from-gray-800/80 to-purple-900/80 border-2 border-purple-500 rounded-xl shadow-2xl flex justify-center py-12 relative cursor-pointer hover:from-gray-700 hover:to-purple-800 transition-all group"
           onClick={() => navigate('/store')}
           onMouseEnter={handleEnter}
           onMouseLeave={handleLeave}
@@ -102,15 +131,65 @@ const Dashboard: React.FC = () => {
           role="button"
           aria-label="Ir a la tienda"
         >
-          <span className="text-lg font-semibold text-gray-800 select-none">Visit Store</span>
-          {showRewards && (
-            <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-full z-20 flex gap-4 p-4 bg-white border border-gray-200 rounded-xl shadow-xl animate-fade-in min-w-[340px]">
-              {rewardsPreview.map((reward, idx) => (
-                <div key={idx} className={`flex flex-col items-center justify-center rounded-xl shadow-sm p-4 w-[110px] h-[110px] ${reward.bg}`}>
-                  {reward.icon}
-                  <span className="mt-2 text-xs font-semibold text-gray-700 text-center">{reward.title}</span>
+          <div className="flex items-center gap-3">
+            <ShoppingCart size={24} className="text-white" />
+            <span className="text-lg font-semibold text-white select-none">Visit Store</span>
+          </div>
+          
+          {showStorePreview && (
+            <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-full z-20 bg-gradient-to-br from-gray-800 to-gray-900 border-2 border-purple-500 rounded-xl shadow-2xl animate-fade-in min-w-[480px] p-6">
+              {/* Header del preview */}
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-white">🏪 Tienda</h3>
+                <div className="flex items-center gap-2">
+                  <ChartLine size={16} className="text-green-400" />
+                  <span className="text-sm text-green-400 font-semibold">+2 nuevos items</span>
                 </div>
-              ))}
+              </div>
+              
+              {/* Productos destacados */}
+              <div className="grid grid-cols-1 gap-3 mb-4">
+                {storePreview.map((product, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3 bg-gradient-to-r from-gray-700/50 to-gray-800/50 rounded-lg border border-purple-500/30">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-gradient-to-br from-purple-600/20 to-blue-600/20 rounded-lg border border-purple-500/30">
+                        {product.icon}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-semibold text-white">{product.title}</h4>
+                          {product.popular && (
+                            <Star size={12} className="text-yellow-400" />
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-300">{product.description}</p>
+                        <span className="text-xs text-purple-300">{product.category}</span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-bold text-yellow-400">{product.price}</div>
+                      <div className="text-xs text-gray-400">puntos</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Footer con estadísticas */}
+              <div className="flex items-center justify-between pt-3 border-t border-purple-500/30">
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="text-gray-300">🎨 <span className="text-white font-semibold">4</span> Temas</span>
+                  <span className="text-gray-300">🖼️ <span className="text-white font-semibold">1</span> Marco</span>
+                </div>
+                <button 
+                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/store');
+                  }}
+                >
+                  Ver Todo
+                </button>
+              </div>
             </div>
           )}
         </div>

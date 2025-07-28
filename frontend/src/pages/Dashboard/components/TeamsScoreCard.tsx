@@ -15,19 +15,19 @@ const medalColors = [
 const medalEmojis = ['🥇', '🥈', '🥉'];
 
 const TeamsScoreCard: React.FC<{ teams: Team[] }> = ({ teams }) => (
-  <Tile className="col-span-1 flex flex-col gap-2 min-h-[200px] bg-white border border-gray-400 rounded-2xl shadow-lg p-5 animate-fade-in">
+  <Tile className="col-span-1 flex flex-col gap-2 min-h-[200px] bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-2 border-purple-500 rounded-2xl shadow-2xl p-5 animate-fade-in">
     <div className="flex items-center gap-2 mb-0.5">
       <Trophy className="text-yellow-400" size={24} />
-      <span className="font-bold text-lg text-gray-800">Teams Score</span>
+      <span className="font-bold text-lg text-white">Teams Score</span>
     </div>
     <ol className="flex flex-col gap-2 mt-0.5">
       {teams.map((team, idx) => (
         <li key={team.name} className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className={`px-2 py-1 rounded-lg text-sm font-bold ${medalColors[idx] || 'bg-gray-100 text-gray-500'}`}>{medalEmojis[idx] || idx + 1}</span>
-            <span className="font-semibold text-gray-700">{team.name}</span>
+            <span className="font-semibold text-gray-300">{team.name}</span>
           </div>
-          <span className="font-mono text-gray-600">{team.score} pts</span>
+          <span className="font-mono text-purple-400">{team.score} pts</span>
         </li>
       ))}
     </ol>

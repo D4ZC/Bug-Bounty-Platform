@@ -1,19 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Header, HeaderName, HeaderGlobalBar, HeaderGlobalAction, SideNav, SideNavItems, SideNavLink } from '@carbon/react';
 import { Home, TableSplit, Book, Rule, ShoppingBag, GameConsole, Notification, UserAvatar } from '@carbon/icons-react';
 
 const initialNotifications = [
-  { id: 1, text: 'Nueva vulnerabilidad reportada', read: false, link: '/documentation' },
-  { id: 2, text: 'Tu equipo subió de ranking', read: true, link: '/rankings' },
-  { id: 3, text: 'Tienes una recompensa pendiente', read: false, link: '/rewards' },
-  { id: 4, text: 'Nuevo mensaje de tu capitán de equipo', read: false, link: '/team' },
-  { id: 5, text: 'Desafío semanal disponible', read: true, link: '/challenges' },
-  { id: 6, text: 'Tu reporte fue validado por un admin', read: false, link: '/contributions' },
-  { id: 7, text: 'Has recibido un nuevo logro', read: true, link: '/profile' },
-  { id: 8, text: 'Actualización de reglas en la plataforma', read: false, link: '/documentation' },
-  { id: 9, text: 'Un miembro se unió a tu equipo', read: true, link: '/team' },
-  { id: 10, text: 'Tu vulnerabilidad fue comentada', read: false, link: '/vulnerabilities' },
+  { id: 1, text: 'Nueva vulnerabilidad reportada.', read: false, link: '/documentation' },
+  { id: 6, text: 'Tu equipo subió de ranking', read: false, link: '/tables' },
+  { id: 8, text: 'Actualización de reglas en la plataforma', read: false, link: '/rules' },
 ];
 
 const TablePreviewCard = () => (
@@ -53,6 +46,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const bellRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter(n => !n.read).length;
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Marcar todas como leídas al abrir el menú
   const handleBellClick = () => {
@@ -71,23 +65,23 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900">
       {/* Navbar superior */}
-      <Header aria-label="Bug Bounty Platform" className="bg-black text-white h-20">
+      <Header aria-label="Bug Bounty Platform" className="bg-gradient-to-r from-gray-900 to-purple-900 text-white h-20 border-b-2 border-purple-500">
         <div className="flex w-full items-center h-20">
           <HeaderName href="/" prefix="" className="text-white text-2xl font-bold">
             Bug Bounty Platform
           </HeaderName>
           <div className="ml-auto flex items-center gap-6">
             <div className="relative" ref={bellRef}>
-              <HeaderGlobalAction className="text-white" onClick={handleBellClick}>
+              <HeaderGlobalAction className="text-white hover:bg-purple-700 transition-colors" onClick={handleBellClick}>
                 <Notification size={32} />
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 block h-3 w-3 rounded-full bg-red-500 border-2 border-black"></span>
                 )}
               </HeaderGlobalAction>
             </div>
-            <HeaderGlobalAction className="text-white">
+            <HeaderGlobalAction className="text-white hover:bg-purple-700 transition-colors" onClick={() => navigate('/profile')}>
               <UserAvatar size={32} />
             </HeaderGlobalAction>
           </div>
@@ -102,21 +96,21 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             onClick={handleClosePanel}
           ></div>
           <aside
-            className={`relative w-80 h-full bg-white text-black shadow-lg flex flex-col transform transition-transform duration-300 pointer-events-auto ${open ? 'translate-x-0' : 'translate-x-full'}`}
+            className={`relative w-80 h-full bg-gradient-to-b from-gray-800 to-gray-900 text-white shadow-2xl flex flex-col transform transition-transform duration-300 pointer-events-auto border-l-2 border-purple-500 ${open ? 'translate-x-0' : 'translate-x-full'}`}
           >
-            <div className="p-4 font-bold border-b text-lg flex justify-between items-center">
+            <div className="p-5 font-bold text-xl bg-gradient-to-r from-purple-900 to-blue-900 border-b-2 border-purple-500 flex justify-between items-center">
               Notificaciones
-              <button onClick={handleClosePanel} className="text-gray-500 hover:text-black text-2xl">&times;</button>
+              <button onClick={handleClosePanel} className="text-gray-300 hover:text-white text-2xl transition-colors">&times;</button>
             </div>
             <ul className="flex-1 overflow-y-auto">
               {notifications.length === 0 ? (
-                <li className="p-4 text-center text-gray-500">Sin notificaciones</li>
+                <li className="p-4 text-center text-gray-400">Sin notificaciones</li>
               ) : (
-                notifications.map((n) => (
+                notifications.map((n, idx) => (
                   <li
                     key={n.id}
-                    className={`p-4 border-b last:border-b-0 cursor-pointer transition hover:bg-blue-100 ${n.read ? 'bg-gray-100' : 'bg-blue-50 font-semibold'}`}
-                    onClick={() => navigate(n.link)}
+                    className={`p-4 border-b border-gray-700 last:border-b-0 cursor-pointer transition hover:bg-purple-700 ${idx % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'}`}
+                    onClick={() => n.link && navigate(n.link)}
                   >
                     {n.text}
                   </li>
@@ -128,30 +122,30 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       )}
       <div className="flex flex-1">
         {/* Sidebar lateral */}
-        <SideNav aria-label="Menú lateral" className="bg-white shadow-md min-h-full w-16 flex flex-col items-center py-4">
+        <SideNav aria-label="Menú lateral" className="bg-gradient-to-b from-gray-800 to-gray-900 shadow-2xl min-h-full w-16 flex flex-col items-center py-4 border-r-2 border-purple-500">
           <SideNavItems className="flex flex-col gap-6">
-            <SideNavLink href="/" title="Inicio">
+            <SideNavLink href="/" title="Inicio" className="text-white hover:bg-purple-700 transition-colors">
               <Home size={24} />
             </SideNavLink>
-            <SideNavLink href="/tables" title="Tablas">
+            <SideNavLink href="/tables" title="Tablas" className="text-white hover:bg-purple-700 transition-colors">
               <TableSplit size={24} />
             </SideNavLink>
-            <SideNavLink href="/documentation" title="Documentación">
+            <SideNavLink href="/documentation" title="Documentación" className="text-white hover:bg-purple-700 transition-colors">
               <Book size={24} />
             </SideNavLink>
-            <SideNavLink href="/rules" title="Reglas">
+            <SideNavLink href="/rules" title="Reglas" className="text-white hover:bg-purple-700 transition-colors">
               <Rule size={24} />
             </SideNavLink>
-            <SideNavLink href="/store" title="Tienda">
+            <SideNavLink href="/store" title="Tienda" className="text-white hover:bg-purple-700 transition-colors">
               <ShoppingBag size={24} />
             </SideNavLink>
-            <SideNavLink href="/duels" title="Duelos">
+            <SideNavLink href="/duels" title="Duelos" className="text-white hover:bg-purple-700 transition-colors">
               <GameConsole size={24} />
             </SideNavLink>
           </SideNavItems>
         </SideNav>
         {/* Contenido principal */}
-        <main className="flex-1 p-6 bg-gray-100 min-h-screen">{children}</main>
+        <main className="flex-1 p-6 bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen">{children}</main>
       </div>
     </div>
   );

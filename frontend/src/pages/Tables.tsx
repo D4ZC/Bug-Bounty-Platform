@@ -9,7 +9,7 @@ const allTeams = [
   { name: 'Blue Sentinels', score: 1300 },
   { name: 'Aldrich Faithful', score: 1200 },
   { name: 'Watchdogs of Farron', score: 1100 },
-  { name: 'Rosaria’s Fingers', score: 1000 },
+  { name: 'Rosaria\'s Fingers', score: 1000 },
 ];
 const allUsers = [
   { name: 'Solaire of Astora', score: 2100 },
@@ -24,7 +24,7 @@ const allUsers = [
   { name: 'Shiva of the East', score: 1100 },
   { name: 'Domhnall of Zena', score: 1050 },
   { name: 'Laurentius', score: 1000 },
-  { name: 'Quelaag’s Sister', score: 950 },
+  { name: 'Quelaag\'s Sister', score: 950 },
   { name: 'Havel the Rock', score: 900 },
   { name: 'Chester', score: 850 },
   { name: 'Crestfallen Warrior', score: 800 },
@@ -45,9 +45,9 @@ const orderOptions = [
 ];
 
 const podiumColors = [
-  'text-yellow-600 font-bold', // Oro
-  'text-gray-500 font-bold',  // Plata
-  'text-orange-500 font-bold', // Bronce
+  'text-yellow-400 font-bold', // Oro
+  'text-gray-300 font-bold',  // Plata
+  'text-orange-400 font-bold', // Bronce
 ];
 
 function sortArray<T extends { name: string; score: number }>(arr: T[], order: string, key: keyof T = 'name'): T[] {
@@ -124,7 +124,7 @@ const Tables: React.FC = () => {
     'Shiva of the East': { img: '', stats: { criticas: 1, altas: 4, medianas: 5, bajas: 2, total: 12 } },
     'Domhnall of Zena': { img: '', stats: { criticas: 1, altas: 3, medianas: 4, bajas: 2, total: 10 } },
     'Laurentius': { img: '', stats: { criticas: 0, altas: 2, medianas: 3, bajas: 2, total: 7 } },
-    'Quelaag’s Sister': { img: '', stats: { criticas: 0, altas: 1, medianas: 2, bajas: 2, total: 5 } },
+    'Quelaag\'s Sister': { img: '', stats: { criticas: 0, altas: 1, medianas: 2, bajas: 2, total: 5 } },
     'Havel the Rock': { img: '', stats: { criticas: 0, altas: 1, medianas: 1, bajas: 1, total: 3 } },
     'Chester': { img: '', stats: { criticas: 2, altas: 4, medianas: 3, bajas: 1, total: 10 } },
     'Crestfallen Warrior': { img: '', stats: { criticas: 1, altas: 2, medianas: 4, bajas: 2, total: 9 } },
@@ -135,148 +135,221 @@ const Tables: React.FC = () => {
   const [hovered, setHovered] = useState<string | null>(null);
 
   return (
-    <div className="w-full max-w-full mx-auto py-10 px-2">
-      <h1 className="text-4xl font-extrabold mb-8 text-gray-900 tracking-tight">Leaderboard</h1>
-      <div className="flex items-center gap-4 mb-6">
-        <label htmlFor="order" className="font-semibold text-gray-700">Ordenar:</label>
-        <select
-          id="order"
-          value={order}
-          onChange={e => setOrder(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-200"
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 py-10 px-2">
+      <div className="w-full max-w-full mx-auto">
+        <h1 className="text-4xl font-extrabold mb-8 text-white tracking-tight">Leaderboard</h1>
+        <div className="flex items-center gap-4 mb-6">
+          <label htmlFor="order" className="font-semibold text-gray-300">Ordenar:</label>
+          <select
+            id="order"
+            value={order}
+            onChange={e => setOrder(e.target.value)}
+            className="border border-purple-500 rounded px-3 py-1 text-white bg-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            {orderOptions.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+        <div
+          ref={cardRef}
+          className={`bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-2xl shadow-2xl border-2 border-purple-500 p-8 w-full ${needsScroll ? 'max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent relative' : ''}`}
+          style={{ scrollbarWidth: needsScroll ? 'none' : undefined }}
         >
-          {orderOptions.map(opt => (
-            <option key={opt.value} value={opt.value}>{opt.label}</option>
-          ))}
-        </select>
-      </div>
-      <div
-        ref={cardRef}
-        className={`bg-white rounded-2xl shadow-lg border border-gray-300 p-8 w-full ${needsScroll ? 'max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-thumb-transparent scrollbar-track-transparent relative' : ''}`}
-        style={{ scrollbarWidth: needsScroll ? 'none' : undefined }}
-      >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Tabla de Usuarios */}
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-green-700">Usuarios</h2>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-gray-500 text-sm">
-                  <th className="pb-2 w-8">#</th>
-                  <th className="pb-2">Nombre</th>
-                  <th className="pb-2 text-right">Puntos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user, idx) => {
-                  // Ranking real según puntaje
-                  const realRank = usersByScore.findIndex(u => u.name === user.name) + 1;
-                  let nameClass = 'text-black';
-                  let posClass = 'text-gray-400';
-                  let scoreClass = '';
-                  if (podiumNames.includes(user.name)) {
-                    const pidx = podiumNames.indexOf(user.name);
-                    nameClass = podiumColors[pidx];
-                  }
-                  if (gulagNames.includes(user.name)) {
-                    nameClass = 'text-red-600 font-semibold';
-                    posClass = 'text-red-400';
-                    scoreClass = 'text-red-600';
-                  }
-                  const userCellRef = useRef<HTMLSpanElement>(null);
-                  return (
-                    <tr
-                      key={user.name}
-                      className={gulagNames.includes(user.name)
-                        ? 'border-t border-red-100 hover:bg-red-50 transition'
-                        : 'border-t border-gray-100 hover:bg-green-50 transition'}
-                    >
-                      <td className={`py-2 font-bold ${posClass}`}>{realRank}.</td>
-                      <td className={`py-2 ${nameClass} font-semibold`}>
-                        <span
-                          className="cursor-pointer relative"
-                          ref={userCellRef}
-                          onMouseEnter={() => setHovered(user.name)}
-                          onMouseLeave={() => setHovered(null)}
-                          onFocus={() => setHovered(user.name)}
-                          onBlur={() => setHovered(null)}
-                          tabIndex={0}
-                        >
-                          {user.name}
-                          {hovered === user.name && (
-                            <div
-                              className="fixed z-50 bg-white border border-gray-200 rounded-2xl shadow-2xl p-6 flex flex-col items-center min-w-[260px] max-w-[320px] animate-fade-in"
-                              style={{
-                                ...getCardPosition(userCellRef, 340),
-                                width: 280,
-                                minHeight: 260,
-                                maxHeight: 340,
-                              }}
-                            >
-                              <UserAvatar size={64} className="text-gray-300 bg-gray-100 rounded-full p-2 mb-2" />
-                              <div className="font-bold text-xl mb-4 text-center">{user.name}</div>
-                              <div className="grid grid-cols-2 gap-3 w-full mb-4">
-                                <div className="flex items-center gap-2 bg-red-100 rounded-lg px-3 py-2">
-                                  <Warning size={20} className="text-red-500" />
-                                  <span className="text-red-600 font-bold text-lg">{userStats[user.name]?.stats?.criticas ?? '-'}</span>
-                                  <span className="text-xs text-red-700 font-semibold">Críticas</span>
-                                </div>
-                                <div className="flex items-center gap-2 bg-orange-100 rounded-lg px-3 py-2">
-                                  <Fire size={20} className="text-orange-500" />
-                                  <span className="text-orange-600 font-bold text-lg">{userStats[user.name]?.stats?.altas ?? '-'}</span>
-                                  <span className="text-xs text-orange-700 font-semibold">Altas</span>
-                                </div>
-                                <div className="flex items-center gap-2 bg-yellow-100 rounded-lg px-3 py-2">
-                                  <Information size={20} className="text-yellow-600" />
-                                  <span className="text-yellow-700 font-bold text-lg">{userStats[user.name]?.stats?.medianas ?? '-'}</span>
-                                  <span className="text-xs text-yellow-800 font-semibold">Medianas</span>
-                                </div>
-                                <div className="flex items-center gap-2 bg-blue-100 rounded-lg px-3 py-2">
-                                  <Checkmark size={20} className="text-blue-600" />
-                                  <span className="text-blue-600 font-bold text-lg">{userStats[user.name]?.stats?.bajas ?? '-'}</span>
-                                  <span className="text-xs text-blue-700 font-semibold">Bajas</span>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 bg-gray-100 rounded-lg px-4 py-2 text-gray-700 font-semibold text-base">
-                                <Checkmark size={20} className="text-green-500" />
-                                Total: {userStats[user.name]?.stats?.total ?? user.score}
-                              </div>
-                            </div>
-                          )}
-                        </span>
-                      </td>
-                      <td className={`py-2 text-right font-mono ${scoreClass}`}>{user.score}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Tabla de Equipos */}
-          <div>
-            <h2 className="text-2xl font-bold mb-4 text-blue-700">Equipos</h2>
-            <table className="w-full text-left">
-              <thead>
-                <tr className="text-gray-500 text-sm">
-                  <th className="pb-2 w-8">#</th>
-                  <th className="pb-2">Nombre</th>
-                  <th className="pb-2 text-right">Puntos</th>
-                </tr>
-              </thead>
-              <tbody>
-                {teams.map((team, idx) => (
-                  <tr
-                    key={team.name}
-                    className="border-t border-gray-100 hover:bg-blue-50 transition"
-                  >
-                    <td className="py-2 font-bold text-gray-400">{idx + 1}.</td>
-                    <td className="py-2 text-black font-semibold">{team.name}</td>
-                    <td className="py-2 text-right font-mono text-blue-600">{team.score}</td>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Tabla de Usuarios */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-green-400">Usuarios</h2>
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-gray-400 text-sm">
+                    <th className="pb-2 w-8">#</th>
+                    <th className="pb-2">Nombre</th>
+                    <th className="pb-2 text-right">Puntos</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {users.map((user, idx) => {
+                    // Ranking real según puntaje
+                    const realRank = usersByScore.findIndex(u => u.name === user.name) + 1;
+                    let nameClass = 'text-white';
+                    let posClass = 'text-gray-400';
+                    let scoreClass = '';
+                    if (podiumNames.includes(user.name)) {
+                      const pidx = podiumNames.indexOf(user.name);
+                      nameClass = podiumColors[pidx];
+                    }
+                    if (gulagNames.includes(user.name)) {
+                      nameClass = 'text-red-400 font-semibold';
+                      posClass = 'text-red-400';
+                      scoreClass = 'text-red-400';
+                    }
+                    const userCellRef = useRef<HTMLSpanElement>(null);
+                    return (
+                      <tr
+                        key={user.name}
+                        className={gulagNames.includes(user.name)
+                          ? 'border-t border-red-500/30 hover:bg-red-500/10 transition'
+                          : 'border-t border-gray-500/30 hover:bg-purple-500/10 transition'}
+                      >
+                        <td className={`py-2 font-bold ${posClass}`}>{realRank}.</td>
+                        <td className={`py-2 ${nameClass} font-semibold`}>
+                          <span
+                            className="cursor-pointer relative"
+                            ref={userCellRef}
+                            onMouseEnter={() => setHovered(user.name)}
+                            onMouseLeave={() => setHovered(null)}
+                            onFocus={() => setHovered(user.name)}
+                            onBlur={() => setHovered(null)}
+                            tabIndex={0}
+                          >
+                            {user.name}
+                            {hovered === user.name && (
+                              <div
+                                className="fixed z-50 rounded-2xl shadow-2xl animate-fade-in overflow-hidden"
+                                style={{
+                                  ...getCardPosition(userCellRef, 340),
+                                  width: 280,
+                                  minHeight: 340,
+                                  maxHeight: 340,
+                                  backgroundImage: user.name === 'Solaire of Astora' 
+                                    ? "url('/assets/dark_souls2.jpg')" 
+                                    : "url('/assets/cyberpunk.jpg')",
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                }}
+                              >
+                                {/* Overlay oscuro */}
+                                <div className="absolute inset-0 bg-black bg-opacity-85 z-0 rounded-2xl" />
+                                
+                                {/* Contenido del perfil */}
+                                <div className="relative z-10 p-4 flex flex-col items-center justify-center gap-3 h-full">
+                                  {/* Avatar con marco Challenger solo para Solaire */}
+                                  {user.name === 'Solaire of Astora' ? (
+                                    <div className="relative flex items-center justify-center mb-2" style={{width: 80, height: 80}}>
+                                      <img src="/assets/chalenger.png" alt="Marco Challenger" className="absolute" style={{top:'63%', left:'50%', width:80, height:80, transform:'translate(-50%,-50%)', pointerEvents:'none', zIndex:30}} />
+                                      <div className="flex items-center justify-center" style={{width: 64, height: 64, zIndex: 20, background: 'transparent'}}>
+                                        <UserAvatar size={56} className="text-yellow-200 bg-gray-900 rounded-full p-1 border-2 border-yellow-400" style={{zIndex: 20}} />
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <UserAvatar size={56} className="text-gray-300 bg-gray-100 rounded-full p-1 border-2 border-gray-400 mb-2" />
+                                  )}
+                                  
+                                  {/* Nombre del usuario */}
+                                  <div 
+                                    className="font-bold text-center mb-2"
+                                    style={{
+                                      color: user.name === 'Solaire of Astora' ? '#ffe066' : '#ffffff',
+                                      textShadow: user.name === 'Solaire of Astora' ? '0 2px 12px #000, 0 0px 2px #000' : '0 2px 8px #000',
+                                      fontWeight: 900,
+                                      fontSize: user.name === 'Solaire of Astora' ? '1.2rem' : '1rem',
+                                      letterSpacing: '0.5px',
+                                    }}
+                                  >
+                                    {user.name}
+                                  </div>
+                                  
+                                  {/* Estadísticas */}
+                                  <div className="grid grid-cols-2 gap-1 w-full mb-2">
+                                    {statConfig.map((stat, i) => (
+                                      <div 
+                                        key={stat.key} 
+                                        className="flex flex-col items-center justify-center rounded-lg px-1 py-1 font-semibold text-center min-w-[60px]" 
+                                        style={{
+                                          backgroundColor: user.name === 'Solaire of Astora' 
+                                            ? i === 0 ? 'rgba(127, 29, 29, 0.8)' :    // Rojo oscuro para críticas
+                                               i === 1 ? 'rgba(146, 64, 14, 0.8)' :    // Naranja oscuro para altas
+                                               i === 2 ? 'rgba(146, 64, 14, 0.8)' :    // Naranja oscuro para medianas
+                                               'rgba(30, 58, 138, 0.8)'                 // Azul oscuro para bajas
+                                            : i === 0 ? 'rgba(59, 130, 246, 0.8)' :    // Azul neón para críticas
+                                               i === 1 ? 'rgba(147, 51, 234, 0.8)' :   // Púrpura neón para altas
+                                               i === 2 ? 'rgba(16, 185, 129, 0.8)' :   // Verde neón para medianas
+                                               'rgba(236, 72, 153, 0.8)',              // Rosa neón para bajas
+                                          color: user.name === 'Solaire of Astora' 
+                                            ? i === 0 ? '#fecaca' :    // Rojo claro para Dark Souls
+                                               i === 1 ? '#fef3c7' :   // Amarillo claro
+                                               i === 2 ? '#fef3c7' :   // Amarillo claro
+                                               '#bfdbfe'                // Azul claro
+                                            : '#ffffff',               // Blanco para cyberpunk
+                                          boxShadow: '0 2px 8px #000'
+                                        }}
+                                      >
+                                        <div className="flex items-center justify-center gap-1">
+                                          <span className="text-sm font-bold leading-tight">{userStats[user.name]?.stats?.[stat.key] ?? '-'}</span>
+                                          {stat.icon}
+                                        </div>
+                                        <span 
+                                          className="text-xs mt-0.5 font-semibold" 
+                                          style={{
+                                            color: user.name === 'Solaire of Astora' 
+                                              ? '#fbbf24' // Amarillo dorado para Dark Souls
+                                              : '#60a5fa', // Azul claro para cyberpunk
+                                            fontWeight: 600
+                                          }}
+                                        >
+                                          {stat.label}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                  
+                                  {/* Total */}
+                                  <div 
+                                    className="flex items-center gap-2 rounded-lg px-3 py-1 font-semibold text-sm"
+                                    style={{
+                                      backgroundColor: user.name === 'Solaire of Astora' 
+                                        ? 'rgba(146, 64, 14, 0.8)'  // Naranja oscuro para Dark Souls
+                                        : 'rgba(59, 130, 246, 0.8)', // Azul neón para cyberpunk
+                                      color: user.name === 'Solaire of Astora' 
+                                        ? '#fef3c7'  // Amarillo claro para Dark Souls
+                                        : '#ffffff', // Blanco para cyberpunk
+                                      boxShadow: '0 2px 8px #000'
+                                    }}
+                                  >
+                                    <Checkmark size={16} className="text-green-400" />
+                                    <span style={{color: user.name === 'Solaire of Astora' ? '#fbbf24' : '#60a5fa'}}>
+                                      Total: {userStats[user.name]?.stats?.total ?? user.score}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </span>
+                        </td>
+                        <td className={`py-2 text-right font-mono ${gulagNames.includes(user.name) ? 'text-red-400' : 'text-purple-300'}`}>{user.score}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Tabla de Equipos */}
+            <div>
+              <h2 className="text-2xl font-bold mb-4 text-blue-400">Equipos</h2>
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="text-gray-400 text-sm">
+                    <th className="pb-2 w-8">#</th>
+                    <th className="pb-2">Nombre</th>
+                    <th className="pb-2 text-right">Puntos</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {teams.map((team, idx) => (
+                    <tr
+                      key={team.name}
+                      className="border-t border-gray-500/30 hover:bg-blue-500/10 transition"
+                    >
+                      <td className="py-2 font-bold text-gray-400">{idx + 1}.</td>
+                      <td className="py-2 text-white font-semibold">{team.name}</td>
+                      <td className="py-2 text-right font-mono text-purple-300">{team.score}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

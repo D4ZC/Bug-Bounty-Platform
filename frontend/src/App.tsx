@@ -23,6 +23,7 @@ import Documentation from '@/pages/Documentation';
 import DocumentationDetail from '@/pages/DocumentationDetail';
 import Tables from '@/pages/Tables';
 import Rules from '@/pages/Rules';
+import Duels from '@/pages/Duels';
 
 // Components
 import ProtectedRoute from '@/components/auth/ProtectedRoute';
@@ -45,7 +46,7 @@ function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vulnerabilities" element={<Vulnerabilities />} />
           <Route path="challenges" element={<Challenges />} />
-          <Route path="shop" element={<Shop />} />
+          <Route path="store" element={<Shop />} />
           <Route path="contributions" element={<Contributions />} />
           <Route path="profile" element={<Profile />} />
           <Route path="team" element={<Team />} />
@@ -55,6 +56,7 @@ function App() {
           <Route path="documentation/:vulnName" element={<DocumentationDetail />} />
           <Route path="tables" element={<Tables />} />
           <Route path="rules" element={<Rules />} />
+          <Route path="duels" element={<Duels />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

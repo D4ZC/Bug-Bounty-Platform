@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 type DocInstance = { cve: string; description: string; url: string; files: File[] };
 type Resource = { title: string; docs: DocInstance[] };
+
 const initialResources: Resource[] = [
   {
     title: 'SQL Injection',
@@ -104,15 +105,15 @@ const Documentation: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-2xl font-semibold mb-6">Documentación</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 p-8">
+      <h1 className="text-2xl font-semibold mb-6 text-white">Documentación</h1>
       <div className="mb-8 flex items-center">
         <input
           type="text"
           placeholder="Search resources..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md px-4 py-2 border border-gray-300 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full max-w-md px-4 py-2 border border-purple-500 rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 text-white"
         />
         <span className="-ml-8 text-gray-400">
           <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 1 0 6.5 6.5a7.5 7.5 0 0 0 10.6 10.6z"/></svg>
@@ -120,14 +121,14 @@ const Documentation: React.FC = () => {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {filtered.length === 0 ? (
-          <div className="col-span-3 text-center text-gray-500">No results found.</div>
+          <div className="col-span-3 text-center text-gray-400">No results found.</div>
         ) : (
           filtered.map((res, idx) => (
-            <div key={idx} className="bg-white rounded-lg shadow p-6 flex flex-col items-start">
-              <span className="text-lg font-medium mb-2">{res.title}</span>
-              <span className="text-2xl font-semibold mb-4">{res.docs.length}</span>
+            <div key={idx} className="bg-gradient-to-br from-gray-800/80 to-gray-900/80 border-2 border-purple-500 rounded-lg shadow-2xl p-6 flex flex-col items-start">
+              <span className="text-lg font-medium mb-2 text-white">{res.title}</span>
+              <span className="text-2xl font-semibold mb-4 text-purple-400">{res.docs.length}</span>
               <button
-                className="border border-blue-400 text-blue-600 px-4 py-1 rounded hover:bg-blue-50 transition"
+                className="border border-purple-500 text-purple-400 px-4 py-1 rounded hover:bg-purple-700 transition"
                 onClick={() => navigate(`/documentation/${encodeURIComponent(res.title)}`)}
               >
                 View All
@@ -137,7 +138,7 @@ const Documentation: React.FC = () => {
         )}
       </div>
       <button
-        className="fixed bottom-8 right-8 bg-gray-400 hover:bg-gray-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg text-3xl"
+        className="fixed bottom-8 right-8 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-2xl text-3xl transition-all transform hover:scale-105"
         onClick={() => setModalOpen(true)}
         aria-label="Agregar documentación"
       >
@@ -147,76 +148,76 @@ const Documentation: React.FC = () => {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-40">
           <form
             onSubmit={handleSubmit}
-            className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative"
+            className="bg-gradient-to-br from-gray-800/90 to-gray-900/90 border-2 border-purple-500 rounded-2xl shadow-2xl p-8 w-full max-w-md relative"
           >
             <button
               type="button"
-              className="absolute top-2 right-2 text-gray-400 hover:text-black text-2xl"
+              className="absolute top-2 right-2 text-gray-400 hover:text-white text-2xl transition-colors"
               onClick={() => { setModalOpen(false); setVulnName(''); setCve(''); setDescription(''); setUrl(''); setFiles(null); }}
               aria-label="Cerrar"
             >
               &times;
             </button>
-            <h2 className="text-xl font-bold mb-4">Agregar nueva documentación</h2>
+            <h2 className="text-xl font-bold mb-4 text-white">Agregar nueva documentación</h2>
             <div className="mb-4">
-              <label className="block mb-1 font-medium">Nombre de la vulnerabilidad</label>
+              <label className="block mb-1 font-medium text-gray-300">Nombre de la vulnerabilidad</label>
               <input
                 type="text"
                 value={vulnName}
                 onChange={e => setVulnName(e.target.value)}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full px-3 py-2 border border-purple-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 text-white"
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium">CVE</label>
+              <label className="block mb-1 font-medium text-gray-300">CVE</label>
               <input
                 type="text"
                 value={cve}
                 onChange={e => setCve(e.target.value)}
                 placeholder="CVE-XXXX-XXXX"
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full px-3 py-2 border border-purple-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 text-white"
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium">Descripción</label>
+              <label className="block mb-1 font-medium text-gray-300">Descripción</label>
               <textarea
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                className="w-full px-3 py-2 border border-purple-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 text-white resize-none"
               />
             </div>
             <div className="mb-4">
-              <label className="block mb-1 font-medium">URL</label>
+              <label className="block mb-1 font-medium text-gray-300">URL</label>
               <input
                 type="url"
                 value={url}
                 onChange={e => setUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full px-3 py-2 border border-purple-500 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-800 text-white"
               />
             </div>
             <div className="mb-6">
-              <label className="block mb-1 font-medium">Subir archivos</label>
+              <label className="block mb-1 font-medium text-gray-300">Subir archivos</label>
               <input
                 type="file"
                 multiple
                 onChange={handleFileChange}
-                className="w-full"
+                className="w-full text-gray-300"
               />
             </div>
             <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => { setModalOpen(false); setVulnName(''); setCve(''); setDescription(''); setUrl(''); setFiles(null); }}
-                className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+                className="px-4 py-2 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded hover:from-gray-700 hover:to-gray-800 transition-all"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded hover:from-purple-700 hover:to-blue-700 transition-all"
               >
                 Guardar
               </button>
