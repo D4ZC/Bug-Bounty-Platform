@@ -7,7 +7,7 @@ interface Team {
 }
 
 const TeamsScoreCard: React.FC<{ teams: Team[] }> = ({ teams }) => (
-  <Tile className="col-span-1 flex flex-col gap-2 min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm">
+  <Tile className="col-span-1 flex flex-col gap-2 min-h-[200px] bg-gray-50 border border-gray-200 rounded-xl shadow-sm p-6">
     <h2 className="text-2xl font-bold text-primary-700">Teams Score</h2>
     <div className="font-bold text-primary-500">Top 3 Teams</div>
     <ol className="mt-2">

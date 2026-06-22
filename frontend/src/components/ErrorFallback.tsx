@@ -4,7 +4,7 @@ import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
 
 const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-50 px-4">
       <div className="max-w-md w-full text-center">
         <div className="mb-6">
           <AlertTriangle className="w-16 h-16 text-danger-500 mx-auto mb-4" />
@@ -17,7 +17,7 @@ const ErrorFallback: React.FC<FallbackProps> = ({ error, resetErrorBoundary }) =
         </div>
 
         {process.env.NODE_ENV === 'development' && (
-          <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-lg text-left">
+          <div className="mb-6 p-4 bg-gray-100 dark:bg-gray-500 rounded-lg text-left">
             <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">
               Detalles del error:
             </h3>

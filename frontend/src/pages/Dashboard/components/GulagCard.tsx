@@ -7,7 +7,7 @@ interface GulagUser {
 }
 
 const GulagCard: React.FC<{ gulag: GulagUser[] }> = ({ gulag }) => (
-  <Tile className="col-span-1 min-h-[200px] bg-white flex flex-col border border-gray-200 rounded-xl shadow-sm relative">
+  <Tile className="col-span-1 min-h-[200px] bg-gray-50 flex flex-col border border-gray-200 rounded-xl shadow-sm relative p-6">
     <h2 className="text-2xl font-bold text-danger-700">Gulag</h2>
     <div className="font-bold text-danger-500">Top 5 Worst</div>
     <ol className="mt-2">

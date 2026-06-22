@@ -8,7 +8,7 @@ interface MVPUser {
 }
 
 const MVPUserCard: React.FC<{ user: MVPUser }> = ({ user }) => (
-  <Tile className="col-span-1 flex flex-col items-center justify-center min-h-[200px] bg-white border border-gray-200 rounded-xl shadow-sm">
+  <Tile className="col-span-1 flex flex-col items-center justify-center min-h-[200px] bg-gray-50 border border-gray-200 rounded-xl shadow-sm p-6">
     <h2 className="text-2xl font-bold text-primary-700 mb-2">MVP User</h2>
     <div className="mb-2 text-primary-500">Top 3 Teams</div>
     {/* Placeholder de imagen de usuario */}
